@@ -47,7 +47,7 @@ private:
 	sp<Runnable> mRunnable;
 	sp<Thread> mThreadKeeper;
 	pthread_t mThread;
-	bool mRunning;
+	bool mStarted;
 	bool mInterrupted;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Thread)

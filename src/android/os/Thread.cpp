@@ -24,29 +24,30 @@ namespace os {
 
 Thread::Thread() :
 	mRunnable(NULL),
-	mRunning(false),
+	mStarted(false),
 	mInterrupted(false) {
 }
 
 Thread::Thread(const sp<Runnable>& runnable) :
 	mRunnable(runnable),
-	mRunning(false),
+	mStarted(false),
 	mInterrupted(false) {
 }
 
 Thread::Thread(pthread_t thread) :
 	mThread(thread),
-	mRunning(true),
+	mStarted(true),
 	mInterrupted(false) {
 }
 
 bool Thread::start() {
-	if (!mRunning) {
+	if (!mStarted) {
 		mThreadKeeper = this;
 		if (pthread_create(&mThread, NULL, &Thread::exec, this) != 0) {
 			mThreadKeeper.clear();
 		}
-		return (mThreadKeeper != NULL);
+		mStarted = (mThreadKeeper != NULL);
+		return mStarted;
 	}
 	return false;
 }
