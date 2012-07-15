@@ -57,13 +57,13 @@ bool Socket::connect(const char* host, uint16_t port) {
 	}
 }
 
-int32_t Socket::read(uint8_t* data, size_t size) {
+ssize_t Socket::read(uint8_t* data, size_t size) {
 	return ::recv(mSocketId, reinterpret_cast<char*>(data), size, 0);
 }
 
-int32_t Socket::readFully(uint8_t* data, size_t size) {
+ssize_t Socket::readFully(uint8_t* data, size_t size) {
 	size_t curSize = 0;
-	int32_t result = 0;
+	ssize_t result = 0;
 	while (curSize < size) {
 		result = ::recv(mSocketId, reinterpret_cast<char*>(data + curSize), size - curSize, 0);
 		if (result > 0) {
@@ -76,7 +76,7 @@ int32_t Socket::readFully(uint8_t* data, size_t size) {
 }
 
 bool Socket::write(const void* data, size_t size) {
-	return ::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
+	return (size_t)::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
 }
 
 void Socket::close() {

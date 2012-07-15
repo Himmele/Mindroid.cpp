@@ -53,6 +53,9 @@ Message::Message() :
 	mNextMessage(NULL) {
 }
 
+Message::~Message() {
+}
+
 sp<Message> Message::obtain() {
 	{
 		AutoLock autoLock(sMessagePool.mLock);

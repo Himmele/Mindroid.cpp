@@ -44,7 +44,7 @@ class Message :
 	public Ref,
 	public Ref::Destroyer {
 public:
-	virtual ~Message() { }
+	virtual ~Message();
     static sp<Message> obtain();
     static sp<Message> obtain(const sp<Handler>& handler);
     static sp<Message> obtain(const sp<Handler>& handler, int32_t what);

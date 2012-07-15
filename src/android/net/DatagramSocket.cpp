@@ -63,20 +63,20 @@ bool DatagramSocket::bind(const char* host, uint16_t port) {
 	return mIsBound;
 }
 
-int32_t DatagramSocket::recv(uint8_t* data, uint32_t size) {
+ssize_t DatagramSocket::recv(uint8_t* data, size_t size) {
 	return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, NULL, 0);
 }
 
-int32_t DatagramSocket::recv(uint8_t* data, uint32_t size, android::os::sp<SocketAddress>& sender) {
+ssize_t DatagramSocket::recv(uint8_t* data, size_t size, android::os::sp<SocketAddress>& sender) {
 	socklen_t socketSize = sizeof(sender->mSocketAddress);
-	int32_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, (struct sockaddr*)&sender->mSocketAddress, &socketSize);
+	ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, (struct sockaddr*)&sender->mSocketAddress, &socketSize);
 	sender->mValid = true;
 	return result;
 }
 
-bool DatagramSocket::send(const void* data, uint32_t size, const android::os::sp<SocketAddress>& receiver) {
+bool DatagramSocket::send(const void* data, size_t size, const android::os::sp<SocketAddress>& receiver) {
 	socklen_t socketSize = sizeof(receiver->mSocketAddress);
-	return ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0, (struct sockaddr*)&receiver->mSocketAddress, socketSize) == size;
+	return (size_t)::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0, (struct sockaddr*)&receiver->mSocketAddress, socketSize) == size;
 }
 
 void DatagramSocket::close() {

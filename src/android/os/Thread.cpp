@@ -24,20 +24,31 @@ namespace os {
 
 Thread::Thread() :
 	mRunnable(NULL),
+	mRunning(false),
 	mInterrupted(false) {
 }
 
 Thread::Thread(const sp<Runnable>& runnable) :
 	mRunnable(runnable),
+	mRunning(false),
+	mInterrupted(false) {
+}
+
+Thread::Thread(pthread_t thread) :
+	mThread(thread),
+	mRunning(true),
 	mInterrupted(false) {
 }
 
 bool Thread::start() {
-	mThreadKeeper = this;
-	if (pthread_create(&mThread, NULL, &Thread::exec, this) != 0) {
-		mThreadKeeper.clear();
+	if (!mRunning) {
+		mThreadKeeper = this;
+		if (pthread_create(&mThread, NULL, &Thread::exec, this) != 0) {
+			mThreadKeeper.clear();
+		}
+		return (mThreadKeeper != NULL);
 	}
-	return (mThreadKeeper != NULL);
+	return false;
 }
 
 void Thread::sleep(uint32_t milliseconds) {
@@ -70,6 +81,10 @@ void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
 	memset(&schedulingParameters, 0, sizeof(schedulingParameters));
 	schedulingParameters.sched_priority = priority;
 	pthread_setschedparam(mThread, policy, &schedulingParameters);
+}
+
+sp<Thread> Thread::currentThread() {
+	return new Thread(pthread_self());
 }
 
 } /* namespace os */

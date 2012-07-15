@@ -33,15 +33,15 @@ public:
 	virtual ~Socket();
 
 	bool connect(const char* host, uint16_t port);
-	int32_t read(uint8_t* data, size_t size);
-	int32_t readFully(uint8_t* data, size_t size);
+	ssize_t read(uint8_t* data, size_t size);
+	ssize_t readFully(uint8_t* data, size_t size);
 	bool write(const void* data, size_t size);
 	void close();
 	bool isConnected() const { return mIsConnected; }
 	bool isClosed() const { return mIsClosed; }
 
 private:
-	int32_t mSocketId;
+	int mSocketId;
 	bool mIsConnected;
 	bool mIsClosed;
 

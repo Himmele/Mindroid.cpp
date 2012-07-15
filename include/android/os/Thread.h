@@ -38,13 +38,16 @@ public:
 	bool isInterrupted() const;
 	void join() const;
 	void setSchedulingParams(int32_t policy, int32_t priority);
+	static sp<Thread> currentThread();
 
 private:
+	Thread(pthread_t thread);
 	static void* exec(void* args);
 
 	sp<Runnable> mRunnable;
 	sp<Thread> mThreadKeeper;
 	pthread_t mThread;
+	bool mRunning;
 	bool mInterrupted;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Thread)

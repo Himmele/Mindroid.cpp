@@ -35,15 +35,16 @@ public:
 
 	bool bind(uint16_t port);
 	bool bind(const char* host, uint16_t port);
-	int32_t recv(uint8_t* data, uint32_t size);
-	int32_t recv(uint8_t* data, uint32_t size, android::os::sp<SocketAddress>& sender);
-	bool send(const void* data, uint32_t size, const android::os::sp<SocketAddress>& receiver);
+	ssize_t recv(uint8_t* data, size_t size);
+	ssize_t recv(uint8_t* data, size_t size, android::os::sp<SocketAddress>& sender);
+	bool send(const void* data, size_t size, const android::os::sp<SocketAddress>& receiver);
 	void close();
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
+	int getSocketId() const { return mSocketId; }
 
 private:
-	int32_t mSocketId;
+	int mSocketId;
 	bool mIsBound;
 	bool mIsClosed;
 

@@ -41,7 +41,7 @@ ServerSocket::ServerSocket(uint16_t port) :
 	bind(port);
 }
 
-ServerSocket::ServerSocket(uint16_t port, uint32_t backlog) :
+ServerSocket::ServerSocket(uint16_t port, int backlog) :
 	mSocketId(-1),
 	mIsBound(false),
 	mIsClosed(false),
@@ -49,7 +49,7 @@ ServerSocket::ServerSocket(uint16_t port, uint32_t backlog) :
 	bind(port, backlog);
 }
 
-ServerSocket::ServerSocket(const char* host, uint16_t port, uint32_t backlog) :
+ServerSocket::ServerSocket(const char* host, uint16_t port, int backlog) :
 	mSocketId(-1),
 	mIsBound(false),
 	mIsClosed(false),
@@ -61,11 +61,11 @@ ServerSocket::~ServerSocket() {
 	close();
 }
 
-bool ServerSocket::bind(uint16_t port, uint32_t backlog) {
+bool ServerSocket::bind(uint16_t port, int backlog) {
 	return bind(NULL, port, backlog);
 }
 
-bool ServerSocket::bind(const char* host, uint16_t port, uint32_t backlog) {
+bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
 	if (mIsBound) {
 		return false;
 	}

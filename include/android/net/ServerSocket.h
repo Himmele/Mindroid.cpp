@@ -28,15 +28,15 @@ class ServerSocket :
 	public android::os::Ref
 {
 public:
-	static const uint32_t DEFAULT_BACKLOG = 10;
+	static const int DEFAULT_BACKLOG = 10;
 
 	ServerSocket();
 	ServerSocket(uint16_t port);
-	ServerSocket(uint16_t port, uint32_t backlog);
-	ServerSocket(const char* host, uint16_t port, uint32_t backlog);
+	ServerSocket(uint16_t port, int backlog);
+	ServerSocket(const char* host, uint16_t port, int backlog);
 	virtual ~ServerSocket();
-	bool bind(uint16_t port, uint32_t backlog = DEFAULT_BACKLOG);
-	bool bind(const char* host, uint16_t port, uint32_t backlog = DEFAULT_BACKLOG);
+	bool bind(uint16_t port, int backlog = DEFAULT_BACKLOG);
+	bool bind(const char* host, uint16_t port, int backlog = DEFAULT_BACKLOG);
 	android::os::sp<Socket> accept();
 	void close();
 	bool isBound() const { return mIsBound; }
@@ -44,7 +44,7 @@ public:
 	void setReuseAddress(bool reuse);
 
 private:
-	int32_t mSocketId;
+	int mSocketId;
 	bool mIsBound;
 	bool mIsClosed;
 	bool mReuseAddress;
