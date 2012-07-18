@@ -153,7 +153,7 @@ String String::trim() const {
 			break;
 		}
 	}
-	if (beginIndex == 0 && endIndex == tmp.size() - 1) {
+	if (beginIndex == 0 && endIndex == (ssize_t)tmp.size() - 1) {
 		return tmp;
 	} else {
 		if (beginIndex != tmp.size()) {
