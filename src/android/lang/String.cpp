@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 using namespace android::os;
+using namespace android::util;
 
 namespace android {
 namespace lang {
@@ -59,7 +60,11 @@ String::String(const char* string, size_t size) {
 }
 
 bool String::contains(const char* subString) const {
-	return strstr(c_str(), subString) != NULL;
+	if (c_str() && subString) {
+		return strstr(c_str(), subString) != NULL;
+	} else {
+		return false;
+	}
 }
 
 bool String::contains(const String& subString) const {
@@ -92,7 +97,7 @@ bool String::endsWith(const String& suffix) const {
 	return endsWith(suffix.c_str());
 }
 
-String String::substr(uint32_t beginIndex) const {
+String String::substr(size_t beginIndex) const {
 	if (beginIndex < size()) {
 		return String(c_str() + beginIndex, size() - beginIndex);
 	} else {
@@ -100,7 +105,7 @@ String String::substr(uint32_t beginIndex) const {
 	}
 }
 
-String String::substr(uint32_t beginIndex, uint32_t endIndex) const {
+String String::substr(size_t beginIndex, size_t endIndex) const {
 	if (beginIndex < size()) {
 		return String(c_str() + beginIndex, endIndex - beginIndex);
 	} else {
@@ -121,6 +126,19 @@ ssize_t String::indexOf(const String& string) const {
 	return indexOf(string.c_str());
 }
 
+ssize_t String::indexOf(const char* string, size_t fromIndex) const {
+	const char* substr = strstr(c_str() + fromIndex, string);
+	if (substr != NULL) {
+		return substr - c_str();
+	} else {
+		return -1;
+	}
+}
+
+ssize_t String::indexOf(const String& string, size_t fromIndex) const {
+	return indexOf(string.c_str() + fromIndex);
+}
+
 String String::trim() const {
 	String tmp(*this);
 	size_t beginIndex;
@@ -135,12 +153,16 @@ String String::trim() const {
 			break;
 		}
 	}
-	if (beginIndex != tmp.size()) {
-		tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex, endIndex - beginIndex + 1);
+	if (beginIndex == 0 && endIndex == tmp.size() - 1) {
+		return tmp;
 	} else {
-		tmp.mString = sEmptyString;
+		if (beginIndex != tmp.size()) {
+			tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex, endIndex - beginIndex + 1);
+		} else {
+			tmp.mString = sEmptyString;
+		}
+		return tmp;
 	}
-	return tmp;
 }
 
 String String::left(size_t n) const {
@@ -155,6 +177,27 @@ String String::right(size_t n) const {
 	n = (n > tmp.size()) ? tmp.size() : n;
 	tmp.mString = new StringBuffer(tmp.mString->mData + tmp.size() - n , n);
 	return tmp;
+}
+
+List<String> String::split(const char* separator) const {
+	List<String> strings;
+	ssize_t curIndex = 0;
+	ssize_t prevCurIndex;
+	while (curIndex >= 0 && (size_t)curIndex < size()) {
+		prevCurIndex = curIndex;
+		curIndex = indexOf(separator, curIndex);
+		if (curIndex >= 0) {
+			strings.push_back(substr(prevCurIndex, curIndex));
+			curIndex += strlen(separator);
+		} else {
+			strings.push_back(substr(prevCurIndex, size()));
+		}
+	}
+	return strings;
+}
+
+List<String> String::split(const String& separator) const {
+	return split(separator.c_str());
 }
 
 String& String::append(const char* data, size_t size) {
@@ -197,6 +240,10 @@ String& String::appendFormattedWithVarArgList(const char* format, va_list args) 
     }
 
     return *this;
+}
+
+size_t String::size(const char* string) {
+	return strlen(string);
 }
 
 } /* namespace lang */

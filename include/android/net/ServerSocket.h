@@ -42,6 +42,7 @@ public:
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
 	void setReuseAddress(bool reuse);
+	int getId() const { return mSocketId; }
 
 private:
 	int mSocketId;

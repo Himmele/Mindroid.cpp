@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Some refactorings by Daniel Himmelein
+ * Some extenstions and refactorings by Daniel Himmelein
  */
 
 #ifndef ANDROID_OS_REF_H_

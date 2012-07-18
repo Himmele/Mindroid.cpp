@@ -41,7 +41,7 @@ public:
 	void close();
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
-	int getSocketId() const { return mSocketId; }
+	int getId() const { return mSocketId; }
 
 private:
 	int mSocketId;

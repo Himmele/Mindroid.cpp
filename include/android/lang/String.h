@@ -18,6 +18,7 @@
 #define ANDROID_LANG_STRING_H_
 
 #include "android/os/Ref.h"
+#include "android/util/List.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
@@ -74,7 +75,7 @@ public:
 		return mString->mData[index];
 	}
 
-	inline char charAt(uint32_t index) const {
+	inline char charAt(size_t index) const {
 		assert(index < size());
 		return mString->mData[index];
 	}
@@ -88,21 +89,28 @@ public:
 	bool endsWith(const char* suffix) const;
 	bool endsWith(const String& suffix) const;
 
-	String substr(uint32_t beginIndex) const;
-	String substr(uint32_t beginIndex, uint32_t endIndex) const;
+	String substr(size_t beginIndex) const;
+	String substr(size_t beginIndex, size_t endIndex) const;
 
 	ssize_t indexOf(const char* string) const;
 	ssize_t indexOf(const String& string) const;
+	ssize_t indexOf(const char* string, size_t fromIndex) const;
+	ssize_t indexOf(const String& string, size_t fromIndex) const;
 
 	String trim() const;
 
 	String left(size_t n) const;
 	String right(size_t n) const;
 
+	android::util::List<String> split(const char* separator) const;
+	android::util::List<String> split(const String& separator) const;
+
 	String& append(const char* data, size_t size);
 	String& appendFormatted(const char* format, ...) __attribute__((format (printf, 2, 3)));
 
 	static String format(const char* format, ...) __attribute__((format (printf, 1, 2)));
+
+	static size_t size(const char* string);
 
 private:
 	class StringBuffer :

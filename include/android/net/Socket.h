@@ -39,6 +39,7 @@ public:
 	void close();
 	bool isConnected() const { return mIsConnected; }
 	bool isClosed() const { return mIsClosed; }
+	int getId() const { return mSocketId; }
 
 private:
 	int mSocketId;

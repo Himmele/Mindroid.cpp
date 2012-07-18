@@ -37,13 +37,15 @@ public:
 	Event() {}
 	~Event() {}
 
-    Event& operator+=(const Delegate<R, A1, A2, A3, A4>& delegate) {
+	typedef Delegate<R, A1, A2, A3, A4> DelegateType;
+
+    Event& operator+=(const DelegateType& delegate) {
     	mEventHandlers.push_back(delegate);
     	return *this;
     }
 
-    Event& operator-=(const Delegate<R, A1, A2, A3, A4>& delegate) {
-		typename std::vector< Delegate<R, A1, A2, A3, A4> >::iterator itr;
+    Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -52,14 +54,14 @@ public:
 	}
 
     void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-    	typename std::vector< Delegate<R, A1, A2, A3, A4> >::const_iterator itr;
+    	typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-    std::vector< Delegate<R, A1, A2, A3, A4> > mEventHandlers;
+    std::vector< DelegateType > mEventHandlers;
 
     NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -71,13 +73,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R (A1, A2, A3, A4)>& delegate) {
+	typedef Delegate<R (A1, A2, A3, A4)> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R (A1, A2, A3, A4)>& delegate) {
-		typename std::vector< Delegate<R (A1, A2, A3, A4)> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -86,14 +90,14 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-		typename std::vector< Delegate<R (A1, A2, A3, A4)> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-	std::vector< Delegate<R (A1, A2, A3, A4)> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -106,13 +110,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R, A1, A2, A3>& delegate) {
+	typedef Delegate<R, A1, A2, A3> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R, A1, A2, A3>& delegate) {
-		typename std::vector< Delegate<R, A1, A2, A3> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -121,14 +127,14 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename std::vector< Delegate<R, A1, A2, A3> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	std::vector< Delegate<R, A1, A2, A3> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -140,13 +146,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R (A1, A2, A3)>& delegate) {
+	typedef Delegate<R (A1, A2, A3)> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R (A1, A2, A3)>& delegate) {
-		typename std::vector< Delegate<R (A1, A2, A3)> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -155,14 +163,14 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename std::vector< Delegate<R (A1, A2, A3)> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	std::vector< Delegate<R (A1, A2, A3)> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -175,13 +183,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R, A1, A2>& delegate) {
+	typedef Delegate<R, A1, A2> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R, A1, A2>& delegate) {
-		typename std::vector< Delegate<R, A1, A2> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -190,14 +200,14 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2) const {
-		typename std::vector< Delegate<R, A1, A2> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	std::vector< Delegate<R, A1, A2> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -209,13 +219,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R (A1, A2)>& delegate) {
+	typedef Delegate<R (A1, A2)> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R (A1, A2)>& delegate) {
-		typename std::vector< Delegate<R (A1, A2)> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -224,14 +236,14 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2) const {
-		typename std::vector< Delegate<R (A1, A2)> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	std::vector< Delegate<R (A1, A2)> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -244,13 +256,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R, A1>& delegate) {
+	typedef Delegate<R, A1> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R, A1>& delegate) {
-		typename std::vector< Delegate<R, A1> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -259,14 +273,14 @@ public:
 	}
 
 	void operator()(A1 arg1) const {
-		typename std::vector< Delegate<R, A1> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	std::vector< Delegate<R, A1> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -278,13 +292,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R (A1)>& delegate) {
+	typedef Delegate<R (A1)> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R (A1)>& delegate) {
-		typename std::vector< Delegate<R (A1)> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -293,14 +309,14 @@ public:
 	}
 
 	void operator()(A1 arg1) const {
-		typename std::vector< Delegate<R (A1)> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	std::vector< Delegate<R (A1)> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -313,13 +329,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R>& delegate) {
+	typedef Delegate<R> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R>& delegate) {
-		typename std::vector< Delegate<R> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -328,14 +346,14 @@ public:
 	}
 
 	void operator()() const {
-		typename std::vector< Delegate<R> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	std::vector< Delegate<R> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -347,13 +365,15 @@ public:
 	Event() {}
 	~Event() {}
 
-	Event& operator+=(const Delegate<R>& delegate) {
+	typedef Delegate<R> DelegateType;
+
+	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers.push_back(delegate);
 		return *this;
 	}
 
-	Event& operator-=(const Delegate<R>& delegate) {
-		typename std::vector< Delegate<R> >::iterator itr;
+	Event& operator-=(const DelegateType& delegate) {
+		typename std::vector< DelegateType >::iterator itr;
 		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
 		if (itr != mEventHandlers.end()) {
 			mEventHandlers.erase(itr);
@@ -362,14 +382,14 @@ public:
 	}
 
 	void operator()() const {
-		typename std::vector< Delegate<R> >::const_iterator itr;
+		typename std::vector< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	std::vector< Delegate<R> > mEventHandlers;
+	std::vector< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };

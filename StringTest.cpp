@@ -3,6 +3,7 @@
 #include <assert.h>
 
 using namespace android::lang;
+using namespace android::util;
 
 int main() {
 	String s1("Hello");
@@ -64,6 +65,14 @@ int main() {
 	assert(s7.left(2) == "Te");
 	assert(s7.right(2) == "st");
 	assert(s7.right(20) == "Test");
+
+	String s8("abc\n\n\ndef\r\nyxz");
+	List<String> strings = s8.split("\n");
+	List<String>::iterator itr = strings.begin();
+	while (itr != strings.end()) {
+		printf("%s\n", itr->trim().c_str());
+		++itr;
+	}
 
 	return 0;
 }
