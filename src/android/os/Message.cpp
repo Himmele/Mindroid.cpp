@@ -50,6 +50,7 @@ Message::Message() :
 	mExecTimestamp(0),
 	mHandler(NULL),
 	mCallback(NULL),
+	mData(NULL),
 	mNextMessage(NULL) {
 }
 
@@ -111,6 +112,7 @@ sp<Message> Message::obtain(const Message* message) {
 	dupMessage->mExecTimestamp = 0;
 	dupMessage->mHandler = message->mHandler;
 	dupMessage->mCallback = message->mCallback;
+	dupMessage->mData = message->mData;
 	dupMessage->mNextMessage = NULL;
 	return dupMessage;
 }
@@ -131,6 +133,14 @@ sp<Runnable> Message::getCallback() const {
 	return mCallback;
 }
 
+void Message::setData(sp<Bundle> data) {
+	mData = data;
+}
+
+sp<Bundle> Message::getData() const {
+	return mData;
+}
+
 bool Message::sendToTarget() {
 	if (mHandler != NULL) {
 		return mHandler->sendMessage(this);
@@ -141,14 +151,6 @@ bool Message::sendToTarget() {
 
 sp<Message> Message::dup() const {
 	return Message::obtain(this);
-}
-
-void Message::setData(sp<Bundle> data) {
-	mData = data;
-}
-
-sp<Bundle> Message::getData() const {
-	return mData;
 }
 
 void Message::destroy(Ref* ref) {
@@ -179,6 +181,7 @@ void Message::clear() {
 	mExecTimestamp = 0;
 	mHandler = NULL;
 	mCallback = NULL;
+	mData = NULL;
 	mNextMessage = NULL;
 }
 
