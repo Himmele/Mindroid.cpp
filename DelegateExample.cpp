@@ -13,11 +13,11 @@ class Test
 {
 public:
 	void test1(int32_t value) {
-		printf("Test::test1 with value %d\n");
+		printf("Test::test1 with value %d\n", value);
 	}
 
 	void test2(int32_t value) {
-		printf("Test::test2 with value %d\n");
+		printf("Test::test2 with value %d\n", value);
 	}
 
 	Event<void (int32_t)> testIt;
