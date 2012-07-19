@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include "android/os/Lock.h"
 #include "android/os/Ref.h"
+#include "android/os/Bundle.h"
 
 namespace android {
 namespace os {
@@ -57,6 +58,8 @@ public:
     sp<Runnable> getCallback() const;
     bool sendToTarget();
     sp<Message> dup() const;
+    void setData(sp<Bundle> data);
+    sp<Bundle> getData() const;
 
     virtual void destroy(Ref* ref);
 
@@ -75,6 +78,7 @@ private:
     sp<Handler> mHandler;
     sp<Runnable> mCallback;
     sp<Message> mNextMessage;
+    sp<Bundle> mData;
 	static MessagePool sMessagePool;
 
     friend class MessageQueue;

@@ -143,6 +143,14 @@ sp<Message> Message::dup() const {
 	return Message::obtain(this);
 }
 
+void Message::setData(sp<Bundle> data) {
+	mData = data;
+}
+
+sp<Bundle> Message::getData() const {
+	return mData;
+}
+
 void Message::destroy(Ref* ref) {
 	{
 		// The reentranceMessageGuard keeps the mNextMessage until we release the sMessagePoolLock since sMessagePoolLock is not a recursive mutex.
