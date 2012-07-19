@@ -17,11 +17,9 @@
 #ifndef ANDROID_OS_EVENT_H_
 #define ANDROID_OS_EVENT_H_
 
-#include <stdlib.h>
-#include <vector>
-#include <algorithm>
 #include "android/os/Utils.h"
 #include "android/os/Delegate.h"
+#include "android/util/List.h"
 
 namespace android {
 namespace os {
@@ -45,23 +43,25 @@ public:
     }
 
     Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
     void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-    	typename std::vector< DelegateType >::const_iterator itr;
+    	typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-    std::vector< DelegateType > mEventHandlers;
+    android::util::List< DelegateType > mEventHandlers;
 
     NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -81,23 +81,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -118,23 +120,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -154,23 +158,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -191,23 +197,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1, A2 arg2) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -227,23 +235,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1, A2 arg2) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -264,23 +274,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -300,23 +312,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()(A1 arg1) const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -337,23 +351,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()() const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -373,23 +389,25 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename std::vector< DelegateType >::iterator itr;
-		itr = std::find(mEventHandlers.begin(), mEventHandlers.end(), delegate);
-		if (itr != mEventHandlers.end()) {
-			mEventHandlers.erase(itr);
+		typename android::util::List< DelegateType >::iterator itr;
+		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers.erase(itr);
+				break;
+			}
 		}
 		return *this;
 	}
 
 	void operator()() const {
-		typename std::vector< DelegateType >::const_iterator itr;
+		typename android::util::List< DelegateType >::const_iterator itr;
 		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	std::vector< DelegateType > mEventHandlers;
+	android::util::List< DelegateType > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
