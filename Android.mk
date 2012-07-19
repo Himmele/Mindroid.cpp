@@ -16,6 +16,7 @@ LOCAL_SRC_FILES:= \
 	src/android/os/ThreadPoolExecutor.cpp \
 	src/android/os/AtomicInteger.cpp.arm \
 	src/android/os/Ref.cpp \
+	src/android/os/Bundle.cpp \
 	src/android/util/Buffer.cpp \
 	src/android/lang/String.cpp \
 	src/android/net/SocketAddress.cpp \
