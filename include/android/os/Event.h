@@ -32,10 +32,10 @@ template<typename R, typename A1, typename A2, typename A3, typename A4>
 class Event
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R, A1, A2, A3, A4> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
     Event& operator+=(const DelegateType& delegate) {
     	mEventHandlers->push_back(delegate);
@@ -55,7 +55,7 @@ public:
 
     void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
     	typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
@@ -70,10 +70,11 @@ template<typename R, typename A1, typename A2, typename A3, typename A4>
 class Event<R (A1, A2, A3, A4)>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R (A1, A2, A3, A4)> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
+
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -93,7 +94,7 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
@@ -109,10 +110,10 @@ template<typename R, typename A1, typename A2, typename A3>
 class Event<R, A1, A2, A3, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R, A1, A2, A3> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -132,7 +133,7 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
@@ -147,10 +148,10 @@ template<typename R, typename A1, typename A2, typename A3>
 class Event<R (A1, A2, A3), void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R (A1, A2, A3)> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -170,7 +171,7 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
@@ -186,10 +187,10 @@ template<typename R, typename A1, typename A2>
 class Event<R, A1, A2, void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R, A1, A2> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() {}
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -209,7 +210,7 @@ public:
 
 	void operator()(A1 arg1, A2 arg2) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
@@ -224,10 +225,10 @@ template<typename R, typename A1, typename A2>
 class Event<R (A1, A2), void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R (A1, A2)> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -247,7 +248,7 @@ public:
 
 	void operator()(A1 arg1, A2 arg2) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
@@ -263,10 +264,10 @@ template<typename R, typename A1>
 class Event<R, A1, void, void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R, A1> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -286,7 +287,7 @@ public:
 
 	void operator()(A1 arg1) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
@@ -301,10 +302,10 @@ template<typename R, typename A1>
 class Event<R (A1), void, void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R (A1)> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -324,7 +325,7 @@ public:
 
 	void operator()(A1 arg1) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
@@ -340,10 +341,10 @@ template<typename R>
 class Event<R, void, void, void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -363,7 +364,7 @@ public:
 
 	void operator()() const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)();
 		}
 	}
@@ -378,10 +379,10 @@ template<typename R>
 class Event<R (void), void, void, void>
 {
 public:
-	Event() {}
-	~Event() {}
-
 	typedef Delegate<R> DelegateType;
+
+	Event() { mEventHandlers = new android::util::List< DelegateType >(); }
+	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -401,7 +402,7 @@ public:
 
 	void operator()() const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)();
 		}
 	}
