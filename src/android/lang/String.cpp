@@ -193,6 +193,14 @@ bool String::operator>(const String& string) const {
 	}
 }
 
+bool String::equalsIgnoreCase(const char* string) const {
+	return toLowerCase() == String(string).toLowerCase();
+}
+
+bool String::equalsIgnoreCase(const String& string) const {
+	return toLowerCase() == string.toLowerCase();
+}
+
 bool String::contains(const String& subString) const {
 	return contains(subString.c_str());
 }
@@ -237,6 +245,24 @@ String String::substr(size_t beginIndex, size_t endIndex) const {
 	} else {
 		return String();
 	}
+}
+
+String String::toLowerCase() const {
+	android::os::sp<StringBuffer> string = new StringBuffer(size());
+	for (size_t i = 0; i < size(); i++) {
+		string->mData[i] = tolower(mString->mData[i]);
+	}
+	String tmp(string);
+	return tmp;
+}
+
+String String::toUpperCase() const {
+	android::os::sp<StringBuffer> string = new StringBuffer(size());
+	for (size_t i = 0; i < size(); i++) {
+		string->mData[i] = toupper(mString->mData[i]);
+	}
+	String tmp(string);
+	return tmp;
 }
 
 ssize_t String::indexOf(const char* string) const {
@@ -305,24 +331,24 @@ String String::right(size_t n) const {
 	return tmp;
 }
 
-List<String> String::split(const char* separator) const {
-	List<String> strings;
+sp< List<String> > String::split(const char* separator) const {
+	sp< List<String> > strings = new List<String>();
 	ssize_t curIndex = 0;
 	ssize_t prevCurIndex;
 	while (curIndex >= 0 && (size_t)curIndex < size()) {
 		prevCurIndex = curIndex;
 		curIndex = indexOf(separator, curIndex);
 		if (curIndex >= 0) {
-			strings.push_back(substr(prevCurIndex, curIndex));
+			strings->push_back(substr(prevCurIndex, curIndex));
 			curIndex += strlen(separator);
 		} else {
-			strings.push_back(substr(prevCurIndex, size()));
+			strings->push_back(substr(prevCurIndex, size()));
 		}
 	}
 	return strings;
 }
 
-List<String> String::split(const String& separator) const {
+sp< List<String> > String::split(const String& separator) const {
 	return split(separator.c_str());
 }
 

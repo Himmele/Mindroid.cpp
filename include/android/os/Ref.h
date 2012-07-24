@@ -201,9 +201,10 @@ public:
     template<typename U> sp& operator= (U* other);
     
     // Accessor methods
-    inline T& operator* () const { return *mPointer; }
-    inline T* operator-> () const { return mPointer; }
+    inline T& operator*() const { return *mPointer; }
+    inline T* operator->() const { return mPointer; }
     inline T* getPointer() const { return mPointer; }
+    inline T const* getConstPointer() const { return mPointer; }
 
     // Operators
     COMPARE_REF(==)

@@ -58,6 +58,9 @@ public:
 	bool operator>(const char* string) const;
 	bool operator>(const String& string) const;
 
+	bool equalsIgnoreCase(const char* string) const;
+	bool equalsIgnoreCase(const String& string) const;
+
 	inline size_t size() const {
 		return mString->mSize;
 	}
@@ -100,6 +103,9 @@ public:
 	String substr(size_t beginIndex) const;
 	String substr(size_t beginIndex, size_t endIndex) const;
 
+	String toLowerCase() const;
+	String toUpperCase() const;
+
 	ssize_t indexOf(const char* string) const;
 	ssize_t indexOf(const String& string) const;
 	ssize_t indexOf(const char* string, size_t fromIndex) const;
@@ -110,8 +116,8 @@ public:
 	String left(size_t n) const;
 	String right(size_t n) const;
 
-	android::util::List<String> split(const char* separator) const;
-	android::util::List<String> split(const String& separator) const;
+	android::os::sp< android::util::List<String> > split(const char* separator) const;
+	android::os::sp< android::util::List<String> > split(const String& separator) const;
 
 	String& append(const char* data, size_t size);
 	String& appendFormatted(const char* format, ...) __attribute__((format (printf, 2, 3)));
@@ -149,6 +155,10 @@ private:
 
 		friend class String;
 	};
+
+	String(const android::os::sp<StringBuffer>& string) :
+			mString(string) {
+	}
 
 	String& appendFormattedWithVarArgList(const char* format, va_list args);
 

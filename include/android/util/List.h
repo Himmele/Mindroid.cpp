@@ -23,12 +23,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "android/os/Ref.h"
 
 namespace android {
 namespace util {
 
 template<typename T>
-class List
+class List :
+	public android::os::Ref
 {
 protected:
     class Node
@@ -115,12 +117,12 @@ protected:
             return tmp;
         }
 
-        inline Iterator& operator--() { // ++itr
+        inline Iterator& operator--() { // --itr
             mNode = mNode->getPrevNode();
             return *this;
         }
 
-        const Iterator operator--(int) { // itr++
+        const Iterator operator--(int) { // itr--
         	Iterator tmp(*this);
             mNode = mNode->getPrevNode();
             return tmp;
@@ -138,11 +140,6 @@ public:
     	init();
     }
 
-    List(const List<T>& otherList) {
-    	init();
-        insert(begin(), otherList.begin(), otherList.end());
-    }
-
     virtual ~List() {
         clear();
         delete[] (uint8_t*) mMiddleNode;
@@ -150,8 +147,6 @@ public:
 
     typedef ListIterator<T, ITERATOR> iterator;
     typedef ListIterator<T, CONST_ITERATOR> const_iterator;
-
-    List<T>& operator=(const List<T>& rhs);
 
     inline bool empty() const { return mMiddleNode->getNextNode() == mMiddleNode; }
 
@@ -270,28 +265,9 @@ private:
      * The iterator runs around the circle until it encounters this one.
      */
     Node* mMiddleNode;
-};
 
-template<class T>
-List<T>& List<T>::operator=(const List<T>& rhs)
-{
-    if (this == &rhs) {
-        return *this;
-    }
-    iterator firstDstItr = begin();
-    iterator lastDstItr = end();
-    const_iterator firstSrcItr = rhs.begin();
-    const_iterator lastSrcItr = rhs.end();
-    while (firstSrcItr != lastSrcItr && firstDstItr != lastDstItr) {
-        *firstDstItr++ = *firstSrcItr++;
-    }
-    if (firstSrcItr == lastSrcItr) {
-        erase(firstDstItr, lastDstItr);
-    } else {
-        insert(lastDstItr, firstSrcItr, lastSrcItr);
-    }
-    return *this;
-}
+    NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(List<T>)
+};
 
 } /* namespace util */
 } /* namespace android */

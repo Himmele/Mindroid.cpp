@@ -38,15 +38,15 @@ public:
 	typedef Delegate<R, A1, A2, A3, A4> DelegateType;
 
     Event& operator+=(const DelegateType& delegate) {
-    	mEventHandlers.push_back(delegate);
+    	mEventHandlers->push_back(delegate);
     	return *this;
     }
 
     Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -55,13 +55,13 @@ public:
 
     void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
     	typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-    android::util::List< DelegateType > mEventHandlers;
+    android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
     NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -76,15 +76,15 @@ public:
 	typedef Delegate<R (A1, A2, A3, A4)> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -93,13 +93,13 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -115,15 +115,15 @@ public:
 	typedef Delegate<R, A1, A2, A3> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -132,13 +132,13 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -153,15 +153,15 @@ public:
 	typedef Delegate<R (A1, A2, A3)> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -170,13 +170,13 @@ public:
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -192,15 +192,15 @@ public:
 	typedef Delegate<R, A1, A2> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -209,13 +209,13 @@ public:
 
 	void operator()(A1 arg1, A2 arg2) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -230,15 +230,15 @@ public:
 	typedef Delegate<R (A1, A2)> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -247,13 +247,13 @@ public:
 
 	void operator()(A1 arg1, A2 arg2) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -269,15 +269,15 @@ public:
 	typedef Delegate<R, A1> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -286,13 +286,13 @@ public:
 
 	void operator()(A1 arg1) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -307,15 +307,15 @@ public:
 	typedef Delegate<R (A1)> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -324,13 +324,13 @@ public:
 
 	void operator()(A1 arg1) const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -346,15 +346,15 @@ public:
 	typedef Delegate<R> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -363,13 +363,13 @@ public:
 
 	void operator()() const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -384,15 +384,15 @@ public:
 	typedef Delegate<R> DelegateType;
 
 	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers.push_back(delegate);
+		mEventHandlers->push_back(delegate);
 		return *this;
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
 		typename android::util::List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
-				itr = mEventHandlers.erase(itr);
+				itr = mEventHandlers->erase(itr);
 				break;
 			}
 		}
@@ -401,13 +401,13 @@ public:
 
 	void operator()() const {
 		typename android::util::List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.begin(); itr != mEventHandlers.end(); ++itr) {
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	android::util::List< DelegateType > mEventHandlers;
+	android::os::sp< android::util::List< DelegateType > > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };

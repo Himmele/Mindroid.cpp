@@ -33,8 +33,8 @@ public:
 	Bundle();
 	virtual ~Bundle();
 
-	size_t size() const { return mKeyValuePairs.size(); }
-	bool empty() const { return mKeyValuePairs.empty(); }
+	size_t size() const { return mKeyValuePairs->size(); }
+	bool empty() const { return mKeyValuePairs->empty(); }
 	void clear();
 	bool containsKey(const char* key);
 	void remove(const char* key);
@@ -268,7 +268,7 @@ private:
 	};
 
 	android::util::List<KeyValuePair>::const_iterator findValue(const char* key) const;
-	android::util::List<KeyValuePair> mKeyValuePairs;
+	android::os::sp< android::util::List<KeyValuePair> > mKeyValuePairs;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Bundle)
 };
@@ -276,7 +276,7 @@ private:
 template<typename T>
 sp<T> Bundle::getObject(const char* key) const {
 	android::util::List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs.end()) {
+	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Object) {
 			return itr->value->getObject<T>();
 		} else {
@@ -289,7 +289,7 @@ sp<T> Bundle::getObject(const char* key) const {
 template<typename T>
 bool Bundle::fillObject(const char* key, sp<T>* object) const {
 	android::util::List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs.end()) {
+	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Object) {
 			*object = itr->value->getObject<T>();
 			return true;

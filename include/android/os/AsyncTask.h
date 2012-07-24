@@ -32,9 +32,11 @@ public:
 	static SerialExecutor SERIAL_EXECUTOR;
 	static ThreadPoolExecutor THREAD_POOL_EXECUTOR;
 
+protected:
+	static Lock sLock;
+
 private:
 	static const uint32_t THREAD_POOL_SIZE = 4;
-	static Lock sLock;
 };
 
 
