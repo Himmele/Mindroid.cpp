@@ -67,6 +67,132 @@ bool String::contains(const char* subString) const {
 	}
 }
 
+String& String::operator=(const char* string) {
+	if (string != NULL) {
+		size_t size = strlen(string);
+		if (size > 0) {
+			mString = new StringBuffer(string, size);
+		} else {
+			mString = sEmptyString;
+		}
+	} else {
+		mString = sNullString;
+	}
+	return *this;
+}
+
+bool String::operator<(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) < 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator<(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) < 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator<=(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) <= 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator<=(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) <= 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator==(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) == 0;
+	} else {
+		if (mString->mData == NULL && string == NULL) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+bool String::operator==(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) == 0;
+	} else {
+		if (mString->mData == NULL && string.mString->mData == NULL) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+bool String::operator!=(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) != 0;
+	} else {
+		if (mString->mData == NULL && string == NULL) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+}
+
+bool String::operator!=(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) != 0;
+	} else {
+		if (mString->mData == NULL && string.mString->mData == NULL) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+}
+
+bool String::operator>=(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) >= 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator>=(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) >= 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator>(const char* string) const {
+	if (mString->mData && string) {
+		return strcmp(mString->mData, string) > 0;
+	} else {
+		return false;
+	}
+}
+
+bool String::operator>(const String& string) const {
+	if (mString->mData && string.mString->mData) {
+		return strcmp(mString->mData, string.mString->mData) > 0;
+	} else {
+		return false;
+	}
+}
+
 bool String::contains(const String& subString) const {
 	return contains(subString.c_str());
 }
@@ -242,12 +368,45 @@ String& String::appendFormattedWithVarArgList(const char* format, va_list args) 
     return *this;
 }
 
-size_t String::size(const char* string) {
-	return strlen(string);
+String::StringBuffer::StringBuffer(size_t size) {
+	mSize = size;
+	if (size > 0) {
+		mData = (char*) malloc(mSize + 1);
+		mData[size] = '\0';
+	} else {
+		mData = NULL;
+	}
+}
+
+String::StringBuffer::StringBuffer(const char* string, size_t size) {
+	mSize = size;
+	if (string != NULL) {
+		mData = (char*) malloc(mSize + 1);
+		memcpy(mData, string, size);
+		mData[size] = '\0';
+	} else {
+		mData = NULL;
+	}
+}
+
+String::StringBuffer::StringBuffer(const char* string1, size_t size1, const char* string2, size_t size2) {
+	mSize = size1 + size2;
+	mData = (char*) malloc(mSize + 1);
+	memcpy(mData, string1, size1);
+	memcpy(mData + size1, string2, size2);
+	mData[size1 + size2] = '\0';
 }
 
 } /* namespace lang */
 } /* namespace android */
+
+bool operator<(const char* lhs, const android::lang::String& rhs) {
+	return rhs < lhs;
+}
+
+bool operator<=(const char* lhs, const android::lang::String& rhs) {
+	return rhs <= lhs;
+}
 
 bool operator==(const char* lhs, const android::lang::String& rhs) {
 	return rhs == lhs;
@@ -255,4 +414,12 @@ bool operator==(const char* lhs, const android::lang::String& rhs) {
 
 bool operator!=(const char* lhs, const android::lang::String& rhs) {
 	return rhs != lhs;
+}
+
+bool operator>=(const char* lhs, const android::lang::String& rhs) {
+	return rhs >= lhs;
+}
+
+bool operator>(const char* lhs, const android::lang::String& rhs) {
+	return rhs > lhs;
 }

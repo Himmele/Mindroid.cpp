@@ -190,6 +190,12 @@ public:
     }
 
     // Insert a range of elements before the current node.
+    void insert(iterator curItr, iterator firstItr, iterator lastItr) {
+		for ( ; firstItr != lastItr; ++firstItr) {
+			insert(curItr, *firstItr);
+		}
+	}
+
     void insert(iterator curItr, const_iterator firstItr, const_iterator lastItr) {
         for ( ; firstItr != lastItr; ++firstItr) {
             insert(curItr, *firstItr);
