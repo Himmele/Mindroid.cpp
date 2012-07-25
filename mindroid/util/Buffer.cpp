@@ -21,19 +21,19 @@
 namespace mindroid {
 
 Buffer::Buffer(size_t capacity) :
-	mData(malloc(capacity)),
-	mCapacity(capacity),
-	mOffset(0),
-	mSize(capacity),
-	mMetaData(0) {
+		mData(malloc(capacity)),
+		mCapacity(capacity),
+		mOffset(0),
+		mSize(capacity),
+		mMetaData(0) {
 }
 
 Buffer::Buffer(void* data, size_t capacity) :
-	mData(data),
-	mCapacity(capacity),
-	mOffset(0),
-	mSize(capacity),
-	mMetaData(0) {
+		mData(data),
+		mCapacity(capacity),
+		mOffset(0),
+		mSize(capacity),
+		mMetaData(0) {
 }
 
 Buffer::~Buffer() {
@@ -44,11 +44,11 @@ Buffer::~Buffer() {
 }
 
 void Buffer::setRange(size_t offset, size_t size) {
-    assert(offset <= mCapacity);
-    assert(offset + size <= mCapacity);
+	assert(offset <= mCapacity);
+	assert(offset + size <= mCapacity);
 
-    mOffset = offset;
-    mSize = size;
+	mOffset = offset;
+	mSize = size;
 }
 
 } /* namespace mindroid */

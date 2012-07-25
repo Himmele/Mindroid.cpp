@@ -25,22 +25,42 @@
 namespace mindroid {
 
 class Buffer :
-	public Ref
+		public Ref
 {
 public:
 	Buffer(size_t capacity);
 	Buffer(void* data, size_t capacity);
 	virtual ~Buffer();
 
-	uint8_t* base() { return (uint8_t*)mData; }
-	uint8_t* data() { return (uint8_t*)mData + mOffset; }
-	size_t capacity() const { return mCapacity; }
-	size_t size() const { return mSize; }
-	size_t offset() const { return mOffset; }
+	uint8_t* base() {
+		return (uint8_t*) mData;
+	}
+
+	uint8_t* data() {
+		return (uint8_t*) mData + mOffset;
+	}
+
+	size_t capacity() const {
+		return mCapacity;
+	}
+
+	size_t size() const {
+		return mSize;
+	}
+
+	size_t offset() const {
+		return mOffset;
+	}
+
 	void setRange(size_t offset, size_t size);
 
-	void setMetaData(int32_t metaData) { mMetaData = metaData; }
-	int32_t getMetaData() const { return mMetaData; }
+	void setMetaData(int32_t metaData) {
+		mMetaData = metaData;
+	}
+
+	int32_t getMetaData() const {
+		return mMetaData;
+	}
 
 private:
 	void* mData;
