@@ -24,7 +24,7 @@
 namespace mindroid {
 
 class ThreadPoolExecutor :
-	public Executor
+		public Executor
 {
 public:
 	ThreadPoolExecutor(uint32_t threadPoolSize);
@@ -37,12 +37,12 @@ private:
 	class WorkerThread : public Thread
 	{
 	public:
-		WorkerThread() : mQueue(NULL) {}
-		virtual ~WorkerThread() {}
+		WorkerThread() : mQueue(NULL) { }
+		virtual ~WorkerThread() { }
 		virtual void run();
 
 	private:
-		void setQueue(LinkedBlockingQueue< sp<Runnable> >& queue);
+		void setQueue(LinkedBlockingQueue<sp<Runnable> >& queue);
 
 		LinkedBlockingQueue< sp<Runnable> >* mQueue;
 

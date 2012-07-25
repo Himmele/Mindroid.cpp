@@ -38,7 +38,7 @@ bool Semaphore::wait() {
 bool Semaphore::wait(uint32_t timeout) {
 	timespec tsAbsTimeout;
 	clock_gettime(CLOCK_REALTIME, &tsAbsTimeout);
-	uint64_t absTimeout = ((uint64_t)tsAbsTimeout.tv_nsec) + (uint64_t)(timeout * 1000000LL);
+	uint64_t absTimeout = ((uint64_t) tsAbsTimeout.tv_nsec) + (uint64_t) (timeout * 1000000LL);
 	tsAbsTimeout.tv_sec += absTimeout / 1000000000LL;
 	tsAbsTimeout.tv_nsec = absTimeout % 1000000000LL;
 	return (sem_timedwait(&mSemaphore, &tsAbsTimeout) == 0);

@@ -19,8 +19,8 @@
 namespace mindroid {
 
 ThreadPoolExecutor::ThreadPoolExecutor(uint32_t threadPoolSize) :
-	THREAD_POOL_SIZE(threadPoolSize),
-	mWorkerThreads(NULL) {
+		THREAD_POOL_SIZE(threadPoolSize),
+		mWorkerThreads(NULL) {
 	start();
 }
 
@@ -49,7 +49,7 @@ void ThreadPoolExecutor::shutdown() {
 			mWorkerThreads[i]->join();
 			mWorkerThreads[i] = NULL;
 		}
-		delete [] mWorkerThreads;
+		delete[] mWorkerThreads;
 		mWorkerThreads = NULL;
 	}
 }

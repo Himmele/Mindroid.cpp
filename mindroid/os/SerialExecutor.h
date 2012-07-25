@@ -25,7 +25,7 @@ namespace mindroid {
 class Handler;
 
 class SerialExecutor :
-	public Executor
+		public Executor
 {
 public:
 	SerialExecutor();

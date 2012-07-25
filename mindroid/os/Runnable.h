@@ -23,10 +23,10 @@
 namespace mindroid {
 
 class Runnable :
-	public Ref
+		public Ref
 {
 public:
-	virtual ~Runnable() {}
+	virtual ~Runnable() { }
 	virtual void run() = 0;
 };
 

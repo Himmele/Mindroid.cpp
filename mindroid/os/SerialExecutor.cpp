@@ -21,7 +21,7 @@
 namespace mindroid {
 
 SerialExecutor::SerialExecutor() :
-	mHandler(NULL) {
+		mHandler(NULL) {
 	mLooperThread = new LooperThread<Handler>();
 	mLooperThread->start();
 	mHandler = mLooperThread->getHandler();

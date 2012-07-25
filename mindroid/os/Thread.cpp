@@ -22,21 +22,21 @@
 namespace mindroid {
 
 Thread::Thread() :
-	mRunnable(NULL),
-	mStarted(false),
-	mInterrupted(false) {
+		mRunnable(NULL),
+		mStarted(false),
+		mInterrupted(false) {
 }
 
 Thread::Thread(const sp<Runnable>& runnable) :
-	mRunnable(runnable),
-	mStarted(false),
-	mInterrupted(false) {
+		mRunnable(runnable),
+		mStarted(false),
+		mInterrupted(false) {
 }
 
 Thread::Thread(pthread_t thread) :
-	mThread(thread),
-	mStarted(true),
-	mInterrupted(false) {
+		mThread(thread),
+		mStarted(true),
+		mInterrupted(false) {
 }
 
 bool Thread::start() {

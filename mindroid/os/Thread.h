@@ -24,13 +24,13 @@
 namespace mindroid {
 
 class Thread :
-	public Runnable
+		public Runnable
 {
 public:
 	Thread();
 	Thread(const sp<Runnable>& runnable);
-	virtual ~Thread() {}
-	virtual void run() {}
+	virtual ~Thread() { }
+	virtual void run() { }
 	bool start();
 	static void sleep(uint32_t milliseconds);
 	void interrupt();
