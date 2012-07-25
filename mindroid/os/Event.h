@@ -33,47 +33,8 @@ class Event
 public:
 	typedef Delegate<R, A1, A2, A3, A4> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
-
-    Event& operator+=(const DelegateType& delegate) {
-    	mEventHandlers->push_back(delegate);
-    	return *this;
-    }
-
-    Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
-			if (*itr == delegate) {
-				itr = mEventHandlers->erase(itr);
-				break;
-			}
-		}
-		return *this;
-	}
-
-    void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-    	typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
-			(*itr)(arg1, arg2, arg3, arg4);
-		}
-	}
-
-private:
-    sp< List< DelegateType > > mEventHandlers;
-
-    NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
-};
-
-template<typename R, typename A1, typename A2, typename A3, typename A4>
-class Event<R (A1, A2, A3, A4)>
-{
-public:
-	typedef Delegate<R (A1, A2, A3, A4)> DelegateType;
-
-	Event() { mEventHandlers = new List< DelegateType >(); }
-	~Event() { }
-
 
 	Event& operator+=(const DelegateType& delegate) {
 		mEventHandlers->push_back(delegate);
@@ -81,7 +42,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -92,14 +53,54 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3, arg4);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
+
+	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
+};
+
+template<typename R, typename A1, typename A2, typename A3, typename A4>
+class Event<R(A1, A2, A3, A4)>
+{
+public:
+	typedef Delegate<R(A1, A2, A3, A4)> DelegateType;
+
+	Event() { mEventHandlers = new List<DelegateType>(); }
+	~Event() { }
+
+	Event& operator+=(const DelegateType& delegate) {
+		mEventHandlers->push_back(delegate);
+		return *this;
+	}
+
+	Event& operator-=(const DelegateType& delegate) {
+		typename List<DelegateType>::iterator itr;
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers->erase(itr);
+				break;
+			}
+		}
+		return *this;
+	}
+
+	void operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+			(*itr)(arg1, arg2, arg3, arg4);
+		}
+	}
+
+private:
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -111,7 +112,7 @@ class Event<R, A1, A2, A3, void>
 public:
 	typedef Delegate<R, A1, A2, A3> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -120,7 +121,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -131,25 +132,26 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
 
 template<typename R, typename A1, typename A2, typename A3>
-class Event<R (A1, A2, A3), void>
+class Event<R(A1, A2, A3), void>
 {
 public:
-	typedef Delegate<R (A1, A2, A3)> DelegateType;
+	typedef Delegate<R(A1, A2, A3)> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -158,7 +160,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -169,14 +171,15 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2, A3 arg3) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2, arg3);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -188,45 +191,7 @@ class Event<R, A1, A2, void, void>
 public:
 	typedef Delegate<R, A1, A2> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
-	~Event() {}
-
-	Event& operator+=(const DelegateType& delegate) {
-		mEventHandlers->push_back(delegate);
-		return *this;
-	}
-
-	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
-		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
-			if (*itr == delegate) {
-				itr = mEventHandlers->erase(itr);
-				break;
-			}
-		}
-		return *this;
-	}
-
-	void operator()(A1 arg1, A2 arg2) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
-			(*itr)(arg1, arg2);
-		}
-	}
-
-private:
-	sp< List< DelegateType > > mEventHandlers;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
-};
-
-template<typename R, typename A1, typename A2>
-class Event<R (A1, A2), void, void>
-{
-public:
-	typedef Delegate<R (A1, A2)> DelegateType;
-
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -235,7 +200,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -246,14 +211,54 @@ public:
 	}
 
 	void operator()(A1 arg1, A2 arg2) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1, arg2);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
+
+	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
+};
+
+template<typename R, typename A1, typename A2>
+class Event<R(A1, A2), void, void>
+{
+public:
+	typedef Delegate<R(A1, A2)> DelegateType;
+
+	Event() { mEventHandlers = new List<DelegateType>(); }
+	~Event() { }
+
+	Event& operator+=(const DelegateType& delegate) {
+		mEventHandlers->push_back(delegate);
+		return *this;
+	}
+
+	Event& operator-=(const DelegateType& delegate) {
+		typename List<DelegateType>::iterator itr;
+		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
+			if (*itr == delegate) {
+				itr = mEventHandlers->erase(itr);
+				break;
+			}
+		}
+		return *this;
+	}
+
+	void operator()(A1 arg1, A2 arg2) const {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+			(*itr)(arg1, arg2);
+		}
+	}
+
+private:
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -265,7 +270,7 @@ class Event<R, A1, void, void, void>
 public:
 	typedef Delegate<R, A1> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -274,7 +279,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -285,25 +290,26 @@ public:
 	}
 
 	void operator()(A1 arg1) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
 
 template<typename R, typename A1>
-class Event<R (A1), void, void, void>
+class Event<R(A1), void, void, void>
 {
 public:
-	typedef Delegate<R (A1)> DelegateType;
+	typedef Delegate<R(A1)> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -312,7 +318,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -323,14 +329,15 @@ public:
 	}
 
 	void operator()(A1 arg1) const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)(arg1);
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
@@ -342,7 +349,7 @@ class Event<R, void, void, void, void>
 public:
 	typedef Delegate<R> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -351,7 +358,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -362,25 +369,26 @@ public:
 	}
 
 	void operator()() const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
 
 template<typename R>
-class Event<R (void), void, void, void>
+class Event<R(void), void, void, void>
 {
 public:
 	typedef Delegate<R> DelegateType;
 
-	Event() { mEventHandlers = new List< DelegateType >(); }
+	Event() { mEventHandlers = new List<DelegateType>(); }
 	~Event() { }
 
 	Event& operator+=(const DelegateType& delegate) {
@@ -389,7 +397,7 @@ public:
 	}
 
 	Event& operator-=(const DelegateType& delegate) {
-		typename List< DelegateType >::iterator itr;
+		typename List<DelegateType>::iterator itr;
 		for (itr = mEventHandlers->begin(); itr != mEventHandlers->end(); ++itr) {
 			if (*itr == delegate) {
 				itr = mEventHandlers->erase(itr);
@@ -400,14 +408,15 @@ public:
 	}
 
 	void operator()() const {
-		typename List< DelegateType >::const_iterator itr;
-		for (itr = mEventHandlers.getConstPointer()->begin(); itr != mEventHandlers.getConstPointer()->end(); ++itr) {
+		typename List<DelegateType>::const_iterator itr;
+		for (itr = mEventHandlers.getConstPointer()->begin();
+				itr != mEventHandlers.getConstPointer()->end(); ++itr) {
 			(*itr)();
 		}
 	}
 
 private:
-	sp< List< DelegateType > > mEventHandlers;
+	sp< List<DelegateType> > mEventHandlers;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Event)
 };
