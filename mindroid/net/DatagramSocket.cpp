@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-#include "android/net/DatagramSocket.h"
-#include "android/net/SocketAddress.h"
+#include "mindroid/net/DatagramSocket.h"
+#include "mindroid/net/SocketAddress.h"
 #include <unistd.h>
 #include <sys/socket.h>
 
-using namespace android::os;
-
-namespace android {
-namespace net {
+namespace mindroid {
 
 DatagramSocket::DatagramSocket() :
 	mSocketId(-1),
@@ -67,16 +64,16 @@ ssize_t DatagramSocket::recv(uint8_t* data, size_t size) {
 	return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, NULL, 0);
 }
 
-ssize_t DatagramSocket::recv(uint8_t* data, size_t size, android::os::sp<SocketAddress>& sender) {
+ssize_t DatagramSocket::recv(uint8_t* data, size_t size, sp<SocketAddress>& sender) {
 	socklen_t socketSize = sizeof(sender->mSocketAddress);
 	ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, (struct sockaddr*)&sender->mSocketAddress, &socketSize);
 	sender->mValid = true;
 	return result;
 }
 
-bool DatagramSocket::send(const void* data, size_t size, const android::os::sp<SocketAddress>& receiver) {
+bool DatagramSocket::send(const void* data, size_t size, const sp<SocketAddress>& receiver) {
 	socklen_t socketSize = sizeof(receiver->mSocketAddress);
-	return (size_t)::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0, (struct sockaddr*)&receiver->mSocketAddress, socketSize) == size;
+	return (size_t) ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0, (struct sockaddr*)&receiver->mSocketAddress, socketSize) == size;
 }
 
 void DatagramSocket::close() {
@@ -89,5 +86,4 @@ void DatagramSocket::close() {
 	}
 }
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */

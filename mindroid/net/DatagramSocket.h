@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_NET_DATAGRAMSOCKET_H_
-#define ANDROID_NET_DATAGRAMSOCKET_H_
+#ifndef MINDROID_DATAGRAMSOCKET_H_
+#define MINDROID_DATAGRAMSOCKET_H_
 
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace net {
+namespace mindroid {
 
 class SocketAddress;
 
 class DatagramSocket :
-	public android::os::Ref
+	public Ref
 {
 public:
 	DatagramSocket();
@@ -36,8 +35,8 @@ public:
 	bool bind(uint16_t port);
 	bool bind(const char* host, uint16_t port);
 	ssize_t recv(uint8_t* data, size_t size);
-	ssize_t recv(uint8_t* data, size_t size, android::os::sp<SocketAddress>& sender);
-	bool send(const void* data, size_t size, const android::os::sp<SocketAddress>& receiver);
+	ssize_t recv(uint8_t* data, size_t size, sp<SocketAddress>& sender);
+	bool send(const void* data, size_t size, const sp<SocketAddress>& receiver);
 	void close();
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
@@ -51,7 +50,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(DatagramSocket)
 };
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /*ANDROID_NET_DATAGRAMSOCKET_H_*/
+#endif /*MINDROID_DATAGRAMSOCKET_H_*/

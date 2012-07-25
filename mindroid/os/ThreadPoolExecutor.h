@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_THREADPOOLEXECUTOR_H_
-#define ANDROID_OS_THREADPOOLEXECUTOR_H_
+#ifndef MINDROID_THREADPOOLEXECUTOR_H_
+#define MINDROID_THREADPOOLEXECUTOR_H_
 
-#include "android/os/Executor.h"
-#include "android/os/Thread.h"
-#include "android/os/LinkedBlockingQueue.h"
+#include "mindroid/os/Executor.h"
+#include "mindroid/os/Thread.h"
+#include "mindroid/os/LinkedBlockingQueue.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class ThreadPoolExecutor :
 	public Executor
@@ -60,7 +59,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(ThreadPoolExecutor)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_THREADPOOLEXECUTOR_H_ */
+#endif /* MINDROID_THREADPOOLEXECUTOR_H_ */

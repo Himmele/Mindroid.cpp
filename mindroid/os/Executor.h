@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_EXECUTOR_H_
-#define ANDROID_OS_EXECUTOR_H_
+#ifndef MINDROID_EXECUTOR_H_
+#define MINDROID_EXECUTOR_H_
 
-#include "android/os/Utils.h"
-#include "android/os/Ref.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Runnable;
 
@@ -38,7 +37,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Executor)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_EXECUTOR_H_ */
+#endif /* MINDROID_EXECUTOR_H_ */

@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_CONDVAR_H_
-#define ANDROID_OS_CONDVAR_H_
+#ifndef MINDROID_CONDVAR_H_
+#define MINDROID_CONDVAR_H_
 
 #include <stdint.h>
 #include <pthread.h>
-#include "android/os/Utils.h"
+#include "mindroid/util/Utils.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Lock;
 
@@ -44,7 +43,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(CondVar)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_CONDVAR_H_ */
+#endif /* MINDROID_CONDVAR_H_ */

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#include "android/os/Clock.h"
+#include "mindroid/os/Clock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 uint64_t Clock::monotonicTime() {
 	timespec now;
@@ -31,5 +30,4 @@ uint64_t Clock::realTime() {
 	return (((uint64_t)now.tv_sec * 1000000000LL) + now.tv_nsec);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

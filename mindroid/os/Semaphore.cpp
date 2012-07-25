@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#include "android/os/Semaphore.h"
-#include "android/os/Clock.h"
+#include "mindroid/os/Semaphore.h"
+#include "mindroid/os/Clock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 Semaphore::Semaphore(uint32_t value) {
 	sem_init(&mSemaphore, 0, value);
@@ -45,5 +44,4 @@ bool Semaphore::wait(uint32_t timeout) {
 	return (sem_timedwait(&mSemaphore, &tsAbsTimeout) == 0);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

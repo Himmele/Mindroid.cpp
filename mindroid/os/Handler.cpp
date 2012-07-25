@@ -16,14 +16,13 @@
 
 #include <stddef.h>
 #include <assert.h>
-#include "android/os/Handler.h"
-#include "android/os/Message.h"
-#include "android/os/MessageQueue.h"
-#include "android/os/Looper.h"
-#include "android/os/Clock.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Message.h"
+#include "mindroid/os/MessageQueue.h"
+#include "mindroid/os/Looper.h"
+#include "mindroid/os/Clock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 Handler::Handler() {
 	Looper* looper = Looper::myLooper();
@@ -107,5 +106,4 @@ bool Handler::removeCallbacksAndMessages() {
 	return mMessageQueue->removeCallbacksAndMessages(this);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

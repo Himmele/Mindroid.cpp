@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#include "android/os/AtomicInteger.h"
-#include "android/os/Lock.h"
+#include "mindroid/os/AtomicInteger.h"
+#include "mindroid/os/Lock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 #ifdef __X86_CPU_ARCH__
 
@@ -188,5 +187,4 @@ int32_t AtomicInteger::compareAndSwap(int32_t oldValue, int32_t newValue, volati
 
 #endif
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-#include "android/os/Bundle.h"
+#include "mindroid/os/Bundle.h"
 
-using namespace android::util;
-using namespace android::lang;
-
-namespace android {
-namespace os {
+namespace mindroid {
 
 Bundle::Bundle() {
 	mKeyValuePairs = new List<KeyValuePair>();
@@ -140,7 +136,7 @@ void Bundle::putString(const char* key, const char* string) {
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
-void Bundle::putString(const char* key, const android::lang::String& string) {
+void Bundle::putString(const char* key, const String& string) {
 	putString(key, string.c_str());
 }
 
@@ -286,7 +282,7 @@ double Bundle::getDouble(const char* key, const double defaultValue) const {
 String Bundle::getString(const char* key) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::String) {
+		if (itr->value->getType() == Variant::CharString) {
 			return itr->value->getString();
 		} else {
 			return String(NULL);
@@ -438,10 +434,10 @@ bool Bundle::fillDouble(const char* key, double* value) const {
 	return false;
 }
 
-bool Bundle::fillString(const char* key, android::lang::String* string) const {
+bool Bundle::fillString(const char* key, String* string) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::String) {
+		if (itr->value->getType() == Variant::CharString) {
 			*string = itr->value->getString();
 			return true;
 		} else {
@@ -462,5 +458,4 @@ List<Bundle::KeyValuePair>::const_iterator Bundle::findValue(const char* key) co
 	return mKeyValuePairs.getConstPointer()->end();
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

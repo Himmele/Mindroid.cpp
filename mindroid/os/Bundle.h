@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_BUNDLE_H_
-#define ANDROID_OS_BUNDLE_H_
+#ifndef MINDROID_BUNDLE_H_
+#define MINDROID_BUNDLE_H_
 
 #include <stdint.h>
-#include "android/os/Utils.h"
-#include "android/os/Ref.h"
-#include "android/util/List.h"
-#include "android/lang/String.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Ref.h"
+#include "mindroid/util/List.h"
+#include "mindroid/lang/String.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Bundle :
 	public Ref
@@ -51,7 +50,7 @@ public:
 	void putFloat(const char* key, float value);
 	void putDouble(const char* key, double value);
 	void putString(const char* key, const char* string);
-	void putString(const char* key, const android::lang::String& string);
+	void putString(const char* key, const String& string);
 	void putObject(const char* key, const sp<Ref>& object);
 
 	bool getBool(const char* key, const bool defaultValue) const;
@@ -65,7 +64,7 @@ public:
 	uint64_t getUInt64(const char* key, const uint64_t defaultValue) const;
 	float getFloat(const char* key, const float defaultValue) const;
 	double getDouble(const char* key, const double defaultValue) const;
-	android::lang::String getString(const char* key) const;
+	String getString(const char* key) const;
 	template<typename T>
 	sp<T> getObject(const char* key) const;
 
@@ -80,7 +79,7 @@ public:
 	bool fillUInt64(const char* key, uint64_t* value) const;
 	bool fillFloat(const char* key, float* value) const;
 	bool fillDouble(const char* key, double* value) const;
-	bool fillString(const char* key, android::lang::String* string) const;
+	bool fillString(const char* key, String* string) const;
 	template<typename T>
 	bool fillObject(const char* key, sp<T>* object) const;
 
@@ -102,7 +101,7 @@ private:
 			UInt64,
 			Float,
 			Double,
-			String,
+			CharString,
 			Object
 		};
 
@@ -152,12 +151,12 @@ private:
 			mVariant.doubleValue = value;
 		}
 
-		inline Variant(const char* string) : mType(String) {
-			mVariant.string = new android::lang::String(string);
+		inline Variant(const char* string) : mType(CharString) {
+			mVariant.string = new String(string);
 		}
 
-		inline Variant(const android::lang::String& string) : mType(String) {
-			mVariant.string = new android::lang::String(string.c_str());
+		inline Variant(const String& string) : mType(CharString) {
+			mVariant.string = new String(string.c_str());
 		}
 
 		inline Variant(const sp<Ref>& object) : mType(Object) {
@@ -169,7 +168,7 @@ private:
 
 		inline ~Variant() {
 			switch (mType) {
-			case Variant::String:
+			case Variant::CharString:
 				delete mVariant.string;
 				break;
 			case Variant::Object:
@@ -230,7 +229,7 @@ private:
 			return mVariant.doubleValue;
 		}
 
-		inline android::lang::String getString() const {
+		inline String getString() const {
 			return *mVariant.string;
 		}
 
@@ -252,7 +251,7 @@ private:
 			uint64_t uint64Value;
 			float floatValue;
 			double doubleValue;
-			android::lang::String* string;
+			String* string;
 			Ref* object;
 		} Value;
 
@@ -263,19 +262,19 @@ private:
 	};
 
 	struct KeyValuePair {
-		android::lang::String key;
+		String key;
 		sp<Variant> value;
 	};
 
-	android::util::List<KeyValuePair>::const_iterator findValue(const char* key) const;
-	android::os::sp< android::util::List<KeyValuePair> > mKeyValuePairs;
+	List<KeyValuePair>::const_iterator findValue(const char* key) const;
+	sp< List<KeyValuePair> > mKeyValuePairs;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Bundle)
 };
 
 template<typename T>
 sp<T> Bundle::getObject(const char* key) const {
-	android::util::List<KeyValuePair>::const_iterator itr = findValue(key);
+	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Object) {
 			return itr->value->getObject<T>();
@@ -288,7 +287,7 @@ sp<T> Bundle::getObject(const char* key) const {
 
 template<typename T>
 bool Bundle::fillObject(const char* key, sp<T>* object) const {
-	android::util::List<KeyValuePair>::const_iterator itr = findValue(key);
+	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Object) {
 			*object = itr->value->getObject<T>();
@@ -300,7 +299,6 @@ bool Bundle::fillObject(const char* key, sp<T>* object) const {
 	return false;
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_BUNDLE_H_ */
+#endif /* MINDROID_BUNDLE_H_ */

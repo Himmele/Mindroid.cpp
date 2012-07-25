@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_HANDLER_H_
-#define ANDROID_OS_HANDLER_H_
+#ifndef MINDROID_HANDLER_H_
+#define MINDROID_HANDLER_H_
 
 #include <stdint.h>
-#include "android/os/Utils.h"
-#include "android/os/Message.h"
-#include "android/os/Runnable.h"
-#include "android/os/Ref.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Message.h"
+#include "mindroid/os/Runnable.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Looper;
 class MessageQueue;
@@ -77,7 +76,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Handler)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_HANDLER_H_ */
+#endif /* MINDROID_HANDLER_H_ */

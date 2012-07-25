@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-#include "android/os/Looper.h"
-#include "android/os/Handler.h"
-#include "android/os/Message.h"
+#include "mindroid/os/Looper.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Message.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 pthread_once_t Looper::sTlsOneTimeInitializer = PTHREAD_ONCE_INIT;
 pthread_key_t Looper::sTlsKey;
@@ -103,5 +102,4 @@ void Looper::quit() {
 	mMessageQueue->enqueueMessage(message, 0);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

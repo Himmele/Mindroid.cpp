@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-#include "android/lang/String.h"
+#include "mindroid/lang/String.h"
 #include <stdio.h>
 
-using namespace android::os;
-using namespace android::util;
-
-namespace android {
-namespace lang {
+namespace mindroid {
 
 sp<String::StringBuffer> String::sNullString = new String::StringBuffer();
 sp<String::StringBuffer> String::sEmptyString = new String::StringBuffer("", 0);
@@ -248,7 +244,7 @@ String String::substr(size_t beginIndex, size_t endIndex) const {
 }
 
 String String::toLowerCase() const {
-	android::os::sp<StringBuffer> string = new StringBuffer(size());
+	sp<StringBuffer> string = new StringBuffer(size());
 	for (size_t i = 0; i < size(); i++) {
 		string->mData[i] = tolower(mString->mData[i]);
 	}
@@ -257,7 +253,7 @@ String String::toLowerCase() const {
 }
 
 String String::toUpperCase() const {
-	android::os::sp<StringBuffer> string = new StringBuffer(size());
+	sp<StringBuffer> string = new StringBuffer(size());
 	for (size_t i = 0; i < size(); i++) {
 		string->mData[i] = toupper(mString->mData[i]);
 	}
@@ -423,29 +419,28 @@ String::StringBuffer::StringBuffer(const char* string1, size_t size1, const char
 	mData[size1 + size2] = '\0';
 }
 
-} /* namespace lang */
-} /* namespace android */
+} /* namespace mindroid */
 
-bool operator<(const char* lhs, const android::lang::String& rhs) {
+bool operator<(const char* lhs, const mindroid::String& rhs) {
 	return rhs < lhs;
 }
 
-bool operator<=(const char* lhs, const android::lang::String& rhs) {
+bool operator<=(const char* lhs, const mindroid::String& rhs) {
 	return rhs <= lhs;
 }
 
-bool operator==(const char* lhs, const android::lang::String& rhs) {
+bool operator==(const char* lhs, const mindroid::String& rhs) {
 	return rhs == lhs;
 }
 
-bool operator!=(const char* lhs, const android::lang::String& rhs) {
+bool operator!=(const char* lhs, const mindroid::String& rhs) {
 	return rhs != lhs;
 }
 
-bool operator>=(const char* lhs, const android::lang::String& rhs) {
+bool operator>=(const char* lhs, const mindroid::String& rhs) {
 	return rhs >= lhs;
 }
 
-bool operator>(const char* lhs, const android::lang::String& rhs) {
+bool operator>(const char* lhs, const mindroid::String& rhs) {
 	return rhs > lhs;
 }

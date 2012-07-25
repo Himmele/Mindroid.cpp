@@ -15,12 +15,11 @@
  */
 
 #include <stdlib.h>
-#include "android/os/CondVar.h"
-#include "android/os/Lock.h"
-#include "android/os/Clock.h"
+#include "mindroid/os/CondVar.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/Clock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 CondVar::CondVar(Lock& lock) :
 	mCondVarLock(lock) {
@@ -64,5 +63,4 @@ void CondVar::notifyAll() {
 	pthread_cond_broadcast(&mCondVar);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

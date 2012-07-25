@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_SERIALEXECUTOR_H_
-#define ANDROID_OS_SERIALEXECUTOR_H_
+#ifndef MINDROID_SERIALEXECUTOR_H_
+#define MINDROID_SERIALEXECUTOR_H_
 
-#include "android/os/Executor.h"
-#include "android/os/LooperThread.h"
+#include "mindroid/os/Executor.h"
+#include "mindroid/os/LooperThread.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Handler;
 
@@ -42,7 +41,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(SerialExecutor)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_SERIALEXECUTOR_H_ */
+#endif /* MINDROID_SERIALEXECUTOR_H_ */

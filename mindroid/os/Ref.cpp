@@ -21,8 +21,8 @@
 #include <typeinfo>
 #include <sys/types.h>
 #include <cstring>
-#include "android/os/Ref.h"
-#include "android/os/Lock.h"
+#include "mindroid/os/Ref.h"
+#include "mindroid/os/Lock.h"
 
 // Log all reference counting operations
 #define PRINT_REFS 0
@@ -31,8 +31,7 @@
 #define DEBUG_REFS_DO_REF_TRACKING 0
 #define DEBUG_REFS_MEMORIZE_REF_OPERATIONS_DURING_REF_TRACKING 0
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 #define INITIAL_STRONG_REF_VALUE (1<<28)
 
@@ -413,5 +412,4 @@ bool Ref::onIncStrongRefAttempt(uint32_t flags, const void* id) {
 void Ref::onLastWeakRef(const void* id) {
 }
 
-} // namespace os
-} // namespace android
+} // namespace mindroid

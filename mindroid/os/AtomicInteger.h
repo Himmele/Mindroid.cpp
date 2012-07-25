@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_ATOMICINTEGER_H_
-#define ANDROID_OS_ATOMICINTEGER_H_
+#ifndef MINDROID_ATOMICINTEGER_H_
+#define MINDROID_ATOMICINTEGER_H_
 
 #include <stdint.h>
-#include "android/os/Utils.h"
+#include "mindroid/util/Utils.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class AtomicInteger
 {
@@ -37,7 +36,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(AtomicInteger)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_ATOMICINTEGER_H_ */
+#endif /* MINDROID_ATOMICINTEGER_H_ */

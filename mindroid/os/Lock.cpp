@@ -15,11 +15,10 @@
  */
 
 #include <stdlib.h>
-#include "android/os/Lock.h"
-#include "android/os/Clock.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/Clock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 Lock::Lock() {
 	pthread_mutex_init(&mMutex, NULL);
@@ -48,5 +47,4 @@ void Lock::unlock() {
 	pthread_mutex_unlock(&mMutex);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

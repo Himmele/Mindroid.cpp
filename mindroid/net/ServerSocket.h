@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_NET_SERVERSOCKET_H_
-#define ANDROID_NET_SERVERSOCKET_H_
+#ifndef MINDROID_SERVERSOCKET_H_
+#define MINDROID_SERVERSOCKET_H_
 
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace net {
+namespace mindroid {
 
 class Socket;
 
 class ServerSocket :
-	public android::os::Ref
+	public Ref
 {
 public:
 	static const int DEFAULT_BACKLOG = 10;
@@ -37,7 +36,7 @@ public:
 	virtual ~ServerSocket();
 	bool bind(uint16_t port, int backlog = DEFAULT_BACKLOG);
 	bool bind(const char* host, uint16_t port, int backlog = DEFAULT_BACKLOG);
-	android::os::sp<Socket> accept();
+	sp<Socket> accept();
 	void close();
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
@@ -53,7 +52,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(ServerSocket)
 };
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_NET_SERVERSOCKET_H_ */
+#endif /* MINDROID_SERVERSOCKET_H_ */

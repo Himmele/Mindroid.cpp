@@ -15,15 +15,14 @@
  */
 
 #include <pthread.h>
-#include "android/os/MessageQueue.h"
-#include "android/os/Message.h"
-#include "android/os/Clock.h"
-#include "android/os/Lock.h"
-#include "android/os/Handler.h"
-#include "android/os/Runnable.h"
+#include "mindroid/os/MessageQueue.h"
+#include "mindroid/os/Message.h"
+#include "mindroid/os/Clock.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Runnable.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 MessageQueue::MessageQueue() :
 	mHeadMessage(NULL),
@@ -34,7 +33,7 @@ MessageQueue::MessageQueue() :
 MessageQueue::~MessageQueue() {
 }
 
-bool MessageQueue::enqueueMessage(const android::os::sp<Message>& message, uint64_t execTimestamp) {
+bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t execTimestamp) {
 	AutoLock autoLock(mCondVarLock);
 	if (message->mExecTimestamp != 0) {
 		return false;
@@ -45,13 +44,13 @@ bool MessageQueue::enqueueMessage(const android::os::sp<Message>& message, uint6
 		mLockMessageQueue = true;
 	}
 	message->mExecTimestamp = execTimestamp;
-	android::os::sp<Message> curMessage = mHeadMessage;
+	sp<Message> curMessage = mHeadMessage;
 	if (curMessage == NULL || execTimestamp == 0 || execTimestamp < curMessage->mExecTimestamp) {
 		message->mNextMessage = curMessage;
 		mHeadMessage = message;
 		mCondVar.notify();
 	} else {
-		android::os::sp<Message> prevMessage = NULL;
+		sp<Message> prevMessage = NULL;
 		while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
 			prevMessage = curMessage;
 			curMessage = curMessage->mNextMessage;
@@ -211,5 +210,4 @@ bool MessageQueue::removeCallbacksAndMessages(const sp<Handler>& handler) {
 	return foundSomething;
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

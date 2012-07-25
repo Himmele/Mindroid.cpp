@@ -17,10 +17,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include "android/os/Thread.h"
+#include "mindroid/os/Thread.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 Thread::Thread() :
 	mRunnable(NULL),
@@ -88,5 +87,4 @@ sp<Thread> Thread::currentThread() {
 	return new Thread(pthread_self());
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

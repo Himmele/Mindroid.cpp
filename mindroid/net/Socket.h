@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_NET_SOCKET_H_
-#define ANDROID_NET_SOCKET_H_
+#ifndef MINDROID_SOCKET_H_
+#define MINDROID_SOCKET_H_
 
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace net {
+namespace mindroid {
 
 class ServerSocket;
 
 class Socket :
-	public android::os::Ref
+	public Ref
 {
 public:
 	Socket();
@@ -51,7 +50,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Socket)
 };
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /*ANDROID_NET_SOCKET_H_*/
+#endif /* MINDROID_SOCKET_H_ */

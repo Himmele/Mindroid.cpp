@@ -37,14 +37,13 @@
  * runnable->run();
  */
 
-#ifndef ANDROID_OS_CLOSURE_H_
-#define ANDROID_OS_CLOSURE_H_
+#ifndef MINDROID_CLOSURE_H_
+#define MINDROID_CLOSURE_H_
 
-#include "android/os/Utils.h"
-#include "android/os/Runnable.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Runnable.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class FuncClosure0 :
 	public Runnable
@@ -354,7 +353,6 @@ inline sp<Runnable> newRunnable(Class& object, void (Class::*method)(Arg1, Arg2,
 	return new MethodClosure4<Class, Arg1, Arg2, Arg3, Arg4>(object, method, arg1, arg2, arg3, arg4);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_CLOSURE_H_ */
+#endif /* MINDROID_CLOSURE_H_ */

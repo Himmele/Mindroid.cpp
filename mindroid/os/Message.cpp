@@ -16,12 +16,11 @@
 
 #include <stddef.h>
 #include <assert.h>
-#include "android/os/Message.h"
-#include "android/os/Handler.h"
-#include "android/os/Lock.h"
+#include "mindroid/os/Message.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Lock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 MessagePool Message::sMessagePool;
 
@@ -185,5 +184,4 @@ void Message::clear() {
 	mNextMessage = NULL;
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

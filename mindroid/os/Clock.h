@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_CLOCK_H_
-#define ANDROID_OS_CLOCK_H_
+#ifndef MINDROID_CLOCK_H_
+#define MINDROID_CLOCK_H_
 
 #include <stdint.h>
 #include "time.h"
-#include "android/os/Utils.h"
+#include "mindroid/util/Utils.h"
 
 #define CLOCK_REALTIME  0
 #define CLOCK_MONOTONIC 1
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Clock
 {
@@ -37,7 +36,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Clock)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_CLOCK_H_ */
+#endif /* MINDROID_CLOCK_H_ */

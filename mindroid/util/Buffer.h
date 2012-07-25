@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_UTIL_BUFFER_H_
-#define ANDROID_UTIL_BUFFER_H_
+#ifndef MINDROID_BUFFER_H_
+#define MINDROID_BUFFER_H_
 
 #include <sys/types.h>
 #include <stdint.h>
-#include "android/os/Utils.h"
-#include "android/os/Ref.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace util {
+namespace mindroid {
 
 class Buffer :
-	public android::os::Ref
+	public Ref
 {
 public:
 	Buffer(size_t capacity);
@@ -53,7 +52,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Buffer)
 };
 
-} /* namespace util */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /*ANDROID_UTIL_BUFFER_H_*/
+#endif /* MINDROID_BUFFER_H_ */

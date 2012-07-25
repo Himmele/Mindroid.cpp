@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_ASYNCTASK_H_
-#define ANDROID_OS_ASYNCTASK_H_
+#ifndef MINDROID_ASYNCTASK_H_
+#define MINDROID_ASYNCTASK_H_
 
-#include "android/os/Utils.h"
-#include "android/os/Handler.h"
-#include "android/os/SerialExecutor.h"
-#include "android/os/ThreadPoolExecutor.h"
-#include "android/os/Lock.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/SerialExecutor.h"
+#include "mindroid/os/ThreadPoolExecutor.h"
+#include "mindroid/os/Lock.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class AsyncTaskBase
 {
@@ -202,7 +201,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(AsyncTask)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_ASYNCTASK_H_ */
+#endif /* MINDROID_ASYNCTASK_H_ */

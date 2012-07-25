@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-#include "android/os/SerialExecutor.h"
-#include "android/os/Handler.h"
-#include "android/os/Message.h"
+#include "mindroid/os/SerialExecutor.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Message.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 SerialExecutor::SerialExecutor() :
 	mHandler(NULL) {
@@ -41,5 +40,4 @@ bool SerialExecutor::cancel(const sp<Runnable>& runnable) {
 	return mHandler->removeCallbacks(runnable);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_LOOPERTHREAD_H_
-#define ANDROID_OS_LOOPERTHREAD_H_
+#ifndef MYDROID_LOOPERTHREAD_H_
+#define MYDROID_LOOPERTHREAD_H_
 
-#include "android/os/Utils.h"
-#include "android/os/Thread.h"
-#include "android/os/Looper.h"
-#include "android/os/Handler.h"
-#include "android/os/Lock.h"
-#include "android/os/CondVar.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Thread.h"
+#include "mindroid/os/Looper.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/CondVar.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 /*
  * Handy class for starting a new Thread that has a Looper and a Handler.
@@ -89,7 +88,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(LooperThread)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_LOOPERTHREAD_H_ */
+#endif /* MYDROID_LOOPERTHREAD_H_ */

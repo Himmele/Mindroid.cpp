@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-#include "android/net/ServerSocket.h"
-#include "android/net/Socket.h"
-#include "android/net/SocketAddress.h"
+#include "mindroid/net/ServerSocket.h"
+#include "mindroid/net/Socket.h"
+#include "mindroid/net/SocketAddress.h"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
-using namespace android::os;
-
-namespace android {
-namespace net {
+namespace mindroid {
 
 ServerSocket::ServerSocket() :
 	mSocketId(-1),
@@ -96,8 +93,8 @@ bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
 	}
 }
 
-android::os::sp<Socket> ServerSocket::accept() {
-	android::os::sp<Socket> socket = new Socket();
+sp<Socket> ServerSocket::accept() {
+	sp<Socket> socket = new Socket();
 	socket->mSocketId = ::accept(mSocketId, 0, 0);
 	if (socket->mSocketId < 0) {
 		return NULL;
@@ -122,5 +119,4 @@ void ServerSocket::setReuseAddress(bool reuse) {
 	mReuseAddress = reuse;
 }
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */

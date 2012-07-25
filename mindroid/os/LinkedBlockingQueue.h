@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_LINKEDBLOCKINGQUEUE_H_
-#define ANDROID_OS_LINKEDBLOCKINGQUEUE_H_
+#ifndef MINDROID_LINKEDBLOCKINGQUEUE_H_
+#define MINDROID_LINKEDBLOCKINGQUEUE_H_
 
 #include <stdint.h>
-#include "android/os/Utils.h"
-#include "android/os/Lock.h"
-#include "android/os/CondVar.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/CondVar.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 template<typename T>
 class LinkedBlockingQueue
@@ -134,7 +133,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(LinkedBlockingQueue)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_LINKEDBLOCKINGQUEUE_H_ */
+#endif /* MINDROID_LINKEDBLOCKINGQUEUE_H_ */

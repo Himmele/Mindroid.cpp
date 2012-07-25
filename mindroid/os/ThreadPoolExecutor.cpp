@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#include "android/os/ThreadPoolExecutor.h"
+#include "mindroid/os/ThreadPoolExecutor.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 ThreadPoolExecutor::ThreadPoolExecutor(uint32_t threadPoolSize) :
 	THREAD_POOL_SIZE(threadPoolSize),
@@ -78,5 +77,4 @@ bool ThreadPoolExecutor::cancel(const sp<Runnable>& runnable) {
 	return mQueue.remove(runnable);
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

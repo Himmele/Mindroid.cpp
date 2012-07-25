@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_NET_SOCKETADDRESS_H_
-#define ANDROID_NET_SOCKETADDRESS_H_
+#ifndef MINDROID_SOCKETADDRESS_H_
+#define MINDROID_SOCKETADDRESS_H_
 
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 #include <netinet/in.h>
 
-namespace android {
-namespace net {
+namespace mindroid {
 
 class SocketAddress :
-	public android::os::Ref
+	public Ref
 {
 public:
 	SocketAddress();
@@ -46,7 +45,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(SocketAddress)
 };
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /*ANDROID_NET_SOCKETADDRESS_H_*/
+#endif /* MINDROID_SOCKETADDRESS_H_ */

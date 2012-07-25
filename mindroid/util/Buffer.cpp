@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-#include "android/util/Buffer.h"
+#include "mindroid/util/Buffer.h"
 #include <stdlib.h>
 #include <assert.h>
 
-namespace android {
-namespace util {
+namespace mindroid {
 
 Buffer::Buffer(size_t capacity) :
 	mData(malloc(capacity)),
@@ -52,5 +51,4 @@ void Buffer::setRange(size_t offset, size_t size) {
     mSize = size;
 }
 
-} /* namespace util */
-} /* namespace android */
+} /* namespace mindroid */

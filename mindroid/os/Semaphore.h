@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_SEMAPHORE_H_
-#define ANDROID_OS_SEMAPHORE_H_
+#ifndef MINDROID_SEMAPHORE_H_
+#define MINDROID_SEMAPHORE_H_
 
 #include <stdint.h>
 #include <semaphore.h>
-#include "android/os/Utils.h"
+#include "mindroid/util/Utils.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Semaphore
 {
@@ -39,7 +38,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Semaphore)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_SEMAPHORE_H_ */
+#endif /* MINDROID_SEMAPHORE_H_ */

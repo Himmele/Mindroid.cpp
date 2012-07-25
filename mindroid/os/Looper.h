@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_LOOPER_H_
-#define ANDROID_OS_LOOPER_H_
+#ifndef MINDROID_LOOPER_H_
+#define MINDROID_LOOPER_H_
 
 #include <pthread.h>
-#include "android/os/Utils.h"
-#include "android/os/MessageQueue.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/MessageQueue.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Runnable;
 
@@ -52,7 +51,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Looper)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_LOOPER_H_ */
+#endif /* MINDROID_LOOPER_H_ */

@@ -22,13 +22,12 @@
  * delegate(123);
  */
 
-#ifndef ANDROID_OS_DELEGATE_H_
-#define ANDROID_OS_DELEGATE_H_
+#ifndef MINDROID_DELEGATE_H_
+#define MINDROID_DELEGATE_H_
 
 #include <stdlib.h>
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 template<typename R = void, typename A1 = void, typename A2 = void, typename A3 = void, typename A4 = void>
 class Delegate;
@@ -638,7 +637,6 @@ private:
     MethodType mMethod;
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_DELEGATE_H_ */
+#endif /* MINDROID_DELEGATE_H_ */

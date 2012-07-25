@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-#include "android/os/AsyncTask.h"
+#include "mindroid/os/AsyncTask.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 SerialExecutor AsyncTaskBase::SERIAL_EXECUTOR;
 ThreadPoolExecutor AsyncTaskBase::THREAD_POOL_EXECUTOR(THREAD_POOL_SIZE);
 Lock AsyncTaskBase::sLock;
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#include "android/net/SocketAddress.h"
+#include "mindroid/net/SocketAddress.h"
 #include <unistd.h>
 #include <string.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 
-namespace android {
-namespace net {
+namespace mindroid {
 
 SocketAddress::SocketAddress() :
 	mValid(false) {
@@ -63,5 +62,4 @@ const char* SocketAddress::getHostName() const {
 	return host;
 }
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */

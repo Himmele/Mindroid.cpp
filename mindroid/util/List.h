@@ -18,19 +18,18 @@
 
 // STL-like list class
 
-#ifndef ANDROID_UTIL_LIST_H_
-#define ANDROID_UTIL_LIST_H_
+#ifndef MINDROID_LIST_H_
+#define MINDROID_LIST_H_
 
 #include <stddef.h>
 #include <stdint.h>
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace util {
+namespace mindroid {
 
 template<typename T>
 class List :
-	public android::os::Ref
+	public Ref
 {
 protected:
     class Node
@@ -269,7 +268,6 @@ private:
     NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(List<T>)
 };
 
-} /* namespace util */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /*ANDROID_UTIL_LIST_H_*/
+#endif /* MINDROID_LIST_H_ */

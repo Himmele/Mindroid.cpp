@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_LANG_STRING_H_
-#define ANDROID_LANG_STRING_H_
+#ifndef MINDROID_STRING_H_
+#define MINDROID_STRING_H_
 
-#include "android/os/Ref.h"
-#include "android/util/List.h"
+#include "mindroid/os/Ref.h"
+#include "mindroid/util/List.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <ctype.h>
 #include <assert.h>
 
-namespace android {
-namespace lang {
+namespace mindroid {
 
 class String
 {
@@ -116,8 +115,8 @@ public:
 	String left(size_t n) const;
 	String right(size_t n) const;
 
-	android::os::sp< android::util::List<String> > split(const char* separator) const;
-	android::os::sp< android::util::List<String> > split(const String& separator) const;
+	sp< List<String> > split(const char* separator) const;
+	sp< List<String> > split(const String& separator) const;
 
 	String& append(const char* data, size_t size);
 	String& appendFormatted(const char* format, ...) __attribute__((format (printf, 2, 3)));
@@ -130,7 +129,7 @@ public:
 
 private:
 	class StringBuffer :
-		public android::os::LightweightRef<StringBuffer> {
+		public LightweightRef<StringBuffer> {
 	public:
 		StringBuffer() :
 			mData(NULL),
@@ -156,15 +155,15 @@ private:
 		friend class String;
 	};
 
-	String(const android::os::sp<StringBuffer>& string) :
+	String(const sp<StringBuffer>& string) :
 			mString(string) {
 	}
 
 	String& appendFormattedWithVarArgList(const char* format, va_list args);
 
-	android::os::sp<StringBuffer> mString;
-	static android::os::sp<StringBuffer> sNullString;
-	static android::os::sp<StringBuffer> sEmptyString;
+	sp<StringBuffer> mString;
+	static sp<StringBuffer> sNullString;
+	static sp<StringBuffer> sEmptyString;
 };
 
 inline String& String::operator=(String const& string) {
@@ -196,14 +195,13 @@ inline String String::operator+(String const& string) const {
 	return tmp;
 }
 
-} /* namespace lang */
-} /* namespace android */
+} /* namespace mindroid */
 
-bool operator<(const char* lhs, const android::lang::String& rhs);
-bool operator<=(const char* lhs, const android::lang::String& rhs);
-bool operator==(const char* lhs, const android::lang::String& rhs);
-bool operator!=(const char* lhs, const android::lang::String& rhs);
-bool operator>=(const char* lhs, const android::lang::String& rhs);
-bool operator>(const char* lhs, const android::lang::String& rhs);
+bool operator<(const char* lhs, const mindroid::String& rhs);
+bool operator<=(const char* lhs, const mindroid::String& rhs);
+bool operator==(const char* lhs, const mindroid::String& rhs);
+bool operator!=(const char* lhs, const mindroid::String& rhs);
+bool operator>=(const char* lhs, const mindroid::String& rhs);
+bool operator>(const char* lhs, const mindroid::String& rhs);
 
-#endif /* ANDROID_LANG_STRING_H_ */
+#endif /* MINDROID_STRING_H_ */

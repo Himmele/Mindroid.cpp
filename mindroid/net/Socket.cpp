@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-#include "android/net/Socket.h"
-#include "android/net/SocketAddress.h"
+#include "mindroid/net/Socket.h"
+#include "mindroid/net/SocketAddress.h"
 #include <sys/socket.h>
 #include <unistd.h>
 
-using namespace android::os;
-
-namespace android {
-namespace net {
+namespace mindroid {
 
 Socket::Socket() :
 	mSocketId(-1),
@@ -89,5 +86,4 @@ void Socket::close() {
 	}
 }
 
-} /* namespace net */
-} /* namespace android */
+} /* namespace mindroid */

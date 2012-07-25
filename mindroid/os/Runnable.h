@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_RUNNABLE_H_
-#define ANDROID_OS_RUNNABLE_H_
+#ifndef MINDROID_RUNNABLE_H_
+#define MINDROID_RUNNABLE_H_
 
 #include <stdint.h>
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Runnable :
 	public Ref
@@ -31,7 +30,6 @@ public:
 	virtual void run() = 0;
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_RUNNABLE_H_ */
+#endif /* MINDROID_RUNNABLE_H_ */

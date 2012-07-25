@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_MESSAGEQUEUE_H_
-#define ANDROID_OS_MESSAGEQUEUE_H_
+#ifndef MINDROID_MESSAGEQUEUE_H_
+#define MINDROID_MESSAGEQUEUE_H_
 
 #include <stdint.h>
 #include <pthread.h>
-#include "android/os/Utils.h"
-#include "android/os/Ref.h"
-#include "android/os/Lock.h"
-#include "android/os/CondVar.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/Ref.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/CondVar.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Message;
 class Handler;
@@ -54,7 +53,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(MessageQueue)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_MESSAGEQUEUE_H_ */
+#endif /* MINDROID_MESSAGEQUEUE_H_ */

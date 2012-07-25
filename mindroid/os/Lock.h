@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_LOCK_H_
-#define ANDROID_OS_LOCK_H_
+#ifndef MINDROID_LOCK_H_
+#define MINDROID_LOCK_H_
 
 #include <stdint.h>
 #include <pthread.h>
-#include "android/os/Utils.h"
+#include "mindroid/util/Utils.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Lock
 {
@@ -61,7 +60,6 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(AutoLock)
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_LOCK_H_ */
+#endif /* MINDROID_LOCK_H_ */

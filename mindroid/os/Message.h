@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef ANDROID_OS_MESSAGE_H_
-#define ANDROID_OS_MESSAGE_H_
+#ifndef MINDROID_MESSAGE_H_
+#define MINDROID_MESSAGE_H_
 
 #include <stdint.h>
-#include "android/os/Lock.h"
-#include "android/os/Ref.h"
-#include "android/os/Bundle.h"
+#include "mindroid/os/Lock.h"
+#include "mindroid/os/Ref.h"
+#include "mindroid/os/Bundle.h"
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 class Runnable;
 class Handler;
@@ -87,7 +86,6 @@ private:
     friend class MessagePool;
 };
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_MESSAGE_H_ */
+#endif /* MINDROID_MESSAGE_H_ */

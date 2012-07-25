@@ -16,22 +16,21 @@
  * Some extenstions and refactorings by Daniel Himmelein
  */
 
-#ifndef ANDROID_OS_REF_H_
-#define ANDROID_OS_REF_H_
+#ifndef MINDROID_REF_H_
+#define MINDROID_REF_H_
 
 #include <stdint.h>
 #include <sys/types.h>
 #include <stddef.h>
 #include <assert.h>
-#include "android/os/Utils.h"
-#include "android/os/AtomicInteger.h"
+#include "mindroid/util/Utils.h"
+#include "mindroid/os/AtomicInteger.h"
 
 #define ASSERT(cond, ...) if (!(cond)) { printf(__VA_ARGS__); printf("\n"); assert(cond); }
 #define DEBUG_INFO(...) printf(__VA_ARGS__)
 #define ERROR_INFO(...) printf(__VA_ARGS__)
 
-namespace android {
-namespace os {
+namespace mindroid {
 
 template<typename T> class sp;
 template<typename T> class wp;
@@ -525,7 +524,6 @@ sp<T> Ref::Destroyer::reviveObject(Ref* ref) {
 	return newRef;
 }
 
-} /* namespace os */
-} /* namespace android */
+} /* namespace mindroid */
 
-#endif /* ANDROID_OS_REF_H_ */
+#endif /* MINDROID_REF_H_ */
