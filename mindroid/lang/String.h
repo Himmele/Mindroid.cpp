@@ -34,7 +34,7 @@ public:
 	String(const String& string);
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
-	~String() {}
+	~String() { }
 
 	inline String& operator=(String const& string);
 	String& operator=(const char* string);
@@ -69,7 +69,7 @@ public:
 	}
 
 	inline bool isEmpty() const {
-	    return size() == 0;
+		return size() == 0;
 	}
 
 	inline const char* c_str() const {
@@ -119,7 +119,7 @@ public:
 	sp< List<String> > split(const String& separator) const;
 
 	String& append(const char* data, size_t size);
-	String& appendFormatted(const char* format, ...) __attribute__((format (printf, 2, 3)));
+	String& appendFormatted(const char* format, ...) __attribute__((format (printf,2, 3)));
 
 	static String format(const char* format, ...) __attribute__((format (printf, 1, 2)));
 
@@ -128,12 +128,12 @@ public:
 	}
 
 private:
-	class StringBuffer :
-		public LightweightRef<StringBuffer> {
+	class StringBuffer : public LightweightRef<StringBuffer>
+	{
 	public:
 		StringBuffer() :
-			mData(NULL),
-			mSize(0) {
+				mData(NULL),
+				mSize(0) {
 		}
 
 		StringBuffer(size_t size);
@@ -155,9 +155,7 @@ private:
 		friend class String;
 	};
 
-	String(const sp<StringBuffer>& string) :
-			mString(string) {
-	}
+	String(const sp<StringBuffer>& string) : mString(string) { }
 
 	String& appendFormattedWithVarArgList(const char* format, va_list args);
 
@@ -184,9 +182,9 @@ inline String& String::operator+=(const char character) {
 }
 
 inline String String::operator+(const char* string) const {
-    String tmp(*this);
-    tmp += string;
-    return tmp;
+	String tmp(*this);
+	tmp += string;
+	return tmp;
 }
 
 inline String String::operator+(String const& string) const {

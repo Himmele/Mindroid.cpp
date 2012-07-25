@@ -301,11 +301,12 @@ String String::trim() const {
 			break;
 		}
 	}
-	if (beginIndex == 0 && endIndex == (ssize_t)tmp.size() - 1) {
+	if (beginIndex == 0 && endIndex == (ssize_t) tmp.size() - 1) {
 		return tmp;
 	} else {
 		if (beginIndex != tmp.size()) {
-			tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex, endIndex - beginIndex + 1);
+			tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex,
+					endIndex - beginIndex + 1);
 		} else {
 			tmp.mString = sEmptyString;
 		}
@@ -323,15 +324,15 @@ String String::left(size_t n) const {
 String String::right(size_t n) const {
 	String tmp(*this);
 	n = (n > tmp.size()) ? tmp.size() : n;
-	tmp.mString = new StringBuffer(tmp.mString->mData + tmp.size() - n , n);
+	tmp.mString = new StringBuffer(tmp.mString->mData + tmp.size() - n, n);
 	return tmp;
 }
 
-sp< List<String> > String::split(const char* separator) const {
-	sp< List<String> > strings = new List<String>();
+sp<List<String> > String::split(const char* separator) const {
+	sp<List<String> > strings = new List<String>();
 	ssize_t curIndex = 0;
 	ssize_t prevCurIndex;
-	while (curIndex >= 0 && (size_t)curIndex < size()) {
+	while (curIndex >= 0 && (size_t) curIndex < size()) {
 		prevCurIndex = curIndex;
 		curIndex = indexOf(separator, curIndex);
 		if (curIndex >= 0) {
@@ -344,7 +345,7 @@ sp< List<String> > String::split(const char* separator) const {
 	return strings;
 }
 
-sp< List<String> > String::split(const String& separator) const {
+sp<List<String> > String::split(const String& separator) const {
 	return split(separator.c_str());
 }
 
@@ -380,14 +381,14 @@ String& String::appendFormattedWithVarArgList(const char* format, va_list args) 
 	int size = vsnprintf(NULL, 0, format, copyOfArgs);
 	va_end(copyOfArgs);
 
-    if (size != 0) {
-        sp<StringBuffer> oldString = mString;
-        mString = new StringBuffer(oldString->mSize + size);
-        memcpy(mString->mData, oldString->mData, oldString->mSize);
-        vsnprintf(mString->mData + oldString->mSize, size + 1, format, args);
-    }
+	if (size != 0) {
+		sp<StringBuffer> oldString = mString;
+		mString = new StringBuffer(oldString->mSize + size);
+		memcpy(mString->mData, oldString->mData, oldString->mSize);
+		vsnprintf(mString->mData + oldString->mSize, size + 1, format, args);
+	}
 
-    return *this;
+	return *this;
 }
 
 String::StringBuffer::StringBuffer(size_t size) {
@@ -411,7 +412,8 @@ String::StringBuffer::StringBuffer(const char* string, size_t size) {
 	}
 }
 
-String::StringBuffer::StringBuffer(const char* string1, size_t size1, const char* string2, size_t size2) {
+String::StringBuffer::StringBuffer(const char* string1, size_t size1,
+		const char* string2, size_t size2) {
 	mSize = size1 + size2;
 	mData = (char*) malloc(mSize + 1);
 	memcpy(mData, string1, size1);
