@@ -24,7 +24,7 @@ namespace mindroid {
 class Socket;
 
 class ServerSocket :
-	public Ref
+		public Ref
 {
 public:
 	static const int DEFAULT_BACKLOG = 10;

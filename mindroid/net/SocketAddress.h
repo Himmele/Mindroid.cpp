@@ -23,13 +23,13 @@
 namespace mindroid {
 
 class SocketAddress :
-	public Ref
+		public Ref
 {
 public:
 	SocketAddress();
 	SocketAddress(uint16_t port);
 	SocketAddress(const char* host, uint16_t port);
-	virtual ~SocketAddress() {}
+	virtual ~SocketAddress() { }
 	const char* getHostName() const;
 	uint16_t getPort() const { return ntohs(mSocketAddress.sin_port); }
 	bool isValid() const { return mValid; }

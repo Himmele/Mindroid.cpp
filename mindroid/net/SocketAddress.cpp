@@ -23,12 +23,12 @@
 namespace mindroid {
 
 SocketAddress::SocketAddress() :
-	mValid(false) {
+		mValid(false) {
 	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 }
 
 SocketAddress::SocketAddress(uint16_t port) :
-	mValid(true) {
+		mValid(true) {
 	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 	mSocketAddress.sin_family = AF_INET;
 	mSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -36,7 +36,7 @@ SocketAddress::SocketAddress(uint16_t port) :
 }
 
 SocketAddress::SocketAddress(const char* host, uint16_t port) :
-	mValid(false) {
+		mValid(false) {
 	struct addrinfo hints, *result;
 	int status;
 
@@ -49,7 +49,7 @@ SocketAddress::SocketAddress(const char* host, uint16_t port) :
 	if (mValid) {
 		memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 		mSocketAddress.sin_family = AF_INET;
-		mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *)(result->ai_addr))->sin_addr.s_addr;
+		mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
 		mSocketAddress.sin_port = htons(port);
 	}
 
@@ -58,7 +58,7 @@ SocketAddress::SocketAddress(const char* host, uint16_t port) :
 
 const char* SocketAddress::getHostName() const {
 	static char host[NI_MAXHOST];
-	getnameinfo((sockaddr*)&mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), NULL, 0, 0);
+	getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), NULL, 0, 0);
 	return host;
 }
 

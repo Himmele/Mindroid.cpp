@@ -22,15 +22,15 @@
 namespace mindroid {
 
 Socket::Socket() :
-	mSocketId(-1),
-	mIsConnected(false),
-	mIsClosed(false) {
+		mSocketId(-1),
+		mIsConnected(false),
+		mIsClosed(false) {
 }
 
 Socket::Socket(const char* host, uint16_t port) :
-	mSocketId(-1),
-	mIsConnected(false),
-	mIsClosed(false) {
+		mSocketId(-1),
+		mIsConnected(false),
+		mIsClosed(false) {
 	connect(host, port);
 }
 
@@ -42,7 +42,7 @@ bool Socket::connect(const char* host, uint16_t port) {
 	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
 	if (mSocketId >= 0 && socketAddress->isValid()) {
-		if (::connect(mSocketId, (struct sockaddr*)&socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
+		if (::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
 			mIsConnected = true;
 			return true;
 		} else {
@@ -73,7 +73,7 @@ ssize_t Socket::readFully(uint8_t* data, size_t size) {
 }
 
 bool Socket::write(const void* data, size_t size) {
-	return (size_t)::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
+	return (size_t) ::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
 }
 
 void Socket::close() {

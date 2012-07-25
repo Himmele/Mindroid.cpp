@@ -24,7 +24,7 @@ namespace mindroid {
 class SocketAddress;
 
 class DatagramSocket :
-	public Ref
+		public Ref
 {
 public:
 	DatagramSocket();

@@ -24,33 +24,33 @@
 namespace mindroid {
 
 ServerSocket::ServerSocket() :
-	mSocketId(-1),
-	mIsBound(false),
-	mIsClosed(false),
-	mReuseAddress(false) {
+		mSocketId(-1),
+		mIsBound(false),
+		mIsClosed(false),
+		mReuseAddress(false) {
 }
 
 ServerSocket::ServerSocket(uint16_t port) :
-	mSocketId(-1),
-	mIsBound(false),
-	mIsClosed(false),
-	mReuseAddress(false) {
+		mSocketId(-1),
+		mIsBound(false),
+		mIsClosed(false),
+		mReuseAddress(false) {
 	bind(port);
 }
 
 ServerSocket::ServerSocket(uint16_t port, int backlog) :
-	mSocketId(-1),
-	mIsBound(false),
-	mIsClosed(false),
-	mReuseAddress(false) {
+		mSocketId(-1),
+		mIsBound(false),
+		mIsClosed(false),
+		mReuseAddress(false) {
 	bind(port, backlog);
 }
 
 ServerSocket::ServerSocket(const char* host, uint16_t port, int backlog) :
-	mSocketId(-1),
-	mIsBound(false),
-	mIsClosed(false),
-	mReuseAddress(false) {
+		mSocketId(-1),
+		mIsBound(false),
+		mIsClosed(false),
+		mReuseAddress(false) {
 	bind(host, port, backlog);
 }
 
@@ -73,18 +73,19 @@ bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
 	}
 
 	int value = mReuseAddress;
-	setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*)&value, sizeof(value));
+	setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
 
-	sp<SocketAddress> socketAddress = (host == NULL) ? new SocketAddress(port) : new SocketAddress(host, port);
+	sp<SocketAddress> socketAddress = (host == NULL) ?
+			new SocketAddress(port) : new SocketAddress(host, port);
 
-	if (::bind(mSocketId, (struct sockaddr*)&socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
+	if (::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
 		if (::listen(mSocketId, backlog) == 0) {
 			mIsBound = true;
 			return true;
 		} else {
 			::close(mSocketId);
 			mSocketId = -1;
-            return false;
+			return false;
 		}
 	} else {
 		::close(mSocketId);

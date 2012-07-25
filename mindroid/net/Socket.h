@@ -24,7 +24,7 @@ namespace mindroid {
 class ServerSocket;
 
 class Socket :
-	public Ref
+		public Ref
 {
 public:
 	Socket();
