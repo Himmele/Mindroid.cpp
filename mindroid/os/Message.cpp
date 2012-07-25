@@ -25,7 +25,7 @@ namespace mindroid {
 MessagePool Message::sMessagePool;
 
 MessagePool::MessagePool() :
-	MAX_SIZE(10) {
+		MAX_SIZE(10) {
 }
 
 MessagePool::~MessagePool() {
@@ -40,21 +40,19 @@ MessagePool::~MessagePool() {
 	mHeadMessage = NULL;
 }
 
-
 Message::Message() :
-	what(0),
-	arg1(0),
-	arg2(0),
-	obj(NULL),
-	mExecTimestamp(0),
-	mHandler(NULL),
-	mCallback(NULL),
-	mData(NULL),
-	mNextMessage(NULL) {
+		what(0),
+		arg1(0),
+		arg2(0),
+		obj(NULL),
+		mExecTimestamp(0),
+		mHandler(NULL),
+		mCallback(NULL),
+		mData(NULL),
+		mNextMessage(NULL) {
 }
 
-Message::~Message() {
-}
+Message::~Message() { }
 
 sp<Message> Message::obtain() {
 	{

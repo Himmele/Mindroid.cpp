@@ -39,51 +39,51 @@ struct MessagePool
 	Lock mLock;
 };
 
-
 class Message :
-	public Ref,
-	public Ref::Destroyer {
+		public Ref,
+		public Ref::Destroyer
+{
 public:
 	virtual ~Message();
-    static sp<Message> obtain();
-    static sp<Message> obtain(const sp<Handler>& handler);
-    static sp<Message> obtain(const sp<Handler>& handler, int32_t what);
-    static sp<Message> obtain(const sp<Handler>& handler, int32_t what, int32_t arg1, int32_t arg2);
-    static sp<Message> obtain(const sp<Handler>& handler, const sp<Runnable>& callback);
+	static sp<Message> obtain();
+	static sp<Message> obtain(const sp<Handler>& handler);
+	static sp<Message> obtain(const sp<Handler>& handler, int32_t what);
+	static sp<Message> obtain(const sp<Handler>& handler, int32_t what, int32_t arg1, int32_t arg2);
+	static sp<Message> obtain(const sp<Handler>& handler, const sp<Runnable>& callback);
 
-    uint64_t getExecTimestamp() const;
-    void setHandler(const sp<Handler>& handler);
-    sp<Handler> getHandler() const;
-    sp<Runnable> getCallback() const;
-    void setData(sp<Bundle> data);
-    sp<Bundle> getData() const;
-    bool sendToTarget();
-    sp<Message> dup() const;
+	uint64_t getExecTimestamp() const;
+	void setHandler(const sp<Handler>& handler);
+	sp<Handler> getHandler() const;
+	sp<Runnable> getCallback() const;
+	void setData(sp<Bundle> data);
+	sp<Bundle> getData() const;
+	bool sendToTarget();
+	sp<Message> dup() const;
 
-    virtual void destroy(Ref* ref);
+	virtual void destroy(Ref* ref);
 
-    int32_t what;
-    int32_t arg1;
-    int32_t arg2;
-    void* obj;
+	int32_t what;
+	int32_t arg1;
+	int32_t arg2;
+	void* obj;
 
 protected:
-    Message();
-    static sp<Message> obtain(const Message* message);
-    void clear();
+	Message();
+	static sp<Message> obtain(const Message* message);
+	void clear();
 
 private:
-    uint64_t mExecTimestamp; // nanoseconds
-    sp<Handler> mHandler;
-    sp<Runnable> mCallback;
-    sp<Bundle> mData;
-    sp<Message> mNextMessage;
+	uint64_t mExecTimestamp; // nanoseconds
+	sp<Handler> mHandler;
+	sp<Runnable> mCallback;
+	sp<Bundle> mData;
+	sp<Message> mNextMessage;
 	static MessagePool sMessagePool;
 
-    friend class MessageQueue;
-    friend class Looper;
-    friend class Handler;
-    friend class MessagePool;
+	friend class MessageQueue;
+	friend class Looper;
+	friend class Handler;
+	friend class MessagePool;
 };
 
 } /* namespace mindroid */

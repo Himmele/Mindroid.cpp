@@ -25,13 +25,12 @@
 namespace mindroid {
 
 MessageQueue::MessageQueue() :
-	mHeadMessage(NULL),
-	mCondVar(mCondVarLock),
-	mLockMessageQueue(false) {
+		mHeadMessage(NULL),
+		mCondVar(mCondVarLock),
+		mLockMessageQueue(false) {
 }
 
-MessageQueue::~MessageQueue() {
-}
+MessageQueue::~MessageQueue() { }
 
 bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t execTimestamp) {
 	AutoLock autoLock(mCondVarLock);

@@ -34,9 +34,7 @@ public:
 	static Looper* myLooper();
 	static void loop();
 	void quit();
-	sp<MessageQueue> myMessageQueue() {
-		return mMessageQueue;
-	}
+	sp<MessageQueue> myMessageQueue() { return mMessageQueue; }
 
 private:
 	Looper();

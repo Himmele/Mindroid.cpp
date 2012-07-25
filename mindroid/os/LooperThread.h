@@ -33,18 +33,17 @@ namespace mindroid {
  */
 template<class T /*extends Handler*/>
 class LooperThread :
-	public Thread
+		public Thread
 {
 public:
 	LooperThread() :
-		mLooper(NULL),
-		mHandler(NULL),
-		mCondVar(mLock),
-		mIsDone(false) {
+			mLooper(NULL),
+			mHandler(NULL),
+			mCondVar(mLock),
+			mIsDone(false) {
 	}
 
-	virtual ~LooperThread() {
-	}
+	virtual ~LooperThread() { }
 
 	virtual void run() {
 		Looper::prepare();

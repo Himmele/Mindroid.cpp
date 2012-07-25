@@ -24,21 +24,18 @@ pthread_once_t Looper::sTlsOneTimeInitializer = PTHREAD_ONCE_INIT;
 pthread_key_t Looper::sTlsKey;
 
 Looper::Looper() :
-	mOnLooperReadyRunnable(NULL) {
+		mOnLooperReadyRunnable(NULL) {
 	mMessageQueue = new MessageQueue();
 }
 
-Looper::~Looper() {
-}
+Looper::~Looper() { }
 
-void Looper::init()
-{
+void Looper::init() {
 	pthread_key_create(&sTlsKey, Looper::finalize);
 }
 
-void Looper::finalize(void* looper)
-{
-    delete (Looper*) looper;
+void Looper::finalize(void* looper) {
+	delete (Looper*) looper;
 }
 
 bool Looper::prepare() {

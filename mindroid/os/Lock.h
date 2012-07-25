@@ -42,11 +42,10 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Lock)
 };
 
-class AutoLock
-{
+class AutoLock {
 public:
 	AutoLock(Lock& lock) :
-		mLock(lock) {
+			mLock(lock) {
 		mLock.lock();
 	}
 

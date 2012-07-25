@@ -31,7 +31,7 @@ class Handler;
 class Runnable;
 
 class MessageQueue :
-	public Ref
+		public Ref
 {
 public:
 	MessageQueue();
