@@ -27,8 +27,8 @@ class Runnable;
 class Executor
 {
 public:
-	Executor() {}
-	virtual ~Executor() {}
+	Executor() { }
+	virtual ~Executor() { }
 
 	virtual void execute(const sp<Runnable>& runnable) = 0;
 	virtual bool cancel(const sp<Runnable>& runnable) = 0;

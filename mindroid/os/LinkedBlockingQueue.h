@@ -29,8 +29,8 @@ class LinkedBlockingQueue
 {
 public:
 	LinkedBlockingQueue() :
-		mHeadNode(NULL),
-		mCondVar(mCondVarLock) {
+			mHeadNode(NULL),
+			mCondVar(mCondVarLock) {
 	}
 
 	~LinkedBlockingQueue() {
@@ -108,8 +108,7 @@ public:
 	}
 
 private:
-	struct Node
-	{
+	struct Node {
 		T item;
 
 		Node* nextNode;

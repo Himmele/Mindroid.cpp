@@ -29,7 +29,7 @@ class Looper;
 class MessageQueue;
 
 class Handler :
-	public Ref
+		public Ref
 {
 public:
 	Handler();
@@ -69,7 +69,7 @@ private:
 
 	void handleCallback(const sp<Message>& message) {
 		message->mCallback->run();
-    }
+	}
 
 	sp<MessageQueue> mMessageQueue;
 
