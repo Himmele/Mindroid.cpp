@@ -1,14 +1,12 @@
 #include <stdio.h>
-#include "android/os/Thread.h"
-#include "android/net/ServerSocket.h"
-#include "android/net/Socket.h"
-#include "android/net/DatagramSocket.h"
-#include "android/net/SocketAddress.h"
-#include "android/lang/String.h"
+#include "mindroid/os/Thread.h"
+#include "mindroid/net/ServerSocket.h"
+#include "mindroid/net/Socket.h"
+#include "mindroid/net/DatagramSocket.h"
+#include "mindroid/net/SocketAddress.h"
+#include "mindroid/lang/String.h"
 
-using namespace android::os;
-using namespace android::net;
-using namespace android::lang;
+using namespace mindroid;
 
 class ServerSocketThread : public Thread
 {

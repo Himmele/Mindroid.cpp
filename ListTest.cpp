@@ -1,11 +1,9 @@
-#include "android/util/List.h"
-#include "android/lang/String.h"
+#include "mindroid/util/List.h"
+#include "mindroid/lang/String.h"
 #include <stdio.h>
 #include <assert.h>
 
-using namespace android::os;
-using namespace android::util;
-using namespace android::lang;
+using namespace mindroid;
 
 int main() {
 	String s1("abc\n\n\ndef\r\nyxz");

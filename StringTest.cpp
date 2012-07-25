@@ -1,10 +1,8 @@
-#include "android/lang/String.h"
+#include "mindroid/lang/String.h"
 #include <stdio.h>
 #include <assert.h>
 
-using namespace android::os;
-using namespace android::lang;
-using namespace android::util;
+using namespace mindroid;
 
 int main() {
 	String s1("Hello");

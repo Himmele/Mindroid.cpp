@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include "android/os/Ref.h"
+#include "mindroid/os/Ref.h"
 
-using namespace android::os;
+using namespace mindroid;
 
 class RefTest : public Ref {
 public:

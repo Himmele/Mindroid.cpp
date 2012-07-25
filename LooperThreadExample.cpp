@@ -4,14 +4,14 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include "android/os/Looper.h"
-#include "android/os/Handler.h"
-#include "android/os/Thread.h"
-#include "android/os/Message.h"
-#include "android/os/Closure.h"
-#include "android/os/LooperThread.h"
+#include "mindroid/os/Looper.h"
+#include "mindroid/os/Handler.h"
+#include "mindroid/os/Thread.h"
+#include "mindroid/os/Message.h"
+#include "mindroid/os/Closure.h"
+#include "mindroid/os/LooperThread.h"
 
-using namespace android::os;
+using namespace mindroid;
 
 class ExampleHandler : public Handler
 {

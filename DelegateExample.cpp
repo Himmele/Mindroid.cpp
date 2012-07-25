@@ -4,10 +4,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <assert.h>
-#include "android/os/Delegate.h"
-#include "android/os/Event.h"
+#include "mindroid/os/Delegate.h"
+#include "mindroid/os/Event.h"
 
-using namespace android::os;
+using namespace mindroid;
 
 class Test
 {

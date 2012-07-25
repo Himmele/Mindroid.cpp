@@ -2,27 +2,27 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
-	src/android/os/Thread.cpp \
-	src/android/os/Semaphore.cpp \
-	src/android/os/MessageQueue.cpp \
-	src/android/os/Message.cpp \
-	src/android/os/Looper.cpp \
-	src/android/os/Lock.cpp \
-	src/android/os/CondVar.cpp \
-	src/android/os/Handler.cpp \
-	src/android/os/Clock.cpp \
-	src/android/os/AsyncTask.cpp \
-	src/android/os/SerialExecutor.cpp \
-	src/android/os/ThreadPoolExecutor.cpp \
-	src/android/os/AtomicInteger.cpp.arm \
-	src/android/os/Ref.cpp \
-	src/android/os/Bundle.cpp \
-	src/android/util/Buffer.cpp \
-	src/android/lang/String.cpp \
-	src/android/net/SocketAddress.cpp \
-	src/android/net/ServerSocket.cpp \
-	src/android/net/Socket.cpp \
-	src/android/net/DatagramSocket.cpp
+	mindroid/os/Thread.cpp \
+	mindroid/os/Semaphore.cpp \
+	mindroid/os/MessageQueue.cpp \
+	mindroid/os/Message.cpp \
+	mindroid/os/Looper.cpp \
+	mindroid/os/Lock.cpp \
+	mindroid/os/CondVar.cpp \
+	mindroid/os/Handler.cpp \
+	mindroid/os/Clock.cpp \
+	mindroid/os/AsyncTask.cpp \
+	mindroid/os/SerialExecutor.cpp \
+	mindroid/os/ThreadPoolExecutor.cpp \
+	mindroid/os/AtomicInteger.cpp.arm \
+	mindroid/os/Ref.cpp \
+	mindroid/os/Bundle.cpp \
+	mindroid/util/Buffer.cpp \
+	mindroid/lang/String.cpp \
+	mindroid/net/SocketAddress.cpp \
+	mindroid/net/ServerSocket.cpp \
+	mindroid/net/Socket.cpp \
+	mindroid/net/DatagramSocket.cpp
 
 LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 
@@ -36,7 +36,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_PRELINK_MODULE := false
 
 LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE:= libAndroidNativePlatform
+LOCAL_MODULE:= libmindroid
 
 include $(BUILD_SHARED_LIBRARY)
 
@@ -52,7 +52,7 @@ LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -74,7 +74,7 @@ LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -96,7 +96,7 @@ LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -119,7 +119,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
 	libstlport \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -144,7 +144,7 @@ LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
 	libstlport \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -166,7 +166,7 @@ LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include
@@ -188,7 +188,7 @@ LOCAL_CFLAGS := -D__ANDROID__ -D__ARM_CPU_ARCH__
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	libcutils \
-	libAndroidNativePlatform
+	libmindroid
 	
 LOCAL_C_INCLUDES := \
 	$(LOCAL_PATH)/include

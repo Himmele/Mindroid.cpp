@@ -227,7 +227,9 @@ int main() {
 	sHandler4 = new Handler4(*sLooper2);
 
 	sp<Message> msg = sHandler1->obtainMessage(Handler1::MSG_PRINT_INFO);
-	while (true) {
+	int turns = 10;
+	while (turns >= 0) {
+		turns--;
 		sHandler1->sendMessage(msg);
 		sHandler1->sendMessage(msg->dup());
 

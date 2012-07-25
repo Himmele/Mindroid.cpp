@@ -1,11 +1,9 @@
-#include "android/os/Bundle.h"
-#include "android/lang/String.h"
+#include "mindroid/os/Bundle.h"
+#include "mindroid/lang/String.h"
 #include <stdio.h>
 #include <assert.h>
 
-using namespace android::os;
-using namespace android::util;
-using namespace android::lang;
+using namespace mindroid;
 
 class Test :
 	public Ref
