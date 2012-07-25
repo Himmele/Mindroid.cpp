@@ -22,7 +22,7 @@
 namespace mindroid {
 
 CondVar::CondVar(Lock& lock) :
-	mCondVarLock(lock) {
+		mCondVarLock(lock) {
 	pthread_condattr_init(&mCondVarAttributes);
 #ifndef __ANDROID__
 	pthread_condattr_setclock(&mCondVarAttributes, CLOCK_MONOTONIC);

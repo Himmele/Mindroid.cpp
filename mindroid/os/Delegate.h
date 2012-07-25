@@ -37,20 +37,20 @@ template<typename R, typename A1, typename A2, typename A3, typename A4>
 class Delegate
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-	template <class T, R (T::*TMethod)(A1, A2, A3, A4)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3, A4)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2, A3, A4)>
+	template<R(*TMethod)(A1, A2, A3, A4)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -58,59 +58,59 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-        return (*mMethod)(mObject, arg1, arg2, arg3, arg4);
-    }
+	R operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
+		return (*mMethod)(mObject, arg1, arg2, arg3, arg4);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 
-    template <class T, R (T::*TMethod)(A1, A2, A3, A4)>
-    static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2, arg3, arg4);
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3, A4)>
+	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2, arg3, arg4);
+	}
 
-    template <R (*TMethod)(A1, A2, A3, A4)>
+	template<R(*TMethod)(A1, A2, A3, A4)>
 	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
 		return (*TMethod)(arg1, arg2, arg3, arg4);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 template<typename R, typename A1, typename A2, typename A3, typename A4>
-class Delegate<R (A1, A2, A3, A4)>
+class Delegate<R(A1, A2, A3, A4)>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-	template <class T, R (T::*TMethod)(A1, A2, A3, A4)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3, A4)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2, A3, A4)>
+	template<R(*TMethod)(A1, A2, A3, A4)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -118,39 +118,39 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
-        return (*mMethod)(mObject, arg1, arg2, arg3, arg4);
-    }
+	R operator()(A1 arg1, A2 arg2, A3 arg3, A4 arg4) const {
+		return (*mMethod)(mObject, arg1, arg2, arg3, arg4);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4);
 
-    template <class T, R (T::*TMethod)(A1, A2, A3, A4)>
-    static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2, arg3, arg4);
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3, A4)>
+	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2, arg3, arg4);
+	}
 
-    template <R (*TMethod)(A1, A2, A3, A4)>
+	template<R(*TMethod)(A1, A2, A3, A4)>
 	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3, A4 arg4) {
 		return (*TMethod)(arg1, arg2, arg3, arg4);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 // 3 arguments
@@ -158,20 +158,20 @@ template<typename R, typename A1, typename A2, typename A3>
 class Delegate<R, A1, A2, A3, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)(A1, A2, A3)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2, A3)>
+	template<R(*TMethod)(A1, A2, A3)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -179,59 +179,59 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2, A3 arg3) const {
-        return (*mMethod)(mObject, arg1, arg2, arg3);
-    }
+	R operator()(A1 arg1, A2 arg2, A3 arg3) const {
+		return (*mMethod)(mObject, arg1, arg2, arg3);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3);
 
-    template <class T, R (T::*TMethod)(A1, A2, A3)>
-    static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2, arg3);
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3)>
+	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2, arg3);
+	}
 
-    template <R (*TMethod)(A1, A2, A3)>
+	template<R(*TMethod)(A1, A2, A3)>
 	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
 		return (*TMethod)(arg1, arg2, arg3);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 template<typename R, typename A1, typename A2, typename A3>
-class Delegate<R (A1, A2, A3), void>
+class Delegate<R(A1, A2, A3), void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)(A1, A2, A3)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2, A3)>
+	template<R(*TMethod)(A1, A2, A3)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -239,39 +239,39 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2, A3 arg3) const {
-        return (*mMethod)(mObject, arg1, arg2, arg3);
-    }
+	R operator()(A1 arg1, A2 arg2, A3 arg3) const {
+		return (*mMethod)(mObject, arg1, arg2, arg3);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2, A3 arg3);
 
-    template <class T, R (T::*TMethod)(A1, A2, A3)>
-    static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2, arg3);
-    }
+	template<class T, R(T::*TMethod)(A1, A2, A3)>
+	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2, arg3);
+	}
 
-    template <R (*TMethod)(A1, A2, A3)>
+	template<R(*TMethod)(A1, A2, A3)>
 	static R exec(void* object, A1 arg1, A2 arg2, A3 arg3) {
 		return (*TMethod)(arg1, arg2, arg3);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 // 2 arguments
@@ -279,20 +279,20 @@ template<typename R, typename A1, typename A2>
 class Delegate<R, A1, A2, void, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)(A1, A2)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2)>
+	template<R(*TMethod)(A1, A2)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -300,59 +300,59 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2) const {
-        return (*mMethod)(mObject, arg1, arg2);
-    }
+	R operator()(A1 arg1, A2 arg2) const {
+		return (*mMethod)(mObject, arg1, arg2);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2);
 
-    template <class T, R (T::*TMethod)(A1, A2)>
-    static R exec(void* object, A1 arg1, A2 arg2) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2);
-    }
+	template<class T, R(T::*TMethod)(A1, A2)>
+	static R exec(void* object, A1 arg1, A2 arg2) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2);
+	}
 
-    template <R (*TMethod)(A1, A2)>
+	template<R(*TMethod)(A1, A2)>
 	static R exec(void* object, A1 arg1, A2 arg2) {
 		return (*TMethod)(arg1, arg2);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 template<typename R, typename A1, typename A2>
-class Delegate<R (A1, A2), void, void>
+class Delegate<R(A1, A2), void, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)(A1, A2)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1, A2)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1, A2)>
+	template<R(*TMethod)(A1, A2)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -360,39 +360,39 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1, A2 arg2) const {
-        return (*mMethod)(mObject, arg1, arg2);
-    }
+	R operator()(A1 arg1, A2 arg2) const {
+		return (*mMethod)(mObject, arg1, arg2);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1, A2 arg2);
+	typedef R (*MethodType)(void* object, A1 arg1, A2 arg2);
 
-    template <class T, R (T::*TMethod)(A1, A2)>
-    static R exec(void* object, A1 arg1, A2 arg2) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1, arg2);
-    }
+	template<class T, R(T::*TMethod)(A1, A2)>
+	static R exec(void* object, A1 arg1, A2 arg2) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1, arg2);
+	}
 
-    template <R (*TMethod)(A1, A2)>
+	template<R(*TMethod)(A1, A2)>
 	static R exec(void* object, A1 arg1, A2 arg2) {
 		return (*TMethod)(arg1, arg2);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 // 1 argument
@@ -400,20 +400,20 @@ template<typename R, typename A1>
 class Delegate<R, A1, void, void, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)(A1)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)(A1)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)(A1)>
+	template<R(*TMethod)(A1)>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -421,99 +421,99 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()(A1 arg1) const {
-    	return (*mMethod)(mObject, arg1);
-    }
-
-    bool operator==(Delegate const& rhs) {
-    	return (mObject == rhs.mObject && mMethod == rhs.mMethod);
-    }
-
-private:
-    typedef R (*MethodType)(void* object, A1 arg1);
-
-    template <class T, R (T::*TMethod)(A1)>
-    static R exec(void* object, A1 arg1) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1);
-    }
-
-    template <R (*TMethod)(A1)>
-	static R exec(void* object, A1 arg1) {
-		return (*TMethod)(arg1);
+	R operator()(A1 arg1) const {
+		return (*mMethod)(mObject, arg1);
 	}
 
-    void* mObject;
-    MethodType mMethod;
-};
-
-template<typename R, typename A1>
-class Delegate<R (A1), void, void, void>
-{
-public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
-
-    template <class T, R (T::*TMethod)(A1)>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
-
-    template <R (*TMethod)(A1)>
-	static Delegate create() {
-		Delegate delegate;
-		delegate.mObject = NULL;
-		delegate.mMethod = &exec<TMethod>;
-		return delegate;
-	}
-
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
-
-    bool callable() {
-		return (mMethod != NULL);
-	}
-
-    R operator()(A1 arg1) const {
-    	return (*mMethod)(mObject, arg1);
-    }
-
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object, A1 arg1);
+	typedef R (*MethodType)(void* object, A1 arg1);
 
-    template <class T, R (T::*TMethod)(A1)>
-    static R exec(void* object, A1 arg1) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)(arg1);
-    }
+	template<class T, R(T::*TMethod)(A1)>
+	static R exec(void* object, A1 arg1) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1);
+	}
 
-    template <R (*TMethod)(A1)>
+	template<R(*TMethod)(A1)>
 	static R exec(void* object, A1 arg1) {
 		return (*TMethod)(arg1);
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
+};
+
+template<typename R, typename A1>
+class Delegate<R(A1), void, void, void>
+{
+public:
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
+
+	template<class T, R(T::*TMethod)(A1)>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
+
+	template<R(*TMethod)(A1)>
+	static Delegate create() {
+		Delegate delegate;
+		delegate.mObject = NULL;
+		delegate.mMethod = &exec<TMethod>;
+		return delegate;
+	}
+
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
+
+	bool callable() {
+		return (mMethod != NULL);
+	}
+
+	R operator()(A1 arg1) const {
+		return (*mMethod)(mObject, arg1);
+	}
+
+	bool operator==(Delegate const& rhs) {
+		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
+	}
+
+private:
+	typedef R (*MethodType)(void* object, A1 arg1);
+
+	template<class T, R(T::*TMethod)(A1)>
+	static R exec(void* object, A1 arg1) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)(arg1);
+	}
+
+	template<R(*TMethod)(A1)>
+	static R exec(void* object, A1 arg1) {
+		return (*TMethod)(arg1);
+	}
+
+	void* mObject;
+	MethodType mMethod;
 };
 
 // no arguments
@@ -521,20 +521,20 @@ template<typename R>
 class Delegate<R, void, void, void, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)()>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)()>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)()>
+	template<R(*TMethod)()>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -542,59 +542,59 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
+	bool callable() {
 		return (mMethod != NULL);
 	}
 
-    R operator()() const {
-    	return (*mMethod)(mObject);
-    }
+	R operator()() const {
+		return (*mMethod)(mObject);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object);
+	typedef R (*MethodType)(void* object);
 
-    template <class T, R (T::*TMethod)()>
-    static R exec(void* object) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)();
-    }
+	template<class T, R(T::*TMethod)()>
+	static R exec(void* object) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)();
+	}
 
-    template <R (*TMethod)()>
+	template<R(*TMethod)()>
 	static R exec(void* object) {
 		return (*TMethod)();
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 template<typename R>
-class Delegate<R (void), void, void, void>
+class Delegate<R(void), void, void, void>
 {
 public:
-    Delegate() :
-    	mObject(NULL),
-    	mMethod(NULL) {
-    }
+	Delegate() :
+			mObject(NULL),
+			mMethod(NULL) {
+	}
 
-    template <class T, R (T::*TMethod)()>
-    static Delegate create(T& object) {
-        Delegate delegate;
-        delegate.mObject = &object;
-        delegate.mMethod = &exec<T, TMethod>;
-        return delegate;
-    }
+	template<class T, R(T::*TMethod)()>
+	static Delegate create(T& object) {
+		Delegate delegate;
+		delegate.mObject = &object;
+		delegate.mMethod = &exec<T, TMethod>;
+		return delegate;
+	}
 
-    template <R (*TMethod)()>
+	template<R(*TMethod)()>
 	static Delegate create() {
 		Delegate delegate;
 		delegate.mObject = NULL;
@@ -602,39 +602,39 @@ public:
 		return delegate;
 	}
 
-    void destroy() {
-    	mObject = NULL;
-    	mMethod = NULL;
-    }
+	void destroy() {
+		mObject = NULL;
+		mMethod = NULL;
+	}
 
-    bool callable() {
-    	return (mMethod != NULL);
-    }
+	bool callable() {
+		return (mMethod != NULL);
+	}
 
-    R operator()() const {
-    	return (*mMethod)(mObject);
-    }
+	R operator()() const {
+		return (*mMethod)(mObject);
+	}
 
-    bool operator==(Delegate const& rhs) {
+	bool operator==(Delegate const& rhs) {
 		return (mObject == rhs.mObject && mMethod == rhs.mMethod);
 	}
 
 private:
-    typedef R (*MethodType)(void* object);
+	typedef R (*MethodType)(void* object);
 
-    template <class T, R (T::*TMethod)()>
-    static R exec(void* object) {
-        T* self = static_cast<T*>(object);
-        return (self->*TMethod)();
-    }
+	template<class T, R(T::*TMethod)()>
+	static R exec(void* object) {
+		T* self = static_cast<T*>(object);
+		return (self->*TMethod)();
+	}
 
-    template <R (*TMethod)()>
+	template<R(*TMethod)()>
 	static R exec(void* object) {
 		return (*TMethod)();
 	}
 
-    void* mObject;
-    MethodType mMethod;
+	void* mObject;
+	MethodType mMethod;
 };
 
 } /* namespace mindroid */

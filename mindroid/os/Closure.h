@@ -46,14 +46,16 @@
 namespace mindroid {
 
 class FuncClosure0 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (*FuncType)();
+
 	FuncClosure0(FuncType func) :
-		mFunc(func) {
+			mFunc(func) {
 	}
-	virtual ~FuncClosure0() {}
+
+	virtual ~FuncClosure0() { }
 
 	virtual void run() {
 		mFunc();
@@ -67,38 +69,42 @@ private:
 
 template<typename Class>
 class MethodClosure0 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (Class::*MethodType)();
+
 	MethodClosure0(Class& object, MethodType method) :
-		mObject(&object),
-		mMethod(method) {
+			mObject(&object),
+			mMethod(method) {
 	}
-	virtual ~MethodClosure0() {}
+
+	virtual ~MethodClosure0() { }
 
 	virtual void run() {
 		(mObject->*mMethod)();
 	}
 
 private:
-	 Class* mObject;
-	 MethodType mMethod;
+	Class* mObject;
+	MethodType mMethod;
 
-	 NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(MethodClosure0)
+	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(MethodClosure0)
 };
 
 template<typename Arg1>
 class FuncClosure1 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (*FuncType)(Arg1 arg1);
+
 	FuncClosure1(FuncType func, Arg1 arg1) :
-		mFunc(func),
-		mArg1(arg1)	{
+			mFunc(func),
+			mArg1(arg1) {
 	}
-	virtual ~FuncClosure1() {}
+
+	virtual ~FuncClosure1() { }
 
 	virtual void run() {
 		mFunc(mArg1);
@@ -113,16 +119,18 @@ private:
 
 template<typename Class, typename Arg1>
 class MethodClosure1 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (Class::*MethodType)(Arg1 arg1);
+
 	MethodClosure1(Class& object, MethodType method, Arg1 arg1) :
-		mObject(&object),
-		mMethod(method),
-		mArg1(arg1)	{
+			mObject(&object),
+			mMethod(method),
+			mArg1(arg1) {
 	}
-	virtual ~MethodClosure1() {}
+
+	virtual ~MethodClosure1() { }
 
 	virtual void run() {
 		(mObject->*mMethod)(mArg1);
@@ -138,16 +146,18 @@ private:
 
 template<typename Arg1, typename Arg2>
 class FuncClosure2 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (*FuncType)(Arg1 arg1, Arg2 arg2);
+
 	FuncClosure2(FuncType func, Arg1 arg1, Arg2 arg2) :
-		mFunc(func),
-		mArg1(arg1),
-		mArg2(arg2) {
+			mFunc(func),
+			mArg1(arg1),
+			mArg2(arg2) {
 	}
-	virtual ~FuncClosure2() {}
+
+	virtual ~FuncClosure2() { }
 
 	virtual void run() {
 		mFunc(mArg1, mArg2);
@@ -163,17 +173,19 @@ private:
 
 template<typename Class, typename Arg1, typename Arg2>
 class MethodClosure2 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (Class::*MethodType)(Arg1 arg1, Arg2 arg2);
+
 	MethodClosure2(Class& object, MethodType method, Arg1 arg1, Arg2 arg2) :
-		mObject(&object),
-		mMethod(method),
-		mArg1(arg1),
-		mArg2(arg2) {
+			mObject(&object),
+			mMethod(method),
+			mArg1(arg1),
+			mArg2(arg2) {
 	}
-	virtual ~MethodClosure2() {}
+
+	virtual ~MethodClosure2() { }
 
 	virtual void run() {
 		(mObject->*mMethod)(mArg1, mArg2);
@@ -190,17 +202,19 @@ private:
 
 template<typename Arg1, typename Arg2, typename Arg3>
 class FuncClosure3 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (*FuncType)(Arg1 arg1, Arg2 arg2, Arg3 arg3);
+
 	FuncClosure3(FuncType func, Arg1 arg1, Arg2 arg2, Arg3 arg3) :
-		mFunc(func),
-		mArg1(arg1),
-		mArg2(arg2),
-		mArg3(arg3) {
+			mFunc(func),
+			mArg1(arg1),
+			mArg2(arg2),
+			mArg3(arg3) {
 	}
-	virtual ~FuncClosure3() {}
+
+	virtual ~FuncClosure3() { }
 
 	virtual void run() {
 		mFunc(mArg1, mArg2, mArg3);
@@ -217,18 +231,20 @@ private:
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3>
 class MethodClosure3 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (Class::*MethodType)(Arg1 arg1, Arg2 arg2, Arg3 arg3);
+
 	MethodClosure3(Class& object, MethodType method, Arg1 arg1, Arg2 arg2, Arg3 arg3) :
-		mObject(&object),
-		mMethod(method),
-		mArg1(arg1),
-		mArg2(arg2),
-		mArg3(arg3) {
+			mObject(&object),
+			mMethod(method),
+			mArg1(arg1),
+			mArg2(arg2),
+			mArg3(arg3) {
 	}
-	virtual ~MethodClosure3() {}
+
+	virtual ~MethodClosure3() { }
 
 	virtual void run() {
 		(mObject->*mMethod)(mArg1, mArg2, mArg3);
@@ -246,18 +262,20 @@ private:
 
 template<typename Arg1, typename Arg2, typename Arg3, typename Arg4>
 class FuncClosure4 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (*FuncType)(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4);
+
 	FuncClosure4(FuncType func, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) :
-		mFunc(func),
-		mArg1(arg1),
-		mArg2(arg2),
-		mArg3(arg3),
-		mArg4(arg4) {
+			mFunc(func),
+			mArg1(arg1),
+			mArg2(arg2),
+			mArg3(arg3),
+			mArg4(arg4) {
 	}
-	virtual ~FuncClosure4() {}
+
+	virtual ~FuncClosure4() { }
 
 	virtual void run() {
 		mFunc(mArg1, mArg2, mArg3, mArg4);
@@ -275,19 +293,21 @@ private:
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
 class MethodClosure4 :
-	public Runnable
+		public Runnable
 {
 public:
 	typedef void (Class::*MethodType)(Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4);
+
 	MethodClosure4(Class& object, MethodType method, Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) :
-		mObject(&object),
-		mMethod(method),
-		mArg1(arg1),
-		mArg2(arg2),
-		mArg3(arg3),
-		mArg4(arg4) {
+			mObject(&object),
+			mMethod(method),
+			mArg1(arg1),
+			mArg2(arg2),
+			mArg3( arg3),
+			mArg4(arg4) {
 	}
-	virtual ~MethodClosure4() {}
+
+	virtual ~MethodClosure4() { }
 
 	virtual void run() {
 		(mObject->*mMethod)(mArg1, mArg2, mArg3, mArg4);
@@ -304,52 +324,52 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(MethodClosure4)
 };
 
-inline sp<Runnable> newRunnable(void (*func)()) {
+inline sp<Runnable> newRunnable(void(*func)()) {
 	return new FuncClosure0(func);
 }
 
 template<typename Class>
-inline sp<Runnable> newRunnable(Class& object, void (Class::*method)()) {
+inline sp<Runnable> newRunnable(Class& object, void(Class::*method)()) {
 	return new MethodClosure0<Class>(object, method);
 }
 
 template<typename Arg1>
-inline sp<Runnable> newRunnable(void (*func)(Arg1), Arg1 arg1) {
+inline sp<Runnable> newRunnable(void(*func)(Arg1), Arg1 arg1) {
 	return new FuncClosure1<Arg1>(func, arg1);
 }
 
 template<typename Class, typename Arg1>
-inline sp<Runnable> newRunnable(Class& object, void (Class::*method)(Arg1), Arg1 arg1) {
+inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1), Arg1 arg1) {
 	return new MethodClosure1<Class, Arg1>(object, method, arg1);
 }
 
 template<typename Arg1, typename Arg2>
-inline sp<Runnable> newRunnable(void (*func)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
+inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
 	return new FuncClosure2<Arg1, Arg2>(func, arg1, arg2);
 }
 
 template<typename Class, typename Arg1, typename Arg2>
-inline sp<Runnable> newRunnable(Class& object, void (Class::*method)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
+inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
 	return new MethodClosure2<Class, Arg1, Arg2>(object, method, arg1, arg2);
 }
 
 template<typename Arg1, typename Arg2, typename Arg3>
-inline sp<Runnable> newRunnable(void (*func)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
 	return new FuncClosure3<Arg1, Arg2, Arg3>(func, arg1, arg2, arg3);
 }
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3>
-inline sp<Runnable> newRunnable(Class& object, void (Class::*method)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
 	return new MethodClosure3<Class, Arg1, Arg2, Arg3>(object, method, arg1, arg2, arg3);
 }
 
 template<typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-inline sp<Runnable> newRunnable(void (*func)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
+inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
 	return new FuncClosure4<Arg1, Arg2, Arg3, Arg4>(func, arg1, arg2, arg3, arg4);
 }
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-inline sp<Runnable> newRunnable(Class& object, void (Class::*method)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
+inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
 	return new MethodClosure4<Class, Arg1, Arg2, Arg3, Arg4>(object, method, arg1, arg2, arg3, arg4);
 }
 

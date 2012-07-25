@@ -23,9 +23,9 @@ namespace mindroid {
 
 int32_t AtomicInteger::addAndGet(int32_t value, volatile int32_t* ptr) {
 	__asm__ __volatile__ ("lock; xaddl %0, %1"
-						  : "+r" (value), "+m" (*ptr)
-						  :
-						  : "memory");
+			: "+r" (value), "+m" (*ptr)
+			:
+			: "memory");
 	/* value now holds the old value of *ptr */
 	return value;
 }
@@ -59,9 +59,9 @@ int32_t AtomicInteger::orAndGet(int32_t value, volatile int32_t* ptr) {
 int32_t AtomicInteger::compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* ptr) {
 	int32_t prevValue;
 	__asm__ __volatile__ ("lock; cmpxchgl %1, %2"
-						  : "=a" (prevValue)
-						  : "q" (newValue), "m" (*ptr), "0" (oldValue)
-						  : "memory");
+			: "=a" (prevValue)
+			: "q" (newValue), "m" (*ptr), "0" (oldValue)
+			: "memory");
 	return prevValue != oldValue;
 }
 
@@ -78,12 +78,12 @@ int32_t AtomicInteger::addAndGet(int32_t value, volatile int32_t* ptr) {
 	dmb();
 	do {
 		__asm__ __volatile__ ("ldrex %0, [%4]\n"
-							  "add %1, %0, %5\n"
-							  "strex %2, %1, [%4]"
-							  : "=&r" (prevValue), "=&r" (tmpValue),
-								"=&r" (status), "+m" (*ptr)
-							  : "r" (ptr), "Ir" (value)
-							  : "cc");
+				"add %1, %0, %5\n"
+				"strex %2, %1, [%4]"
+				: "=&r" (prevValue), "=&r" (tmpValue),
+				"=&r" (status), "+m" (*ptr)
+				: "r" (ptr), "Ir" (value)
+				: "cc");
 	} while (__builtin_expect(status != 0, 0));
 	return prevValue;
 }
@@ -101,12 +101,12 @@ int32_t AtomicInteger::andAndGet(int32_t value, volatile int32_t* ptr) {
 	dmb();
 	do {
 		__asm__ __volatile__ ("ldrex %0, [%4]\n"
-							  "and %1, %0, %5\n"
-							  "strex %2, %1, [%4]"
-							  : "=&r" (prevValue), "=&r" (tmpValue),
-								"=&r" (status), "+m" (*ptr)
-							  : "r" (ptr), "Ir" (value)
-							  : "cc");
+				"and %1, %0, %5\n"
+				"strex %2, %1, [%4]"
+				: "=&r" (prevValue), "=&r" (tmpValue),
+				"=&r" (status), "+m" (*ptr)
+				: "r" (ptr), "Ir" (value)
+				: "cc");
 	} while (__builtin_expect(status != 0, 0));
 	return prevValue;
 }
@@ -116,12 +116,12 @@ int32_t AtomicInteger::orAndGet(int32_t value, volatile int32_t* ptr) {
 	dmb();
 	do {
 		__asm__ __volatile__ ("ldrex %0, [%4]\n"
-							  "orr %1, %0, %5\n"
-							  "strex %2, %1, [%4]"
-							  : "=&r" (prevValue), "=&r" (tmpValue),
-								"=&r" (status), "+m" (*ptr)
-							  : "r" (ptr), "Ir" (value)
-							  : "cc");
+				"orr %1, %0, %5\n"
+				"strex %2, %1, [%4]"
+				: "=&r" (prevValue), "=&r" (tmpValue),
+				"=&r" (status), "+m" (*ptr)
+				: "r" (ptr), "Ir" (value)
+				: "cc");
 	} while (__builtin_expect(status != 0, 0));
 	return prevValue;
 }
@@ -131,12 +131,12 @@ int32_t AtomicInteger::compareAndSwap(int32_t oldValue, int32_t newValue, volati
 	dmb();
 	do {
 		__asm__ __volatile__ ("ldrex %0, [%3]\n"
-							  "mov %1, #0\n"
-							  "teq %0, %4\n"
-							  "strexeq %1, %5, [%3]"
-							  : "=&r" (prevValue), "=&r" (status), "+m"(*ptr)
-							  : "r" (ptr), "Ir" (oldValue), "r" (newValue)
-							  : "cc");
+				"mov %1, #0\n"
+				"teq %0, %4\n"
+				"strexeq %1, %5, [%3]"
+				: "=&r" (prevValue), "=&r" (status), "+m"(*ptr)
+				: "r" (ptr), "Ir" (oldValue), "r" (newValue)
+				: "cc");
 	} while (__builtin_expect(status != 0, 0));
 	return prevValue != oldValue;
 }

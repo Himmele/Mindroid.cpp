@@ -25,7 +25,8 @@ namespace mindroid {
 
 class Lock;
 
-class CondVar {
+class CondVar
+{
 public:
 	CondVar(Lock& lock);
 	~CondVar();

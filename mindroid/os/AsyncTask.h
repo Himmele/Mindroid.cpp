@@ -38,22 +38,20 @@ private:
 	static const uint32_t THREAD_POOL_SIZE = 4;
 };
 
-
 template<typename Params, typename Progress, typename Result>
 class AsyncTask :
-	public AsyncTaskBase,
-	public Ref
+		public AsyncTaskBase,
+		public Ref
 {
 public:
 	AsyncTask() :
-		mExecutor(NULL),
-		mCancelled(false) {
+			mExecutor(NULL),
+			mCancelled(false) {
 		mHandler = new InternalHandler();
 		mWorkerRunnable = new WorkerRunnable(*this);
 	}
 
-	virtual ~AsyncTask() {
-	}
+	virtual ~AsyncTask() { }
 
 	sp< AsyncTask<Params, Progress, Result> > execute(Params params) {
 		if (mExecutor == NULL) {
@@ -67,7 +65,7 @@ public:
 		}
 	}
 
-	sp< AsyncTask<Params, Progress, Result> > executeOnExecutor(Executor& executor, Params params) {
+	sp<AsyncTask<Params, Progress, Result> > executeOnExecutor(Executor& executor, Params params) {
 		if (mExecutor == NULL) {
 			mExecutor = &executor;
 			onPreExecute();
@@ -106,10 +104,10 @@ protected:
 	virtual Result doInBackground(Params params) = 0;
 
 	// runs within the Handler's thread context.
-	virtual void onPreExecute() {}
-	virtual void onProgressUpdate(Progress values) {}
-	virtual void onPostExecute(Result result) {}
-	virtual void onCancelled() {}
+	virtual void onPreExecute() { }
+	virtual void onProgressUpdate(Progress values) { }
+	virtual void onPostExecute(Result result) { }
+	virtual void onCancelled() { }
 
 	void publishProgress(Progress values) {
 		sp<Message> message = mHandler->obtainMessage(ON_PROGRESS_UPDATE_MESSAGE);
@@ -126,7 +124,8 @@ protected:
 	}
 
 private:
-	class InternalHandler : public Handler
+	class InternalHandler :
+			public Handler
 	{
 	public:
 		virtual void handleMessage(const sp<Message>& message) {
@@ -151,11 +150,12 @@ private:
 		}
 	};
 
-	class WorkerRunnable : public Runnable
+	class WorkerRunnable :
+			public Runnable
 	{
 	public:
 		WorkerRunnable(AsyncTask<Params, Progress, Result>& task) :
-			mTask(task) {
+				mTask(task) {
 		}
 
 		virtual void run() {
@@ -174,12 +174,10 @@ private:
 		friend class InternalHandler;
 	};
 
-	class AsyncTaskResult
-	{
+	class AsyncTaskResult {
 	public:
 		AsyncTaskResult(AsyncTask<Params, Progress, Result>& task, Progress& data) :
-			mTask(task),
-			mData(data) {
+				mTask(task), mData(data) {
 		}
 
 	private:

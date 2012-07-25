@@ -21,13 +21,13 @@ namespace mindroid {
 uint64_t Clock::monotonicTime() {
 	timespec now;
 	clock_gettime(CLOCK_MONOTONIC, &now);
-	return (((uint64_t)now.tv_sec * 1000000000LL) + now.tv_nsec);
+	return (((uint64_t) now.tv_sec * 1000000000LL) + now.tv_nsec);
 }
 
 uint64_t Clock::realTime() {
 	timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
-	return (((uint64_t)now.tv_sec * 1000000000LL) + now.tv_nsec);
+	return (((uint64_t) now.tv_sec * 1000000000LL) + now.tv_nsec);
 }
 
 } /* namespace mindroid */

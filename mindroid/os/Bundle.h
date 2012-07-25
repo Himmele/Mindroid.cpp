@@ -26,7 +26,7 @@
 namespace mindroid {
 
 class Bundle :
-	public Ref
+		public Ref
 {
 public:
 	Bundle();
@@ -85,7 +85,7 @@ public:
 
 private:
 	class Variant :
-		public Ref
+			public Ref
 	{
 	public:
 		enum Type {
@@ -107,59 +107,73 @@ private:
 
 		inline Variant() : mType(Null) { }
 
-		inline Variant(bool value) : mType(Bool) {
+		inline Variant(bool value) :
+				mType(Bool) {
 			mVariant.boolValue = value;
 		}
 
-		inline Variant(uint8_t value) : mType(Byte) {
+		inline Variant(uint8_t value) :
+				mType(Byte) {
 			mVariant.byteValue = value;
 		}
 
-		inline Variant(char value) : mType(Char) {
+		inline Variant(char value) :
+				mType(Char) {
 			mVariant.charValue = value;
 		}
 
-		inline Variant(int16_t value) : mType(Int16) {
+		inline Variant(int16_t value) :
+				mType(Int16) {
 			mVariant.int16Value = value;
 		}
 
-		inline Variant(uint16_t value) : mType(UInt16) {
+		inline Variant(uint16_t value) :
+				mType(UInt16) {
 			mVariant.uint16Value = value;
 		}
 
-		inline Variant(int32_t value) : mType(Int32) {
+		inline Variant(int32_t value) :
+				mType(Int32) {
 			mVariant.int32Value = value;
 		}
 
-		inline Variant(uint32_t value) : mType(UInt32) {
+		inline Variant(uint32_t value) :
+				mType(UInt32) {
 			mVariant.uint32Value = value;
 		}
 
-		inline Variant(int64_t value) : mType(Int64) {
+		inline Variant(int64_t value) :
+				mType(Int64) {
 			mVariant.int64Value = value;
 		}
 
-		inline Variant(uint64_t value) : mType(UInt64) {
+		inline Variant(uint64_t value) :
+				mType(UInt64) {
 			mVariant.uint64Value = value;
 		}
 
-		inline Variant(float value) : mType(Float) {
+		inline Variant(float value) :
+				mType(Float) {
 			mVariant.floatValue = value;
 		}
 
-		inline Variant(double value) : mType(Double) {
+		inline Variant(double value) :
+				mType(Double) {
 			mVariant.doubleValue = value;
 		}
 
-		inline Variant(const char* string) : mType(CharString) {
+		inline Variant(const char* string) :
+				mType(CharString) {
 			mVariant.string = new String(string);
 		}
 
-		inline Variant(const String& string) : mType(CharString) {
+		inline Variant(const String& string) :
+				mType(CharString) {
 			mVariant.string = new String(string.c_str());
 		}
 
-		inline Variant(const sp<Ref>& object) : mType(Object) {
+		inline Variant(const sp<Ref>& object) :
+				mType(Object) {
 			if (object != NULL) {
 				object->incStrongRef(this);
 			}
