@@ -48,7 +48,7 @@ Message::Message() :
 		mExecTimestamp(0),
 		mHandler(NULL),
 		mCallback(NULL),
-		mData(NULL),
+		mMetaData(NULL),
 		mNextMessage(NULL) {
 }
 
@@ -109,7 +109,7 @@ sp<Message> Message::obtain(const Message* message) {
 	dupMessage->mExecTimestamp = 0;
 	dupMessage->mHandler = message->mHandler;
 	dupMessage->mCallback = message->mCallback;
-	dupMessage->mData = message->mData;
+	dupMessage->mMetaData = message->mMetaData;
 	dupMessage->mNextMessage = NULL;
 	return dupMessage;
 }
@@ -130,12 +130,15 @@ sp<Runnable> Message::getCallback() const {
 	return mCallback;
 }
 
-void Message::setData(sp<Bundle> data) {
-	mData = data;
+bool Message::hasMetaData() const {
+	return mMetaData != NULL;
 }
 
-sp<Bundle> Message::getData() const {
-	return mData;
+sp<Bundle> Message::metaData() {
+	if (mMetaData == NULL) {
+		mMetaData = new Bundle();
+	}
+	return mMetaData;
 }
 
 bool Message::sendToTarget() {
@@ -178,7 +181,7 @@ void Message::clear() {
 	mExecTimestamp = 0;
 	mHandler = NULL;
 	mCallback = NULL;
-	mData = NULL;
+	mMetaData = NULL;
 	mNextMessage = NULL;
 }
 

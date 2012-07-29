@@ -68,20 +68,20 @@ public:
 	template<typename T>
 	sp<T> getObject(const char* key) const;
 
-	bool fillBool(const char* key, bool* value) const;
-	bool fillByte(const char* key, uint8_t* value) const;
-	bool fillChar(const char* key, char* value) const;
-	bool fillInt16(const char* key, int16_t* value) const;
-	bool fillUInt16(const char* key, uint16_t* value) const;
-	bool fillInt32(const char* key, int32_t* value) const;
-	bool fillUInt32(const char* key, uint32_t* value) const;
-	bool fillInt64(const char* key, int64_t* value) const;
-	bool fillUInt64(const char* key, uint64_t* value) const;
-	bool fillFloat(const char* key, float* value) const;
-	bool fillDouble(const char* key, double* value) const;
-	bool fillString(const char* key, String* string) const;
+	bool fillBool(const char* key, bool& value) const;
+	bool fillByte(const char* key, uint8_t& value) const;
+	bool fillChar(const char* key, char& value) const;
+	bool fillInt16(const char* key, int16_t& value) const;
+	bool fillUInt16(const char* key, uint16_t& value) const;
+	bool fillInt32(const char* key, int32_t& value) const;
+	bool fillUInt32(const char* key, uint32_t& value) const;
+	bool fillInt64(const char* key, int64_t& value) const;
+	bool fillUInt64(const char* key, uint64_t& value) const;
+	bool fillFloat(const char* key, float& value) const;
+	bool fillDouble(const char* key, double& value) const;
+	bool fillString(const char* key, String& string) const;
 	template<typename T>
-	bool fillObject(const char* key, sp<T>* object) const;
+	bool fillObject(const char* key, sp<T>& object) const;
 
 private:
 	class Variant :
@@ -300,11 +300,11 @@ sp<T> Bundle::getObject(const char* key) const {
 }
 
 template<typename T>
-bool Bundle::fillObject(const char* key, sp<T>* object) const {
+bool Bundle::fillObject(const char* key, sp<T>& object) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Object) {
-			*object = itr->value->getObject<T>();
+			object = itr->value->getObject<T>();
 			return true;
 		} else {
 			return false;

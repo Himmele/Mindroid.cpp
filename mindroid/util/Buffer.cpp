@@ -25,7 +25,7 @@ Buffer::Buffer(size_t capacity) :
 		mCapacity(capacity),
 		mOffset(0),
 		mSize(capacity),
-		mMetaData(0) {
+		mId(0) {
 }
 
 Buffer::Buffer(void* data, size_t capacity) :
@@ -33,7 +33,7 @@ Buffer::Buffer(void* data, size_t capacity) :
 		mCapacity(capacity),
 		mOffset(0),
 		mSize(capacity),
-		mMetaData(0) {
+		mId(0) {
 }
 
 Buffer::~Buffer() {
@@ -49,6 +49,17 @@ void Buffer::setRange(size_t offset, size_t size) {
 
 	mOffset = offset;
 	mSize = size;
+}
+
+bool Buffer::hasMetaData() const {
+	return mMetaData != NULL;
+}
+
+sp<Bundle> Buffer::metaData() {
+	if (mMetaData == NULL) {
+		mMetaData = new Bundle();
+	}
+	return mMetaData;
 }
 
 } /* namespace mindroid */

@@ -55,8 +55,8 @@ public:
 	void setHandler(const sp<Handler>& handler);
 	sp<Handler> getHandler() const;
 	sp<Runnable> getCallback() const;
-	void setData(sp<Bundle> data);
-	sp<Bundle> getData() const;
+	bool hasMetaData() const;
+	sp<Bundle> metaData();
 	bool sendToTarget();
 	sp<Message> dup() const;
 
@@ -76,7 +76,7 @@ private:
 	uint64_t mExecTimestamp; // nanoseconds
 	sp<Handler> mHandler;
 	sp<Runnable> mCallback;
-	sp<Bundle> mData;
+	sp<Bundle> mMetaData;
 	sp<Message> mNextMessage;
 	static MessagePool sMessagePool;
 

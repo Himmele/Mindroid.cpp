@@ -19,8 +19,9 @@
 
 #include <sys/types.h>
 #include <stdint.h>
-#include "mindroid/util/Utils.h"
-#include "mindroid/os/Ref.h"
+#include <mindroid/util/Utils.h>
+#include <mindroid/os/Ref.h>
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 
@@ -54,20 +55,24 @@ public:
 
 	void setRange(size_t offset, size_t size);
 
-	void setMetaData(int32_t metaData) {
-		mMetaData = metaData;
+	void setId(int32_t id) {
+		mId = id;
 	}
 
-	int32_t getMetaData() const {
-		return mMetaData;
+	int32_t getId() const {
+		return mId;
 	}
+
+	bool hasMetaData() const;
+	sp<Bundle> metaData();
 
 private:
 	void* mData;
 	size_t mCapacity;
 	size_t mOffset;
 	size_t mSize;
-	int32_t mMetaData;
+	int32_t mId;
+	sp<Bundle> mMetaData;
 
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Buffer)
 };

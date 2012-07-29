@@ -291,11 +291,11 @@ String Bundle::getString(const char* key) const {
 	return String(NULL);
 }
 
-bool Bundle::fillBool(const char* key, bool* value) const {
+bool Bundle::fillBool(const char* key, bool& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Bool) {
-			*value = itr->value->getBool();
+			value = itr->value->getBool();
 			return true;
 		} else {
 			return false;
@@ -304,11 +304,11 @@ bool Bundle::fillBool(const char* key, bool* value) const {
 	return false;
 }
 
-bool Bundle::fillByte(const char* key, uint8_t* value) const {
+bool Bundle::fillByte(const char* key, uint8_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Byte) {
-			*value = itr->value->getByte();
+			value = itr->value->getByte();
 			return true;
 		} else {
 			return false;
@@ -317,11 +317,11 @@ bool Bundle::fillByte(const char* key, uint8_t* value) const {
 	return false;
 }
 
-bool Bundle::fillChar(const char* key, char* value) const {
+bool Bundle::fillChar(const char* key, char& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Char) {
-			*value = itr->value->getChar();
+			value = itr->value->getChar();
 			return true;
 		} else {
 			return false;
@@ -330,11 +330,11 @@ bool Bundle::fillChar(const char* key, char* value) const {
 	return false;
 }
 
-bool Bundle::fillInt16(const char* key, int16_t* value) const {
+bool Bundle::fillInt16(const char* key, int16_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Int16) {
-			*value = itr->value->getInt16();
+			value = itr->value->getInt16();
 			return true;
 		} else {
 			return false;
@@ -343,11 +343,11 @@ bool Bundle::fillInt16(const char* key, int16_t* value) const {
 	return false;
 }
 
-bool Bundle::fillUInt16(const char* key, uint16_t* value) const {
+bool Bundle::fillUInt16(const char* key, uint16_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::UInt16) {
-			*value = itr->value->getUInt16();
+			value = itr->value->getUInt16();
 			return true;
 		} else {
 			return false;
@@ -356,11 +356,11 @@ bool Bundle::fillUInt16(const char* key, uint16_t* value) const {
 	return false;
 }
 
-bool Bundle::fillInt32(const char* key, int32_t* value) const {
+bool Bundle::fillInt32(const char* key, int32_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Int32) {
-			*value = itr->value->getInt32();
+			value = itr->value->getInt32();
 			return true;
 		} else {
 			return false;
@@ -369,11 +369,11 @@ bool Bundle::fillInt32(const char* key, int32_t* value) const {
 	return false;
 }
 
-bool Bundle::fillUInt32(const char* key, uint32_t* value) const {
+bool Bundle::fillUInt32(const char* key, uint32_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::UInt32) {
-			*value = itr->value->getUInt32();
+			value = itr->value->getUInt32();
 			return true;
 		} else {
 			return false;
@@ -382,11 +382,11 @@ bool Bundle::fillUInt32(const char* key, uint32_t* value) const {
 	return false;
 }
 
-bool Bundle::fillInt64(const char* key, int64_t* value) const {
+bool Bundle::fillInt64(const char* key, int64_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Int64) {
-			*value = itr->value->getInt64();
+			value = itr->value->getInt64();
 			return true;
 		} else {
 			return false;
@@ -395,11 +395,11 @@ bool Bundle::fillInt64(const char* key, int64_t* value) const {
 	return false;
 }
 
-bool Bundle::fillUInt64(const char* key, uint64_t* value) const {
+bool Bundle::fillUInt64(const char* key, uint64_t& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::UInt64) {
-			*value = itr->value->getUInt64();
+			value = itr->value->getUInt64();
 			return true;
 		} else {
 			return false;
@@ -408,11 +408,11 @@ bool Bundle::fillUInt64(const char* key, uint64_t* value) const {
 	return false;
 }
 
-bool Bundle::fillFloat(const char* key, float* value) const {
+bool Bundle::fillFloat(const char* key, float& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Float) {
-			*value = itr->value->getFloat();
+			value = itr->value->getFloat();
 			return true;
 		} else {
 			return false;
@@ -421,11 +421,11 @@ bool Bundle::fillFloat(const char* key, float* value) const {
 	return false;
 }
 
-bool Bundle::fillDouble(const char* key, double* value) const {
+bool Bundle::fillDouble(const char* key, double& value) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::Double) {
-			*value = itr->value->getFloat();
+			value = itr->value->getFloat();
 			return true;
 		} else {
 			return false;
@@ -434,11 +434,11 @@ bool Bundle::fillDouble(const char* key, double* value) const {
 	return false;
 }
 
-bool Bundle::fillString(const char* key, String* string) const {
+bool Bundle::fillString(const char* key, String& string) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::CharString) {
-			*string = itr->value->getString();
+			string = itr->value->getString();
 			return true;
 		} else {
 			return false;
