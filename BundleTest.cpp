@@ -22,7 +22,7 @@ int main() {
 	bundle->putBool("1", true);
 	assert(bundle->getBool("1", false));
 	bool value;
-	assert(bundle->fillBool("1", &value));
+	assert(bundle->fillBool("1", value));
 
 	bundle->putInt32("2", 12345);
 	assert(bundle->getInt32("2", 0) == 12345);
@@ -31,12 +31,12 @@ int main() {
 	bundle->putObject("3", new Test(17));
 	sp<Test> test = bundle->getObject<Test>("3");
 	assert(test->getValue() == 17);
-	assert(bundle->fillObject("3", &test));
+	assert(bundle->fillObject("3", test));
 
 	bundle->putString("4", "Test");
 	String string = bundle->getString("4");
 	assert(string == "Test");
-	assert(bundle->fillString("4", &string));
+	assert(bundle->fillString("4", string));
 
 	return 0;
 }
