@@ -47,6 +47,7 @@ bool Socket::connect(const char* host, uint16_t port) {
 			return true;
 		} else {
 			::close(mSocketId);
+			mSocketId = -1;
 			return false;
 		}
 	} else {
