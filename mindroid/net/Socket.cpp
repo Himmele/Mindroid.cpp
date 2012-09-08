@@ -81,6 +81,7 @@ void Socket::close() {
 	mIsClosed = true;
 	mIsConnected = false;
 	if (mSocketId >= 0) {
+		::shutdown(mSocketId, SHUT_RDWR);
 		::close(mSocketId);
 		mSocketId = -1;
 	}
