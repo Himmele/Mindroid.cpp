@@ -54,11 +54,11 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.216612493" name="Test.cpp" rcbsApplicability="disable" resourcePath="Test.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1614598519">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1614598519" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1189803094" name="AsyncTaskTest.cpp" rcbsApplicability="disable" resourcePath="tests/AsyncTaskTest.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1659179471">
+						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1659179471" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/BundleTest.cpp|tests/DelegateTest.cpp|tests/ListTest.cpp|tests/NetworkTest.cpp|tests/RefCountingTest.cpp|tests/StringTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

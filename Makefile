@@ -1,48 +1,39 @@
-CC       := gcc
-CXX      := g++ 
-CFLAGS   := -D__X86_CPU_ARCH__
-INCLUDES := -I.
-LDFLAGS  := -lpthread -lrt
+CC        := gcc
+CXX       := g++
+LD        := g++
+CFLAGS    := -D__X86_CPU_ARCH__ -fPIC
+LDFLAGS   := -shared -lpthread -lrt
 
-SRC_FILES := \
-	mindroid/os/Thread.cpp \
-	mindroid/os/Semaphore.cpp \
-	mindroid/os/MessageQueue.cpp \
-	mindroid/os/Message.cpp \
-	mindroid/os/Looper.cpp \
-	mindroid/os/Lock.cpp \
-	mindroid/os/CondVar.cpp \
-	mindroid/os/Handler.cpp \
-	mindroid/os/Clock.cpp \
-	mindroid/os/AsyncTask.cpp \
-	mindroid/os/SerialExecutor.cpp \
-	mindroid/os/ThreadPoolExecutor.cpp \
-	mindroid/os/AtomicInteger.cpp \
-	mindroid/os/Ref.cpp \
-	mindroid/os/Bundle.cpp \
-	mindroid/util/Buffer.cpp \
-	mindroid/lang/String.cpp \
-	mindroid/net/SocketAddress.cpp \
-	mindroid/net/ServerSocket.cpp \
-	mindroid/net/Socket.cpp \
-	mindroid/net/DatagramSocket.cpp
+MODULES   := os util lang net
+SRC_DIR   := $(addprefix mindroid/,$(MODULES))
+BUILD_DIR := $(addprefix out/,$(MODULES))
 
-OBJS += $(filter %.o,$(SRC_FILES:.cpp=.o))
+SRCS      := $(foreach sdir,$(SRC_DIR),$(wildcard $(sdir)/*.cpp))
+OBJS      := $(patsubst mindroid/%.cpp,out/%.o,$(SRCS))
+INCLUDES  := -I.
+#INCLUDES := $(addprefix -I,$(SRC_DIR))
 
-%.o: %.cpp
-	@rm -f $@ 
-	$(CXX) $(CFLAGS) $(INCLUDES) -shared -fPIC -c $< -o $@
+vpath %.cpp $(SRC_DIR)
 
-all: libmindroid
+define make-srcs
+$1/%.o: %.cpp
+	$(CXX) $(CFLAGS) $(INCLUDES) -c $$< -o $$@
+endef
 
-libmindroid: $(OBJS)
-	$(CXX) $(CFLAGS) $(INCLUDES) -o libmindroid.so -shared -fPIC $(OBJS) $(LDFLAGS)
+.PHONY: all checkdirs clean
 
-Test:
-	$(CXX) $(CFLAGS) $(INCLUDES) Test.cpp -L. -lmindroid $(LDFLAGS) -o Test
+all: checkdirs libmindroid.so
+
+libmindroid.so: $(OBJS)
+	$(LD) $(LDFLAGS) $^ -o $@
+
+checkdirs: $(BUILD_DIR)
+
+$(BUILD_DIR):
+	@mkdir -p $@
 
 clean:
-	for i in $(OBJS); do (if test -e "$$i"; then ( rm $$i ); fi ); done
-	@rm -f libmindroid.so	
-	@rm -f Test
+	@rm -rf $(BUILD_DIR)
+
+$(foreach bdir,$(BUILD_DIR),$(eval $(call make-srcs,$(bdir))))
 
