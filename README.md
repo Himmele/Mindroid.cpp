@@ -1,4 +1,5 @@
 ## Mindroid is mainly a messaging and concurrency framework for native C++ development ##
+
 A lot of ideas of this framework are based on Google's Java Android messaging and concurrency classes.
 This small messaging framework is very handy not only for Android developers :-).
 
