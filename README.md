@@ -1,7 +1,8 @@
 ## Mindroid is mainly a messaging and concurrency framework for native C++ development ##
 
 A lot of ideas of this framework are based on Google's Java Android messaging and concurrency classes.
-This small messaging framework is very handy not only for Android developers :-).
+This small framework is very handy not only for Android developers :-).
+For examples how to use this framework just see the tests in the tests directory.
 
 frameworks/base/core/java/os:
 - Looper (loops on its MessageQueue) -> Looper.prepare binds the Looper to the calling thread's context by using the thread local storage pthread functions
