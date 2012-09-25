@@ -18,6 +18,7 @@
 #include "mindroid/net/SocketAddress.h"
 #include <sys/socket.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 namespace mindroid {
 
@@ -38,20 +39,21 @@ Socket::~Socket() {
 	close();
 }
 
-bool Socket::connect(const char* host, uint16_t port) {
+int Socket::connect(const char* host, uint16_t port) {
 	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
+	int rc = -1;
 	if (mSocketId >= 0 && socketAddress->isValid()) {
-		if (::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
+		if ((rc = ::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress))) == 0) {
 			mIsConnected = true;
-			return true;
+			return rc;
 		} else {
 			::close(mSocketId);
 			mSocketId = -1;
-			return false;
+			return rc;
 		}
 	} else {
-		return false;
+		return rc;
 	}
 }
 
@@ -85,6 +87,23 @@ void Socket::close() {
 		::close(mSocketId);
 		mSocketId = -1;
 	}
+}
+
+bool Socket::setBlockingMode(bool blockingIO) {
+	int flags = fcntl(mSocketId, F_GETFL, 0);
+
+	if (flags == -1) {
+		return false;
+	}
+
+	if (blockingIO) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
+	}
+	flags = fcntl(mSocketId, F_SETFL, flags);
+
+	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */
