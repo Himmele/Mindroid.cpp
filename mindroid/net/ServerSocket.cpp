@@ -24,33 +24,33 @@
 namespace mindroid {
 
 ServerSocket::ServerSocket() :
-		mSocketId(-1),
 		mIsBound(false),
 		mIsClosed(false),
 		mReuseAddress(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 }
 
 ServerSocket::ServerSocket(uint16_t port) :
-		mSocketId(-1),
 		mIsBound(false),
 		mIsClosed(false),
 		mReuseAddress(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	bind(port);
 }
 
 ServerSocket::ServerSocket(uint16_t port, int backlog) :
-		mSocketId(-1),
 		mIsBound(false),
 		mIsClosed(false),
 		mReuseAddress(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	bind(port, backlog);
 }
 
 ServerSocket::ServerSocket(const char* host, uint16_t port, int backlog) :
-		mSocketId(-1),
 		mIsBound(false),
 		mIsClosed(false),
 		mReuseAddress(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	bind(host, port, backlog);
 }
 
@@ -67,7 +67,6 @@ bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
 		return false;
 	}
 
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	if (mSocketId < 0) {
 		return false;
 	}

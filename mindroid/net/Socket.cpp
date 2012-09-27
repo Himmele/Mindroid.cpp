@@ -23,15 +23,15 @@
 namespace mindroid {
 
 Socket::Socket() :
-		mSocketId(-1),
 		mIsConnected(false),
 		mIsClosed(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 }
 
 Socket::Socket(const char* host, uint16_t port) :
-		mSocketId(-1),
 		mIsConnected(false),
 		mIsClosed(false) {
+	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	connect(host, port);
 }
 
@@ -40,7 +40,6 @@ Socket::~Socket() {
 }
 
 int Socket::connect(const char* host, uint16_t port) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
 	int rc = -1;
 	if (mSocketId >= 0 && socketAddress->isValid()) {
@@ -48,8 +47,6 @@ int Socket::connect(const char* host, uint16_t port) {
 			mIsConnected = true;
 			return rc;
 		} else {
-			::close(mSocketId);
-			mSocketId = -1;
 			return rc;
 		}
 	} else {
