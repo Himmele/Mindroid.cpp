@@ -18,6 +18,7 @@
 #include "mindroid/net/SocketAddress.h"
 #include <unistd.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 
 namespace mindroid {
 
@@ -86,6 +87,23 @@ void DatagramSocket::close() {
 		::close(mSocketId);
 		mSocketId = -1;
 	}
+}
+
+bool DatagramSocket::setBlockingMode(bool blockingIO) {
+	int flags = fcntl(mSocketId, F_GETFL, 0);
+
+	if (flags == -1) {
+		return false;
+	}
+
+	if (blockingIO) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
+	}
+	flags = fcntl(mSocketId, F_SETFL, flags);
+
+	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */

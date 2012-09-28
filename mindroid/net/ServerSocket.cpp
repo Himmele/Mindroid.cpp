@@ -20,6 +20,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 
 namespace mindroid {
 
@@ -117,6 +118,23 @@ void ServerSocket::close() {
 
 void ServerSocket::setReuseAddress(bool reuse) {
 	mReuseAddress = reuse;
+}
+
+bool ServerSocket::setBlockingMode(bool blockingIO) {
+	int flags = fcntl(mSocketId, F_GETFL, 0);
+
+	if (flags == -1) {
+		return false;
+	}
+
+	if (blockingIO) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
+	}
+	flags = fcntl(mSocketId, F_SETFL, flags);
+
+	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */

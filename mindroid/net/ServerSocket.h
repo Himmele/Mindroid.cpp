@@ -38,6 +38,7 @@ public:
 	bool bind(const char* host, uint16_t port, int backlog = DEFAULT_BACKLOG);
 	sp<Socket> accept();
 	void close();
+	bool setBlockingMode(bool blockingIO);
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
 	void setReuseAddress(bool reuse);

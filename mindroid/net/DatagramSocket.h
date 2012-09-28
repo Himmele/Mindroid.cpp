@@ -38,6 +38,7 @@ public:
 	ssize_t recv(uint8_t* data, size_t size, sp<SocketAddress>& sender);
 	bool send(const void* data, size_t size, const sp<SocketAddress>& receiver);
 	void close();
+	bool setBlockingMode(bool blockingIO);
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
 	int getId() const { return mSocketId; }
