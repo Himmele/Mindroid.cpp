@@ -80,7 +80,7 @@ int main() {
 
 	sp<Socket> socket = new Socket();
 	printf("TCP-Client: Connecting to port 1234\n");
-	if (socket->connect("localhost", 1234)) {
+	if (socket->connect("localhost", 1234) == 0) {
 		String string("123456789ABCDEF");
 		socket->write(string.c_str(), string.size());
 		int32_t size = 16;
