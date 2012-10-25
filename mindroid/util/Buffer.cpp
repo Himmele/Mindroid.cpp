@@ -26,6 +26,7 @@ Buffer::Buffer(size_t capacity) :
 		mOffset(0),
 		mSize(capacity),
 		mId(0) {
+	assert(mData);
 }
 
 Buffer::Buffer(void* data, size_t capacity) :
