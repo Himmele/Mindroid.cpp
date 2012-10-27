@@ -1,4 +1,6 @@
-## Mindroid is mainly a messaging and concurrency framework for native C++ development ##
+## Mindroid is mainly a concurrency and messaging framework for native C++ development ##
+
+### Mindroid would even make Alan Kay comfortable with C++ :-) ###
 
 Most ideas for this framework come from Google's Android Java messaging and concurrency classes.
 This small framework is very handy not only for Android developers :-).
@@ -19,9 +21,4 @@ There are two main uses for a Handler. First a Handler allows you to enqueue an 
 and furthermore it also enables you to schedule messages and runnables to be executed at some point in the future.
 The AsyncTask class enables proper and easy use of concurrency in a multithread environment.
 For more information about this class see Google's "Painless Threading" article. (Source: Google Android Developer Reference).
-
-To do:
-- Add the Binder IPC interface by implementing the Messenger class.
-- Take a look at the Chrome project to do a Windows port (e.g. condition_variable_win.cc).
-- ...
 
