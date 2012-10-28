@@ -22,3 +22,7 @@ and furthermore it also enables you to schedule messages and runnables to be exe
 The AsyncTask class enables proper and easy use of concurrency in a multithread environment.
 For more information about this class see Google's "Painless Threading" article. (Source: Google Android Developer Reference).
 
+Links:
+- [Android messaging and concurrency for native C++ code development](http://himmele.blogspot.com/2011/08/android-messaging-and-concurrency-for.html)
+- [Alan Kay on Object-Oriented Programming](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
+
