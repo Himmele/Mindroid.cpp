@@ -54,7 +54,6 @@ public:
 	}
 
 	void setRange(size_t offset, size_t size);
-	void advance(size_t bytes);
 
 	void setId(int32_t id) {
 		mId = id;

@@ -52,12 +52,6 @@ void Buffer::setRange(size_t offset, size_t size) {
 	mSize = size;
 }
 
-void Buffer::advance(size_t bytes) {
-	assert( bytes <= mSize );
-	mOffset += bytes;
-	mSize -= bytes;
-}
-
 bool Buffer::hasMetaData() const {
 	return mMetaData != NULL;
 }
