@@ -54,11 +54,11 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1189803094" name="AsyncTaskTest.cpp" rcbsApplicability="disable" resourcePath="tests/AsyncTaskTest.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1659179471">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1659179471" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1870859175" name="HelloWorld.cpp" rcbsApplicability="disable" resourcePath="tests/HelloWorld.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.147735261">
+						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.147735261" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/BundleTest.cpp|tests/DelegateTest.cpp|tests/ListTest.cpp|tests/NetworkTest.cpp|tests/RefCountingTest.cpp|tests/StringTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="tests/HelloWorld.cpp|tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/BundleTest.cpp|tests/DelegateTest.cpp|tests/ListTest.cpp|tests/NetworkTest.cpp|tests/RefCountingTest.cpp|tests/StringTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
@@ -113,8 +113,13 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="Mindroid.cdt.managedbuild.target.gnu.exe.95908219" name="Executable" projectType="cdt.managedbuild.target.gnu.exe"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/Mindroid"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/Mindroid"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/Mindroid"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
@@ -133,4 +138,5 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>

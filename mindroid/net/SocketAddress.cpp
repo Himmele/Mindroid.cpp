@@ -51,9 +51,8 @@ SocketAddress::SocketAddress(const char* host, uint16_t port) :
 		mSocketAddress.sin_family = AF_INET;
 		mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
 		mSocketAddress.sin_port = htons(port);
+		freeaddrinfo(result);
 	}
-
-	freeaddrinfo(result);
 }
 
 const char* SocketAddress::getHostName() const {
