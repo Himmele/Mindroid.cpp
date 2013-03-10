@@ -204,7 +204,7 @@ public:
 	}
 };
 
-class Closure1
+class TestClosure1
 {
 public:
 	void test(int32_t value) {
@@ -215,7 +215,7 @@ public:
 
 sp<Thread1> sThread1 = new Thread1();
 sp<Thread2> sThread2 = new Thread2();
-Closure1 sClosure1;
+TestClosure1 sTestClosure1;
 
 int main() {
 	sThread1->start();
@@ -238,7 +238,7 @@ int main() {
 		sp<Runnable1> runnable1 = new Runnable1();
 		sHandler2->postDelayed(runnable1, 100);
 		sHandler2->removeCallbacks(runnable1);
-		sHandler2->postDelayed(newRunnable(sClosure1, &Closure1::test, 42), 500);
+		sHandler2->postDelayed(newRunnable(sTestClosure1, &TestClosure1::test, 42), 500);
 
 		sHandler3->test();
 		sHandler4->test();
