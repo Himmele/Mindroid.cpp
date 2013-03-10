@@ -208,7 +208,7 @@ class TestClosure1
 {
 public:
 	void test(int32_t value) {
-		printf("Closure1::test with value %d by Looper %p\n",
+		printf("TestClosure1::test with value %d by Looper %p\n",
 				value, Looper::myLooper());
 	}
 };
