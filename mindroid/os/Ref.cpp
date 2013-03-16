@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <typeinfo>
 #include <sys/types.h>
-#include <cstring>
+#include <string.h>
 #include "mindroid/os/Ref.h"
 #include "mindroid/os/Lock.h"
 

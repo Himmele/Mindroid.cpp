@@ -238,7 +238,7 @@ int main() {
 		sp<Runnable1> runnable1 = new Runnable1();
 		sHandler2->postDelayed(runnable1, 100);
 		sHandler2->removeCallbacks(runnable1);
-		sHandler2->postDelayed(newRunnable(sTestClosure1, &TestClosure1::test, 42), 500);
+		sHandler2->postDelayed(obtainClosure(sTestClosure1, &TestClosure1::test, 42), 500);
 
 		sHandler3->test();
 		sHandler4->test();

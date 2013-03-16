@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Daniel Himmelein
+ * Copyright (C) 2013 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public:
 	bool operator>(const StringWrapper& string) const;
 
 	bool equals(const char* string) const;
-	bool equals(const sp<String>& string) const;
+	bool equals(const StringWrapper& string) const;
 	bool equalsIgnoreCase(const char* string) const;
 	bool equalsIgnoreCase(const StringWrapper& string) const;
 
@@ -61,12 +61,8 @@ public:
 		return mString->size();
 	}
 
-	inline bool isNull() const {
-		return mString->isNull();
-	}
-
 	inline bool isEmpty() const {
-		return size() == 0;
+		return mString->isEmpty();
 	}
 
 	inline const char* c_str() const {
@@ -78,13 +74,15 @@ public:
 	}
 
 	inline char operator[](const size_t index) const {
-		assert(index < size());
-		return mString->mData[index];
+		return mString->charAt(index);
 	}
 
 	inline char charAt(size_t index) const {
-		assert(index < size());
-		return mString->mData[index];
+		return mString->charAt(index);
+	}
+
+	inline sp<String> getString() {
+		return mString;
 	}
 
 	bool contains(const char* subString) const;
@@ -115,6 +113,14 @@ public:
 	sp< List<StringWrapper> > split(const char* separator) const;
 	sp< List<StringWrapper> > split(const StringWrapper& separator) const;
 
+	StringWrapper& append(const char* string) {
+		return append(string, strlen(string));
+	}
+
+	StringWrapper& append(const sp<String>& string) {
+		return append(string->c_str(), strlen(string->c_str()));
+	}
+
 	StringWrapper& append(const char* data, size_t size);
 	StringWrapper& appendFormatted(const char* format, ...) __attribute__((format (printf,2, 3)));
 
@@ -125,12 +131,11 @@ public:
 	}
 
 private:
-	StringWrapper(const sp<StringWrapper>& string) : mString(string) { }
+	StringWrapper(const sp<String>& string) : mString(string) { }
 
 	StringWrapper& appendFormattedWithVarArgList(const char* format, va_list args);
 
 	sp<String> mString;
-	static sp<String> sEmptyString;
 };
 
 inline StringWrapper& StringWrapper::operator=(StringWrapper const& string) {

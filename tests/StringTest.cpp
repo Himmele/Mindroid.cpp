@@ -1,18 +1,21 @@
 #include "mindroid/lang/String.h"
+#include "mindroid/lang/StringWrapper.h"
 #include <stdio.h>
 #include <assert.h>
 
 using namespace mindroid;
 
 int main() {
-	sp<String> s1 = new String("Hello");
-	printf("%s\n", s1->c_str());
-//	s1 += " World";
-//	printf("%s\n", s1.c_str());
-//	s1 = s1 + "!";
-//	printf("%s\n", s1.c_str());
-//	s1 = "Test";
-//	printf("%s\n", s1.c_str());
+	StringWrapper s1("Hello");
+	printf("%s\n", s1.c_str());
+	s1 += " World";
+	printf("%s\n", s1.c_str());
+	s1 = s1 + "!";
+	printf("%s\n", s1.c_str());
+	s1 = "Test";
+	printf("%s\n", s1.c_str());
+	sp<String> tmp = s1.getString();
+	printf("%s\n", tmp->c_str());
 
 	sp<String> s2 = String::format("%d", 123);
 	printf("%s\n", s2->c_str());

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Daniel Himmelein
+ * Copyright (C) 2013 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,52 +14,25 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/String.h"
+#include "mindroid/lang/StringWrapper.h"
 #include <stdio.h>
 
 namespace mindroid {
 
-sp<String> StringWrapper::sEmptyString = new String("");
-
 StringWrapper::StringWrapper() {
-	mString = sEmptyString;
+	mString = new String();
 }
 
-StringWrapper::StringWrapper(const StringWrapper& string) {
-	mString = string.mString;
+StringWrapper::StringWrapper(const StringWrapper& string) :
+		mString(string.mString) {
 }
 
 StringWrapper::StringWrapper(const char* string) {
-	if (string != NULL) {
-		size_t size = strlen(string);
-		if (size > 0) {
-			mString = new String(string, size);
-		} else {
-			mString = sEmptyString;
-		}
-	} else {
-		mString = sEmptyString;
-	}
+	mString = new String(string);
 }
 
 StringWrapper::StringWrapper(const char* string, size_t size) {
-	if (string != NULL) {
-		if (size > 0) {
-			mString = new String(string, size);
-		} else {
-			mString = sEmptyString;
-		}
-	} else {
-		mString = sEmptyString;
-	}
-}
-
-bool StringWrapper::contains(const char* subString) const {
-	if (c_str() && subString) {
-		return strstr(c_str(), subString) != NULL;
-	} else {
-		return false;
-	}
+	mString = new String(string, size);
 }
 
 StringWrapper& StringWrapper::operator=(const char* string) {
@@ -68,10 +41,10 @@ StringWrapper& StringWrapper::operator=(const char* string) {
 		if (size > 0) {
 			mString = new String(string, size);
 		} else {
-			mString = sEmptyString;
+			mString = new String();
 		}
 	} else {
-		mString = sEmptyString;
+		mString = new String();
 	}
 	return *this;
 }
@@ -192,151 +165,88 @@ bool StringWrapper::equals(const char* string) const {
 	return mString->equals(string);
 }
 
-bool StringWrapper::equals(const sp<String>& string) const {
+bool StringWrapper::equals(const StringWrapper& string) const {
 	return mString->equals(string);
 }
 
 bool StringWrapper::equalsIgnoreCase(const char* string) const {
-	return toLowerCase() == StringWrapper(string).toLowerCase();
+	return mString->equalsIgnoreCase(string);
 }
 
 bool StringWrapper::equalsIgnoreCase(const StringWrapper& string) const {
-	return toLowerCase() == string.toLowerCase();
+	return mString->equalsIgnoreCase(string);
+}
+
+bool StringWrapper::contains(const char* subString) const {
+	return mString->contains(subString);
 }
 
 bool StringWrapper::contains(const StringWrapper& subString) const {
-	return contains(subString.c_str());
+	return mString->contains(subString);
 }
 
 bool StringWrapper::startsWith(const char* prefix) const {
-	size_t prefixSize = strlen(prefix);
-	if (size() >= prefixSize) {
-		return strncmp(c_str(), prefix, prefixSize) == 0;
-	} else {
-		return false;
-	}
+	return mString->startsWith(prefix);
 }
 
 bool StringWrapper::startsWith(const StringWrapper& prefix) const {
-	return startsWith(prefix.c_str());
+	return mString->startsWith(prefix);
 }
 
 bool StringWrapper::endsWith(const char* suffix) const {
-	size_t suffixSize = strlen(suffix);
-	if (size() >= suffixSize) {
-		return strncmp(c_str() + size() - suffixSize, suffix, suffixSize) == 0;
-	} else {
-		return false;
-	}
+	return mString->endsWith(suffix);
 }
 
 bool StringWrapper::endsWith(const StringWrapper& suffix) const {
-	return endsWith(suffix.c_str());
+	return mString->endsWith(suffix);
 }
 
 StringWrapper StringWrapper::substr(size_t beginIndex) const {
-	if (beginIndex < size()) {
-		return StringWrapper(c_str() + beginIndex, size() - beginIndex);
-	} else {
-		return StringWrapper();
-	}
+	return StringWrapper(mString->substr(beginIndex));
 }
 
 StringWrapper StringWrapper::substr(size_t beginIndex, size_t endIndex) const {
-	if (beginIndex < size()) {
-		return StringWrapper(c_str() + beginIndex, endIndex - beginIndex);
-	} else {
-		return StringWrapper();
-	}
+	return StringWrapper(mString->substr(beginIndex, endIndex));
 }
 
 StringWrapper StringWrapper::toLowerCase() const {
-	sp<StringBuffer> string = new StringBuffer(size());
-	for (size_t i = 0; i < size(); i++) {
-		string->mData[i] = tolower(mString->mData[i]);
-	}
-	StringWrapper tmp(string);
-	return tmp;
+	return StringWrapper(mString->toLowerCase());
 }
 
 StringWrapper StringWrapper::toUpperCase() const {
-	sp<StringBuffer> string = new StringBuffer(size());
-	for (size_t i = 0; i < size(); i++) {
-		string->mData[i] = toupper(mString->mData[i]);
-	}
-	StringWrapper tmp(string);
-	return tmp;
+	return StringWrapper(mString->toUpperCase());
 }
 
 ssize_t StringWrapper::indexOf(const char* string) const {
-	const char* substr = strstr(c_str(), string);
-	if (substr != NULL) {
-		return substr - c_str();
-	} else {
-		return -1;
-	}
+	return mString->indexOf(string);
 }
 
 ssize_t StringWrapper::indexOf(const StringWrapper& string) const {
-	return indexOf(string.c_str());
+	return mString->indexOf(string);
 }
 
 ssize_t StringWrapper::indexOf(const char* string, size_t fromIndex) const {
-	const char* substr = strstr(c_str() + fromIndex, string);
-	if (substr != NULL) {
-		return substr - c_str();
-	} else {
-		return -1;
-	}
+	return mString->indexOf(string, fromIndex);
 }
 
 ssize_t StringWrapper::indexOf(const StringWrapper& string, size_t fromIndex) const {
-	return indexOf(string.c_str() + fromIndex);
+	return mString->indexOf(string, fromIndex);
 }
 
 StringWrapper StringWrapper::trim() const {
-	StringWrapper tmp(*this);
-	size_t beginIndex;
-	ssize_t endIndex;
-	for (beginIndex = 0; beginIndex < tmp.size(); beginIndex++) {
-		if (!isspace(tmp.mString->mData[beginIndex])) {
-			break;
-		}
-	}
-	for (endIndex = tmp.size() - 1; endIndex >= 0; endIndex--) {
-		if (!isspace(tmp.mString->mData[endIndex])) {
-			break;
-		}
-	}
-	if (beginIndex == 0 && endIndex == (ssize_t) tmp.size() - 1) {
-		return tmp;
-	} else {
-		if (beginIndex != tmp.size()) {
-			tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex,
-					endIndex - beginIndex + 1);
-		} else {
-			tmp.mString = sEmptyString;
-		}
-		return tmp;
-	}
+	return StringWrapper(mString->trim());
 }
 
 StringWrapper StringWrapper::left(size_t n) const {
-	StringWrapper tmp(*this);
-	n = (n > tmp.size()) ? tmp.size() : n;
-	tmp.mString = new StringBuffer(tmp.mString->mData, n);
-	return tmp;
+	return StringWrapper(mString->left(n));
 }
 
 StringWrapper StringWrapper::right(size_t n) const {
-	StringWrapper tmp(*this);
-	n = (n > tmp.size()) ? tmp.size() : n;
-	tmp.mString = new StringBuffer(tmp.mString->mData + tmp.size() - n, n);
-	return tmp;
+	return StringWrapper(mString->right(n));
 }
 
-sp<List<StringWrapper> > StringWrapper::split(const char* separator) const {
-	sp<List<StringWrapper> > strings = new List<StringWrapper>();
+sp< List<StringWrapper> > StringWrapper::split(const char* separator) const {
+	sp< List<StringWrapper> > strings = new List<StringWrapper>();
 	ssize_t curIndex = 0;
 	ssize_t prevCurIndex;
 	while (curIndex >= 0 && (size_t) curIndex < size()) {
@@ -352,15 +262,12 @@ sp<List<StringWrapper> > StringWrapper::split(const char* separator) const {
 	return strings;
 }
 
-sp<List<StringWrapper> > StringWrapper::split(const StringWrapper& separator) const {
+sp< List<StringWrapper> > StringWrapper::split(const StringWrapper& separator) const {
 	return split(separator.c_str());
 }
 
 StringWrapper& StringWrapper::append(const char* data, size_t size) {
-	if (data != NULL && size > 0) {
-		sp<StringBuffer> oldString = mString;
-		mString = new StringBuffer(oldString->mData, oldString->mSize, data, size);
-	}
+	mString = mString->append(data, size);
 	return *this;
 }
 
@@ -375,57 +282,15 @@ StringWrapper& StringWrapper::appendFormatted(const char* format, ...) {
 StringWrapper StringWrapper::format(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
-	StringWrapper string;
-	string.appendFormattedWithVarArgList(format, args);
+	StringWrapper stringWrapper;
+	stringWrapper.appendFormattedWithVarArgList(format, args);
 	va_end(args);
-	return string;
+	return stringWrapper;
 }
 
 StringWrapper& StringWrapper::appendFormattedWithVarArgList(const char* format, va_list args) {
-	// see http://stackoverflow.com/questions/9937505/va-list-misbehavior-on-linux
-	va_list copyOfArgs;
-	va_copy(copyOfArgs, args);
-	int size = vsnprintf(NULL, 0, format, copyOfArgs);
-	va_end(copyOfArgs);
-
-	if (size != 0) {
-		sp<StringBuffer> oldString = mString;
-		mString = new StringBuffer(oldString->mSize + size);
-		memcpy(mString->mData, oldString->mData, oldString->mSize);
-		vsnprintf(mString->mData + oldString->mSize, size + 1, format, args);
-	}
-
+	mString = mString->appendFormattedWithVarArgList(format, args);
 	return *this;
-}
-
-StringWrapper::StringBuffer::StringBuffer(size_t size) {
-	mSize = size;
-	if (size > 0) {
-		mData = (char*) malloc(mSize + 1);
-		mData[size] = '\0';
-	} else {
-		mData = NULL;
-	}
-}
-
-StringWrapper::StringBuffer::StringBuffer(const char* string, size_t size) {
-	mSize = size;
-	if (string != NULL) {
-		mData = (char*) malloc(mSize + 1);
-		memcpy(mData, string, size);
-		mData[size] = '\0';
-	} else {
-		mData = NULL;
-	}
-}
-
-StringWrapper::StringBuffer::StringBuffer(const char* string1, size_t size1,
-		const char* string2, size_t size2) {
-	mSize = size1 + size2;
-	mData = (char*) malloc(mSize + 1);
-	memcpy(mData, string1, size1);
-	memcpy(mData + size1, string2, size2);
-	mData[size1 + size2] = '\0';
 }
 
 } /* namespace mindroid */

@@ -34,8 +34,8 @@ int main() {
 	assert(bundle->fillObject("3", test));
 
 	bundle->putString("4", "Test");
-	String string = bundle->getString("4");
-	assert(string == "Test");
+	sp<String> string = bundle->getString("4");
+	assert(string->equals("Test"));
 	assert(bundle->fillString("4", string));
 
 	return 0;

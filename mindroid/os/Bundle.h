@@ -164,7 +164,7 @@ private:
 
 		inline Variant(const char* string) :
 				mType(CharString) {
-			const sp<Ref>& object = new String(string);
+			const sp<String> object = new String(string);
 			if (object != NULL) {
 				object->incStrongRef(this);
 			}
@@ -190,6 +190,7 @@ private:
 		inline ~Variant() {
 			switch (mType) {
 			case Variant::Object:
+			case Variant::CharString:
 				if (mVariant.object != NULL) {
 					mVariant.object->decStrongRef(this);
 				}

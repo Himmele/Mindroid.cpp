@@ -38,7 +38,7 @@ int main() {
 	sp<Handler> handler = sLooperThread->getHandler();
 
 	handler->obtainMessage(1234)->sendToTarget();
-	handler->postDelayed(newRunnable(sTest, &Test::test, 42), 1000);
+	handler->postDelayed(obtainClosure(sTest, &Test::test, 42), 1000);
 
 	Thread::sleep(2000);
 

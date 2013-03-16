@@ -32,7 +32,7 @@
  */
 
 /**
- * Runnable* runnable = newRunnable(instance, &Test::test, 17)
+ * sp<Runnable> runnable = obtainClosure(instance, &Test::test, 17)
  *
  * runnable->run();
  */
@@ -324,52 +324,52 @@ private:
 	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Closure4)
 };
 
-inline sp<Runnable> newRunnable(void(*func)()) {
+inline sp<Runnable> obtainClosure(void(*func)()) {
 	return new FuncClosure0(func);
 }
 
 template<typename Class>
-inline sp<Runnable> newRunnable(Class& object, void(Class::*method)()) {
+inline sp<Runnable> obtainClosure(Class& object, void(Class::*method)()) {
 	return new Closure0<Class>(object, method);
 }
 
 template<typename Arg1>
-inline sp<Runnable> newRunnable(void(*func)(Arg1), Arg1 arg1) {
+inline sp<Runnable> obtainClosure(void(*func)(Arg1), Arg1 arg1) {
 	return new FuncClosure1<Arg1>(func, arg1);
 }
 
 template<typename Class, typename Arg1>
-inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1), Arg1 arg1) {
+inline sp<Runnable> obtainClosure(Class& object, void(Class::*method)(Arg1), Arg1 arg1) {
 	return new Closure1<Class, Arg1>(object, method, arg1);
 }
 
 template<typename Arg1, typename Arg2>
-inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
+inline sp<Runnable> obtainClosure(void(*func)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
 	return new FuncClosure2<Arg1, Arg2>(func, arg1, arg2);
 }
 
 template<typename Class, typename Arg1, typename Arg2>
-inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
+inline sp<Runnable> obtainClosure(Class& object, void(Class::*method)(Arg1, Arg2), Arg1 arg1, Arg2 arg2) {
 	return new Closure2<Class, Arg1, Arg2>(object, method, arg1, arg2);
 }
 
 template<typename Arg1, typename Arg2, typename Arg3>
-inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+inline sp<Runnable> obtainClosure(void(*func)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
 	return new FuncClosure3<Arg1, Arg2, Arg3>(func, arg1, arg2, arg3);
 }
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3>
-inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
+inline sp<Runnable> obtainClosure(Class& object, void(Class::*method)(Arg1, Arg2, Arg3), Arg1 arg1, Arg2 arg2, Arg3 arg3) {
 	return new Closure3<Class, Arg1, Arg2, Arg3>(object, method, arg1, arg2, arg3);
 }
 
 template<typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-inline sp<Runnable> newRunnable(void(*func)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
+inline sp<Runnable> obtainClosure(void(*func)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
 	return new FuncClosure4<Arg1, Arg2, Arg3, Arg4>(func, arg1, arg2, arg3, arg4);
 }
 
 template<typename Class, typename Arg1, typename Arg2, typename Arg3, typename Arg4>
-inline sp<Runnable> newRunnable(Class& object, void(Class::*method)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
+inline sp<Runnable> obtainClosure(Class& object, void(Class::*method)(Arg1, Arg2, Arg3, Arg4), Arg1 arg1, Arg2 arg2, Arg3 arg3, Arg4 arg4) {
 	return new Closure4<Class, Arg1, Arg2, Arg3, Arg4>(object, method, arg1, arg2, arg3, arg4);
 }
 

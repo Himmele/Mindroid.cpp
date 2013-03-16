@@ -193,7 +193,7 @@ sp<String> String::trim() const {
 		}
 	}
 	if (beginIndex == 0 && endIndex == (ssize_t) size() - 1) {
-		return new String(mStringBuffer);
+		return const_cast<String*>(this);
 	} else {
 		if (beginIndex != size()) {
 			return new String(new StringBuffer(mStringBuffer->mData + beginIndex,
@@ -235,14 +235,14 @@ sp< List< sp<String> > > String::split(const sp<String>& separator) const {
 	return split(separator->c_str());
 }
 
-sp<String> String::append(const char* data, size_t size) {
+sp<String> String::append(const char* data, size_t size) const {
 	if (data != NULL && size > 0) {
 		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, data, size));
 	}
-	return this;
+	return const_cast<String*>(this);
 }
 
-sp<String> String::appendFormatted(const char* format, ...) {
+sp<String> String::appendFormatted(const char* format, ...) const {
 	va_list args;
 	va_start(args, format);
 	sp<String> formattedString = appendFormattedWithVarArgList(format, args);
@@ -253,13 +253,13 @@ sp<String> String::appendFormatted(const char* format, ...) {
 sp<String> String::format(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
-	sp<String> emptyString = new String();
+	sp<String> emptyString = new String(sEmptyStringBuffer);
 	sp<String> formattedString = emptyString->appendFormattedWithVarArgList(format, args);
 	va_end(args);
 	return formattedString;
 }
 
-sp<String> String::appendFormattedWithVarArgList(const char* format, va_list args) {
+sp<String> String::appendFormattedWithVarArgList(const char* format, va_list args) const {
 	// see http://stackoverflow.com/questions/9937505/va-list-misbehavior-on-linux
 	va_list copyOfArgs;
 	va_copy(copyOfArgs, args);
@@ -273,7 +273,7 @@ sp<String> String::appendFormattedWithVarArgList(const char* format, va_list arg
 		return new String(stringBuffer);
 	}
 
-	return this;
+	return const_cast<String*>(this);
 }
 
 String::StringBuffer::StringBuffer(size_t size) {

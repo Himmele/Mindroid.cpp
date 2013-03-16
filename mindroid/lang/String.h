@@ -95,8 +95,16 @@ public:
 	sp< List< sp<String> > > split(const char* separator) const;
 	sp< List< sp<String> > > split(const sp<String>& separator) const;
 
-	sp<String> append(const char* data, size_t size);
-	sp<String> appendFormatted(const char* format, ...) __attribute__((format (printf,2, 3)));
+	sp<String> append(const char* string) const {
+		return append(string, strlen(string));
+	}
+
+	sp<String> append(const sp<String>& string) const {
+		return append(string->c_str(), strlen(string->c_str()));
+	}
+
+	sp<String> append(const char* data, size_t size) const;
+	sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf,2, 3)));
 
 	static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
 
@@ -114,9 +122,7 @@ private:
 		}
 
 		StringBuffer(size_t size);
-
 		StringBuffer(const char* string, size_t size);
-
 		StringBuffer(const char* string1, size_t size1, const char* string2, size_t size2);
 
 		~StringBuffer() {
@@ -130,14 +136,17 @@ private:
 		size_t mSize;
 
 		friend class String;
+		friend class StringWrapper;
 	};
 
 	String(const sp<StringBuffer>& string) : mStringBuffer(string) { }
 
-	sp<String> appendFormattedWithVarArgList(const char* format, va_list args);
+	sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
 	sp<StringBuffer> mStringBuffer;
 	static sp<StringBuffer> sEmptyStringBuffer;
+
+	friend class StringWrapper;
 };
 
 } /* namespace mindroid */

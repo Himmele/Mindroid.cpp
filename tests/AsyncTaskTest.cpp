@@ -68,7 +68,7 @@ public:
 		mAsyncTask2 = new ExampleAsyncTask();
 		mAsyncTask2->executeOnExecutor(AsyncTaskBase::THREAD_POOL_EXECUTOR, 123);
 
-		mHandler->postDelayed(newRunnable(*this, &AsyncTaskSupervisor::shutdownLooper), 2000);
+		mHandler->postDelayed(obtainClosure(*this, &AsyncTaskSupervisor::shutdownLooper), 2000);
 	}
 
 	void shutdownLooper() {
@@ -85,7 +85,7 @@ private:
 int main() {
 	AsyncTaskSupervisor asyncTaskSupervisor;
 
-	Looper::prepare(newRunnable(asyncTaskSupervisor, &AsyncTaskSupervisor::onLooperReady));
+	Looper::prepare(obtainClosure(asyncTaskSupervisor, &AsyncTaskSupervisor::onLooperReady));
 	Looper::loop();
 
 	return 0;
