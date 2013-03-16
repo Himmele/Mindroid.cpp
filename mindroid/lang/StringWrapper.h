@@ -82,7 +82,7 @@ public:
 		return mString->charAt(index);
 	}
 
-	inline sp<String> getString() {
+	inline sp<String> toString() {
 		return mString;
 	}
 

@@ -14,7 +14,7 @@ int main() {
 	printf("%s\n", s1.c_str());
 	s1 = "Test";
 	printf("%s\n", s1.c_str());
-	sp<String> tmp = s1.getString();
+	sp<String> tmp = s1.toString();
 	printf("%s\n", tmp->c_str());
 
 	sp<String> s2 = String::format("%d", 123);
