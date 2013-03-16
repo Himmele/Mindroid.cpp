@@ -132,7 +132,7 @@ sp<String> String::substr(size_t beginIndex) const {
 	if (beginIndex < size()) {
 		return new String(c_str() + beginIndex, size() - beginIndex);
 	} else {
-		return new String();
+		return EMPTY_STRING;
 	}
 }
 
@@ -140,7 +140,7 @@ sp<String> String::substr(size_t beginIndex, size_t endIndex) const {
 	if (beginIndex < size()) {
 		return new String(c_str() + beginIndex, endIndex - beginIndex);
 	} else {
-		return new String();
+		return EMPTY_STRING;
 	}
 }
 
