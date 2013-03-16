@@ -285,10 +285,10 @@ sp<String> Bundle::getString(const char* key) const {
 		if (itr->value->getType() == Variant::CharString) {
 			return itr->value->getString();
 		} else {
-			return new String(NULL);
+			return String::EMPTY_STRING;
 		}
 	}
-	return new String(NULL);
+	return String::EMPTY_STRING;
 }
 
 bool Bundle::fillBool(const char* key, bool& value) const {
