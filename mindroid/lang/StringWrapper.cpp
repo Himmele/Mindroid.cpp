@@ -20,7 +20,7 @@
 namespace mindroid {
 
 StringWrapper::StringWrapper() {
-	mString = new String();
+	mString = String::EMPTY_STRING;
 }
 
 StringWrapper::StringWrapper(const StringWrapper& string) :
@@ -41,10 +41,10 @@ StringWrapper& StringWrapper::operator=(const char* string) {
 		if (size > 0) {
 			mString = new String(string, size);
 		} else {
-			mString = new String();
+			mString = String::EMPTY_STRING;
 		}
 	} else {
-		mString = new String();
+		mString = String::EMPTY_STRING;
 	}
 	return *this;
 }

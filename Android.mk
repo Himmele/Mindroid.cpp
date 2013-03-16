@@ -19,6 +19,7 @@ LOCAL_SRC_FILES := \
 	mindroid/os/Bundle.cpp \
 	mindroid/util/Buffer.cpp \
 	mindroid/lang/String.cpp \
+	mindroid/lang/StringWrapper.cpp \
 	mindroid/net/SocketAddress.cpp \
 	mindroid/net/ServerSocket.cpp \
 	mindroid/net/Socket.cpp \

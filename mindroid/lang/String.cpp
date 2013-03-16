@@ -19,10 +19,17 @@
 
 namespace mindroid {
 
-sp<String::StringBuffer> String::sEmptyStringBuffer = new String::StringBuffer("", 0);
+/*
+ * C++ Standard Core Language (http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_closed.html#269)
+ * Objects with static storage duration defined in namespace scope in the same translation unit
+ * and dynamically initialized shall be initialized in the order in which their definition appears
+ * in the translation unit.
+ */
+const sp<String::StringBuffer> String::EMPTY_STRING_BUFFER = new String::StringBuffer("", 0);
+const sp<String> String::EMPTY_STRING = new String();
 
 String::String() {
-	mStringBuffer = sEmptyStringBuffer;
+	mStringBuffer = EMPTY_STRING_BUFFER;
 }
 
 String::String(const char* string) {
@@ -31,10 +38,10 @@ String::String(const char* string) {
 		if (size > 0) {
 			mStringBuffer = new StringBuffer(string, size);
 		} else {
-			mStringBuffer = sEmptyStringBuffer;
+			mStringBuffer = EMPTY_STRING_BUFFER;
 		}
 	} else {
-		mStringBuffer = sEmptyStringBuffer;
+		mStringBuffer = EMPTY_STRING_BUFFER;
 	}
 }
 
@@ -43,10 +50,10 @@ String::String(const char* string, size_t size) {
 		if (size > 0) {
 			mStringBuffer = new StringBuffer(string, size);
 		} else {
-			mStringBuffer = sEmptyStringBuffer;
+			mStringBuffer = EMPTY_STRING_BUFFER;
 		}
 	} else {
-		mStringBuffer = sEmptyStringBuffer;
+		mStringBuffer = EMPTY_STRING_BUFFER;
 	}
 }
 
@@ -199,7 +206,7 @@ sp<String> String::trim() const {
 			return new String(new StringBuffer(mStringBuffer->mData + beginIndex,
 					endIndex - beginIndex + 1));
 		} else {
-			return new String(sEmptyStringBuffer);
+			return EMPTY_STRING;
 		}
 	}
 }
@@ -253,8 +260,7 @@ sp<String> String::appendFormatted(const char* format, ...) const {
 sp<String> String::format(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
-	sp<String> emptyString = new String(sEmptyStringBuffer);
-	sp<String> formattedString = emptyString->appendFormattedWithVarArgList(format, args);
+	sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
 	va_end(args);
 	return formattedString;
 }

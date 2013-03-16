@@ -31,6 +31,8 @@ class String :
 		public Ref
 {
 public:
+	static const sp<String> EMPTY_STRING;
+
 	String();
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
@@ -144,7 +146,7 @@ private:
 	sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
 	sp<StringBuffer> mStringBuffer;
-	static sp<StringBuffer> sEmptyStringBuffer;
+	static const sp<StringBuffer> EMPTY_STRING_BUFFER;
 
 	friend class StringWrapper;
 };

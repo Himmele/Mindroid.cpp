@@ -46,6 +46,7 @@ int main() {
 	s4 = s4->trim();
 	assert(s4->size() == 0);
 	assert(s4->equals(""));
+	assert(s4 == String::EMPTY_STRING);
 
 	sp<String> s5 = new String();
 	assert(s5->isEmpty());
