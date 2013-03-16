@@ -27,6 +27,7 @@ class StringWrapper
 public:
 	StringWrapper();
 	StringWrapper(const StringWrapper& string);
+	StringWrapper(const sp<String>& string) : mString(string) { }
 	explicit StringWrapper(const char* string);
 	explicit StringWrapper(const char* string, size_t size);
 	~StringWrapper() { }
@@ -131,8 +132,6 @@ public:
 	}
 
 private:
-	StringWrapper(const sp<String>& string) : mString(string) { }
-
 	StringWrapper& appendFormattedWithVarArgList(const char* format, va_list args);
 
 	sp<String> mString;
