@@ -137,7 +137,7 @@ void Bundle::putString(const char* key, const char* string) {
 }
 
 void Bundle::putString(const char* key, const sp<String>& string) {
-	putString(key, string->c_str());
+	putString(key, (string != NULL) ? string->c_str() : NULL);
 }
 
 void Bundle::putObject(const char* key, const sp<Ref>& object) {
