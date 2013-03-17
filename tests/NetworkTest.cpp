@@ -81,8 +81,8 @@ int main() {
 	sp<Socket> socket = new Socket();
 	printf("TCP-Client: Connecting to port 1234\n");
 	if (socket->connect("localhost", 1234) == 0) {
-		String string("123456789ABCDEF");
-		socket->write(string.c_str(), string.size());
+		sp<String> string = new String("123456789ABCDEF");
+		socket->write(string->c_str(), string->size());
 		int32_t size = 16;
 		char data[size];
 		data[size - 1] = '\0';
@@ -104,9 +104,9 @@ int main() {
 	Thread::sleep(1000);
 
 	sp<DatagramSocket> udpClientSocket = new DatagramSocket();
-	String string("123456789ABCDEF");
+	sp<String> string = new String("123456789ABCDEF");
 	sp<SocketAddress> serverAddress = new SocketAddress("127.0.0.1", 1234);
-	udpClientSocket->send(string.c_str(), string.size(), serverAddress);
+	udpClientSocket->send(string->c_str(), string->size(), serverAddress);
 	int32_t size = 16;
 	char data[size];
 	sp<SocketAddress> senderAddress = new SocketAddress();

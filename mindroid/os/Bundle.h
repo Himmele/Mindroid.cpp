@@ -50,7 +50,7 @@ public:
 	void putFloat(const char* key, float value);
 	void putDouble(const char* key, double value);
 	void putString(const char* key, const char* string);
-	void putString(const char* key, const String& string);
+	void putString(const char* key, const sp<String>& string);
 	void putObject(const char* key, const sp<Ref>& object);
 
 	bool getBool(const char* key, const bool defaultValue) const;
@@ -64,7 +64,7 @@ public:
 	uint64_t getUInt64(const char* key, const uint64_t defaultValue) const;
 	float getFloat(const char* key, const float defaultValue) const;
 	double getDouble(const char* key, const double defaultValue) const;
-	String getString(const char* key) const;
+	sp<String> getString(const char* key) const;
 	template<typename T>
 	sp<T> getObject(const char* key) const;
 
@@ -79,7 +79,7 @@ public:
 	bool fillUInt64(const char* key, uint64_t& value) const;
 	bool fillFloat(const char* key, float& value) const;
 	bool fillDouble(const char* key, double& value) const;
-	bool fillString(const char* key, String& string) const;
+	bool fillString(const char* key, sp<String>& string) const;
 	template<typename T>
 	bool fillObject(const char* key, sp<T>& object) const;
 
@@ -164,12 +164,19 @@ private:
 
 		inline Variant(const char* string) :
 				mType(CharString) {
-			mVariant.string = new String(string);
+			const sp<String> object = new String(string);
+			if (object != NULL) {
+				object->incStrongRef(this);
+			}
+			mVariant.object = object.getPointer();
 		}
 
-		inline Variant(const String& string) :
+		inline Variant(const sp<String>& string) :
 				mType(CharString) {
-			mVariant.string = new String(string.c_str());
+			if (string != NULL) {
+				string->incStrongRef(this);
+			}
+			mVariant.object = string.getPointer();
 		}
 
 		inline Variant(const sp<Ref>& object) :
@@ -182,10 +189,8 @@ private:
 
 		inline ~Variant() {
 			switch (mType) {
-			case Variant::CharString:
-				delete mVariant.string;
-				break;
 			case Variant::Object:
+			case Variant::CharString:
 				if (mVariant.object != NULL) {
 					mVariant.object->decStrongRef(this);
 				}
@@ -243,8 +248,8 @@ private:
 			return mVariant.doubleValue;
 		}
 
-		inline String getString() const {
-			return *mVariant.string;
+		inline sp<String> getString() const {
+			return static_cast<String*>(mVariant.object);
 		}
 
 		template<typename T>
@@ -265,7 +270,6 @@ private:
 			uint64_t uint64Value;
 			float floatValue;
 			double doubleValue;
-			String* string;
 			Ref* object;
 		} Value;
 
@@ -276,7 +280,7 @@ private:
 	};
 
 	struct KeyValuePair {
-		String key;
+		sp<String> key;
 		sp<Variant> value;
 	};
 

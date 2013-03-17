@@ -27,45 +27,24 @@
 
 namespace mindroid {
 
-class String
+class String :
+		public Ref
 {
 public:
+	static const sp<String> EMPTY_STRING;
+
 	String();
-	String(const String& string);
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
-	~String() { }
+	virtual ~String() { }
 
-	inline String& operator=(String const& string);
-	String& operator=(const char* string);
-	inline String& operator+=(const String& string);
-	inline String& operator+=(const char* string);
-	inline String& operator+=(const char character);
-	inline String operator+(const char* string) const;
-	inline String operator+(const String& string) const;
-
-	bool operator<(const char* string) const;
-	bool operator<(const String& string) const;
-	bool operator<=(const char* string) const;
-	bool operator<=(const String& string) const;
-	bool operator==(const char* string) const;
-	bool operator==(const String& string) const;
-	bool operator!=(const char* string) const;
-	bool operator!=(const String& string) const;
-	bool operator>=(const char* string) const;
-	bool operator>=(const String& string) const;
-	bool operator>(const char* string) const;
-	bool operator>(const String& string) const;
-
+	bool equals(const char* string) const;
+	bool equals(const sp<String>& string) const;
 	bool equalsIgnoreCase(const char* string) const;
-	bool equalsIgnoreCase(const String& string) const;
+	bool equalsIgnoreCase(const sp<String>& string) const;
 
 	inline size_t size() const {
-		return mString->mSize;
-	}
-
-	inline bool isNull() const {
-		return mString->mData == NULL;
+		return mStringBuffer->mSize;
 	}
 
 	inline bool isEmpty() const {
@@ -73,7 +52,7 @@ public:
 	}
 
 	inline const char* c_str() const {
-		return mString->mData;
+		return mStringBuffer->mData;
 	}
 
 	inline operator const char*() const {
@@ -82,46 +61,54 @@ public:
 
 	inline char operator[](const size_t index) const {
 		assert(index < size());
-		return mString->mData[index];
+		return mStringBuffer->mData[index];
 	}
 
 	inline char charAt(size_t index) const {
 		assert(index < size());
-		return mString->mData[index];
+		return mStringBuffer->mData[index];
 	}
 
 	bool contains(const char* subString) const;
-	bool contains(const String& subString) const;
+	bool contains(const sp<String>& subString) const;
 
 	bool startsWith(const char* prefix) const;
-	bool startsWith(const String& prefix) const;
+	bool startsWith(const sp<String>& prefix) const;
 
 	bool endsWith(const char* suffix) const;
-	bool endsWith(const String& suffix) const;
+	bool endsWith(const sp<String>& suffix) const;
 
-	String substr(size_t beginIndex) const;
-	String substr(size_t beginIndex, size_t endIndex) const;
+	sp<String> substr(size_t beginIndex) const;
+	sp<String> substr(size_t beginIndex, size_t endIndex) const;
 
-	String toLowerCase() const;
-	String toUpperCase() const;
+	sp<String> toLowerCase() const;
+	sp<String> toUpperCase() const;
 
 	ssize_t indexOf(const char* string) const;
-	ssize_t indexOf(const String& string) const;
+	ssize_t indexOf(const sp<String>& string) const;
 	ssize_t indexOf(const char* string, size_t fromIndex) const;
-	ssize_t indexOf(const String& string, size_t fromIndex) const;
+	ssize_t indexOf(const sp<String>& string, size_t fromIndex) const;
 
-	String trim() const;
+	sp<String> trim() const;
 
-	String left(size_t n) const;
-	String right(size_t n) const;
+	sp<String> left(size_t n) const;
+	sp<String> right(size_t n) const;
 
-	sp< List<String> > split(const char* separator) const;
-	sp< List<String> > split(const String& separator) const;
+	sp< List< sp<String> > > split(const char* separator) const;
+	sp< List< sp<String> > > split(const sp<String>& separator) const;
 
-	String& append(const char* data, size_t size);
-	String& appendFormatted(const char* format, ...) __attribute__((format (printf,2, 3)));
+	sp<String> append(const char* string) const {
+		return append(string, strlen(string));
+	}
 
-	static String format(const char* format, ...) __attribute__((format (printf, 1, 2)));
+	sp<String> append(const sp<String>& string) const {
+		return append(string->c_str(), strlen(string->c_str()));
+	}
+
+	sp<String> append(const char* data, size_t size) const;
+	sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf,2, 3)));
+
+	static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
 
 	static size_t size(const char* string) {
 		return strlen(string);
@@ -137,9 +124,7 @@ private:
 		}
 
 		StringBuffer(size_t size);
-
 		StringBuffer(const char* string, size_t size);
-
 		StringBuffer(const char* string1, size_t size1, const char* string2, size_t size2);
 
 		~StringBuffer() {
@@ -153,53 +138,19 @@ private:
 		size_t mSize;
 
 		friend class String;
+		friend class StringWrapper;
 	};
 
-	String(const sp<StringBuffer>& string) : mString(string) { }
+	String(const sp<StringBuffer>& string) : mStringBuffer(string) { }
 
-	String& appendFormattedWithVarArgList(const char* format, va_list args);
+	sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
-	sp<StringBuffer> mString;
-	static sp<StringBuffer> sNullString;
-	static sp<StringBuffer> sEmptyString;
+	sp<StringBuffer> mStringBuffer;
+	static const sp<StringBuffer> EMPTY_STRING_BUFFER;
+
+	friend class StringWrapper;
 };
 
-inline String& String::operator=(String const& string) {
-	mString = string.mString;
-	return *this;
-}
-
-inline String& String::operator+=(const char* string) {
-	return append(string, strlen(string));
-}
-
-inline String& String::operator+=(const String& string) {
-	return append(string.c_str(), string.size());
-}
-
-inline String& String::operator+=(const char character) {
-	return append(&character, 1);
-}
-
-inline String String::operator+(const char* string) const {
-	String tmp(*this);
-	tmp += string;
-	return tmp;
-}
-
-inline String String::operator+(String const& string) const {
-	String tmp(*this);
-	tmp += string;
-	return tmp;
-}
-
 } /* namespace mindroid */
-
-bool operator<(const char* lhs, const mindroid::String& rhs);
-bool operator<=(const char* lhs, const mindroid::String& rhs);
-bool operator==(const char* lhs, const mindroid::String& rhs);
-bool operator!=(const char* lhs, const mindroid::String& rhs);
-bool operator>=(const char* lhs, const mindroid::String& rhs);
-bool operator>(const char* lhs, const mindroid::String& rhs);
 
 #endif /* MINDROID_STRING_H_ */

@@ -33,7 +33,7 @@ void Bundle::clear() {
 bool Bundle::containsKey(const char* key) {
 	List<KeyValuePair>::iterator itr = mKeyValuePairs->begin();
 	while (itr != mKeyValuePairs->end()) {
-		if (itr->key == key) {
+		if (itr->key->equals(key)) {
 			return true;
 		}
 		++itr;
@@ -44,7 +44,7 @@ bool Bundle::containsKey(const char* key) {
 void Bundle::remove(const char* key) {
 	List<KeyValuePair>::iterator itr = mKeyValuePairs->begin();
 	while (itr != mKeyValuePairs->end()) {
-		if (itr->key == key) {
+		if (itr->key->equals(key)) {
 			itr = mKeyValuePairs->erase(itr);
 			break;
 		}
@@ -54,95 +54,95 @@ void Bundle::remove(const char* key) {
 
 void Bundle::putBool(const char* key, bool value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putByte(const char* key, uint8_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putChar(const char* key, char value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putInt16(const char* key, int16_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putUInt16(const char* key, uint16_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putInt32(const char* key, int32_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putUInt32(const char* key, uint32_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putInt64(const char* key, int64_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putUInt64(const char* key, uint64_t value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putFloat(const char* key, float value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putDouble(const char* key, double value) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(value);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
 void Bundle::putString(const char* key, const char* string) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(string);
 	mKeyValuePairs->push_back(keyValuePair);
 }
 
-void Bundle::putString(const char* key, const String& string) {
-	putString(key, string.c_str());
+void Bundle::putString(const char* key, const sp<String>& string) {
+	putString(key, (string != NULL) ? string->c_str() : NULL);
 }
 
 void Bundle::putObject(const char* key, const sp<Ref>& object) {
 	KeyValuePair keyValuePair;
-	keyValuePair.key = key;
+	keyValuePair.key = new String(key);
 	keyValuePair.value = new Variant(object);
 	mKeyValuePairs->push_back(keyValuePair);
 }
@@ -279,16 +279,16 @@ double Bundle::getDouble(const char* key, const double defaultValue) const {
 	return defaultValue;
 }
 
-String Bundle::getString(const char* key) const {
+sp<String> Bundle::getString(const char* key) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::CharString) {
 			return itr->value->getString();
 		} else {
-			return String(NULL);
+			return String::EMPTY_STRING;
 		}
 	}
-	return String(NULL);
+	return String::EMPTY_STRING;
 }
 
 bool Bundle::fillBool(const char* key, bool& value) const {
@@ -434,7 +434,7 @@ bool Bundle::fillDouble(const char* key, double& value) const {
 	return false;
 }
 
-bool Bundle::fillString(const char* key, String& string) const {
+bool Bundle::fillString(const char* key, sp<String>& string) const {
 	List<KeyValuePair>::const_iterator itr = findValue(key);
 	if (itr != mKeyValuePairs->end()) {
 		if (itr->value->getType() == Variant::CharString) {
@@ -450,7 +450,7 @@ bool Bundle::fillString(const char* key, String& string) const {
 List<Bundle::KeyValuePair>::const_iterator Bundle::findValue(const char* key) const {
 	List<KeyValuePair>::const_iterator itr = mKeyValuePairs.getConstPointer()->begin();
 	while (itr != mKeyValuePairs->end()) {
-		if (itr->key == key) {
+		if (itr->key->equals(key)) {
 			return itr;
 		}
 		++itr;

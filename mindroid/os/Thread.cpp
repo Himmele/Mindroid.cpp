@@ -80,7 +80,7 @@ void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
 	sched_param schedulingParameters;
 	memset(&schedulingParameters, 0, sizeof(schedulingParameters));
 	schedulingParameters.sched_priority = priority;
-	pthread_setschedparam(mThread, policy, &schedulingParameters);	
+	pthread_setschedparam(mThread, policy, &schedulingParameters);
 }
 
 sp<Thread> Thread::currentThread() {

@@ -19,40 +19,75 @@
 
 namespace mindroid {
 
-sp<String::StringBuffer> String::sNullString = new String::StringBuffer();
-sp<String::StringBuffer> String::sEmptyString = new String::StringBuffer("", 0);
+/*
+ * C++ Standard Core Language (http://www.open-std.org/jtc1/sc22/wg21/docs/cwg_closed.html#269)
+ * Objects with static storage duration defined in namespace scope in the same translation unit
+ * and dynamically initialized shall be initialized in the order in which their definition appears
+ * in the translation unit.
+ */
+const sp<String::StringBuffer> String::EMPTY_STRING_BUFFER = new String::StringBuffer("", 0);
+const sp<String> String::EMPTY_STRING = new String();
 
 String::String() {
-	mString = sNullString;
-}
-
-String::String(const String& string) {
-	mString = string.mString;
+	mStringBuffer = EMPTY_STRING_BUFFER;
 }
 
 String::String(const char* string) {
 	if (string != NULL) {
 		size_t size = strlen(string);
 		if (size > 0) {
-			mString = new StringBuffer(string, size);
+			mStringBuffer = new StringBuffer(string, size);
 		} else {
-			mString = sEmptyString;
+			mStringBuffer = EMPTY_STRING_BUFFER;
 		}
 	} else {
-		mString = sNullString;
+		mStringBuffer = EMPTY_STRING_BUFFER;
 	}
 }
 
 String::String(const char* string, size_t size) {
 	if (string != NULL) {
 		if (size > 0) {
-			mString = new StringBuffer(string, size);
+			mStringBuffer = new StringBuffer(string, size);
 		} else {
-			mString = sEmptyString;
+			mStringBuffer = EMPTY_STRING_BUFFER;
 		}
 	} else {
-		mString = sNullString;
+		mStringBuffer = EMPTY_STRING_BUFFER;
 	}
+}
+
+bool String::equals(const char* string) const {
+	if (mStringBuffer->mData && string) {
+		return strcmp(mStringBuffer->mData, string) == 0;
+	} else {
+		if (mStringBuffer->mData == NULL && string == NULL) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+bool String::equals(const sp<String>& string) const {
+	if (mStringBuffer->mData && string->mStringBuffer->mData) {
+		return strcmp(mStringBuffer->mData, string->mStringBuffer->mData) == 0;
+	} else {
+		if (mStringBuffer->mData == NULL && string->mStringBuffer->mData == NULL) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+}
+
+bool String::equalsIgnoreCase(const char* string) const {
+	sp<String> tmp = new String(string);
+	return toLowerCase()->equals(tmp->toLowerCase());
+}
+
+bool String::equalsIgnoreCase(const sp<String>& string) const {
+	return toLowerCase()->equals(string->toLowerCase());
 }
 
 bool String::contains(const char* subString) const {
@@ -63,142 +98,8 @@ bool String::contains(const char* subString) const {
 	}
 }
 
-String& String::operator=(const char* string) {
-	if (string != NULL) {
-		size_t size = strlen(string);
-		if (size > 0) {
-			mString = new StringBuffer(string, size);
-		} else {
-			mString = sEmptyString;
-		}
-	} else {
-		mString = sNullString;
-	}
-	return *this;
-}
-
-bool String::operator<(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) < 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator<(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) < 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator<=(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) <= 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator<=(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) <= 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator==(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) == 0;
-	} else {
-		if (mString->mData == NULL && string == NULL) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-}
-
-bool String::operator==(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) == 0;
-	} else {
-		if (mString->mData == NULL && string.mString->mData == NULL) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-}
-
-bool String::operator!=(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) != 0;
-	} else {
-		if (mString->mData == NULL && string == NULL) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-}
-
-bool String::operator!=(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) != 0;
-	} else {
-		if (mString->mData == NULL && string.mString->mData == NULL) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-}
-
-bool String::operator>=(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) >= 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator>=(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) >= 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator>(const char* string) const {
-	if (mString->mData && string) {
-		return strcmp(mString->mData, string) > 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::operator>(const String& string) const {
-	if (mString->mData && string.mString->mData) {
-		return strcmp(mString->mData, string.mString->mData) > 0;
-	} else {
-		return false;
-	}
-}
-
-bool String::equalsIgnoreCase(const char* string) const {
-	return toLowerCase() == String(string).toLowerCase();
-}
-
-bool String::equalsIgnoreCase(const String& string) const {
-	return toLowerCase() == string.toLowerCase();
-}
-
-bool String::contains(const String& subString) const {
-	return contains(subString.c_str());
+bool String::contains(const sp<String>& subString) const {
+	return contains(subString->c_str());
 }
 
 bool String::startsWith(const char* prefix) const {
@@ -210,8 +111,8 @@ bool String::startsWith(const char* prefix) const {
 	}
 }
 
-bool String::startsWith(const String& prefix) const {
-	return startsWith(prefix.c_str());
+bool String::startsWith(const sp<String>& prefix) const {
+	return startsWith(prefix->c_str());
 }
 
 bool String::endsWith(const char* suffix) const {
@@ -223,42 +124,40 @@ bool String::endsWith(const char* suffix) const {
 	}
 }
 
-bool String::endsWith(const String& suffix) const {
-	return endsWith(suffix.c_str());
+bool String::endsWith(const sp<String>& suffix) const {
+	return endsWith(suffix->c_str());
 }
 
-String String::substr(size_t beginIndex) const {
+sp<String> String::substr(size_t beginIndex) const {
 	if (beginIndex < size()) {
-		return String(c_str() + beginIndex, size() - beginIndex);
+		return new String(c_str() + beginIndex, size() - beginIndex);
 	} else {
-		return String();
+		return EMPTY_STRING;
 	}
 }
 
-String String::substr(size_t beginIndex, size_t endIndex) const {
+sp<String> String::substr(size_t beginIndex, size_t endIndex) const {
 	if (beginIndex < size()) {
-		return String(c_str() + beginIndex, endIndex - beginIndex);
+		return new String(c_str() + beginIndex, endIndex - beginIndex);
 	} else {
-		return String();
+		return EMPTY_STRING;
 	}
 }
 
-String String::toLowerCase() const {
-	sp<StringBuffer> string = new StringBuffer(size());
+sp<String> String::toLowerCase() const {
+	sp<StringBuffer> stringBuffer = new StringBuffer(size());
 	for (size_t i = 0; i < size(); i++) {
-		string->mData[i] = tolower(mString->mData[i]);
+		stringBuffer->mData[i] = tolower(mStringBuffer->mData[i]);
 	}
-	String tmp(string);
-	return tmp;
+	return new String(stringBuffer);
 }
 
-String String::toUpperCase() const {
-	sp<StringBuffer> string = new StringBuffer(size());
+sp<String> String::toUpperCase() const {
+	sp<StringBuffer> stringBuffer = new StringBuffer(size());
 	for (size_t i = 0; i < size(); i++) {
-		string->mData[i] = toupper(mString->mData[i]);
+		stringBuffer->mData[i] = toupper(mStringBuffer->mData[i]);
 	}
-	String tmp(string);
-	return tmp;
+	return new String(stringBuffer);
 }
 
 ssize_t String::indexOf(const char* string) const {
@@ -270,8 +169,8 @@ ssize_t String::indexOf(const char* string) const {
 	}
 }
 
-ssize_t String::indexOf(const String& string) const {
-	return indexOf(string.c_str());
+ssize_t String::indexOf(const sp<String>& string) const {
+	return indexOf(string->c_str());
 }
 
 ssize_t String::indexOf(const char* string, size_t fromIndex) const {
@@ -283,53 +182,47 @@ ssize_t String::indexOf(const char* string, size_t fromIndex) const {
 	}
 }
 
-ssize_t String::indexOf(const String& string, size_t fromIndex) const {
-	return indexOf(string.c_str() + fromIndex);
+ssize_t String::indexOf(const sp<String>& string, size_t fromIndex) const {
+	return indexOf(string->c_str() + fromIndex);
 }
 
-String String::trim() const {
-	String tmp(*this);
+sp<String> String::trim() const {
 	size_t beginIndex;
 	ssize_t endIndex;
-	for (beginIndex = 0; beginIndex < tmp.size(); beginIndex++) {
-		if (!isspace(tmp.mString->mData[beginIndex])) {
+	for (beginIndex = 0; beginIndex < size(); beginIndex++) {
+		if (!isspace(mStringBuffer->mData[beginIndex])) {
 			break;
 		}
 	}
-	for (endIndex = tmp.size() - 1; endIndex >= 0; endIndex--) {
-		if (!isspace(tmp.mString->mData[endIndex])) {
+	for (endIndex = size() - 1; endIndex >= 0; endIndex--) {
+		if (!isspace(mStringBuffer->mData[endIndex])) {
 			break;
 		}
 	}
-	if (beginIndex == 0 && endIndex == (ssize_t) tmp.size() - 1) {
-		return tmp;
+	if (beginIndex == 0 && endIndex == (ssize_t) size() - 1) {
+		return const_cast<String*>(this);
 	} else {
-		if (beginIndex != tmp.size()) {
-			tmp.mString = new StringBuffer(tmp.mString->mData + beginIndex,
-					endIndex - beginIndex + 1);
+		if (beginIndex != size()) {
+			return new String(new StringBuffer(mStringBuffer->mData + beginIndex,
+					endIndex - beginIndex + 1));
 		} else {
-			tmp.mString = sEmptyString;
+			return EMPTY_STRING;
 		}
-		return tmp;
 	}
 }
 
-String String::left(size_t n) const {
-	String tmp(*this);
-	n = (n > tmp.size()) ? tmp.size() : n;
-	tmp.mString = new StringBuffer(tmp.mString->mData, n);
-	return tmp;
+sp<String> String::left(size_t n) const {
+	n = (n > size()) ? size() : n;
+	return new String(new StringBuffer(mStringBuffer->mData, n));
 }
 
-String String::right(size_t n) const {
-	String tmp(*this);
-	n = (n > tmp.size()) ? tmp.size() : n;
-	tmp.mString = new StringBuffer(tmp.mString->mData + tmp.size() - n, n);
-	return tmp;
+sp<String> String::right(size_t n) const {
+	n = (n > size()) ? size() : n;
+	return new String(new StringBuffer(mStringBuffer->mData + size() - n, n));
 }
 
-sp<List<String> > String::split(const char* separator) const {
-	sp<List<String> > strings = new List<String>();
+sp< List< sp<String> > > String::split(const char* separator) const {
+	sp< List< sp<String> > > strings = new List< sp<String> >();
 	ssize_t curIndex = 0;
 	ssize_t prevCurIndex;
 	while (curIndex >= 0 && (size_t) curIndex < size()) {
@@ -345,36 +238,34 @@ sp<List<String> > String::split(const char* separator) const {
 	return strings;
 }
 
-sp<List<String> > String::split(const String& separator) const {
-	return split(separator.c_str());
+sp< List< sp<String> > > String::split(const sp<String>& separator) const {
+	return split(separator->c_str());
 }
 
-String& String::append(const char* data, size_t size) {
+sp<String> String::append(const char* data, size_t size) const {
 	if (data != NULL && size > 0) {
-		sp<StringBuffer> oldString = mString;
-		mString = new StringBuffer(oldString->mData, oldString->mSize, data, size);
+		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, data, size));
 	}
-	return *this;
+	return const_cast<String*>(this);
 }
 
-String& String::appendFormatted(const char* format, ...) {
+sp<String> String::appendFormatted(const char* format, ...) const {
 	va_list args;
 	va_start(args, format);
-	appendFormattedWithVarArgList(format, args);
+	sp<String> formattedString = appendFormattedWithVarArgList(format, args);
 	va_end(args);
-	return *this;
+	return formattedString;
 }
 
-String String::format(const char* format, ...) {
+sp<String> String::format(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
-	String string;
-	string.appendFormattedWithVarArgList(format, args);
+	sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
 	va_end(args);
-	return string;
+	return formattedString;
 }
 
-String& String::appendFormattedWithVarArgList(const char* format, va_list args) {
+sp<String> String::appendFormattedWithVarArgList(const char* format, va_list args) const {
 	// see http://stackoverflow.com/questions/9937505/va-list-misbehavior-on-linux
 	va_list copyOfArgs;
 	va_copy(copyOfArgs, args);
@@ -382,13 +273,13 @@ String& String::appendFormattedWithVarArgList(const char* format, va_list args) 
 	va_end(copyOfArgs);
 
 	if (size != 0) {
-		sp<StringBuffer> oldString = mString;
-		mString = new StringBuffer(oldString->mSize + size);
-		memcpy(mString->mData, oldString->mData, oldString->mSize);
-		vsnprintf(mString->mData + oldString->mSize, size + 1, format, args);
+		sp<StringBuffer> stringBuffer = new StringBuffer(mStringBuffer->mSize + size);
+		memcpy(stringBuffer->mData, mStringBuffer->mData, mStringBuffer->mSize);
+		vsnprintf(stringBuffer->mData + mStringBuffer->mSize, size + 1, format, args);
+		return new String(stringBuffer);
 	}
 
-	return *this;
+	return const_cast<String*>(this);
 }
 
 String::StringBuffer::StringBuffer(size_t size) {
@@ -422,27 +313,3 @@ String::StringBuffer::StringBuffer(const char* string1, size_t size1,
 }
 
 } /* namespace mindroid */
-
-bool operator<(const char* lhs, const mindroid::String& rhs) {
-	return rhs < lhs;
-}
-
-bool operator<=(const char* lhs, const mindroid::String& rhs) {
-	return rhs <= lhs;
-}
-
-bool operator==(const char* lhs, const mindroid::String& rhs) {
-	return rhs == lhs;
-}
-
-bool operator!=(const char* lhs, const mindroid::String& rhs) {
-	return rhs != lhs;
-}
-
-bool operator>=(const char* lhs, const mindroid::String& rhs) {
-	return rhs >= lhs;
-}
-
-bool operator>(const char* lhs, const mindroid::String& rhs) {
-	return rhs > lhs;
-}
