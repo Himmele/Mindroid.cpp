@@ -1,10 +1,9 @@
-## Mindroid.cpp is mainly a concurrency and messaging framework for C++ development ##
+## Mindroid.cpp is mainly a messaging and concurrency framework for C++ development ##
 
 ### [Mindroid would even make Alan Kay comfortable with C++ :-)](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html) ###
 
-Most ideas for this framework come from Google's Android Java messaging and concurrency classes.
-This small framework is very handy not only for Android developers :-).
-For examples how to use this framework just see the tests in the tests subdirectory.
+Most ideas for Mindroid come from Google's Android messaging and concurrency classes.
+Take a look at the tests subdirectory for examples how to use Mindroid.
 
 Android's messaging and concurrency framework (together with the Binder IPC mechanism) forms the basis of all Android applications and services.
 The messaging and concurrency framework is mainly based on the Thread, Looper, Message, MessageQueue and Handler classes.

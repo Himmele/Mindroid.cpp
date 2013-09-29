@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2013 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@
 #include <stdarg.h>
 #include "mindroid/util/Logger.h"
 #include "mindroid/util/Utils.h"
-
-extern "C" int vsnprintf(char* msg, size_t size, const char* format, va_list args);
 
 namespace mindroid {
 
