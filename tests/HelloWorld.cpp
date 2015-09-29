@@ -6,58 +6,50 @@ using namespace mindroid;
 
 static const int SAY_HELLO = 0;
 static const int SAY_WORLD = 1;
-static const int QUIT = 2;
 
 class HelloHandler : public Handler {
 public:
 	HelloHandler(const sp<Handler>& worldHandler) :
-			mWorldHandler(worldHandler), mCounter(0) {
+			mWorldHandler(worldHandler) {
 	}
 
 	virtual void handleMessage(const sp<Message>& msg) {
 		switch (msg->what) {
 		case SAY_HELLO:
-			mCounter++;
-			if (mCounter <= 1000) {
-				printf("Hello ");
-				sp<Message> sayWorld = mWorldHandler->obtainMessage(SAY_WORLD);
-				sayWorld->metaData()->putObject("SayHello", obtainMessage(SAY_HELLO));
-				sayWorld->sendToTarget();
-			} else {
-				mWorldHandler->obtainMessage(QUIT)->sendToTarget();
-				Looper::myLooper()->quit();
-			}
+			printf("Hello ");
+			sp<Message> message = mWorldHandler->obtainMessage(SAY_WORLD);
+			message->metaData()->putObject("Handler", this);
+			message->sendToTarget();
 			break;
 		}
 	}
 
 private:
 	sp<Handler> mWorldHandler;
-	int mCounter;
 };
 
 class WorldHandler : public Handler {
 public:
+	WorldHandler() {
+	}
+
 	virtual void handleMessage(const sp<Message>& msg) {
 		switch (msg->what) {
 		case SAY_WORLD:
 			printf("World!\n");
-			msg->metaData()->getObject<Message>("SayHello")->sendToTarget();
-			break;
-		case QUIT:
-			Looper::myLooper()->quit();
+			sp<Handler> helloHandler = msg->metaData()->getObject<Handler>("Handler");
+			sp<Message> message = helloHandler->obtainMessage(SAY_HELLO);
+			helloHandler->sendMessageDelayed(message, 1000);
 			break;
 		}
 	}
 };
 
 int main() {
-	sp< LooperThread<WorldHandler> > wlt = new LooperThread<WorldHandler>();
-	wlt->start();
-
 	Looper::prepare();
-	sp<Handler> hh = new HelloHandler(wlt->getHandler());
-	hh->obtainMessage(SAY_HELLO)->sendToTarget();
+	sp<Handler> worldHandler = new WorldHandler();
+	sp<Handler> helloHandler = new HelloHandler(worldHandler);
+	helloHandler->obtainMessage(SAY_HELLO)->sendToTarget();
 	Looper::loop();
 
 	return 0;

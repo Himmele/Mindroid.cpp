@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2005 The Android Open Source Project
+ * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
- * Some extenstions and refactorings by Daniel Himmelein
  */
 
 #ifndef MINDROID_REF_H_

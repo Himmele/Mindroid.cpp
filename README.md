@@ -1,10 +1,18 @@
-## Mindroid is mainly a concurrency and messaging framework for native C++ code development ##
+## Mindroid.cpp application framework for C++ development ##
 
-### [Mindroid would even make Alan Kay comfortable with C++ :-)](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html) ###
+Mindroid is an application framework (with focus on messaging and concurrency) that lets you create applications using a set of reusable components - just like Android.
+The name Mindroid has two different meanings. On one hand Mindroid is a minimal set of core Android classes and on the other hand these classes also form Android's mind (at least in my opinion).
 
-Most ideas for this framework come from Google's Android Java messaging and concurrency classes.
-This small framework is very handy not only for Android developers :-).
-For examples how to use this framework just see the tests in the tests subdirectory.
+Links:
+- [Mindroid - Android everywhere](http://himmele.blogspot.de/2013/10/mindroid-android-everywhere.html)
+- [Android messaging and concurrency for native C++ code development](http://himmele.blogspot.com/2011/08/android-messaging-and-concurrency-for.html)
+- [Alan Kay on Object-Oriented Programming](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
+
+#### [Mindroid would even make Alan Kay comfortable with C++ :-)](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html) ####
+
+### Ideas from Google Android ###
+
+Most ideas of Mindroid come from Google's Android messaging and concurrency classes.
 
 Android's messaging and concurrency framework (together with the Binder IPC mechanism) forms the basis of all Android applications and services.
 The messaging and concurrency framework is mainly based on the Thread, Looper, Message, MessageQueue and Handler classes.
@@ -21,8 +29,3 @@ There are two main uses for a Handler. First a Handler allows you to enqueue an 
 and furthermore it also enables you to schedule messages and runnables to be executed at some point in the future.
 The AsyncTask class enables proper and easy use of concurrency in a multithread environment.
 For more information about this class see Google's "Painless Threading" article. (Source: Google Android Developer Reference).
-
-Links:
-- [Android messaging and concurrency for native C++ code development](http://himmele.blogspot.com/2011/08/android-messaging-and-concurrency-for.html)
-- [Alan Kay on Object-Oriented Programming](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
-
