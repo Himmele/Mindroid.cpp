@@ -1,4 +1,4 @@
-## Mindroid.cpp application framework for embedded C++ development ##
+## Mindroid.cpp application framework for C++ development ##
 
 Mindroid is an application framework (with focus on messaging and concurrency) that lets you create applications using a set of reusable components - just like Android.
 The name Mindroid has two different meanings. On one hand Mindroid is a minimal set of core Android classes and on the other hand these classes also form Android's mind (at least in my opinion).
