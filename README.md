@@ -35,10 +35,27 @@ For more information about this class see Google's "Painless Threading" article.
 * Android
 `mkdir build; cd build`
 
-`cmake -DCMAKE_TOOLCHAIN_FILE=android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK_HOME -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI="armeabi-v7a with NEON" -D CMAKE_INSTALL_PREFIX=. .. ; make ;make install`
+
+`cmake -DCMAKE_TOOLCHAIN_FILE=../android-cmake/android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK_HOME -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI="armeabi-v7a with NEON" -D CMAKE_INSTALL_PREFIX=. .. `
+
+
+`make; make install`
+
 
 * Linux/MacOS/Windows
 
+
 `mkdir build; cd build`
 
+
 `cmake CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=. ..`
+
+
+`make;make install`
+
+### Test/Samples ###
+* Linux/MacOS/Windows
+`cmake  .`
+
+* Android
+`cmake -DCMAKE_TOOLCHAIN_FILE=../android-cmake/android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK_HOME -DANDROID_ABI="armeabi-v7a with NEON" . `
