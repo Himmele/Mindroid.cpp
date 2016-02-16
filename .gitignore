@@ -4,3 +4,5 @@ out
 *.o
 *.d
 *.so
+build
+prebuilt

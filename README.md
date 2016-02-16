@@ -29,3 +29,16 @@ There are two main uses for a Handler. First a Handler allows you to enqueue an 
 and furthermore it also enables you to schedule messages and runnables to be executed at some point in the future.
 The AsyncTask class enables proper and easy use of concurrency in a multithread environment.
 For more information about this class see Google's "Painless Threading" article. (Source: Google Android Developer Reference).
+
+
+### Build ###
+* Android
+`mkdir build; cd build`
+
+`cmake -DCMAKE_TOOLCHAIN_FILE=android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK_HOME -DCMAKE_BUILD_TYPE=Release -DANDROID_ABI="armeabi-v7a with NEON" -D CMAKE_INSTALL_PREFIX=. .. ; make ;make install`
+
+* Linux/MacOS/Windows
+
+`mkdir build; cd build`
+
+`cmake CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=. ..`
