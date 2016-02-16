@@ -1,0 +1,3 @@
+[submodule "android-cmake"]
+	path = android-cmake
+	url = https://github.com/taka-no-me/android-cmake
