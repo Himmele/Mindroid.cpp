@@ -55,7 +55,13 @@ For more information about this class see Google's "Painless Threading" article.
 
 ### Test/Samples ###
 * Linux/MacOS/Windows
+
+`cd tests`
+
 `cmake  .`
 
 * Android
+
+`cd tests`
+
 `cmake -DCMAKE_TOOLCHAIN_FILE=../android-cmake/android.toolchain.cmake -DANDROID_NDK=$ANDROID_NDK_HOME -DANDROID_ABI="armeabi-v7a with NEON" . `
