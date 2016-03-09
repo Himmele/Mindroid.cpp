@@ -1,6 +1,14 @@
 Debug
 out
+bin
+lib
 .settings
 *.o
 *.d
 *.so
+ConcurrencyTest
+prefs
+build_*
+.bake
+/Release/
+
