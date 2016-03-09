@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,199 +15,256 @@
  * limitations under the License.
  */
 
-#include <pthread.h>
+#include "mindroid/lang/Runnable.h"
+#include "mindroid/lang/Math.h"
+#include "mindroid/os/SystemClock.h"
 #include "mindroid/os/MessageQueue.h"
 #include "mindroid/os/Message.h"
-#include "mindroid/os/Clock.h"
-#include "mindroid/os/Lock.h"
 #include "mindroid/os/Handler.h"
-#include "mindroid/os/Runnable.h"
+#include "mindroid/util/Log.h"
+#include <climits>
 
 namespace mindroid {
 
-MessageQueue::MessageQueue() :
-		mHeadMessage(NULL),
-		mCondVar(mCondVarLock),
-		mLockMessageQueue(false) {
+const char* const MessageQueue::LOG_TAG = "MessageQueue";
+
+MessageQueue::MessageQueue(bool quitAllowed) :
+		mMessages(nullptr),
+		mLock(new ReentrantLock()),
+		mCondition(mLock->newCondition()),
+		mQuitAllowed(quitAllowed),
+		mQuitting(false) {
 }
 
 MessageQueue::~MessageQueue() { }
 
-bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t execTimestamp) {
-	AutoLock autoLock(mCondVarLock);
-	if (message->mExecTimestamp != 0) {
+bool MessageQueue::quit() {
+	if (!mQuitAllowed) {
 		return false;
 	}
-	if (mLockMessageQueue) {
-		return false;
-	} else if (message->mHandler == NULL) {
-		mLockMessageQueue = true;
+
+	AutoLock autoLock(mLock);
+	if (mQuitting) {
+		return true;
 	}
-	message->mExecTimestamp = execTimestamp;
-	sp<Message> curMessage = mHeadMessage;
-	if (curMessage == NULL || execTimestamp == 0 || execTimestamp < curMessage->mExecTimestamp) {
-		message->mNextMessage = curMessage;
-		mHeadMessage = message;
-		mCondVar.notify();
+	mQuitting = true;
+
+	sp<Message> curMessage = mMessages;
+	while (curMessage != nullptr) {
+		sp<Message> nextMessage = curMessage->nextMessage;
+		curMessage->recycle();
+		curMessage = nextMessage;
+	}
+	mMessages = nullptr;
+
+	mCondition->signal();
+	return true;
+}
+
+bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
+	if (message->target == nullptr) {
+		Assert::assertNotNull("Message must have a target", message->target);
+		return false;
+	}
+	if (message->when != 0) {
+		Assert::assertTrue("Message is already in use", message->when == 0);
+		return false;
+	}
+
+	AutoLock autoLock(mLock);
+	if (mQuitting) {
+		Log::w(LOG_TAG, "%p is sending a message to a Handler on a dead thread", message->target.getPointer());
+		message->recycle();
+		return false;
+	}
+
+	message->when = when;
+	sp<Message> curMessage = mMessages;
+	if (curMessage == nullptr || when == 0 || when < curMessage->when) {
+		message->nextMessage = curMessage;
+		mMessages = message;
+		mCondition->signal();
 	} else {
-		sp<Message> prevMessage = NULL;
-		while (curMessage != NULL && curMessage->mExecTimestamp <= execTimestamp) {
+		sp<Message> prevMessage;
+		for (;;) {
 			prevMessage = curMessage;
-			curMessage = curMessage->mNextMessage;
+			curMessage = curMessage->nextMessage;
+			if (curMessage == nullptr || when < curMessage->when) {
+				break;
+			}
 		}
-		message->mNextMessage = prevMessage->mNextMessage;
-		prevMessage->mNextMessage = message;
-		mCondVar.notify();
+		message->nextMessage = curMessage;
+		prevMessage->nextMessage = message;
+		mCondition->signal();
 	}
 	return true;
 }
 
 sp<Message> MessageQueue::dequeueMessage() {
-	while (true) {
-		AutoLock autoLock(mCondVarLock);
-		uint64_t now = Clock::monotonicTime();
-		sp<Message> message = getNextMessage(now);
-		if (message != NULL) {
-			message->mExecTimestamp = 0;
-			return message;
+	for (;;) {
+		AutoLock autoLock(mLock);
+		if (mQuitting) {
+			return nullptr;
 		}
 
-		if (mHeadMessage != NULL) {
-			if (mHeadMessage->mExecTimestamp - now > 0) {
-				timespec absExecTimestamp;
-				absExecTimestamp.tv_sec = mHeadMessage->mExecTimestamp / 1000000000LL;
-				absExecTimestamp.tv_nsec = mHeadMessage->mExecTimestamp % 1000000000LL;
-				mCondVar.wait(absExecTimestamp);
+		const uint64_t now = SystemClock::uptimeMillis();
+		sp<Message> message = mMessages;
+
+		if (message != nullptr) {
+			if (now < message->when) {
+				mCondition->await(Math::min(message->when - now, INT_MAX));
+			} else {
+				mMessages = message->nextMessage;
+				message->nextMessage = nullptr;
+				return message;
 			}
 		} else {
-			mCondVar.wait();
+			mCondition->await();
 		}
 	}
 }
 
-sp<Message> MessageQueue::getNextMessage(uint64_t now) {
-	sp<Message> message = mHeadMessage;
-	if (message != NULL) {
-		if (now >= message->mExecTimestamp) {
-			mHeadMessage = message->mNextMessage;
-			return message;
-		}
+bool MessageQueue::hasMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object) {
+	if (handler == nullptr) {
+		return false;
 	}
-	return NULL;
+
+	AutoLock autoLock(mLock);
+	sp<Message> curMessage = mMessages;
+	while (curMessage != nullptr) {
+		if (curMessage->target == handler && curMessage->what == what && (object == nullptr || curMessage->obj == object)) {
+			return true;
+		}
+		curMessage = curMessage->nextMessage;
+	}
+	return false;
 }
 
-bool MessageQueue::removeMessages(const sp<Handler>& handler, int32_t what) {
-	if (handler == NULL) {
+bool MessageQueue::hasMessages(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object) {
+	if (handler == nullptr) {
+		return false;
+	}
+
+	AutoLock autoLock(mLock);
+	sp<Message> curMessage = mMessages;
+	while (curMessage != nullptr) {
+		if (curMessage->target == handler && curMessage->callback == runnable && (object == nullptr || curMessage->obj == object)) {
+			return true;
+		}
+		curMessage = curMessage->nextMessage;
+	}
+	return false;
+}
+
+bool MessageQueue::removeMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object) {
+	if (handler == nullptr) {
 		return false;
 	}
 
 	bool foundMessage = false;
 
-	mCondVarLock.lock();
+	AutoLock autoLock(mLock);
+	sp<Message> curMessage = mMessages;
 
-	sp<Message> curMessage = mHeadMessage;
-	// remove all matching messages at the front of the message queue.
-	while (curMessage != NULL && curMessage->mHandler == handler && curMessage->what == what) {
+	// Remove all matching messages at the front of the message queue.
+	while (curMessage != nullptr && curMessage->target == handler && curMessage->what == what && (object == nullptr || curMessage->obj == object)) {
 		foundMessage = true;
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		mHeadMessage = nextMessage;
+		sp<Message> nextMessage = curMessage->nextMessage;
+		mMessages = nextMessage;
+		curMessage->recycle();
 		curMessage = nextMessage;
 	}
 
-	// remove all matching messages after the front of the message queue.
-	while (curMessage != NULL) {
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		if (nextMessage != NULL) {
-			if (nextMessage->mHandler == handler && nextMessage->what == what) {
+	// Remove all matching messages after the front of the message queue.
+	while (curMessage != nullptr) {
+		sp<Message> nextMessage = curMessage->nextMessage;
+		if (nextMessage != nullptr) {
+			if (nextMessage->target == handler && nextMessage->what == what && (object == nullptr || nextMessage->obj == object)) {
 				foundMessage = true;
-				sp<Message> nextButOneMessage = nextMessage->mNextMessage;
-				nextMessage = NULL;
-				curMessage->mNextMessage = nextButOneMessage;
+				sp<Message> nextButOneMessage = nextMessage->nextMessage;
+				nextMessage->recycle();
+				curMessage->nextMessage = nextButOneMessage;
 				continue;
 			}
 		}
 		curMessage = nextMessage;
 	}
-
-	mCondVarLock.unlock();
 
 	return foundMessage;
 }
 
-bool MessageQueue::removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable) {
-	if (handler == NULL || runnable == NULL) {
+bool MessageQueue::removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object) {
+	if (handler == nullptr || runnable == nullptr) {
 		return false;
 	}
 
-	bool foundRunnable = false;
+	bool foundMessage = false;
 
-	mCondVarLock.lock();
+	AutoLock autoLock(mLock);
+	sp<Message> curMessage = mMessages;
 
-	sp<Message> curMessage = mHeadMessage;
-	// remove all matching messages at the front of the message queue.
-	while (curMessage != NULL && curMessage->mHandler == handler && curMessage->mCallback == runnable) {
-		foundRunnable = true;
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		mHeadMessage = nextMessage;
+	// Remove all matching messages at the front of the message queue.
+	while (curMessage != nullptr && curMessage->target == handler && curMessage->callback == runnable && (object == nullptr || curMessage->obj == object)) {
+		foundMessage = true;
+		sp<Message> nextMessage = curMessage->nextMessage;
+		mMessages = nextMessage;
+		curMessage->recycle();
 		curMessage = nextMessage;
 	}
 
-	// remove all matching messages after the front of the message queue.
-	while (curMessage != NULL) {
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		if (nextMessage != NULL) {
-			if (nextMessage->mHandler == handler && nextMessage->mCallback == runnable) {
-				foundRunnable = true;
-				sp<Message> nextButOneMessage = nextMessage->mNextMessage;
-				nextMessage = NULL;
-				curMessage->mNextMessage = nextButOneMessage;
+	// Remove all matching messages after the front of the message queue.
+	while (curMessage != nullptr) {
+		sp<Message> nextMessage = curMessage->nextMessage;
+		if (nextMessage != nullptr) {
+			if (nextMessage->target == handler && nextMessage->callback == runnable && (object == nullptr || nextMessage->obj == object)) {
+				foundMessage = true;
+				sp<Message> nextButOneMessage = nextMessage->nextMessage;
+				nextMessage->recycle();
+				curMessage->nextMessage = nextButOneMessage;
 				continue;
 			}
 		}
 		curMessage = nextMessage;
 	}
 
-	mCondVarLock.unlock();
-
-	return foundRunnable;
+	return foundMessage;
 }
 
-bool MessageQueue::removeCallbacksAndMessages(const sp<Handler>& handler) {
-	if (handler == NULL) {
+bool MessageQueue::removeCallbacksAndMessages(const sp<Handler>& handler, const sp<Object>& object) {
+	if (handler == nullptr) {
 		return false;
 	}
 
-	bool foundSomething = false;
+	bool foundMessage = false;
 
-	mCondVarLock.lock();
+	AutoLock autoLock(mLock);
+	sp<Message> curMessage = mMessages;
 
-	sp<Message> curMessage = mHeadMessage;
-	// remove all matching messages at the front of the message queue.
-	while (curMessage != NULL && curMessage->mHandler == handler) {
-		foundSomething = true;
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		mHeadMessage = nextMessage;
+	// Remove all matching messages at the front of the message queue.
+	while (curMessage != nullptr && curMessage->target == handler && (object == nullptr || curMessage->obj == object)) {
+		foundMessage = true;
+		sp<Message> nextMessage = curMessage->nextMessage;
+		mMessages = nextMessage;
+		curMessage->recycle();
 		curMessage = nextMessage;
 	}
 
-	// remove all matching messages after the front of the message queue.
-	while (curMessage != NULL) {
-		sp<Message> nextMessage = curMessage->mNextMessage;
-		if (nextMessage != NULL) {
-			if (nextMessage->mHandler == handler) {
-				foundSomething = true;
-				sp<Message> nextButOneMessage = nextMessage->mNextMessage;
-				nextMessage = NULL;
-				curMessage->mNextMessage = nextButOneMessage;
+	// Remove all matching messages after the front of the message queue.
+	while (curMessage != nullptr) {
+		sp<Message> nextMessage = curMessage->nextMessage;
+		if (nextMessage != nullptr) {
+			if (nextMessage->target == handler && (object == nullptr || nextMessage->obj == object)) {
+				foundMessage = true;
+				sp<Message> nextButOneMessage = nextMessage->nextMessage;
+				nextMessage->recycle();
+				curMessage->nextMessage = nextButOneMessage;
 				continue;
 			}
 		}
 		curMessage = nextMessage;
 	}
 
-	mCondVarLock.unlock();
-
-	return foundSomething;
+	return foundMessage;
 }
 
 } /* namespace mindroid */

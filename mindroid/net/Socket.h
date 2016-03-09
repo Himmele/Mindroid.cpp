@@ -17,26 +17,33 @@
 #ifndef MINDROID_SOCKET_H_
 #define MINDROID_SOCKET_H_
 
-#include "mindroid/os/Ref.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/lang/String.h"
 
 namespace mindroid {
 
 class ServerSocket;
 
 class Socket :
-		public Ref
-{
+		public Object {
 public:
 	Socket();
-	Socket(const char* host, uint16_t port);
+	Socket(const char* host, uint16_t port) :
+			Socket(String::valueOf(host), port) {
+	}
+	Socket(const sp<String>& host, uint16_t port);
 	virtual ~Socket();
+	Socket(const Socket&) = delete;
+	Socket& operator=(const Socket&) = delete;
 
-	int connect(const char* host, uint16_t port);
+	int connect(const char* host, uint16_t port) {
+		return connect(String::valueOf(host), port);
+	}
+	int connect(const sp<String>& host, uint16_t port);
 	ssize_t read(uint8_t* data, size_t size);
 	ssize_t readFully(uint8_t* data, size_t size);
 	bool write(const void* data, size_t size);
 	void close();
-	bool setBlockingMode(bool blockingIO);
 	bool isConnected() const { return mIsConnected; }
 	bool isClosed() const { return mIsClosed; }
 	int getId() const { return mSocketId; }
@@ -47,8 +54,6 @@ private:
 	bool mIsClosed;
 
 	friend class ServerSocket;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Socket)
 };
 
 } /* namespace mindroid */

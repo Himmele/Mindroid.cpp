@@ -17,32 +17,38 @@
 #ifndef MINDROID_SOCKETADDRESS_H_
 #define MINDROID_SOCKETADDRESS_H_
 
-#include "mindroid/os/Ref.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/lang/String.h"
 #include <netinet/in.h>
 
 namespace mindroid {
 
 class SocketAddress :
-		public Ref
+		public Object
 {
 public:
 	SocketAddress();
 	SocketAddress(uint16_t port);
-	SocketAddress(const char* host, uint16_t port);
-	virtual ~SocketAddress() { }
-	const char* getHostName() const;
+	SocketAddress(const char* host, uint16_t port) :
+			SocketAddress(String::valueOf(host), port) {
+	}
+	SocketAddress(const sp<String>& host, uint16_t port);
+	virtual ~SocketAddress() = default;
+
+	SocketAddress(const SocketAddress&) = delete;
+	SocketAddress& operator=(const SocketAddress&) = delete;
+
+	sp<String> getHostName() const;
 	uint16_t getPort() const { return ntohs(mSocketAddress.sin_port); }
-	bool isValid() const { return mValid; }
+	bool isUnresolved() const { return mIsUnresolved; }
 
 private:
 	struct sockaddr_in mSocketAddress;
-	bool mValid;
+	bool mIsUnresolved;
 
 	friend class ServerSocket;
 	friend class Socket;
 	friend class DatagramSocket;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(SocketAddress)
 };
 
 } /* namespace mindroid */

@@ -15,51 +15,52 @@
  */
 
 #include "mindroid/net/SocketAddress.h"
+#include <cstring>
 #include <unistd.h>
-#include <string.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 
 namespace mindroid {
 
 SocketAddress::SocketAddress() :
-		mValid(false) {
+		mIsUnresolved(true) {
 	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 }
 
 SocketAddress::SocketAddress(uint16_t port) :
-		mValid(true) {
+		mIsUnresolved(false) {
 	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 	mSocketAddress.sin_family = AF_INET;
 	mSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 	mSocketAddress.sin_port = htons(port);
 }
 
-SocketAddress::SocketAddress(const char* host, uint16_t port) :
-		mValid(false) {
+SocketAddress::SocketAddress(const sp<String>& host, uint16_t port) :
+		mIsUnresolved(true) {
 	struct addrinfo hints, *result;
 	int status;
 
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	status = getaddrinfo(host, NULL, &hints, &result);
-	mValid = (status == 0);
+	status = getaddrinfo(host->c_str(), nullptr, &hints, &result);
+	mIsUnresolved = (status != 0);
 
-	if (mValid) {
+	if (!mIsUnresolved) {
 		memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 		mSocketAddress.sin_family = AF_INET;
 		mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
 		mSocketAddress.sin_port = htons(port);
+		freeaddrinfo(result);
 	}
-
-	freeaddrinfo(result);
 }
 
-const char* SocketAddress::getHostName() const {
-	static char host[NI_MAXHOST];
-	getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), NULL, 0, 0);
-	return host;
+sp<String> SocketAddress::getHostName() const {
+	char* host = new char[NI_MAXHOST];
+	getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), nullptr, 0, 0);
+	sp<String> h = String::valueOf(host);
+	delete[] host;
+	return h;
 }
 
 } /* namespace mindroid */

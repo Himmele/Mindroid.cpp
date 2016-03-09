@@ -17,23 +17,30 @@
 #ifndef MINDROID_LOGGER_H_
 #define MINDROID_LOGGER_H_
 
-#include <stdint.h>
-#include "mindroid/util/Utils.h"
+#include "mindroid/lang/Object.h"
 
 namespace mindroid {
 
-class Logger
-{
+class Logger :
+		public Object {
 public:
-	Logger() {
-	}
+	Logger() { }
+	virtual ~Logger() { }
+	Logger(const Logger&) = delete;
+	Logger& operator=(const Logger&) = delete;
+	virtual int println(int bufferId, uint8_t priority, const char* tag, const char* msg);
 
-	int println(int bufferId, uint8_t priority, const char* tag, const char* msg);
+	static const uint8_t VERBOSE = 0;
+	static const uint8_t DEBUG = 1;
+	static const uint8_t INFO = 2;
+	static const uint8_t WARN = 3;
+	static const uint8_t ERROR = 4;
+	static const uint8_t WTF = 5;
 	
 private:
-	static char mProrities[];
+	static int getTime(char *time, size_t size);
 
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Logger)
+	static char sProrities[];
 };
 
 } /* namespace mindroid */

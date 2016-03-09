@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2007 The Android Open Source Project
  * Copyright (C) 2012 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,139 +20,114 @@
 namespace mindroid {
 
 Bundle::Bundle() {
-	mKeyValuePairs = new List<KeyValuePair>();
+	mMap = new HashMap<sp<String>, sp<Variant>>();
 }
 
 Bundle::~Bundle() {
 	clear();
 }
 
-void Bundle::clear() {
-	mKeyValuePairs.clear();
+Bundle::Bundle(const sp<Bundle>& other) {
+	putAll(other);
 }
 
-bool Bundle::containsKey(const char* key) {
-	List<KeyValuePair>::iterator itr = mKeyValuePairs->begin();
-	while (itr != mKeyValuePairs->end()) {
-		if (itr->key->equals(key)) {
-			return true;
+bool Bundle::containsKey(const sp<String>& key) {
+	return mMap->containsKey(key);
+}
+
+void Bundle::remove(const sp<String>& key) {
+	mMap->remove(key);
+}
+
+void Bundle::putAll(const sp<Bundle>& bundle) {
+	mMap->putAll(bundle->mMap);
+}
+
+void Bundle::putBinder(const sp<String>& key, const sp<IBinder>& binder) {
+	mMap->put(key, new Variant(binder));
+}
+
+void Bundle::putBoolean(const sp<String>& key, bool value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putBundle(const sp<String>& key, const sp<Bundle>& value) {
+	mMap->put(key, new Variant(sp<Object>(value)));
+}
+
+void Bundle::putByte(const sp<String>& key, uint8_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putChar(const sp<String>& key, char value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putDouble(const sp<String>& key, double value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putFloat(const sp<String>& key, float value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putInt(const sp<String>& key, int32_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putUnsignedInt(const sp<String>& key, uint32_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putLong(const sp<String>& key, int64_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putUnsignedLong(const sp<String>& key, uint64_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putObject(const sp<String>& key, const sp<Object>& object) {
+	mMap->put(key, new Variant(object));
+}
+
+void Bundle::putShort(const sp<String>& key, int16_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putUnsignedShort(const sp<String>& key, uint16_t value) {
+	mMap->put(key, new Variant(value));
+}
+
+void Bundle::putString(const sp<String>& key, const sp<String>& string) {
+	mMap->put(key, new Variant(string));
+}
+
+void Bundle::putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value) {
+	mMap->put(key, new Variant(value));
+}
+
+sp<IBinder> Bundle::getBinder(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isBinder()) {
+			return value->getBinder();
+		} else {
+			return nullptr;
 		}
-		++itr;
 	}
-	return false;
+	return nullptr;
 }
 
-void Bundle::remove(const char* key) {
-	List<KeyValuePair>::iterator itr = mKeyValuePairs->begin();
-	while (itr != mKeyValuePairs->end()) {
-		if (itr->key->equals(key)) {
-			itr = mKeyValuePairs->erase(itr);
-			break;
-		}
-		++itr;
-	}
-}
-
-void Bundle::putBool(const char* key, bool value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putByte(const char* key, uint8_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putChar(const char* key, char value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putInt16(const char* key, int16_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putUInt16(const char* key, uint16_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putInt32(const char* key, int32_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putUInt32(const char* key, uint32_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putInt64(const char* key, int64_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putUInt64(const char* key, uint64_t value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putFloat(const char* key, float value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putDouble(const char* key, double value) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(value);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putString(const char* key, const char* string) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(string);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-void Bundle::putString(const char* key, const sp<String>& string) {
-	putString(key, (string != NULL) ? string->c_str() : NULL);
-}
-
-void Bundle::putObject(const char* key, const sp<Ref>& object) {
-	KeyValuePair keyValuePair;
-	keyValuePair.key = new String(key);
-	keyValuePair.value = new Variant(object);
-	mKeyValuePairs->push_back(keyValuePair);
-}
-
-bool Bundle::getBool(const char* key, const bool defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Bool) {
-			return itr->value->getBool();
+bool Bundle::getBoolean(const sp<String>& key, const bool defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isBool()) {
+			return value->getBool();
 		} else {
 			return defaultValue;
 		}
@@ -159,11 +135,23 @@ bool Bundle::getBool(const char* key, const bool defaultValue) const {
 	return defaultValue;
 }
 
-uint8_t Bundle::getByte(const char* key, const uint8_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Byte) {
-			return itr->value->getByte();
+sp<Bundle> Bundle::getBundle(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isObject()) {
+			return object_cast<Bundle>(value->getObject());
+		} else {
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+uint8_t Bundle::getByte(const sp<String>& key, const uint8_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+		if (value != nullptr) {
+		if (value->isByte()) {
+			return value->getByte();
 		} else {
 			return defaultValue;
 		}
@@ -171,11 +159,11 @@ uint8_t Bundle::getByte(const char* key, const uint8_t defaultValue) const {
 	return defaultValue;
 }
 
-char Bundle::getChar(const char* key, const char defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Char) {
-			return itr->value->getChar();
+char Bundle::getChar(const sp<String>& key, const char defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isChar()) {
+			return value->getChar();
 		} else {
 			return defaultValue;
 		}
@@ -183,11 +171,11 @@ char Bundle::getChar(const char* key, const char defaultValue) const {
 	return defaultValue;
 }
 
-int16_t Bundle::getInt16(const char* key, const int16_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int16) {
-			return itr->value->getInt16();
+double Bundle::getDouble(const sp<String>& key, const double defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isDouble()) {
+			return value->getDouble();
 		} else {
 			return defaultValue;
 		}
@@ -195,11 +183,11 @@ int16_t Bundle::getInt16(const char* key, const int16_t defaultValue) const {
 	return defaultValue;
 }
 
-uint16_t Bundle::getUInt16(const char* key, const uint16_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt16) {
-			return itr->value->getUInt16();
+float Bundle::getFloat(const sp<String>& key, const float defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isFloat()) {
+			return value->getFloat();
 		} else {
 			return defaultValue;
 		}
@@ -207,11 +195,11 @@ uint16_t Bundle::getUInt16(const char* key, const uint16_t defaultValue) const {
 	return defaultValue;
 }
 
-int32_t Bundle::getInt32(const char* key, const int32_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int32) {
-			return itr->value->getInt32();
+int32_t Bundle::getInt(const sp<String>& key, const int32_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isInt()) {
+			return value->getInt();
 		} else {
 			return defaultValue;
 		}
@@ -219,11 +207,11 @@ int32_t Bundle::getInt32(const char* key, const int32_t defaultValue) const {
 	return defaultValue;
 }
 
-uint32_t Bundle::getUInt32(const char* key, const uint32_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt32) {
-			return itr->value->getUInt32();
+uint32_t Bundle::getUnsignedInt(const sp<String>& key, const uint32_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isUnsignedInt()) {
+			return value->getUnsignedInt();
 		} else {
 			return defaultValue;
 		}
@@ -231,11 +219,23 @@ uint32_t Bundle::getUInt32(const char* key, const uint32_t defaultValue) const {
 	return defaultValue;
 }
 
-int64_t Bundle::getInt64(const char* key, const int64_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int64) {
-			return itr->value->getInt64();
+sp<ArrayList<int32_t>> Bundle::getIntegerArrayList(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isIntegerArrayList()) {
+			return value->getIntegerArrayList();
+		} else {
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+int64_t Bundle::getLong(const sp<String>& key, const int64_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isLong()) {
+			return value->getLong();
 		} else {
 			return defaultValue;
 		}
@@ -243,11 +243,11 @@ int64_t Bundle::getInt64(const char* key, const int64_t defaultValue) const {
 	return defaultValue;
 }
 
-uint64_t Bundle::getUInt64(const char* key, const uint64_t defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt64) {
-			return itr->value->getUInt64();
+uint64_t Bundle::getUnsignedLong(const sp<String>& key, const uint64_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isUnsignedLong()) {
+			return value->getUnsignedLong();
 		} else {
 			return defaultValue;
 		}
@@ -255,11 +255,35 @@ uint64_t Bundle::getUInt64(const char* key, const uint64_t defaultValue) const {
 	return defaultValue;
 }
 
-float Bundle::getFloat(const char* key, const float defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Float) {
-			return itr->value->getFloat();
+sp<Object> Bundle::getObject(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isObject()) {
+			return value->getObject();
+		} else {
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+sp<Object> Bundle::getObject(const sp<String>& key, const sp<Object>& defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isObject()) {
+			return value->getObject();
+		} else {
+			return nullptr;
+		}
+	}
+	return nullptr;
+}
+
+int16_t Bundle::getShort(const sp<String>& key, const int16_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isShort()) {
+			return value->getShort();
 		} else {
 			return defaultValue;
 		}
@@ -267,11 +291,11 @@ float Bundle::getFloat(const char* key, const float defaultValue) const {
 	return defaultValue;
 }
 
-double Bundle::getDouble(const char* key, const double defaultValue) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Double) {
-			return itr->value->getDouble();
+uint16_t Bundle::getUnsignedShort(const sp<String>& key, const uint16_t defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isUnsignedShort()) {
+			return value->getUnsignedShort();
 		} else {
 			return defaultValue;
 		}
@@ -279,183 +303,40 @@ double Bundle::getDouble(const char* key, const double defaultValue) const {
 	return defaultValue;
 }
 
-sp<String> Bundle::getString(const char* key) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::CharString) {
-			return itr->value->getString();
+sp<String> Bundle::getString(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isString()) {
+			return value->getString();
 		} else {
-			return String::EMPTY_STRING;
+			return nullptr;
 		}
 	}
-	return String::EMPTY_STRING;
+	return nullptr;
 }
 
-bool Bundle::fillBool(const char* key, bool& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Bool) {
-			value = itr->value->getBool();
-			return true;
+sp<String> Bundle::getString(const sp<String>& key, const char* defaultValue) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isString()) {
+			return value->getString();
 		} else {
-			return false;
+			return String::valueOf(defaultValue);
 		}
 	}
-	return false;
+	return String::valueOf(defaultValue);
 }
 
-bool Bundle::fillByte(const char* key, uint8_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Byte) {
-			value = itr->value->getByte();
-			return true;
+sp<ArrayList<sp<String>>> Bundle::getStringArrayList(const sp<String>& key) const {
+	sp<Variant> value = mMap->get(key);
+	if (value != nullptr) {
+		if (value->isStringArrayList()) {
+			return value->getStringArrayList();
 		} else {
-			return false;
+			return nullptr;
 		}
 	}
-	return false;
-}
-
-bool Bundle::fillChar(const char* key, char& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Char) {
-			value = itr->value->getChar();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillInt16(const char* key, int16_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int16) {
-			value = itr->value->getInt16();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillUInt16(const char* key, uint16_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt16) {
-			value = itr->value->getUInt16();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillInt32(const char* key, int32_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int32) {
-			value = itr->value->getInt32();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillUInt32(const char* key, uint32_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt32) {
-			value = itr->value->getUInt32();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillInt64(const char* key, int64_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Int64) {
-			value = itr->value->getInt64();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillUInt64(const char* key, uint64_t& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::UInt64) {
-			value = itr->value->getUInt64();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillFloat(const char* key, float& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Float) {
-			value = itr->value->getFloat();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillDouble(const char* key, double& value) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Double) {
-			value = itr->value->getFloat();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-bool Bundle::fillString(const char* key, sp<String>& string) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::CharString) {
-			string = itr->value->getString();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-
-List<Bundle::KeyValuePair>::const_iterator Bundle::findValue(const char* key) const {
-	List<KeyValuePair>::const_iterator itr = mKeyValuePairs.getConstPointer()->begin();
-	while (itr != mKeyValuePairs->end()) {
-		if (itr->key->equals(key)) {
-			return itr;
-		}
-		++itr;
-	}
-	return mKeyValuePairs.getConstPointer()->end();
+	return nullptr;
 }
 
 } /* namespace mindroid */

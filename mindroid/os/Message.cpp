@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,175 +15,161 @@
  * limitations under the License.
  */
 
-#include <stddef.h>
-#include <assert.h>
 #include "mindroid/os/Message.h"
 #include "mindroid/os/Handler.h"
-#include "mindroid/os/Lock.h"
+#include "mindroid/util/Assert.h"
+#include "mindroid/util/concurrent/Cancellable.h"
 
 namespace mindroid {
 
 MessagePool Message::sMessagePool;
 
 MessagePool::MessagePool() :
-		MAX_SIZE(10) {
+		MAX_SIZE(42),
+		size(0),
+		lock(new ReentrantLock()) {
 }
 
 MessagePool::~MessagePool() {
-	AutoLock autoLock(mLock);
-	// Avoid memory leaks if new message objects are allocated after the MessagePool is shut down.
+	AutoLock autoLock(lock);
 	MAX_SIZE = 0;
-	sp<Message> curMessage = mHeadMessage;
-	while (curMessage != NULL) {
-		curMessage.getPointer()->setDestroyer(NULL);
-		curMessage = curMessage->mNextMessage;
-	}
-	mHeadMessage = NULL;
+	size = 0;
+	pool = nullptr;
 }
 
 Message::Message() :
 		what(0),
 		arg1(0),
 		arg2(0),
-		obj(NULL),
-		mExecTimestamp(0),
-		mHandler(NULL),
-		mCallback(NULL),
-		mMetaData(NULL),
-		mNextMessage(NULL) {
+		obj(nullptr),
+		when(0),
+		data(nullptr),
+		target(nullptr),
+		callback(nullptr),
+		nextMessage(nullptr) {
 }
-
-Message::~Message() { }
 
 sp<Message> Message::obtain() {
 	{
-		AutoLock autoLock(sMessagePool.mLock);
-		if (sMessagePool.mHeadMessage != NULL) {
-			sp<Message> message = sMessagePool.mHeadMessage;
-			sMessagePool.mHeadMessage = message->mNextMessage;
-			message->mNextMessage = NULL;
-			sMessagePool.mSize--;
+		AutoLock autoLock(sMessagePool.lock);
+		if (sMessagePool.pool != nullptr) {
+			sp<Message> message = sMessagePool.pool;
+			sMessagePool.pool = message->nextMessage;
+			message->nextMessage = nullptr;
+			sMessagePool.size--;
 			return message;
 		}
 	}
 	Message* message = new Message();
-	assert(message != NULL);
-	message->setDestroyer(message);
+	Assert::assertNotNull(message);
+	return message;
+}
+
+sp<Message> Message::obtain(const sp<Message>& origMessage) {
+	sp<Message> message = obtain();
+	message->what = origMessage->what;
+	message->arg1 = origMessage->arg1;
+	message->arg2 = origMessage->arg2;
+	message->obj = origMessage->obj;
+	if (origMessage->data != nullptr) {
+		message->data = new Bundle(origMessage->data);
+	}
+	message->target = origMessage->target;
+	message->callback = origMessage->callback;
+
 	return message;
 }
 
 sp<Message> Message::obtain(const sp<Handler>& handler) {
 	sp<Message> message = obtain();
-	message->mHandler = handler;
+	message->target = handler;
+	return message;
+}
+
+sp<Message> Message::obtain(const sp<Handler>& handler, const sp<Runnable>& callback) {
+	sp<Message> message = obtain();
+	message->target = handler;
+	message->callback = callback;
 	return message;
 }
 
 sp<Message> Message::obtain(const sp<Handler>& handler, int32_t what) {
 	sp<Message> message = obtain();
-	message->mHandler = handler;
+	message->target = handler;
 	message->what = what;
+	return message;
+}
+
+sp<Message> Message::obtain(const sp<Handler>& handler, int32_t what, const sp<Object>& obj) {
+	sp<Message> message = obtain();
+	message->target = handler;
+	message->what = what;
+	message->obj = obj;
 	return message;
 }
 
 sp<Message> Message::obtain(const sp<Handler>& handler, int32_t what, int32_t arg1, int32_t arg2) {
 	sp<Message> message = obtain();
-	message->mHandler = handler;
+	message->target = handler;
 	message->what = what;
 	message->arg1 = arg1;
 	message->arg2 = arg2;
 	return message;
 }
 
-sp<Message> Message::obtain(const sp<Handler>& handler, const sp<Runnable>& callback) {
+sp<Message> Message::obtain(const sp<Handler>& handler, int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj) {
 	sp<Message> message = obtain();
-	message->mHandler = handler;
-	message->mCallback = callback;
+	message->target = handler;
+	message->what = what;
+	message->arg1 = arg1;
+	message->arg2 = arg2;
+	message->obj = obj;
 	return message;
 }
 
-sp<Message> Message::obtain(const Message* message) {
-	sp<Message> dupMessage = obtain();
-	dupMessage->what = message->what;
-	dupMessage->arg1 = message->arg1;
-	dupMessage->arg2 = message->arg2;
-	dupMessage->obj = message->obj;
-	dupMessage->mExecTimestamp = 0;
-	dupMessage->mHandler = message->mHandler;
-	dupMessage->mCallback = message->mCallback;
-	dupMessage->mMetaData = message->mMetaData;
-	dupMessage->mNextMessage = NULL;
-	return dupMessage;
-}
-
-uint64_t Message::getExecTimestamp() const {
-	return mExecTimestamp;
-}
-
-void Message::setHandler(const sp<Handler>& handler) {
-	mHandler = handler;
-}
-
-sp<Handler> Message::getHandler() const {
-	return mHandler;
-}
-
-sp<Runnable> Message::getCallback() const {
-	return mCallback;
-}
-
-bool Message::hasMetaData() const {
-	return mMetaData != NULL;
-}
-
-sp<Bundle> Message::metaData() {
-	if (mMetaData == NULL) {
-		mMetaData = new Bundle();
+/**
+ * Return a Message instance to the global pool. You MUST NOT touch the Message after calling
+ * this function -- it has effectively been freed.
+ */
+void Message::recycle() {
+	if (result != nullptr) {
+		result->cancel();
 	}
-	return mMetaData;
-}
 
-bool Message::sendToTarget() {
-	if (mHandler != NULL) {
-		return mHandler->sendMessage(this);
-	} else {
-		return false;
-	}
-}
-
-sp<Message> Message::dup() const {
-	return Message::obtain(this);
-}
-
-void Message::destroy(Ref* ref) {
-	{
-		// The reentranceMessageGuard keeps the mNextMessage until we release the sMessagePoolLock since sMessagePoolLock is not a recursive mutex.
-		sp<Message> reentranceMessageGuard;
-		AutoLock autoLock(sMessagePool.mLock);
-		if (sMessagePool.mSize < sMessagePool.MAX_SIZE) {
-			// Make sure that the ref message object is alive before it may appear as rvalue (e.g. as sMessagePool or mNextMessage).
-			sp<Message> message = reviveObject<Message>(ref);
-			reentranceMessageGuard = mNextMessage;
-			clear();
-			mNextMessage = sMessagePool.mHeadMessage;
-			sMessagePool.mHeadMessage = message;
-			sMessagePool.mSize++;
-			return;
-		}
-	}
-	setDestroyer(NULL);
-	delete this;
-}
-
-void Message::clear() {
 	what = 0;
 	arg1 = 0;
 	arg2 = 0;
-	obj = NULL;
-	mExecTimestamp = 0;
-	mHandler = NULL;
-	mCallback = NULL;
-	mMetaData = NULL;
-	mNextMessage = NULL;
+	obj = nullptr;
+	when = 0;
+	target = nullptr;
+	callback = nullptr;
+	data = nullptr;
+	result = nullptr;
+
+	{
+		AutoLock autoLock(sMessagePool.lock);
+		if (sMessagePool.size < sMessagePool.MAX_SIZE) {
+			nextMessage = sMessagePool.pool;
+			sMessagePool.pool = this;
+			sMessagePool.size++;
+		}
+	}
+}
+
+void Message::copyFrom(const sp<Message>& otherMessage) {
+	this->what = otherMessage->what;
+	this->arg1 = otherMessage->arg1;
+	this->arg2 = otherMessage->arg2;
+	this->obj = otherMessage->obj;
+	if (otherMessage->data != nullptr) {
+		this->data = new Bundle(otherMessage->data);
+	} else {
+		this->data = nullptr;
+	}
+}
+
+void Message::sendToTarget() {
+	target->sendMessage(this);
 }
 
 } /* namespace mindroid */

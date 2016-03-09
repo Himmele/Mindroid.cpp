@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,36 +18,118 @@
 #ifndef MINDROID_LOOPER_H_
 #define MINDROID_LOOPER_H_
 
-#include <pthread.h>
-#include "mindroid/util/Utils.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/lang/Thread.h"
 #include "mindroid/os/MessageQueue.h"
 
 namespace mindroid {
 
 class Runnable;
 
-class Looper
-{
+/**
+ * Class used to run a message loop for a thread. Threads by default do not have a message loop
+ * associated with them; to create one, call {@link #prepare} in the thread that is to run the loop,
+ * and then {@link #loop} to have it process messages until the loop is stopped.
+ *
+ * <p>
+ * Most interaction with a message loop is through the {@link Handler} class.
+ *
+ * <p>
+ * This is a typical example of the implementation of a Looper thread, using the separation of
+ * {@link #prepare} and {@link #loop} to create an initial Handler to communicate with the Looper.
+ *
+ * <pre>
+ *  class LooperThread extends Thread {
+ *      public Handler mHandler;
+ *
+ *      public void run() {
+ *          Looper.prepare();
+ *
+ *          mHandler = new Handler() {
+ *              public void handleMessage(Message msg) {
+ *                  // process incoming messages here
+ *              }
+ *          };
+ *
+ *          Looper.loop();
+ *      }
+ *  }
+ * </pre>
+ */
+class Looper final :
+		public Object {
 public:
-	virtual ~Looper();
-	static bool prepare();
-	static bool prepare(const sp<Runnable>& onLooperReadyRunnable);
-	static Looper* myLooper();
+	virtual ~Looper() {
+	}
+
+	Looper(const Looper&) = delete;
+	Looper& operator=(const Looper&) = delete;
+
+	/**
+	 * Initialize the current thread as a looper. This gives you a chance to create handlers that
+	 * then reference this looper, before actually starting the loop. Be sure to call
+	 * {@link #loop()} after calling this method, and end it by calling {@link #quit()}.
+	 */
+	static bool prepare() {
+		return prepare(true);
+	}
+
+	static bool prepare(bool quitAllowed);
+
+	/**
+	 * Run the message queue in this thread. Be sure to call {@link #quit()} to end the loop.
+	 */
 	static void loop();
+
+	/**
+	 * Return the Looper object associated with the current thread. Returns null if the calling
+	 * thread is not associated with a Looper.
+	 */
+	static sp<Looper> myLooper();
+
+	/**
+	 * Return the {@link MessageQueue} object associated with the current thread. This must be
+	 * called from a thread running a Looper, or a NullPointerException will be thrown.
+	 */
+	static sp<MessageQueue> myQueue() { return myLooper()->mMessageQueue; }
+
+	/**
+	 * Returns true if the current thread is this looper's thread.
+	 */
+	bool isCurrentThread() {
+		return Thread::currentThread()->mThread == mThread->mThread;
+	}
+
+	/**
+	 * Quits the looper.
+	 *
+	 * Causes the {@link #loop} method to terminate as soon as possible.
+	 */
 	void quit();
-	sp<MessageQueue> myMessageQueue() { return mMessageQueue; }
+
+	/**
+	 * Return the Thread associated with this Looper.
+	 */
+	sp<Thread> getThread() { return mThread; }
+
+	/** @hide */
+	sp<MessageQueue> getQueue() {
+		return mMessageQueue;
+	}
 
 private:
-	Looper();
+	Looper(bool quitAllowed);
 	static void init();
 	static void finalize(void* looper);
 
+	sp<Looper> mSelf;
 	sp<MessageQueue> mMessageQueue;
-	sp<Runnable> mOnLooperReadyRunnable;
+	sp<Thread> mThread;
+
 	static pthread_once_t sTlsOneTimeInitializer;
 	static pthread_key_t sTlsKey;
 
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Looper)
+	friend class Handler;
 };
 
 } /* namespace mindroid */

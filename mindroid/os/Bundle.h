@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2007 The Android Open Source Project
  * Copyright (C) 2012 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,305 +18,635 @@
 #ifndef MINDROID_BUNDLE_H_
 #define MINDROID_BUNDLE_H_
 
-#include <stdint.h>
-#include "mindroid/util/Utils.h"
-#include "mindroid/os/Ref.h"
-#include "mindroid/util/List.h"
-#include "mindroid/lang/String.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/util/HashMap.h"
+#include "mindroid/util/Variant.h"
 
 namespace mindroid {
 
 class Bundle :
-		public Ref
-{
+		public Object {
 public:
+	/**
+	 * Constructs a new, empty Bundle.
+	 */
 	Bundle();
 	virtual ~Bundle();
 
-	size_t size() const { return mKeyValuePairs->size(); }
-	bool empty() const { return mKeyValuePairs->empty(); }
-	void clear();
-	bool containsKey(const char* key);
-	void remove(const char* key);
+	/**
+	 * Constructs a Bundle containing a copy of the mappings from the given Bundle.
+	 *
+	 * @param b a Bundle to be copied.
+	 */
+	Bundle(const sp<Bundle>& b);
 
-	void putBool(const char* key, bool value);
-	void putByte(const char* key, uint8_t value);
-	void putChar(const char* key, char value);
-	void putInt16(const char* key, int16_t value);
-	void putUInt16(const char* key, uint16_t value);
-	void putInt32(const char* key, int32_t value);
-	void putUInt32(const char* key, uint32_t value);
-	void putInt64(const char* key, int64_t value);
-	void putUInt64(const char* key, uint64_t value);
-	void putFloat(const char* key, float value);
-	void putDouble(const char* key, double value);
-	void putString(const char* key, const char* string);
-	void putString(const char* key, const sp<String>& string);
-	void putObject(const char* key, const sp<Ref>& object);
+	Bundle(const Bundle&) = delete;
+	Bundle& operator=(const Bundle&) = delete;
 
-	bool getBool(const char* key, const bool defaultValue) const;
-	uint8_t getByte(const char* key, const uint8_t defaultValue) const;
-	char getChar(const char* key, const char defaultValue) const;
-	int16_t getInt16(const char* key, const int16_t defaultValue) const;
-	uint16_t getUInt16(const char* key, const uint16_t defaultValue) const;
-	int32_t getInt32(const char* key, const int32_t defaultValue) const;
-	uint32_t getUInt32(const char* key, const uint32_t defaultValue) const;
-	int64_t getInt64(const char* key, const int64_t defaultValue) const;
-	uint64_t getUInt64(const char* key, const uint64_t defaultValue) const;
-	float getFloat(const char* key, const float defaultValue) const;
-	double getDouble(const char* key, const double defaultValue) const;
-	sp<String> getString(const char* key) const;
-	template<typename T>
-	sp<T> getObject(const char* key) const;
+	/**
+	 * Removes all elements from the mapping of this Bundle.
+	 */
+	void clear() {
+		mMap.clear();
+	}
 
-	bool fillBool(const char* key, bool& value) const;
-	bool fillByte(const char* key, uint8_t& value) const;
-	bool fillChar(const char* key, char& value) const;
-	bool fillInt16(const char* key, int16_t& value) const;
-	bool fillUInt16(const char* key, uint16_t& value) const;
-	bool fillInt32(const char* key, int32_t& value) const;
-	bool fillUInt32(const char* key, uint32_t& value) const;
-	bool fillInt64(const char* key, int64_t& value) const;
-	bool fillUInt64(const char* key, uint64_t& value) const;
-	bool fillFloat(const char* key, float& value) const;
-	bool fillDouble(const char* key, double& value) const;
-	bool fillString(const char* key, sp<String>& string) const;
-	template<typename T>
-	bool fillObject(const char* key, sp<T>& object) const;
+	/**
+	 * Returns the number of mappings contained in this Bundle.
+	 *
+	 * @return the number of mappings as an int.
+	 */
+	size_t size() const {
+		return mMap->size();
+	}
+
+	/**
+	 * Returns true if the mapping of this Bundle is empty, false otherwise.
+	 */
+	bool isEmpty() const {
+		return mMap->isEmpty();
+	}
+
+	/**
+	 * Returns true if the given key is contained in the mapping
+	 * of this Bundle.
+	 *
+	 * @param key a String key
+	 * @return true if the key is part of the mapping, false otherwise
+	 */
+	bool containsKey(const char* key) {
+		return containsKey(String::valueOf(key));
+	}
+	bool containsKey(const sp<String>& key);
+
+	/**
+	 * Returns the entry with the given key as an object.
+	 *
+	 * @param key a String key
+	 * @return an Variant, or null
+	 */
+	sp<Variant> get(const char* key) const {
+		return mMap->get(String::valueOf(key));
+	}
+	sp<Variant> get(const sp<String>& key) const {
+		return mMap->get(key);
+	}
+
+	/**
+	 * Removes any entry with the given key from the mapping of this Bundle.
+	 *
+	 * @param key a String key
+	 */
+	void remove(const char* key) {
+		remove(String::valueOf(key));
+	}
+	void remove(const sp<String>& key);
+
+	/**
+	 * Inserts all mappings from the given Bundle into this Bundle.
+	 *
+	 * @param bundle a Bundle
+	 */
+	void putAll(const sp<Bundle>& bundle);
+
+	/**
+	 * Inserts an {@link IBinder} value into the mapping of this Bundle, replacing any existing
+	 * value for the given key. Either key or value may be null.
+	 *
+	 * <p class="note">
+	 * You should be very careful when using this function. In many places where Bundles are used
+	 * (such as inside of Intent objects), the Bundle can live longer inside of another process than
+	 * the process that had originally created it. In that case, the IBinder you supply here will
+	 * become invalid when your process goes away, and no longer usable, even if a new process is
+	 * created for you later on.
+	 * </p>
+	 *
+	 * @param key a String, or null
+	 * @param value an IBinder object, or null
+	 */
+	void putBinder(const char* key, const sp<IBinder>& value) {
+		putBinder(String::valueOf(key), value);
+	}
+	void putBinder(const sp<String>& key, const sp<IBinder>& value);
+
+	/**
+	 * Inserts a Boolean value into the mapping of this Bundle, replacing any existing value for the
+	 * given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value a Boolean, or null
+	 */
+	void putBoolean(const char* key, bool value) {
+		putBoolean(String::valueOf(key), value);
+	}
+	void putBoolean(const sp<String>& key, bool value);
+
+	/**
+	 * Inserts a Bundle value into the mapping of this Bundle, replacing any existing value for the
+	 * given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value a Bundle object, or null
+	 */
+	void putBundle(const char* key, const sp<Bundle>& value) {
+		putBundle(String::valueOf(key), value);
+	}
+	void putBundle(const sp<String>& key, const sp<Bundle>& value);
+
+	/**
+	 * Inserts a byte value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a byte
+	 */
+	void putByte(const char* key, uint8_t value) {
+		putByte(String::valueOf(key), value);
+	}
+	void putByte(const sp<String>& key, uint8_t value);
+
+	/**
+	 * Inserts a char value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a char, or null
+	 */
+	void putChar(const char* key, char value) {
+		putChar(String::valueOf(key), value);
+	}
+	void putChar(const sp<String>& key, char value);
+
+	/**
+	 * Inserts a double value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a double
+	 */
+	void putDouble(const char* key, double value) {
+		putDouble(String::valueOf(key), value);
+	}
+	void putDouble(const sp<String>& key, double value);
+
+	/**
+	 * Inserts a float value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a float
+	 */
+	void putFloat(const char* key, float value) {
+		putFloat(String::valueOf(key), value);
+	}
+	void putFloat(const sp<String>& key, float value);
+
+	/**
+	 * Inserts an int value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value an int, or null
+	 */
+	void putInt(const char* key, int32_t value) {
+		putInt(String::valueOf(key), value);
+	}
+	void putInt(const sp<String>& key, int32_t value);
+	void putUnsignedInt(const char* key, uint32_t value) {
+		putUnsignedInt(String::valueOf(key), value);
+	}
+	void putUnsignedInt(const sp<String>& key, uint32_t value);
+
+	/**
+	 * Inserts an ArrayList<Integer> value into the mapping of this Bundle, replacing any existing
+	 * value for the given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value an ArrayList<Integer> object, or null
+	 */
+	void putIntegerArrayList(const char* key, const sp<ArrayList<int32_t>>& value) {
+		putIntegerArrayList(String::valueOf(key), value);
+	}
+	void putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value);
+
+	/**
+	 * Inserts a long value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a long
+	 */
+	void putLong(const char* key, int64_t value) {
+		putLong(String::valueOf(key), value);
+	}
+	void putLong(const sp<String>& key, int64_t value);
+	void putUnsignedLong(const char* key, uint64_t value) {
+		putUnsignedLong(String::valueOf(key), value);
+	}
+	void putUnsignedLong(const sp<String>& key, uint64_t value);
+
+	/**
+	 * Inserts an object value into the mapping of this Bundle, replacing any existing value for the
+	 * given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value an object, or null
+	 */
+	void putObject(const char* key, const sp<Object>& value) {
+		putObject(String::valueOf(key), value);
+	}
+	void putObject(const sp<String>& key, const sp<Object>& value);
+
+	/**
+	 * Inserts a short value into the mapping of this Bundle, replacing any existing value for the
+	 * given key.
+	 *
+	 * @param key a String, or null
+	 * @param value a short
+	 */
+	void putShort(const char* key, int16_t value) {
+		putShort(String::valueOf(key), value);
+	}
+	void putShort(const sp<String>& key, int16_t value);
+	void putUnsignedShort(const char* key, uint16_t value) {
+		putUnsignedShort(String::valueOf(key), value);
+	}
+	void putUnsignedShort(const sp<String>& key, uint16_t value);
+
+	/**
+	 * Inserts a String value into the mapping of this Bundle, replacing any existing value for the
+	 * given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value a String, or null
+	 */
+	void putString(const char* key, const char* value) {
+		putString(String::valueOf(key), String::valueOf(value));
+	}
+	void putString(const char* key, const sp<String>& value) {
+		putString(String::valueOf(key), value);
+	}
+	void putString(const sp<String>& key, const sp<String>& value);
+
+	/**
+	 * Inserts an ArrayList<String> value into the mapping of this Bundle, replacing any existing
+	 * value for the given key. Either key or value may be null.
+	 *
+	 * @param key a String, or null
+	 * @param value an ArrayList<String> object, or null
+	 */
+	void putStringArrayList(const char* key, const sp<ArrayList<sp<String>>>& value) {
+		putStringArrayList(String::valueOf(key), value);
+	}
+	void putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value);
+
+	/**
+	 * Returns the value associated with the given key, or null if
+	 * no mapping of the desired type exists for the given key or a null
+	 * value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return an IBinder value, or null
+	 */
+	sp<IBinder> getBinder(const char* key) const {
+		return getBinder(String::valueOf(key));
+	}
+	sp<IBinder> getBinder(const sp<String>& key) const;
+
+	/**
+	 * Returns the value associated with the given key, or false if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a boolean value
+	 */
+	bool getBoolean(const char* key) const {
+		return getBoolean(String::valueOf(key), false);
+	}
+	bool getBoolean(const sp<String>& key) const {
+		return getBoolean(key, false);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a boolean value
+	 */
+	bool getBoolean(const char* key, const bool defaultValue) const {
+		return getBoolean(String::valueOf(key), defaultValue);
+	}
+	bool getBoolean(const sp<String>& key, const bool defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or null if no mapping of the desired type
+	 * exists for the given key or a null value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return a Bundle value, or null
+	 */
+	sp<Bundle> getBundle(const char* key) const {
+		return getBundle(String::valueOf(key));
+	}
+	sp<Bundle> getBundle(const sp<String>& key) const;
+
+	/**
+	 * Returns the value associated with the given key, or (byte) 0 if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a byte value
+	 */
+	uint8_t getByte(const char* key) const {
+		return getByte(String::valueOf(key), 0);
+	}
+	uint8_t getByte(const sp<String>& key) const {
+		return getByte(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a byte value
+	 */
+	uint8_t getByte(const char* key, const uint8_t defaultValue) const {
+		return getByte(String::valueOf(key), defaultValue);
+	}
+	uint8_t getByte(const sp<String>& key, const uint8_t defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or (char) 0 if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a char value
+	 */
+	char getChar(const char* key) const {
+		return getChar(String::valueOf(key), 0);
+	}
+	char getChar(const sp<String>& key) const {
+		return getChar(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a char value
+	 */
+	char getChar(const char* key, const char defaultValue) const {
+		return getChar(String::valueOf(key), defaultValue);
+	}
+	char getChar(const sp<String>& key, const char defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or 0.0 if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a double value
+	 */
+	double getDouble(const char* key) const {
+		return getDouble(String::valueOf(key), 0.0);
+	}
+	double getDouble(const sp<String>& key) const {
+		return getDouble(key, 0.0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a double value
+	 */
+	double getDouble(const char* key, const double defaultValue) const {
+		return getDouble(String::valueOf(key), defaultValue);
+	}
+	double getDouble(const sp<String>& key, const double defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or 0.0f if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a float value
+	 */
+	float getFloat(const char* key) const {
+		return getFloat(String::valueOf(key), 0.0f);
+	}
+	float getFloat(const sp<String>& key) const {
+		return getFloat(key, 0.0f);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a float value
+	 */
+	float getFloat(const char* key, const float defaultValue) const {
+		return getFloat(String::valueOf(key), defaultValue);
+	}
+	float getFloat(const sp<String>& key, const float defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or 0 if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return an int value
+	 */
+	int32_t getInt(const char* key) const {
+		return getInt(String::valueOf(key), 0);
+	}
+	int32_t getInt(const sp<String>& key) const {
+		return getInt(key, 0);
+	}
+	uint32_t getUnsignedInt(const char* key) const {
+		return getUnsignedInt(String::valueOf(key), 0);
+	}
+	uint32_t getUnsignedInt(const sp<String>& key) const {
+		return getUnsignedInt(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return an int value
+	 */
+	int32_t getInt(const char* key, const int32_t defaultValue) const {
+		return getInt(String::valueOf(key), defaultValue);
+	}
+	int32_t getInt(const sp<String>& key, const int32_t defaultValue) const;
+	uint32_t getUnsignedInt(const char* key, const uint32_t defaultValue) const {
+		return getUnsignedInt(String::valueOf(key), defaultValue);
+	}
+	uint32_t getUnsignedInt(const sp<String>& key, const uint32_t defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or null if no mapping of the desired type
+	 * exists for the given key or a null value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return an ArrayList<String> value, or null
+	 */
+	sp<ArrayList<int32_t>> getIntegerArrayList(const char* key) const {
+		return getIntegerArrayList(String::valueOf(key));
+	}
+	sp<ArrayList<int32_t>> getIntegerArrayList(const sp<String>& key) const;
+
+	/**
+	 * Returns the value associated with the given key, or 0L if no mapping of the desired type
+	 * exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a long value
+	 */
+	int64_t getLong(const char* key) const {
+		return getLong(String::valueOf(key), 0);
+	}
+	int64_t getLong(const sp<String>& key) const {
+		return getLong(key, 0);
+	}
+	uint64_t getUnsignedLong(const char* key) const {
+		return getUnsignedLong(String::valueOf(key), 0);
+	}
+	uint64_t getUnsignedLong(const sp<String>& key) const {
+		return getUnsignedLong(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a long value
+	 */
+	int64_t getLong(const char* key, const int64_t defaultValue) const {
+		return getLong(String::valueOf(key), defaultValue);
+	}
+	int64_t getLong(const sp<String>& key, const int64_t defaultValue) const;
+	uint64_t getUnsignedLong(const char* key, const uint64_t defaultValue) const {
+		return getUnsignedLong(String::valueOf(key), defaultValue);
+	}
+	uint64_t getUnsignedLong(const sp<String>& key, const uint64_t defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or null if no mapping of the desired type
+	 * exists for the given key or a null value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return an object value, or null
+	 */
+	sp<Object> getObject(const char* key) const {
+		return getObject(String::valueOf(key));
+	}
+	sp<Object> getObject(const sp<String>& key) const;
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String, or null
+	 * @param defaultValue Value to return if key does not exist
+	 * @return an object value, or null
+	 */
+	sp<Object> getObject(const char* key, const sp<Object>& defaultValue) const {
+		return getObject(String::valueOf(key), defaultValue);
+	}
+	sp<Object> getObject(const sp<String>& key, const sp<Object>& defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or (short) 0 if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @return a short value
+	 */
+	int16_t getShort(const char* key) const {
+		return getShort(String::valueOf(key), 0);
+	}
+	int16_t getShort(const sp<String>& key) const {
+		return getShort(key, 0);
+	}
+	uint16_t getUnsignedShort(const char* key) const {
+		return getUnsignedShort(String::valueOf(key), 0);
+	}
+	uint16_t getUnsignedShort(const sp<String>& key) const {
+		return getUnsignedShort(key, 0);
+	}
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a short value
+	 */
+	int16_t getShort(const char* key, const int16_t defaultValue) const {
+		return getShort(String::valueOf(key), defaultValue);
+	}
+	int16_t getShort(const sp<String>& key, const int16_t defaultValue) const;
+	uint16_t getUnsignedShort(const char* key, const uint16_t defaultValue) const {
+		return getShort(String::valueOf(key), defaultValue);
+	}
+	uint16_t getUnsignedShort(const sp<String>& key, const uint16_t defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or null if no mapping of the desired type
+	 * exists for the given key or a null value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return a String value, or null
+	 */
+	sp<String> getString(const char* key) const {
+		return getString(String::valueOf(key));
+	}
+	sp<String> getString(const sp<String>& key) const;
+
+	/**
+	 * Returns the value associated with the given key, or defaultValue if no mapping of the desired
+	 * type exists for the given key.
+	 *
+	 * @param key a String, or null
+	 * @param defaultValue Value to return if key does not exist
+	 * @return a String value, or null
+	 */
+	sp<String> getString(const char* key, const char* defaultValue) const {
+		return getString(String::valueOf(key), defaultValue);
+	}
+	sp<String> getString(const sp<String>& key, const char* defaultValue) const;
+
+	/**
+	 * Returns the value associated with the given key, or null if no mapping of the desired type
+	 * exists for the given key or a null value is explicitly associated with the key.
+	 *
+	 * @param key a String, or null
+	 * @return an ArrayList<String> value, or null
+	 */
+	sp<ArrayList<sp<String>>> getStringArrayList(const char* key) const {
+		return getStringArrayList(String::valueOf(key));
+	}
+	sp<ArrayList<sp<String>>> getStringArrayList(const sp<String>& key) const;
 
 private:
-	class Variant :
-			public Ref
-	{
-	public:
-		enum Type {
-			Null,
-			Bool,
-			Byte,
-			Char,
-			Int16,
-			UInt16,
-			Int32,
-			UInt32,
-			Int64,
-			UInt64,
-			Float,
-			Double,
-			CharString,
-			Object
-		};
-
-		inline Variant() : mType(Null) { }
-
-		inline Variant(bool value) :
-				mType(Bool) {
-			mVariant.boolValue = value;
-		}
-
-		inline Variant(uint8_t value) :
-				mType(Byte) {
-			mVariant.byteValue = value;
-		}
-
-		inline Variant(char value) :
-				mType(Char) {
-			mVariant.charValue = value;
-		}
-
-		inline Variant(int16_t value) :
-				mType(Int16) {
-			mVariant.int16Value = value;
-		}
-
-		inline Variant(uint16_t value) :
-				mType(UInt16) {
-			mVariant.uint16Value = value;
-		}
-
-		inline Variant(int32_t value) :
-				mType(Int32) {
-			mVariant.int32Value = value;
-		}
-
-		inline Variant(uint32_t value) :
-				mType(UInt32) {
-			mVariant.uint32Value = value;
-		}
-
-		inline Variant(int64_t value) :
-				mType(Int64) {
-			mVariant.int64Value = value;
-		}
-
-		inline Variant(uint64_t value) :
-				mType(UInt64) {
-			mVariant.uint64Value = value;
-		}
-
-		inline Variant(float value) :
-				mType(Float) {
-			mVariant.floatValue = value;
-		}
-
-		inline Variant(double value) :
-				mType(Double) {
-			mVariant.doubleValue = value;
-		}
-
-		inline Variant(const char* string) :
-				mType(CharString) {
-			const sp<String> object = new String(string);
-			if (object != NULL) {
-				object->incStrongRef(this);
-			}
-			mVariant.object = object.getPointer();
-		}
-
-		inline Variant(const sp<String>& string) :
-				mType(CharString) {
-			if (string != NULL) {
-				string->incStrongRef(this);
-			}
-			mVariant.object = string.getPointer();
-		}
-
-		inline Variant(const sp<Ref>& object) :
-				mType(Object) {
-			if (object != NULL) {
-				object->incStrongRef(this);
-			}
-			mVariant.object = object.getPointer();
-		}
-
-		inline ~Variant() {
-			switch (mType) {
-			case Variant::Object:
-			case Variant::CharString:
-				if (mVariant.object != NULL) {
-					mVariant.object->decStrongRef(this);
-				}
-				break;
-			default:
-				break;
-			}
-		}
-
-		inline Type getType() const {
-			return mType;
-		}
-
-		inline bool getBool() const {
-			return mVariant.boolValue;
-		}
-
-		inline uint8_t getByte() const {
-			return mVariant.byteValue;
-		}
-
-		inline char getChar() const {
-			return mVariant.charValue;
-		}
-
-		inline int16_t getInt16() const {
-			return mVariant.int16Value;
-		}
-
-		inline uint16_t getUInt16() const {
-			return mVariant.uint16Value;
-		}
-
-		inline int32_t getInt32() const {
-			return mVariant.int32Value;
-		}
-
-		inline uint32_t getUInt32() const {
-			return mVariant.uint32Value;
-		}
-
-		inline int64_t getInt64() const {
-			return mVariant.int64Value;
-		}
-
-		inline uint64_t getUInt64() const {
-			return mVariant.uint64Value;
-		}
-
-		inline float getFloat() const {
-			return mVariant.floatValue;
-		}
-
-		inline double getDouble() const {
-			return mVariant.doubleValue;
-		}
-
-		inline sp<String> getString() const {
-			return static_cast<String*>(mVariant.object);
-		}
-
-		template<typename T>
-		inline sp<T> getObject() const {
-			return static_cast<T*>(mVariant.object);
-		}
-
-	private:
-		typedef union {
-			bool boolValue;
-			uint8_t byteValue;
-			char charValue;
-			int16_t int16Value;
-			uint16_t uint16Value;
-			int32_t int32Value;
-			uint32_t uint32Value;
-			int64_t int64Value;
-			uint64_t uint64Value;
-			float floatValue;
-			double doubleValue;
-			Ref* object;
-		} Value;
-
-		Type mType;
-		Value mVariant;
-
-		NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Variant)
-	};
-
-	struct KeyValuePair {
-		sp<String> key;
-		sp<Variant> value;
-	};
-
-	List<KeyValuePair>::const_iterator findValue(const char* key) const;
-	sp< List<KeyValuePair> > mKeyValuePairs;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Bundle)
+	sp<HashMap<sp<String>, sp<Variant>>> mMap;
 };
-
-template<typename T>
-sp<T> Bundle::getObject(const char* key) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Object) {
-			return itr->value->getObject<T>();
-		} else {
-			return NULL;
-		}
-	}
-	return NULL;
-}
-
-template<typename T>
-bool Bundle::fillObject(const char* key, sp<T>& object) const {
-	List<KeyValuePair>::const_iterator itr = findValue(key);
-	if (itr != mKeyValuePairs->end()) {
-		if (itr->value->getType() == Variant::Object) {
-			object = itr->value->getObject<T>();
-			return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
 
 } /* namespace mindroid */
 

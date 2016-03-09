@@ -17,17 +17,19 @@
 #ifndef MINDROID_LOG_H_
 #define MINDROID_LOG_H_
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdarg.h>
 #include "mindroid/util/Logger.h"
-#include "mindroid/util/Utils.h"
+#include <cstdio>
+#include <cstdarg>
 
 namespace mindroid {
 
-class Log
-{
+class Log {
 public:
+	Log() noexcept = delete;
+	~Log() noexcept = delete;
+	Log(const Log&) = delete;
+	Log& operator=(const Log&) = delete;
+
 	/**
 	 * Send a {@link #VERBOSE} log message.
 	 * @param tag Used to identify the source of a log message.  It usually identifies
@@ -79,20 +81,18 @@ public:
 	 */
 	static int wtf(const char* tag, const char* format, ...);
 
+	/**
+	 * Set Logger instance that shall be used. If this method is not called a default
+	 * implementation that prints logcat style to stdout is used.
+	 * @param logger Logger instance to be set
+	 */
+	static void setLogger(const sp<Logger>& logger);
+
 private:
-    static const uint8_t VERBOSE = 0;
-    static const uint8_t DEBUG = 1;
-    static const uint8_t INFO = 2;
-    static const uint8_t WARN = 3;
-    static const uint8_t ERROR = 4;
-    static const uint8_t WTF = 5;
-
     static const int DEFAULT_LOG_ID = 0;
-    static const int LOG_RECORD_SIZE = 64;
+    static const int LOG_MESSAGE_SIZE = 128;
 
-    static Logger sLogger;
-
-    NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(Log)
+    static sp<Logger> sLogger;
 };
 
 } /* namespace mindroid */

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,87 +17,71 @@
 
 #include "mindroid/os/Looper.h"
 #include "mindroid/os/Handler.h"
-#include "mindroid/os/Message.h"
 
 namespace mindroid {
 
 pthread_once_t Looper::sTlsOneTimeInitializer = PTHREAD_ONCE_INIT;
 pthread_key_t Looper::sTlsKey;
 
-Looper::Looper() :
-		mOnLooperReadyRunnable(NULL) {
-	mMessageQueue = new MessageQueue();
+Looper::Looper(bool quitAllowed) {
+	mMessageQueue = new MessageQueue(quitAllowed);
+	mThread = Thread::currentThread();
 }
-
-Looper::~Looper() { }
 
 void Looper::init() {
 	pthread_key_create(&sTlsKey, Looper::finalize);
 }
 
-void Looper::finalize(void* looper) {
-	delete (Looper*) looper;
+void Looper::finalize(void* l) {
+	sp<Looper> looper((Looper*) l);
+	looper->mSelf = nullptr;
 }
 
-bool Looper::prepare() {
+bool Looper::prepare(bool quitAllowed) {
 	pthread_once(&sTlsOneTimeInitializer, Looper::init);
-	Looper* looper = (Looper*) pthread_getspecific(sTlsKey);
-	if (looper == NULL) {
-		looper = new Looper();
-		if (looper == NULL) {
-			return false;
-		} else {
-			if (pthread_setspecific(sTlsKey, looper) != 0) {
-				delete looper;
-				return false;
-			} else {
+	Looper* l = (Looper*) pthread_getspecific(sTlsKey);
+	if (l == nullptr) {
+		sp<Looper> looper = new Looper(quitAllowed);
+		if (looper != nullptr) {
+			if (pthread_setspecific(sTlsKey, looper.getPointer()) == 0) {
+				looper->mSelf = looper;
 				return true;
+			} else {
+				looper = nullptr;
+				return false;
 			}
+		} else {
+			return false;
 		}
 	} else {
-		// There should be only one Looper per thread.
+		Assert::assertNull("Only one Looper may be created per thread", l);
 		return false;
 	}
 }
 
-bool Looper::prepare(const sp<Runnable>& onLooperReadyRunnable) {
-	if (prepare()) {
-		Looper* me = myLooper();
-		if (me != NULL) {
-			me->mOnLooperReadyRunnable = onLooperReadyRunnable;
+void Looper::loop() {
+	sp<Looper> me = myLooper();
+	Assert::assertNotNull("No Looper; Looper.prepare() wasn't called on this thread", me);
+
+	sp<MessageQueue> mq = me->mMessageQueue;
+	for (;;) {
+		sp<Message> message = mq->dequeueMessage();
+		if (message == nullptr) {
+			return;
 		}
-		return true;
+		message->target->dispatchMessage(message);
+		message->recycle();
 	}
-	return false;
 }
 
-Looper* Looper::myLooper() {
+sp<Looper> Looper::myLooper() {
 	pthread_once(&sTlsOneTimeInitializer, Looper::init);
 	Looper* looper = (Looper*) pthread_getspecific(sTlsKey);
 	return looper;
 }
 
-void Looper::loop() {
-	Looper* me = myLooper();
-	if (me != NULL) {
-		sp<MessageQueue> mq = me->mMessageQueue;
-		if (me->mOnLooperReadyRunnable != NULL) {
-			me->mOnLooperReadyRunnable->run();
-			me->mOnLooperReadyRunnable = NULL;
-		}
-		while (true) {
-			sp<Message> message = mq->dequeueMessage();
-			if (message->mHandler == NULL) {
-				return;
-			}
-			message->mHandler->dispatchMessage(message);
-		}
-	}
-}
-
 void Looper::quit() {
-	sp<Message> message = Message::obtain();
-	mMessageQueue->enqueueMessage(message, 0);
+	mMessageQueue->quit();
 }
 
 } /* namespace mindroid */

@@ -15,7 +15,7 @@
  */
 
 #include "mindroid/lang/String.h"
-#include <stdio.h>
+#include <cstdio>
 
 namespace mindroid {
 
@@ -33,7 +33,7 @@ String::String() {
 }
 
 String::String(const char* string) {
-	if (string != NULL) {
+	if (string != nullptr) {
 		size_t size = strlen(string);
 		if (size > 0) {
 			mStringBuffer = new StringBuffer(string, size);
@@ -46,7 +46,7 @@ String::String(const char* string) {
 }
 
 String::String(const char* string, size_t size) {
-	if (string != NULL) {
+	if (string != nullptr) {
 		if (size > 0) {
 			mStringBuffer = new StringBuffer(string, size);
 		} else {
@@ -57,11 +57,19 @@ String::String(const char* string, size_t size) {
 	}
 }
 
+size_t String::hashCode() const {
+	size_t hash = 0;
+	for (size_t i = 0; i < mStringBuffer->mSize; i++) {
+	    hash = 31 * hash + mStringBuffer->mData[i];
+	}
+	return hash;
+}
+
 bool String::equals(const char* string) const {
 	if (mStringBuffer->mData && string) {
 		return strcmp(mStringBuffer->mData, string) == 0;
 	} else {
-		if (mStringBuffer->mData == NULL && string == NULL) {
+		if (mStringBuffer->mData == nullptr && string == nullptr) {
 			return true;
 		} else {
 			return false;
@@ -73,7 +81,7 @@ bool String::equals(const sp<String>& string) const {
 	if (mStringBuffer->mData && string->mStringBuffer->mData) {
 		return strcmp(mStringBuffer->mData, string->mStringBuffer->mData) == 0;
 	} else {
-		if (mStringBuffer->mData == NULL && string->mStringBuffer->mData == NULL) {
+		if (mStringBuffer->mData == nullptr && string->mStringBuffer->mData == nullptr) {
 			return true;
 		} else {
 			return false;
@@ -82,7 +90,7 @@ bool String::equals(const sp<String>& string) const {
 }
 
 bool String::equalsIgnoreCase(const char* string) const {
-	sp<String> tmp = new String(string);
+	sp<String> tmp = String::valueOf(string);
 	return toLowerCase()->equals(tmp->toLowerCase());
 }
 
@@ -92,7 +100,7 @@ bool String::equalsIgnoreCase(const sp<String>& string) const {
 
 bool String::contains(const char* subString) const {
 	if (c_str() && subString) {
-		return strstr(c_str(), subString) != NULL;
+		return strstr(c_str(), subString) != nullptr;
 	} else {
 		return false;
 	}
@@ -104,7 +112,7 @@ bool String::contains(const sp<String>& subString) const {
 
 bool String::startsWith(const char* prefix) const {
 	size_t prefixSize = strlen(prefix);
-	if (size() >= prefixSize) {
+	if (length() >= prefixSize) {
 		return strncmp(c_str(), prefix, prefixSize) == 0;
 	} else {
 		return false;
@@ -117,8 +125,8 @@ bool String::startsWith(const sp<String>& prefix) const {
 
 bool String::endsWith(const char* suffix) const {
 	size_t suffixSize = strlen(suffix);
-	if (size() >= suffixSize) {
-		return strncmp(c_str() + size() - suffixSize, suffix, suffixSize) == 0;
+	if (length() >= suffixSize) {
+		return strncmp(c_str() + length() - suffixSize, suffix, suffixSize) == 0;
 	} else {
 		return false;
 	}
@@ -128,41 +136,50 @@ bool String::endsWith(const sp<String>& suffix) const {
 	return endsWith(suffix->c_str());
 }
 
-sp<String> String::substr(size_t beginIndex) const {
-	if (beginIndex < size()) {
-		return new String(c_str() + beginIndex, size() - beginIndex);
+sp<String> String::substring(size_t beginIndex) const {
+	if (beginIndex < length()) {
+		return String::valueOf(c_str() + beginIndex, length() - beginIndex);
 	} else {
 		return EMPTY_STRING;
 	}
 }
 
-sp<String> String::substr(size_t beginIndex, size_t endIndex) const {
-	if (beginIndex < size()) {
-		return new String(c_str() + beginIndex, endIndex - beginIndex);
+sp<String> String::substring(size_t beginIndex, size_t endIndex) const {
+	if (beginIndex < length()) {
+		return String::valueOf(c_str() + beginIndex, endIndex - beginIndex);
 	} else {
 		return EMPTY_STRING;
 	}
 }
 
 sp<String> String::toLowerCase() const {
-	sp<StringBuffer> stringBuffer = new StringBuffer(size());
-	for (size_t i = 0; i < size(); i++) {
+	sp<StringBuffer> stringBuffer = new StringBuffer(length());
+	for (size_t i = 0; i < length(); i++) {
 		stringBuffer->mData[i] = tolower(mStringBuffer->mData[i]);
 	}
 	return new String(stringBuffer);
 }
 
 sp<String> String::toUpperCase() const {
-	sp<StringBuffer> stringBuffer = new StringBuffer(size());
-	for (size_t i = 0; i < size(); i++) {
+	sp<StringBuffer> stringBuffer = new StringBuffer(length());
+	for (size_t i = 0; i < length(); i++) {
 		stringBuffer->mData[i] = toupper(mStringBuffer->mData[i]);
 	}
 	return new String(stringBuffer);
 }
 
+ssize_t String::indexOf(const char c) const {
+	const char* substr = strchr(c_str(), c);
+	if (substr != nullptr) {
+		return substr - c_str();
+	} else {
+		return -1;
+	}
+}
+
 ssize_t String::indexOf(const char* string) const {
 	const char* substr = strstr(c_str(), string);
-	if (substr != NULL) {
+	if (substr != nullptr) {
 		return substr - c_str();
 	} else {
 		return -1;
@@ -173,9 +190,18 @@ ssize_t String::indexOf(const sp<String>& string) const {
 	return indexOf(string->c_str());
 }
 
+ssize_t String::indexOf(const char c, size_t fromIndex) const {
+	const char* substr = strchr(c_str() + fromIndex, c);
+	if (substr != nullptr) {
+		return substr - c_str();
+	} else {
+		return -1;
+	}
+}
+
 ssize_t String::indexOf(const char* string, size_t fromIndex) const {
 	const char* substr = strstr(c_str() + fromIndex, string);
-	if (substr != NULL) {
+	if (substr != nullptr) {
 		return substr - c_str();
 	} else {
 		return -1;
@@ -186,23 +212,57 @@ ssize_t String::indexOf(const sp<String>& string, size_t fromIndex) const {
 	return indexOf(string->c_str() + fromIndex);
 }
 
+ssize_t String::lastIndexOf(const char c) const {
+	const char* substr = strrchr(c_str(), c);
+	if (substr != nullptr) {
+		return substr - c_str();
+	} else {
+		return -1;
+	}
+}
+
+ssize_t String::lastIndexOf(const char* string) const {
+	return -1;
+}
+
+ssize_t String::lastIndexOf(const sp<String>& string) const {
+	return -1;
+}
+
+ssize_t String::lastIndexOf(const char c, size_t fromIndex) const {
+	const char* substr = strrchr(c_str() + fromIndex, c);
+	if (substr != nullptr) {
+		return substr - c_str();
+	} else {
+		return -1;
+	}
+}
+
+ssize_t String::lastIndexOf(const char* string, size_t fromIndex) const {
+	return -1;
+}
+
+ssize_t String::lastIndexOf(const sp<String>& string, size_t fromIndex) const {
+	return -1;
+}
+
 sp<String> String::trim() const {
 	size_t beginIndex;
 	ssize_t endIndex;
-	for (beginIndex = 0; beginIndex < size(); beginIndex++) {
+	for (beginIndex = 0; beginIndex < length(); beginIndex++) {
 		if (!isspace(mStringBuffer->mData[beginIndex])) {
 			break;
 		}
 	}
-	for (endIndex = size() - 1; endIndex >= 0; endIndex--) {
+	for (endIndex = length() - 1; endIndex >= 0; endIndex--) {
 		if (!isspace(mStringBuffer->mData[endIndex])) {
 			break;
 		}
 	}
-	if (beginIndex == 0 && endIndex == (ssize_t) size() - 1) {
+	if (beginIndex == 0 && endIndex == (ssize_t) length() - 1) {
 		return const_cast<String*>(this);
 	} else {
-		if (beginIndex != size()) {
+		if (beginIndex != length()) {
 			return new String(new StringBuffer(mStringBuffer->mData + beginIndex,
 					endIndex - beginIndex + 1));
 		} else {
@@ -211,39 +271,37 @@ sp<String> String::trim() const {
 	}
 }
 
-sp<String> String::left(size_t n) const {
-	n = (n > size()) ? size() : n;
-	return new String(new StringBuffer(mStringBuffer->mData, n));
-}
-
-sp<String> String::right(size_t n) const {
-	n = (n > size()) ? size() : n;
-	return new String(new StringBuffer(mStringBuffer->mData + size() - n, n));
-}
-
-sp< List< sp<String> > > String::split(const char* separator) const {
-	sp< List< sp<String> > > strings = new List< sp<String> >();
+sp<ArrayList<sp<String>>> String::split(const char* separator) const {
+	sp<ArrayList<sp<String>>> strings = new ArrayList<sp<String>>();
 	ssize_t curIndex = 0;
 	ssize_t prevCurIndex;
-	while (curIndex >= 0 && (size_t) curIndex < size()) {
+	while (curIndex >= 0 && (size_t) curIndex < length()) {
 		prevCurIndex = curIndex;
 		curIndex = indexOf(separator, curIndex);
 		if (curIndex >= 0) {
-			strings->push_back(substr(prevCurIndex, curIndex));
+			strings->add(substring(prevCurIndex, curIndex));
 			curIndex += strlen(separator);
 		} else {
-			strings->push_back(substr(prevCurIndex, size()));
+			strings->add(substring(prevCurIndex, length()));
 		}
 	}
 	return strings;
 }
 
-sp< List< sp<String> > > String::split(const sp<String>& separator) const {
+sp<ArrayList<sp<String>>> String::split(const sp<String>& separator) const {
 	return split(separator->c_str());
 }
 
+sp<String> String::format(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
+	va_end(args);
+	return formattedString;
+}
+
 sp<String> String::append(const char* data, size_t size) const {
-	if (data != NULL && size > 0) {
+	if (data != nullptr && size > 0) {
 		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, data, size));
 	}
 	return const_cast<String*>(this);
@@ -257,19 +315,11 @@ sp<String> String::appendFormatted(const char* format, ...) const {
 	return formattedString;
 }
 
-sp<String> String::format(const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-	sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
-	va_end(args);
-	return formattedString;
-}
-
 sp<String> String::appendFormattedWithVarArgList(const char* format, va_list args) const {
 	// see http://stackoverflow.com/questions/9937505/va-list-misbehavior-on-linux
 	va_list copyOfArgs;
 	va_copy(copyOfArgs, args);
-	int size = vsnprintf(NULL, 0, format, copyOfArgs);
+	int size = vsnprintf(nullptr, 0, format, copyOfArgs);
 	va_end(copyOfArgs);
 
 	if (size != 0) {
@@ -288,18 +338,18 @@ String::StringBuffer::StringBuffer(size_t size) {
 		mData = (char*) malloc(mSize + 1);
 		mData[size] = '\0';
 	} else {
-		mData = NULL;
+		mData = nullptr;
 	}
 }
 
 String::StringBuffer::StringBuffer(const char* string, size_t size) {
 	mSize = size;
-	if (string != NULL) {
+	if (string != nullptr) {
 		mData = (char*) malloc(mSize + 1);
 		memcpy(mData, string, size);
 		mData[size] = '\0';
 	} else {
-		mData = NULL;
+		mData = nullptr;
 	}
 }
 

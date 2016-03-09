@@ -1,0 +1,10 @@
+<map>
+    <int name="Test" value="123"/>
+    <set name="Set">
+        <string>1</string>
+        <string>2</string>
+        <string>3</string>
+    </set>
+    <string name="String">xyz</string>
+    <boolean name="Bool" value="true"/>
+</map>

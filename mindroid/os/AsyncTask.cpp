@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2008 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +19,8 @@
 
 namespace mindroid {
 
-SerialExecutor AsyncTaskBase::SERIAL_EXECUTOR;
-ThreadPoolExecutor AsyncTaskBase::THREAD_POOL_EXECUTOR(THREAD_POOL_SIZE);
-Lock AsyncTaskBase::sLock;
+sp<ReentrantLock> AsyncTaskBase::sLock = new ReentrantLock();
+sp<SerialExecutor> AsyncTaskBase::SERIAL_EXECUTOR = new SerialExecutor();
+sp<ThreadPoolExecutor> AsyncTaskBase::THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(THREAD_POOL_SIZE);
 
 } /* namespace mindroid */

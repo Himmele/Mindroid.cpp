@@ -28,7 +28,7 @@ Socket::Socket() :
 	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 }
 
-Socket::Socket(const char* host, uint16_t port) :
+Socket::Socket(const sp<String>& host, uint16_t port) :
 		mIsConnected(false),
 		mIsClosed(false) {
 	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -39,10 +39,10 @@ Socket::~Socket() {
 	close();
 }
 
-int Socket::connect(const char* host, uint16_t port) {
+int Socket::connect(const sp<String>& host, uint16_t port) {
 	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
 	int rc = -1;
-	if (mSocketId >= 0 && socketAddress->isValid()) {
+	if (mSocketId >= 0 && !socketAddress->isUnresolved()) {
 		if ((rc = ::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress))) == 0) {
 			mIsConnected = true;
 			return rc;
@@ -84,23 +84,6 @@ void Socket::close() {
 		::close(mSocketId);
 		mSocketId = -1;
 	}
-}
-
-bool Socket::setBlockingMode(bool blockingIO) {
-	int flags = fcntl(mSocketId, F_GETFL, 0);
-
-	if (flags == -1) {
-		return false;
-	}
-
-	if (blockingIO) {
-		flags &= ~O_NONBLOCK;
-	} else {
-		flags |= O_NONBLOCK;
-	}
-	flags = fcntl(mSocketId, F_SETFL, flags);
-
-	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */

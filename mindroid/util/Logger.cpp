@@ -15,15 +15,40 @@
  */
 
 #include "mindroid/util/Logger.h"
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <pthread.h>
 
 namespace mindroid {
 
-char Logger::mProrities[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
+char Logger::sProrities[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
 
 int Logger::println(int bufferId, uint8_t priority, const char* tag, const char* msg) {
-	printf("%c/%s: %s\r\n", mProrities[priority], tag, msg);
+	char time[64];
+	getTime(time, sizeof(time));
+	printf("%s  %08x  %c %s: %s\n", time, (uint32_t) pthread_self(), sProrities[priority], tag, msg);
 	return 0;
+}
+
+int Logger::getTime(char *time, size_t size) {
+    struct timespec ts;
+    struct tm t;
+
+    clock_gettime(CLOCK_REALTIME, &ts);
+
+    tzset();
+    if (localtime_r(&(ts.tv_sec), &t) == NULL) {
+        return -1;
+    }
+
+    size_t s = strftime(time, size, "%F %T.000", &t);
+    if (s == 0) {
+        return -1;
+    }
+
+    snprintf(&time[strlen(time) - 4], 5, ".%03ld", ts.tv_nsec / 1000000);
+
+    return 0;
 }
 
 } /* namespace mindroid */

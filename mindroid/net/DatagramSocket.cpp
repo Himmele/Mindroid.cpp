@@ -37,7 +37,7 @@ DatagramSocket::DatagramSocket(uint16_t port) :
 	bind(port);
 }
 
-DatagramSocket::DatagramSocket(const char* host, uint16_t port) :
+DatagramSocket::DatagramSocket(const sp<String>& host, uint16_t port) :
 		mSocketId(-1),
 		mIsBound(false),
 		mIsClosed(false) {
@@ -55,21 +55,21 @@ bool DatagramSocket::bind(uint16_t port) {
 	return mIsBound;
 }
 
-bool DatagramSocket::bind(const char* host, uint16_t port) {
+bool DatagramSocket::bind(const sp<String>& host, uint16_t port) {
 	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
 	mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
 	return mIsBound;
 }
 
 ssize_t DatagramSocket::recv(uint8_t* data, size_t size) {
-	return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, NULL, 0);
+	return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, nullptr, 0);
 }
 
 ssize_t DatagramSocket::recv(uint8_t* data, size_t size, sp<SocketAddress>& sender) {
 	socklen_t socketSize = sizeof(sender->mSocketAddress);
 	ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0,
 			(struct sockaddr*) &sender->mSocketAddress, &socketSize);
-	sender->mValid = true;
+	sender->mIsUnresolved = false;
 	return result;
 }
 
@@ -87,23 +87,6 @@ void DatagramSocket::close() {
 		::close(mSocketId);
 		mSocketId = -1;
 	}
-}
-
-bool DatagramSocket::setBlockingMode(bool blockingIO) {
-	int flags = fcntl(mSocketId, F_GETFL, 0);
-
-	if (flags == -1) {
-		return false;
-	}
-
-	if (blockingIO) {
-		flags &= ~O_NONBLOCK;
-	} else {
-		flags |= O_NONBLOCK;
-	}
-	flags = fcntl(mSocketId, F_SETFL, flags);
-
-	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */

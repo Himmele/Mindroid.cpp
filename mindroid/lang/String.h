@@ -17,19 +17,18 @@
 #ifndef MINDROID_STRING_H_
 #define MINDROID_STRING_H_
 
-#include "mindroid/os/Ref.h"
-#include "mindroid/util/List.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <assert.h>
+#include "mindroid/lang/Object.h"
+#include "mindroid/util/Assert.h"
+#include "mindroid/util/ArrayList.h"
+#include <cstdlib>
+#include <cstring>
+#include <cstdarg>
+#include <cctype>
 
 namespace mindroid {
 
 class String :
-		public Ref
-{
+		public Object {
 public:
 	static const sp<String> EMPTY_STRING;
 
@@ -37,18 +36,19 @@ public:
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
 	virtual ~String() { }
+	virtual size_t hashCode() const;
 
 	bool equals(const char* string) const;
 	bool equals(const sp<String>& string) const;
 	bool equalsIgnoreCase(const char* string) const;
 	bool equalsIgnoreCase(const sp<String>& string) const;
 
-	inline size_t size() const {
+	inline size_t length() const {
 		return mStringBuffer->mSize;
 	}
 
 	inline bool isEmpty() const {
-		return size() == 0;
+		return length() == 0;
 	}
 
 	inline const char* c_str() const {
@@ -60,12 +60,12 @@ public:
 	}
 
 	inline char operator[](const size_t index) const {
-		assert(index < size());
+		Assert::assertTrue(index < length());
 		return mStringBuffer->mData[index];
 	}
 
 	inline char charAt(size_t index) const {
-		assert(index < size());
+		Assert::assertTrue(index < length());
 		return mStringBuffer->mData[index];
 	}
 
@@ -78,24 +78,44 @@ public:
 	bool endsWith(const char* suffix) const;
 	bool endsWith(const sp<String>& suffix) const;
 
-	sp<String> substr(size_t beginIndex) const;
-	sp<String> substr(size_t beginIndex, size_t endIndex) const;
+	sp<String> substring(size_t beginIndex) const;
+	sp<String> substring(size_t beginIndex, size_t endIndex) const;
 
 	sp<String> toLowerCase() const;
 	sp<String> toUpperCase() const;
 
+	ssize_t indexOf(const char c) const;
 	ssize_t indexOf(const char* string) const;
 	ssize_t indexOf(const sp<String>& string) const;
+	ssize_t indexOf(const char c, size_t fromIndex) const;
 	ssize_t indexOf(const char* string, size_t fromIndex) const;
 	ssize_t indexOf(const sp<String>& string, size_t fromIndex) const;
 
+	ssize_t lastIndexOf(const char c) const;
+	ssize_t lastIndexOf(const char* string) const;
+	ssize_t lastIndexOf(const sp<String>& string) const;
+	ssize_t lastIndexOf(const char c, size_t fromIndex) const;
+	ssize_t lastIndexOf(const char* string, size_t fromIndex) const;
+	ssize_t lastIndexOf(const sp<String>& string, size_t fromIndex) const;
+
 	sp<String> trim() const;
 
-	sp<String> left(size_t n) const;
-	sp<String> right(size_t n) const;
+	sp<ArrayList<sp<String>>> split(const char* separator) const;
+	sp<ArrayList<sp<String>>> split(const sp<String>& separator) const;
 
-	sp< List< sp<String> > > split(const char* separator) const;
-	sp< List< sp<String> > > split(const sp<String>& separator) const;
+	inline static sp<String> valueOf(const char* string) {
+		return (string != nullptr) ? new String(string) : nullptr;
+	}
+
+	inline static sp<String> valueOf(const char* string, size_t size) {
+		return (string != nullptr) ? new String(string, size) : nullptr;
+	}
+
+	static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
+
+	static size_t length(const char* string) {
+		return strlen(string);
+	}
 
 	sp<String> append(const char* string) const {
 		return append(string, strlen(string));
@@ -106,20 +126,13 @@ public:
 	}
 
 	sp<String> append(const char* data, size_t size) const;
-	sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf,2, 3)));
-
-	static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
-
-	static size_t size(const char* string) {
-		return strlen(string);
-	}
+	sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf, 2, 3)));
 
 private:
-	class StringBuffer : public LightweightRef<StringBuffer>
-	{
+	class StringBuffer : public LightweightObject<StringBuffer> {
 	public:
 		StringBuffer() :
-				mData(NULL),
+				mData(nullptr),
 				mSize(0) {
 		}
 
@@ -128,7 +141,7 @@ private:
 		StringBuffer(const char* string1, size_t size1, const char* string2, size_t size2);
 
 		~StringBuffer() {
-			if (mData != NULL) {
+			if (mData != nullptr) {
 				free(mData);
 			}
 		}
@@ -138,17 +151,19 @@ private:
 		size_t mSize;
 
 		friend class String;
-		friend class StringWrapper;
+		friend class StringBuilder;
 	};
 
-	String(const sp<StringBuffer>& string) : mStringBuffer(string) { }
+	String(const sp<StringBuffer>& string) :
+			mStringBuffer(string) {
+	}
 
 	sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
 	sp<StringBuffer> mStringBuffer;
 	static const sp<StringBuffer> EMPTY_STRING_BUFFER;
 
-	friend class StringWrapper;
+	friend class StringBuilder;
 };
 
 } /* namespace mindroid */

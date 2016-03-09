@@ -15,69 +15,74 @@
  */
 
 #include "mindroid/util/Log.h"
+#include "mindroid/util/Logger.h"
 
 namespace mindroid {
 
-Logger Log::sLogger;
+sp<Logger> Log::sLogger = new Logger();
 
 int Log::v(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, VERBOSE, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::VERBOSE, tag, msg);
 }
 
 int Log::d(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, DEBUG, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::DEBUG, tag, msg);
 }
 
 int Log::i(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, INFO, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::INFO, tag, msg);
 }
 
 int Log::w(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, WARN, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::WARN, tag, msg);
 }
 
 int Log::e(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, ERROR, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::ERROR, tag, msg);
 }
 
 int Log::wtf(const char* tag, const char* format, ...) {
-	char msg[LOG_RECORD_SIZE];
+	char msg[LOG_MESSAGE_SIZE];
 	va_list args;
 	va_start(args, format);
-	vsnprintf(msg, LOG_RECORD_SIZE, format, args);
+	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
 	va_end(args);
 
-	return sLogger.println(DEFAULT_LOG_ID, WTF, tag, msg);
+	return sLogger->println(DEFAULT_LOG_ID, Logger::WTF, tag, msg);
+}
+
+void Log::setLogger(const sp<Logger>& logger) {
+	sLogger = logger;
 }
 
 } /* namespace mindroid */

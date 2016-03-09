@@ -47,7 +47,7 @@ ServerSocket::ServerSocket(uint16_t port, int backlog) :
 	bind(port, backlog);
 }
 
-ServerSocket::ServerSocket(const char* host, uint16_t port, int backlog) :
+ServerSocket::ServerSocket(const sp<String>& host, uint16_t port, int backlog) :
 		mIsBound(false),
 		mIsClosed(false),
 		mReuseAddress(false) {
@@ -60,10 +60,10 @@ ServerSocket::~ServerSocket() {
 }
 
 bool ServerSocket::bind(uint16_t port, int backlog) {
-	return bind(NULL, port, backlog);
+	return bind(nullptr, port, backlog);
 }
 
-bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
+bool ServerSocket::bind(const sp<String>& host, uint16_t port, int backlog) {
 	if (mIsBound) {
 		return false;
 	}
@@ -75,7 +75,7 @@ bool ServerSocket::bind(const char* host, uint16_t port, int backlog) {
 	int value = mReuseAddress;
 	setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
 
-	sp<SocketAddress> socketAddress = (host == NULL) ?
+	sp<SocketAddress> socketAddress = (host == nullptr) ?
 			new SocketAddress(port) : new SocketAddress(host, port);
 
 	if (::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
@@ -98,7 +98,7 @@ sp<Socket> ServerSocket::accept() {
 	sp<Socket> socket = new Socket();
 	socket->mSocketId = ::accept(mSocketId, 0, 0);
 	if (socket->mSocketId < 0) {
-		return NULL;
+		return nullptr;
 	} else {
 		socket->mIsConnected = true;
 		return socket;
@@ -118,23 +118,6 @@ void ServerSocket::close() {
 
 void ServerSocket::setReuseAddress(bool reuse) {
 	mReuseAddress = reuse;
-}
-
-bool ServerSocket::setBlockingMode(bool blockingIO) {
-	int flags = fcntl(mSocketId, F_GETFL, 0);
-
-	if (flags == -1) {
-		return false;
-	}
-
-	if (blockingIO) {
-		flags &= ~O_NONBLOCK;
-	} else {
-		flags |= O_NONBLOCK;
-	}
-	flags = fcntl(mSocketId, F_SETFL, flags);
-
-	return flags == -1 ? false : true;
 }
 
 } /* namespace mindroid */

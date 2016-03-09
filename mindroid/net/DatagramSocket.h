@@ -17,28 +17,35 @@
 #ifndef MINDROID_DATAGRAMSOCKET_H_
 #define MINDROID_DATAGRAMSOCKET_H_
 
-#include "mindroid/os/Ref.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/lang/String.h"
 
 namespace mindroid {
 
 class SocketAddress;
 
 class DatagramSocket :
-		public Ref
-{
+		public Object {
 public:
 	DatagramSocket();
 	DatagramSocket(uint16_t port);
-	DatagramSocket(const char* host, uint16_t port);
+	DatagramSocket(const char* host, uint16_t port) :
+			DatagramSocket(String::valueOf(host), port) {
+	}
+	DatagramSocket(const sp<String>& host, uint16_t port);
 	virtual ~DatagramSocket();
+	DatagramSocket(const DatagramSocket&) = delete;
+	DatagramSocket& operator=(const DatagramSocket&) = delete;
 
 	bool bind(uint16_t port);
-	bool bind(const char* host, uint16_t port);
+	bool bind(const char* host, uint16_t port) {
+		return bind(String::valueOf(host), port);
+	}
+	bool bind(const sp<String>& host, uint16_t port);
 	ssize_t recv(uint8_t* data, size_t size);
 	ssize_t recv(uint8_t* data, size_t size, sp<SocketAddress>& sender);
 	bool send(const void* data, size_t size, const sp<SocketAddress>& receiver);
 	void close();
-	bool setBlockingMode(bool blockingIO);
 	bool isBound() const { return mIsBound; }
 	bool isClosed() const { return mIsClosed; }
 	int getId() const { return mSocketId; }
@@ -47,8 +54,6 @@ private:
 	int mSocketId;
 	bool mIsBound;
 	bool mIsClosed;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(DatagramSocket)
 };
 
 } /* namespace mindroid */

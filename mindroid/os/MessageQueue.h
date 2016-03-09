@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2011 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,12 +18,8 @@
 #ifndef MINDROID_MESSAGEQUEUE_H_
 #define MINDROID_MESSAGEQUEUE_H_
 
-#include <stdint.h>
-#include <pthread.h>
-#include "mindroid/util/Utils.h"
-#include "mindroid/os/Ref.h"
-#include "mindroid/os/Lock.h"
-#include "mindroid/os/CondVar.h"
+#include "mindroid/lang/Object.h"
+#include "mindroid/util/concurrent/locks/ReentrantLock.h"
 
 namespace mindroid {
 
@@ -30,27 +27,40 @@ class Message;
 class Handler;
 class Runnable;
 
-class MessageQueue :
-		public Ref
-{
+/**
+ * Low-level class holding the list of messages to be dispatched by a {@link Looper}. Messages are
+ * not added directly to a MessageQueue, but rather through {@link Handler} objects associated with
+ * the Looper.
+ *
+ * <p>
+ * You can retrieve the MessageQueue for the current thread with {@link Looper#myQueue()
+ * Looper.myQueue()}.
+ */
+class MessageQueue final :
+		public Object {
 public:
-	MessageQueue();
+	MessageQueue(bool quitAllowed);
 	virtual ~MessageQueue();
-	bool enqueueMessage(const sp<Message>& message, uint64_t execTimestamp);
+    MessageQueue(const MessageQueue&) = delete;
+    MessageQueue& operator=(const MessageQueue&) = delete;
+
+    bool quit();
+	bool enqueueMessage(const sp<Message>& message, uint64_t when);
 	sp<Message> dequeueMessage();
-	bool removeMessages(const sp<Handler>& handler, int32_t what);
-	bool removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable);
-	bool removeCallbacksAndMessages(const sp<Handler>& handler);
+	bool hasMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
+	bool hasMessages(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
+	bool removeMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
+	bool removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
+	bool removeCallbacksAndMessages(const sp<Handler>& handler, const sp<Object>& object);
 
 private:
-	sp<Message> getNextMessage(uint64_t now);
+	static const char* const LOG_TAG;
 
-	sp<Message> mHeadMessage;
-	Lock mCondVarLock;
-	CondVar mCondVar;
-	bool mLockMessageQueue;
-
-	NO_COPY_CTOR_AND_ASSIGNMENT_OPERATOR(MessageQueue)
+	sp<Message> mMessages;
+	sp<ReentrantLock> mLock;
+	sp<Condition> mCondition;
+	const bool mQuitAllowed;
+	bool mQuitting;
 };
 
 } /* namespace mindroid */
