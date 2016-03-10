@@ -22,7 +22,7 @@
 
 namespace mindroid {
 
-class Assert {
+class Assert final {
 public:
 	Assert() noexcept = delete;
 	~Assert() noexcept = delete;

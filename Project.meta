@@ -16,12 +16,5 @@ Project {
 		IncludeDir ".", inherit: true
 
 		Dependency tinyxml2, config: Default
-
-		Toolchain {
-			Compiler CPP {
-				Define "PTHREAD_USE_TIMEDWAIT_NP"
-				Define "PTHREAD_NO_TIMED_LOCK"
-			}
-		}
 	}
 }
