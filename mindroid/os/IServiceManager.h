@@ -118,7 +118,6 @@ public:
 	private:
 		static const char* const DESCRIPTOR;
 		static const int32_t MSG_START_SERVICE = 1;
-		static const int32_t MSG_START_SERVICE2 = 7;
 		static const int32_t MSG_STOP_SERVICE = 2;
 		static const int32_t MSG_BIND_SERVICE = 3;
 		static const int32_t MSG_UNBIND_SERVICE = 4;
