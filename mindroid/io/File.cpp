@@ -139,8 +139,11 @@ bool File::isDirectory() {
 
 bool File::isFile() {
 	struct stat status;
-	stat(mPath->c_str(), &status);
-	return S_ISREG(status.st_mode);
+	if (stat(mPath->c_str(), &status) == 0) {
+		return S_ISREG(status.st_mode);
+	} else {
+		return false;
+	}
 }
 
 bool File::mkdir() {
@@ -148,7 +151,7 @@ bool File::mkdir() {
 }
 
 bool File::renameTo(const sp<File>& newPath) {
-	return (rename(mPath->c_str(), newPath->mPath->c_str()) == 0);
+	return (::rename(mPath->c_str(), newPath->mPath->c_str()) == 0);
 }
 
 } /* namespace mindroid */
