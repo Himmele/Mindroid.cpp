@@ -13,8 +13,8 @@
 Project {
 	LibraryConfig Default {
 		Files "src/mindroid/**/*.cpp"
-		IncludeDir ".", inherit: true
+		IncludeDir "src", inherit: true
 
-		Dependency src/tinyxml2, config: Default
+		Dependency "src/tinyxml2", config: Default
 	}
 }
