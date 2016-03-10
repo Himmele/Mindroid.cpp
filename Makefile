@@ -5,7 +5,7 @@ LD := g++
 AS := gas
 AR := ar
 RM := rm
-INCLUDES := -I.
+INCLUDES := -I. -Isrc
 CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions
 LDFLAGS := 
 LIB_DIR := lib
@@ -24,50 +24,50 @@ clean:
 #==== Mindroid.cpp ====
 
 SRCS = \
-	mindroid/app/SharedPreferencesImpl.cpp \
-	mindroid/app/IOnSharedPreferenceChangeListener.cpp \
-	mindroid/app/Service.cpp \
-	mindroid/app/ContextImpl.cpp \
-	mindroid/content/Context.cpp \
-	mindroid/content/ComponentName.cpp \
-	mindroid/content/ContextWrapper.cpp \
-	mindroid/content/pm/IPackageManager.cpp \
-	mindroid/content/pm/PackageManagerService.cpp \
-	mindroid/content/Intent.cpp \
-	mindroid/io/File.cpp \
-	mindroid/lang/Object.cpp \
-	mindroid/lang/Thread.cpp \
-	mindroid/lang/String.cpp \
-	mindroid/lang/Closure.cpp \
-	mindroid/lang/Class.cpp \
-	mindroid/net/DatagramSocket.cpp \
-	mindroid/net/SocketAddress.cpp \
-	mindroid/net/Socket.cpp \
-	mindroid/net/ServerSocket.cpp \
-	mindroid/os/Environment.cpp \
-	mindroid/os/Handler.cpp \
-	mindroid/os/Message.cpp \
-	mindroid/os/Binder.cpp \
-	mindroid/os/IRemoteCallback.cpp \
-	mindroid/os/Process.cpp \
-	mindroid/os/Bundle.cpp \
-	mindroid/os/HandlerThread.cpp \
-	mindroid/os/IProcess.cpp \
-	mindroid/os/IServiceManager.cpp \
-	mindroid/os/ServiceManager.cpp \
-	mindroid/os/Looper.cpp \
-	mindroid/os/AsyncTask.cpp \
-	mindroid/os/SystemClock.cpp \
-	mindroid/os/MessageQueue.cpp \
-	mindroid/util/Assert.cpp \
-	mindroid/util/Variant.cpp \
-	mindroid/util/concurrent/SerialExecutor.cpp \
-	mindroid/util/concurrent/locks/ReentrantLock.cpp \
-	mindroid/util/concurrent/locks/ConditionImpl.cpp \
-	mindroid/util/concurrent/ThreadPoolExecutor.cpp \
-	mindroid/util/concurrent/Semaphore.cpp \
-	mindroid/util/Log.cpp \
-	mindroid/util/Logger.cpp
+	src/mindroid/app/SharedPreferencesImpl.cpp \
+	src/mindroid/app/IOnSharedPreferenceChangeListener.cpp \
+	src/mindroid/app/Service.cpp \
+	src/mindroid/app/ContextImpl.cpp \
+	src/mindroid/content/Context.cpp \
+	src/mindroid/content/ComponentName.cpp \
+	src/mindroid/content/ContextWrapper.cpp \
+	src/mindroid/content/pm/IPackageManager.cpp \
+	src/mindroid/content/pm/PackageManagerService.cpp \
+	src/mindroid/content/Intent.cpp \
+	src/mindroid/io/File.cpp \
+	src/mindroid/lang/Object.cpp \
+	src/mindroid/lang/Thread.cpp \
+	src/mindroid/lang/String.cpp \
+	src/mindroid/lang/Closure.cpp \
+	src/mindroid/lang/Class.cpp \
+	src/mindroid/net/DatagramSocket.cpp \
+	src/mindroid/net/SocketAddress.cpp \
+	src/mindroid/net/Socket.cpp \
+	src/mindroid/net/ServerSocket.cpp \
+	src/mindroid/os/Environment.cpp \
+	src/mindroid/os/Handler.cpp \
+	src/mindroid/os/Message.cpp \
+	src/mindroid/os/Binder.cpp \
+	src/mindroid/os/IRemoteCallback.cpp \
+	src/mindroid/os/Process.cpp \
+	src/mindroid/os/Bundle.cpp \
+	src/mindroid/os/HandlerThread.cpp \
+	src/mindroid/os/IProcess.cpp \
+	src/mindroid/os/IServiceManager.cpp \
+	src/mindroid/os/ServiceManager.cpp \
+	src/mindroid/os/Looper.cpp \
+	src/mindroid/os/AsyncTask.cpp \
+	src/mindroid/os/SystemClock.cpp \
+	src/mindroid/os/MessageQueue.cpp \
+	src/mindroid/util/Assert.cpp \
+	src/mindroid/util/Variant.cpp \
+	src/mindroid/util/concurrent/SerialExecutor.cpp \
+	src/mindroid/util/concurrent/locks/ReentrantLock.cpp \
+	src/mindroid/util/concurrent/locks/ConditionImpl.cpp \
+	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \
+	src/mindroid/util/concurrent/Semaphore.cpp \
+	src/mindroid/util/Log.cpp \
+	src/mindroid/util/Logger.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 LIB_OBJS = $(addprefix $(LIB_DIR)/,$(OBJS))
@@ -85,7 +85,7 @@ $(LIB_DIR)/%.o: %.cpp
 
 #==== TinyXML2 ====
 
-TINYXML2_SRCS := $(wildcard tinyxml2/*.cpp)
+TINYXML2_SRCS := $(wildcard src/tinyxml2/*.cpp)
 TINYXML2_OBJS = $(TINYXML2_SRCS:.cpp=.o)
 TINYXML2_LIB_OBJS = $(addprefix $(LIB_DIR)/,$(TINYXML2_OBJS))
 
@@ -119,7 +119,7 @@ $(BIN_DIR)/%.o: %.cpp
 
 #==== Services ====
 
-SERVICES_SRCS := samples/Services.cpp
+SERVICES_SRCS := src/examples/Services.cpp
 SERVICES_OBJS = $(SERVICES_SRCS:.cpp=.o)
 SERVICES_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(SERVICES_OBJS))
 
