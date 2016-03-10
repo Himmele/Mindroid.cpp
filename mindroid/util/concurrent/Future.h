@@ -33,9 +33,13 @@ public:
 
 	template<typename Functor>
 	sp<Future> done(Functor func) {
-		await();
-		if (isDone()) {
-			func();
+		try {
+			await();
+			if (isDone()) {
+				func();
+			}
+		} catch (const CancellationException& e) {
+		} catch (const ExecutionException& e) {
 		}
 		return this;
 	}
