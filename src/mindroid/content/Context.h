@@ -44,6 +44,8 @@ class Context :
 public:
 	static const sp<String> SERVICE_MANAGER;
 	static const sp<String> PACKAGE_MANAGER;
+	static const sp<String> LOCATION_SERVICE;
+	static const sp<String> TELEPHONY_SERVICE;
 	
 	/**
      * File creation mode: the default mode.

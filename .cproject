@@ -25,6 +25,7 @@
 								<option id="gnu.cpp.compiler.exe.debug.option.debugging.level.1364200902" name="Debug Level" superClass="gnu.cpp.compiler.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.28206737" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/gtest}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.1501089752" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def"/>
@@ -60,12 +61,11 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.734203065" name="String.h" rcbsApplicability="disable" resourcePath="mindroid/lang/String.h" toolsToInvoke=""/>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1192540529" name="Services.cpp" rcbsApplicability="disable" resourcePath="samples/Services.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.2051444557">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.2051444557" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
+					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1953599925" name="Networking.cpp" rcbsApplicability="disable" resourcePath="src/examples/Networking.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1774552170">
+						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1774552170" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
 					</fileInfo>
 					<sourceEntries>
-						<entry excluding="samples/HelloWorld.cpp|tests/Tests.cpp|samples/Networking.cpp|samples/Delegates.cpp|samples/ConcurrencyMess.cpp|samples/Closures.cpp|samples/AsyncTasks.cpp|samples/LooperThreadTest.cpp|samples/AsyncTaskTest.cpp|tests/ConcurrencyTest.cpp|tests/ListTest.cpp|tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/DelegateTest.cpp|tests/RefCountingTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="src/examples/Networking.cpp|src/examples/HelloWorld.cpp|src/examples/Delegates.cpp|src/examples/ConcurrencyMess.cpp|src/examples/Closures.cpp|src/examples/AsyncTasks.cpp|samples/HelloWorld.cpp|tests/Tests.cpp|samples/Networking.cpp|samples/Delegates.cpp|samples/ConcurrencyMess.cpp|samples/Closures.cpp|samples/AsyncTasks.cpp|samples/LooperThreadTest.cpp|samples/AsyncTaskTest.cpp|tests/ConcurrencyTest.cpp|tests/ListTest.cpp|tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/DelegateTest.cpp|tests/RefCountingTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

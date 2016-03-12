@@ -24,7 +24,7 @@ namespace mindroid {
 class Logger :
 		public Object {
 public:
-	Logger() { }
+	Logger();
 	virtual ~Logger() { }
 	Logger(const Logger&) = delete;
 	Logger& operator=(const Logger&) = delete;

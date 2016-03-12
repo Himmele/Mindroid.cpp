@@ -11,7 +11,7 @@
 #  from E.S.R.Labs.
 
 Project {
-	LibraryConfig Default {
+	LibraryConfig default {
 		Files "tinyxml2.cpp"
 		IncludeDir ".", inherit: true
 	}

@@ -182,7 +182,7 @@ void shutdownServices(sp<IServiceManager> serviceManager) {
 	}
 }
 
-sp<ServiceManager> sServiceManager;
+static sp<ServiceManager> sServiceManager;
 
 int main() {
 	Environment::setRootDirectory(".");

@@ -11,10 +11,10 @@
 #  from E.S.R.Labs.
 
 Project {
-	LibraryConfig Default {
+	LibraryConfig default {
 		Files "src/mindroid/**/*.cpp"
 		IncludeDir "src", inherit: true
 
-		Dependency "src/tinyxml2", config: Default
+		Dependency "src/tinyxml2", config: default
 	}
 }

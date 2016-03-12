@@ -23,6 +23,10 @@ namespace mindroid {
 
 char Logger::sProrities[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
 
+Logger::Logger() {
+    setbuf(stdout, 0);
+}
+
 int Logger::println(int bufferId, uint8_t priority, const char* tag, const char* msg) {
 	char time[64];
 	getTime(time, sizeof(time));

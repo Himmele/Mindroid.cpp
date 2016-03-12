@@ -23,5 +23,7 @@ namespace mindroid {
 
 const sp<String> Context::SERVICE_MANAGER = String::valueOf("serviceManager");
 const sp<String> Context::PACKAGE_MANAGER = String::valueOf("packageManager");
+const sp<String> Context::LOCATION_SERVICE = String::valueOf("locationService");
+const sp<String> Context::TELEPHONY_SERVICE = String::valueOf("telephonyService");
 
 } /* namespace mindroid */
