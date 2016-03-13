@@ -54,7 +54,7 @@ public:
 	bool removeCallbacksAndMessages(const sp<Handler>& handler, const sp<Object>& object);
 
 private:
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 
 	sp<Message> mMessages;
 	sp<ReentrantLock> mLock;

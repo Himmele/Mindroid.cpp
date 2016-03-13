@@ -118,7 +118,7 @@ protected:
 	}
 
 private:
-    static const char* const LOG_TAG;
+    static const char* const TAG;
 
 	sp<IInterface> mOwner;
 	sp<String> mDescriptor;

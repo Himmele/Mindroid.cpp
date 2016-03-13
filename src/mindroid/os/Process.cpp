@@ -28,7 +28,7 @@
 
 namespace mindroid {
 
-const char* const Process::LOG_TAG = "Process";
+const char* const Process::TAG = "Process";
 
 Process::Process(const sp<String>& name) :
 		mName(name),
@@ -39,7 +39,7 @@ Process::Process(const sp<String>& name) :
 }
 
 sp<IProcess> Process::start() {
-	Log::d(LOG_TAG, "Starting process %s", mName->c_str());
+	Log::d(TAG, "Starting process %s", mName->c_str());
 	mMainThread->start();
 	mMainHandler = new Handler(mMainThread->getLooper());
 	sp<Promise<sp<binder::Process::Stub>>> promise = new Promise<sp<binder::Process::Stub>>();
@@ -54,7 +54,7 @@ sp<IProcess> Process::start() {
 }
 
 void Process::stop(uint64_t timeout) {
-	Log::d(LOG_TAG, "Stopping process %s", mName->c_str());
+	Log::d(TAG, "Stopping process %s", mName->c_str());
 
 	{
 		AutoLock autoLock(mLock);
@@ -87,7 +87,7 @@ void Process::stop(uint64_t timeout) {
 	mMainThread->quit();
 	mMainThread->join();
 
-	Log::d(LOG_TAG, "Process %s has been stopped", mName->c_str());
+	Log::d(TAG, "Process %s has been stopped", mName->c_str());
 }
 
 bool Process::isAlive() const {
@@ -122,10 +122,10 @@ void Process::ProcessImpl::createService(const sp<Intent>& intent, const sp<IRem
 				sp<Class<Service>> clazz = Class<Service>::forName(componentName);
 				service = clazz->newInstance();
 			} else {
-				Log::e(Process::LOG_TAG, "Service not enabled %s", intent->getComponent()->toShortString()->c_str());
+				Log::e(Process::TAG, "Service not enabled %s", intent->getComponent()->toShortString()->c_str());
 			}
 		} else {
-			Log::e(Process::LOG_TAG, "Unknown service %s", intent->getComponent()->toShortString()->c_str());
+			Log::e(Process::TAG, "Unknown service %s", intent->getComponent()->toShortString()->c_str());
 		}
 	}
 
@@ -138,7 +138,7 @@ void Process::ProcessImpl::createService(const sp<Intent>& intent, const sp<IRem
 		service->onCreate();
 		result->putBoolean("result", true);
 	} else {
-		Log::e(Process::LOG_TAG, "Cannot find and instantiate class %s", componentName->c_str());
+		Log::e(Process::TAG, "Cannot find and instantiate class %s", componentName->c_str());
 		result->putBoolean("result", false);
 	}
 

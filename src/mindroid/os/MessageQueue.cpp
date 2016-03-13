@@ -26,7 +26,7 @@
 
 namespace mindroid {
 
-const char* const MessageQueue::LOG_TAG = "MessageQueue";
+const char* const MessageQueue::TAG = "MessageQueue";
 
 MessageQueue::MessageQueue(bool quitAllowed) :
 		mMessages(nullptr),
@@ -73,7 +73,7 @@ bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
 
 	AutoLock autoLock(mLock);
 	if (mQuitting) {
-		Log::w(LOG_TAG, "%p is sending a message to a Handler on a dead thread", message->target.getPointer());
+		Log::w(TAG, "%p is sending a message to a Handler on a dead thread", message->target.getPointer());
 		message->recycle();
 		return false;
 	}

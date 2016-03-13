@@ -18,7 +18,6 @@
 #define MINDROID_ATOMICINTEGER_H_
 
 #include <cstdint>
-#include <atomic>
 
 namespace mindroid {
 
@@ -34,35 +33,17 @@ public:
     AtomicInteger(const AtomicInteger&) = delete;
     AtomicInteger& operator=(const AtomicInteger&) = delete;
 
-	static inline int32_t getAndIncrement(volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return a->fetch_add(1, std::memory_order_release);
-	}
+	static int32_t getAndIncrement(volatile int32_t* address);
 
-	static inline int32_t getAndDecrement(volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return a->fetch_sub(1, std::memory_order_release);
-	}
+	static int32_t getAndDecrement(volatile int32_t* address);
 
-	static inline int32_t getAndAdd(int32_t value, volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return a->fetch_add(value, std::memory_order_release);
-	}
+	static int32_t getAndAdd(int32_t value, volatile int32_t* address);
 
-	static inline int32_t getAndAnd(int32_t value, volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return a->fetch_and(value, std::memory_order_release);
-	}
+	static int32_t getAndAnd(int32_t value, volatile int32_t* address);
 
-	static inline int32_t getAndOr(int32_t value, volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return a->fetch_or(value, std::memory_order_release);
-	}
+	static int32_t getAndOr(int32_t value, volatile int32_t* address);
 
-	static inline int32_t compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address) {
-		volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-		return (int32_t) (!a->compare_exchange_strong(oldValue, newValue, std::memory_order_release, std::memory_order_relaxed));
-	}
+	static int32_t compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address);
 };
 
 } /* namespace mindroid */

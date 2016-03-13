@@ -13,16 +13,16 @@ class Service1 :
 		public Service {
 public:
 	Service1() {
-		Log::d(LOG_TAG, "Service1::ctor");
+		Log::d(TAG, "Service1::ctor");
 	}
 
 	virtual ~Service1() {
-		Log::d(LOG_TAG, "Service1::dtor");
+		Log::d(TAG, "Service1::dtor");
 	}
 
 	virtual void onCreate() {
 		mHandler = new Handler();
-		Log::d(LOG_TAG, "Service1::onCreate");
+		Log::d(TAG, "Service1::onCreate");
 		mHandler->postDelayed([this] { test(); }, 1000);
 
 		sp<Intent> service2 = new Intent();
@@ -37,18 +37,18 @@ public:
 	}
 
 	virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
-		Log::d(LOG_TAG, "Service1::onStartCommand");
+		Log::d(TAG, "Service1::onStartCommand");
 		return 0;
 	}
 
 	virtual void onDestroy() {
-		Log::d(LOG_TAG, "Service1::onDestroy");
+		Log::d(TAG, "Service1::onDestroy");
 	}
 
 	virtual sp<IBinder> onBind(const sp<Intent>& intent) { return nullptr; }
 
 	void test() {
-		Log::d(LOG_TAG, "Test");
+		Log::d(TAG, "Test");
 		mHandler->postDelayed([this] { test(); }, 1000);
 	}
 
@@ -56,61 +56,61 @@ public:
 			public ServiceConnection {
 	public:
 		virtual void onServiceConnected(const sp<ComponentName>& name, const sp<IBinder>& service) {
-			Log::d(LOG_TAG, "Service1::onServiceConnected: %s", name->toShortString()->c_str());
+			Log::d(TAG, "Service1::onServiceConnected: %s", name->toShortString()->c_str());
 		}
 
 		virtual void onServiceDisconnected(const sp<ComponentName>& name) {
-			Log::d(LOG_TAG, "Service1::onServiceDisconnected: %s", name->toShortString()->c_str());
+			Log::d(TAG, "Service1::onServiceDisconnected: %s", name->toShortString()->c_str());
 		}
 	};
 
 private:
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 
 	sp<Handler> mHandler;
 	sp<ServiceConnection> mServiceConnection;
 };
 
-const char* const Service1::LOG_TAG = "Service1";
+const char* const Service1::TAG = "Service1";
 
 class Service2 :
 		public Service {
 public:
 	Service2() {
-		Log::d(LOG_TAG, "Service2::ctor");
+		Log::d(TAG, "Service2::ctor");
 	}
 
 	virtual ~Service2() {
-		Log::d(LOG_TAG, "Service2::dtor");
+		Log::d(TAG, "Service2::dtor");
 	}
 
 	virtual void onCreate() {
-		Log::d(LOG_TAG, "Service2::onCreate");
+		Log::d(TAG, "Service2::onCreate");
 		sp<SharedPreferences> sp = getSharedPreferences("Test", 0);
 		int32_t value = sp->getInt("Test", 0);
-		Log::d(LOG_TAG, "Value: %d", value);
+		Log::d(TAG, "Value: %d", value);
 		sp->edit()->putInt("Test", 123)->commit();
 	}
 
 	virtual void onDestroy() {
-		Log::d(LOG_TAG, "Service2::onDestroy");
+		Log::d(TAG, "Service2::onDestroy");
 	}
 
 	virtual sp<IBinder> onBind(const sp<Intent>& intent) {
-		Log::d(LOG_TAG, "Service2::onBind: %s", intent->getComponent()->toShortString()->c_str());
+		Log::d(TAG, "Service2::onBind: %s", intent->getComponent()->toShortString()->c_str());
 		return nullptr;
 	}
 
 	bool onUnbind(const sp<Intent>& intent) {
-		Log::d(LOG_TAG, "Service2::onUnbind: %s", intent->getComponent()->toShortString()->c_str());
+		Log::d(TAG, "Service2::onUnbind: %s", intent->getComponent()->toShortString()->c_str());
 		return true;
 	}
 
 private:
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 };
 
-const char* const Service2::LOG_TAG = "Service2";
+const char* const Service2::TAG = "Service2";
 
 } /* namespace test */
 

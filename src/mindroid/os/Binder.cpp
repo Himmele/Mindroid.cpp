@@ -21,7 +21,7 @@
 
 namespace mindroid {
 
-const char* const Binder::LOG_TAG = "Binder";
+const char* const Binder::TAG = "Binder";
 const sp<String> Binder::EXCEPTION_MESSAGE = String::valueOf("Binder transaction failure");
 
 void Binder::Messenger::handleMessage(const sp<Message>& message) {

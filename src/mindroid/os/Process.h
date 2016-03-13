@@ -66,7 +66,7 @@ private:
 		sp<Process> mProcess;
 	};
 
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 	sp<String> mName;
 	sp<HandlerThread> mMainThread;
 	sp<Handler> mMainHandler;

@@ -26,7 +26,7 @@
 
 namespace mindroid {
 
-const char* const ContextImpl::LOG_TAG = "ContextImpl";
+const char* const ContextImpl::TAG = "ContextImpl";
 sp<ReentrantLock> ContextImpl::sLock = new ReentrantLock();
 sp<HashMap<sp<String>, sp<SharedPreferences>>> ContextImpl::sSharedPreferences = new HashMap<sp<String>, sp<SharedPreferences>>();
 
@@ -122,7 +122,7 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
 					sp<IBinder> binder = data->getBinder("binder");
 					mConn->onServiceConnected(mService->getComponent(), binder);
 				} else {
-					Log::e(ContextImpl::LOG_TAG, "Cannot bind to service %s", mService->getComponent()->toShortString()->c_str());
+					Log::e(ContextImpl::TAG, "Cannot bind to service %s", mService->getComponent()->toShortString()->c_str());
 				}
 			}
 
@@ -179,7 +179,7 @@ void ContextImpl::cleanup() {
         sp<Intent> service = entry.getValue();
         itr.remove();
 		mServiceManager->unbindService(service, conn);
-        Log::w(LOG_TAG, "Service %s is leaking a ServiceConnection to %s", mComponent->toString()->c_str(), service->getComponent()->toString()->c_str());
+        Log::w(TAG, "Service %s is leaking a ServiceConnection to %s", mComponent->toString()->c_str(), service->getComponent()->toString()->c_str());
     }
 }
 

@@ -53,6 +53,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/util/Assert.cpp \
 	src/mindroid/util/Variant.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
+	src/mindroid/util/concurrent/atomic/AtomicInteger.cpp \
 	src/mindroid/util/concurrent/locks/ReentrantLock.cpp \
 	src/mindroid/util/concurrent/locks/ConditionImpl.cpp \
 	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \

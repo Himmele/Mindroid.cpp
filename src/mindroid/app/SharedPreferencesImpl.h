@@ -150,7 +150,7 @@ private:
     void notifySharedPreferenceChangeListeners(const sp<ArrayList<sp<String>>>& keys);
 
 private:
-    static const char* const LOG_TAG;
+    static const char* const TAG;
 	static const char* const UTF_8;
 	static const char* const MAP_TAG;
 	static const char* const BOOLEAN_TAG;

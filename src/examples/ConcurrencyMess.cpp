@@ -20,7 +20,7 @@ sp<Handler4> sHandler4;
 sp<Semaphore> sSemaphore1 = new Semaphore(0);
 sp<Semaphore> sSemaphore2 = new Semaphore(0);
 
-static const char* LOG_TAG = "Mindroid";
+static const char* TAG = "Mindroid";
 
 class Params :
 	public Object {
@@ -39,11 +39,11 @@ public:
 class AsyncTask1 : public AsyncTask<sp<Params>, int32_t, int32_t> {
 public:
 	virtual void onPreExecute() {
-		Log::d(LOG_TAG, "AsyncTask1::onPreExecute on thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "AsyncTask1::onPreExecute on thread %d", (int32_t) pthread_self());
 	}
 
 	virtual int32_t doInBackground(sp<Params> params) {
-		Log::d(LOG_TAG, "AsyncTask1::doInBackground on thread %d with params %d", (int32_t) pthread_self(), params->values[0]);
+		Log::d(TAG, "AsyncTask1::doInBackground on thread %d with params %d", (int32_t) pthread_self(), params->values[0]);
 		Thread::sleep(250);
 		uint32_t sum = 0;
 		uint32_t i;
@@ -59,36 +59,36 @@ public:
 	}
 
 	virtual void onProgressUpdate(int32_t value) {
-		Log::d(LOG_TAG, "AsyncTask1::onProgressUpdate on thread %d with value %d", (int32_t) pthread_self(), value);
+		Log::d(TAG, "AsyncTask1::onProgressUpdate on thread %d with value %d", (int32_t) pthread_self(), value);
 	}
 
 	virtual void onPostExecute(int32_t result) {
-		Log::d(LOG_TAG, "AsyncTask1::onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
+		Log::d(TAG, "AsyncTask1::onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
 	}
 
 	virtual void onCancelled() {
-		Log::d(LOG_TAG, "AsyncTask1::onCancelled on thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "AsyncTask1::onCancelled on thread %d", (int32_t) pthread_self());
 	}
 };
 
 class AsyncTask2 : public AsyncTask<int32_t, int32_t, int32_t> {
 public:
 	virtual void onPreExecute() {
-		Log::d(LOG_TAG, "AsyncTask2::onPreExecute on thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "AsyncTask2::onPreExecute on thread %d", (int32_t) pthread_self());
 	}
 
 	virtual int32_t doInBackground(int32_t param) {
-		Log::d(LOG_TAG, "AsyncTask2::doInBackground on thread %d with params %d", (int32_t) pthread_self(), param);
+		Log::d(TAG, "AsyncTask2::doInBackground on thread %d with params %d", (int32_t) pthread_self(), param);
 		Thread::sleep(100);
 		return 42;
 	}
 
 	virtual void onPostExecute(int32_t result) {
-		Log::d(LOG_TAG, "AsyncTask2::onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
+		Log::d(TAG, "AsyncTask2::onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
 	}
 
 	virtual void onCancelled() {
-		Log::d(LOG_TAG, "AsyncTask2::onCancelled on thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "AsyncTask2::onCancelled on thread %d", (int32_t) pthread_self());
 	}
 };
 
@@ -109,11 +109,11 @@ public:
 			break;
 		}
 		case MSG_PRINT_INFO:
-			Log::i(LOG_TAG, "Handler1::handleMessage %p with ID %d by Looper %p",
+			Log::i(TAG, "Handler1::handleMessage %p with ID %d by Looper %p",
 					message.getPointer(), message->what, Looper::myLooper().getPointer());
 			break;
 		default:
-			Log::i(LOG_TAG, "Handler1::handleMessage: Oops, this message ID is not valid");
+			Log::i(TAG, "Handler1::handleMessage: Oops, this message ID is not valid");
 			break;
 		}
 	}
@@ -127,7 +127,7 @@ private:
 class Handler2 : public Handler {
 public:
 	virtual void handleMessage(const sp<Message>& message) {
-		Log::d(LOG_TAG, "Handler2::handleMessage %p with ID %d by Looper %p",
+		Log::d(TAG, "Handler2::handleMessage %p with ID %d by Looper %p",
 				message.getPointer(), message->what, Looper::myLooper().getPointer());
 	}
 };
@@ -135,7 +135,7 @@ public:
 class Handler3 : public Handler {
 public:
 	virtual void handleMessage(const sp<Message>& message) {
-		Log::d(LOG_TAG, "Handler3::handleMessage %p with ID %d by Looper %p",
+		Log::d(TAG, "Handler3::handleMessage %p with ID %d by Looper %p",
 				message.getPointer(), message->what, Looper::myLooper().getPointer());
 	}
 
@@ -149,7 +149,7 @@ public:
 	Handler4(const sp<Looper>& looper) : Handler(looper) {}
 
 	virtual void handleMessage(const sp<Message>& message) {
-		Log::d(LOG_TAG, "Handler4::handleMessage %p with ID %d by Looper %p",
+		Log::d(TAG, "Handler4::handleMessage %p with ID %d by Looper %p",
 				message.getPointer(), message->what, Looper::myLooper().getPointer());
 	}
 
@@ -165,7 +165,7 @@ public:
 		sLooper1 = Looper::myLooper();
 		sHandler1 = new Handler1();
 		sHandler3 = new Handler3();
-		Log::d(LOG_TAG, "Looper 1 uses thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "Looper 1 uses thread %d", (int32_t) pthread_self());
 		sSemaphore1->release();
 		Looper::loop();
 	}
@@ -177,7 +177,7 @@ public:
 		Looper::prepare();
 		sLooper2 = Looper::myLooper();
 		sHandler2 = new Handler2();
-		Log::d(LOG_TAG, "Looper 2 uses thread %d", (int32_t) pthread_self());
+		Log::d(TAG, "Looper 2 uses thread %d", (int32_t) pthread_self());
 		sSemaphore2->release();
 		Looper::loop();
 	}
@@ -186,7 +186,7 @@ public:
 class Runnable1 : public Runnable {
 public:
 	virtual void run() {
-		Log::d(LOG_TAG, "Runnable1::run by Looper %p", Looper::myLooper().getPointer());
+		Log::d(TAG, "Runnable1::run by Looper %p", Looper::myLooper().getPointer());
 		assert(false);
 	}
 };
@@ -194,7 +194,7 @@ public:
 class TestClosure1 {
 public:
 	void test(int32_t value) {
-		Log::d(LOG_TAG, "TestClosure1::test with value %d by Looper %p",
+		Log::d(TAG, "TestClosure1::test with value %d by Looper %p",
 				value, Looper::myLooper().getPointer());
 	}
 };

@@ -115,7 +115,7 @@ public:
 	static void fail(const char* message);
 
 private:
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 };
 
 } /* namespace mindroid */

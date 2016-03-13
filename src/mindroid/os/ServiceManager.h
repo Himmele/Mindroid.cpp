@@ -146,7 +146,7 @@ public:
 	static void waitForSystemServiceShutdown(const sp<String>& name);
 
 private:
-	static const char* const LOG_TAG;
+	static const char* const TAG;
 	static const char* SYSTEM_SERVICE;
 	static sp<ReentrantLock> sLock;
 	static sp<Condition> sCondition;

@@ -26,7 +26,7 @@ using namespace tinyxml2;
 
 namespace mindroid {
 
-const char* const PackageManagerService::LOG_TAG = "PackageManager";
+const char* const PackageManagerService::TAG = "PackageManager";
 const char* PackageManagerService::MANIFEST_TAG = "manifest";
 const char* PackageManagerService::APPLICATION_TAG = "application";
 const char* PackageManagerService::SERVICE_TAG = "service";
@@ -112,7 +112,7 @@ void PackageManagerService::parseManifest(const sp<File>& file) {
 			}
 		}
 	} else {
-		Log::w(LOG_TAG, "Cannot read %s", file->getPath()->c_str());
+		Log::w(TAG, "Cannot read %s", file->getPath()->c_str());
 	}
 }
 

@@ -74,7 +74,7 @@ private:
     sp<File> makeFilename(const sp<File>& baseDir, const sp<String>& name);
     virtual void cleanup();
 
-    static const char* const LOG_TAG;
+    static const char* const TAG;
     static sp<ReentrantLock> sLock;
     static sp<HashMap<sp<String>, sp<SharedPreferences>>> sSharedPreferences;
     sp<IServiceManager> mServiceManager;

@@ -30,7 +30,7 @@
 
 namespace mindroid {
 
-const char* const ServiceManager::LOG_TAG = "ServiceManager";
+const char* const ServiceManager::TAG = "ServiceManager";
 const char* ServiceManager::SYSTEM_SERVICE = "systemService";
 sp<ReentrantLock> ServiceManager::sLock = new ReentrantLock();
 sp<Condition> ServiceManager::sCondition = sLock->newCondition();
@@ -154,7 +154,7 @@ ServiceManager::ServiceManager() :
 			mProcesses(new HashMap<sp<String>, sp<ProcessRecord>>()),
 			mServices(new HashMap<sp<ComponentName>, sp<ServiceRecord>>()) {
 	mProcessManager = new ProcessManager();
-	mMainThread = new HandlerThread(LOG_TAG);
+	mMainThread = new HandlerThread(TAG);
 }
 
 void ServiceManager::start() {
@@ -213,7 +213,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 		}
 
 		if (serviceRecord->getNumServiceConnections() != 0) {
-			Log::d(ServiceManager::LOG_TAG, "Cannot stop service %s due to active bindings", service->getComponent()->toShortString()->c_str());
+			Log::d(ServiceManager::TAG, "Cannot stop service %s due to active bindings", service->getComponent()->toShortString()->c_str());
 			return false;
 		}
 
@@ -228,9 +228,9 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 			void onResult(const sp<Bundle>& data) {
 				bool result = data->getBoolean("result");
 				if (result) {
-					Log::d(ServiceManager::LOG_TAG, "Service %s has been stopped", mServiceName->c_str());
+					Log::d(ServiceManager::TAG, "Service %s has been stopped", mServiceName->c_str());
 				} else {
-					Log::w(ServiceManager::LOG_TAG, "Service %s cannot be stopped", mServiceName->c_str());
+					Log::w(ServiceManager::TAG, "Service %s cannot be stopped", mServiceName->c_str());
 				}
 			}
 
@@ -264,7 +264,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 
 		return true;
 	} else {
-		Log::d(ServiceManager::LOG_TAG, "Cannot find and stop service %s", service->getComponent()->toShortString()->c_str());
+		Log::d(ServiceManager::TAG, "Cannot find and stop service %s", service->getComponent()->toShortString()->c_str());
 		return false;
 	}
 }
@@ -287,12 +287,12 @@ bool ServiceManager::ServiceManagerImpl::bindService(const sp<Intent>& intent, c
 				Assert::fail("System failure");
 			}
 
-			Log::d(ServiceManager::LOG_TAG, "Bound to service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
+			Log::d(ServiceManager::TAG, "Bound to service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
 		}
 
 		return true;
 	} else {
-		Log::d(ServiceManager::LOG_TAG, "Cannot find and bind service %s", intent->getComponent()->toShortString()->c_str());
+		Log::d(ServiceManager::TAG, "Cannot find and bind service %s", intent->getComponent()->toShortString()->c_str());
 		return false;
 	}
 }
@@ -314,7 +314,7 @@ void ServiceManager::ServiceManagerImpl::unbindService(const sp<Intent>& service
 		} catch (const RemoteException& e) {
 			Assert::fail("System failure");
 		}
-		Log::d(ServiceManager::LOG_TAG, "Unbound from service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
+		Log::d(ServiceManager::TAG, "Unbound from service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
 
 		serviceRecord->removeServiceConnection(conn);
 		if (serviceRecord->getNumServiceConnections() == 0) {
@@ -434,9 +434,9 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
 					if (serviceManager->mServices->containsKey(component)) {
 						sp<ServiceRecord> serviceRecord = serviceManager->mServices->get(component);
 						if (result) {
-							Log::d(LOG_TAG, "Service %s has been created in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
+							Log::d(TAG, "Service %s has been created in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
 						} else {
-							Log::w(LOG_TAG, "Service %s cannot be created in process %s. Cleaning up", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
+							Log::w(TAG, "Service %s cannot be created in process %s. Cleaning up", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
 							serviceManager->cleanupService(mService);
 						}
 					}
@@ -479,9 +479,9 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
 		void onResult(const sp<Bundle>& data) {
 			bool result = data->getBoolean("result");
 			if (result) {
-				Log::d(LOG_TAG, "Service %s has been started in process %s", mServiceName->c_str(), mProcessName->c_str());
+				Log::d(TAG, "Service %s has been started in process %s", mServiceName->c_str(), mProcessName->c_str());
 			} else {
-				Log::w(LOG_TAG, "Service %s cannot be started in process %s", mServiceName->c_str(), mProcessName->c_str());
+				Log::w(TAG, "Service %s cannot be started in process %s", mServiceName->c_str(), mProcessName->c_str());
 			}
 		}
 
@@ -529,7 +529,7 @@ bool ServiceManager::cleanupService(const sp<Intent>& service) {
 
 		return true;
 	} else {
-		Log::d(LOG_TAG, "Cannot find and clean up service %s", service->getComponent()->toShortString()->c_str());
+		Log::d(TAG, "Cannot find and clean up service %s", service->getComponent()->toShortString()->c_str());
 		return false;
 	}
 }
@@ -574,7 +574,7 @@ void ServiceManager::waitForSystemService(const sp<String>& name) {
 		if (!sSystemServices->containsKey(name)) {
 			duration = start + TIMEOUT - SystemClock::uptimeMillis();
 			if (duration <= 0) {
-				Log::w(LOG_TAG, "Starting %s takes very long", name->c_str());
+				Log::w(TAG, "Starting %s takes very long", name->c_str());
 				start = SystemClock::uptimeMillis();
 				duration = TIMEOUT;
 			}
@@ -592,7 +592,7 @@ void ServiceManager::waitForSystemServiceShutdown(const sp<String>& name) {
 		if (sSystemServices->containsKey(name)) {
 			duration = start + TIMEOUT - SystemClock::uptimeMillis();
 			if (duration <= 0) {
-				Log::w(LOG_TAG, "Stopping %s takes very long", name->c_str());
+				Log::w(TAG, "Stopping %s takes very long", name->c_str());
 				start = SystemClock::uptimeMillis();
 				duration = TIMEOUT;
 			}

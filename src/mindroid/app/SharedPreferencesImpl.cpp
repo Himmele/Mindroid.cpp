@@ -25,7 +25,7 @@ using namespace tinyxml2;
 
 namespace mindroid {
 
-const char* const SharedPreferencesImpl::LOG_TAG = "SharedPreferencesImpl";
+const char* const SharedPreferencesImpl::TAG = "SharedPreferencesImpl";
 const char* const SharedPreferencesImpl::UTF_8 = "UTF-8";
 const char* const SharedPreferencesImpl::MAP_TAG = "map";
 const char* const SharedPreferencesImpl::BOOLEAN_TAG = "boolean";
@@ -223,7 +223,7 @@ void SharedPreferencesImpl::loadSharedPrefs() {
 		mMap = map;
 	} else {
 		mMap = new HashMap<sp<String>, sp<Variant>>();
-		Log::e(LOG_TAG, "Cannot read shared preferences: %s", mFile->getPath()->c_str());
+		Log::e(TAG, "Cannot read shared preferences: %s", mFile->getPath()->c_str());
 	}
 }
 
@@ -231,7 +231,7 @@ bool SharedPreferencesImpl::storeSharedPrefs() {
 	if (mFile->exists()) {
 		if (!mBackupFile->exists()) {
 			if (!mFile->renameTo(mBackupFile)) {
-				Log::e(LOG_TAG, "Cannot rename file %s to backup file %s",  mFile->getPath()->c_str(), mBackupFile->getPath()->c_str());
+				Log::e(TAG, "Cannot rename file %s to backup file %s",  mFile->getPath()->c_str(), mBackupFile->getPath()->c_str());
 				return false;
 			}
 		} else {
@@ -243,10 +243,10 @@ bool SharedPreferencesImpl::storeSharedPrefs() {
 		mBackupFile->remove();
 		return true;
 	} else {
-		Log::e(LOG_TAG, "Cannot write shared preferences: %s", mFile->getPath()->c_str());
+		Log::e(TAG, "Cannot write shared preferences: %s", mFile->getPath()->c_str());
 		if (mFile->exists()) {
 			if (!mFile->remove()) {
-				Log::e(LOG_TAG, "Cannot clean up partially-written file %s", mFile->getPath()->c_str());
+				Log::e(TAG, "Cannot clean up partially-written file %s", mFile->getPath()->c_str());
 			}
 		}
 		return false;
