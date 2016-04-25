@@ -31,6 +31,20 @@ Bundle::Bundle(const sp<Bundle>& other) {
 	putAll(other);
 }
 
+sp<Set<sp<String>>> Bundle::keySet() const {
+	if (mMap->isEmpty()) {
+		return nullptr;
+	}
+
+	sp<Set<sp<String>>> keys = new Set<sp<String>>();
+	auto iter = mMap->iterator();
+	while (iter.hasNext()) {
+		auto pair = iter.next();
+		keys->add(pair.getKey());
+	}
+	return keys;
+}
+
 bool Bundle::containsKey(const sp<String>& key) {
 	return mMap->containsKey(key);
 }

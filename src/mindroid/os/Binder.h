@@ -46,7 +46,7 @@ private:
 
 	class Messenger : public Handler {
 	public:
-		Messenger(const sp<Binder>& binder) : mBinder(binder) {
+		Messenger(const sp<Binder>& binder) : Handler(binder->mLooper), mBinder(binder) {
 		}
 
 		virtual void handleMessage(const sp<Message>& message);
@@ -56,9 +56,7 @@ private:
 	};
 
 public:
-    Binder() {
-    	mMessenger = new Messenger(this);
-    }
+    Binder() = default;
     
     /**
 	 * Convenience method for associating a specific interface with the Binder. After calling,
@@ -69,6 +67,14 @@ public:
         mOwner = owner;
         mDescriptor = descriptor;
         mLooper = Looper::myLooper();
+    	mMessenger = new Messenger(this);
+    }
+
+    void attachInterface(const sp<IInterface>& owner, const sp<String>& descriptor, const sp<Looper>& looper) {
+        mOwner = owner;
+        mDescriptor = descriptor;
+        mLooper = looper;
+    	mMessenger = new Messenger(this);
     }
 	
     /**

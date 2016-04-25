@@ -23,10 +23,11 @@
 
 namespace mindroid {
 
-class String;
-class IInterface;
-class Message;
 class Bundle;
+class IInterface;
+class Looper;
+class Message;
+class String;
 class Variant;
 
 /**

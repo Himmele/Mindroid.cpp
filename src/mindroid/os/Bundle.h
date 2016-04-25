@@ -67,6 +67,12 @@ public:
 	}
 
 	/**
+	 * Returns a Set containing the Strings used as keys in this Bundle.
+	 * @return an Set<String> value, or null
+	 */
+	sp<Set<sp<String>>> keySet() const;
+
+	/**
 	 * Returns true if the given key is contained in the mapping
 	 * of this Bundle.
 	 *
