@@ -66,18 +66,21 @@ bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
 		Assert::assertNotNull("Message must have a target", message->target);
 		return false;
 	}
-	if (message->when != 0) {
-		Assert::assertTrue("Message is already in use", message->when == 0);
+
+	AutoLock autoLock(mLock);
+
+	if (message->isInUse()) {
+		Assert::assertFalse("Message is already in use", message->isInUse());
 		return false;
 	}
 
-	AutoLock autoLock(mLock);
 	if (mQuitting) {
 		Log::w(TAG, "%p is sending a message to a Handler on a dead thread", message->target.getPointer());
 		message->recycle();
 		return false;
 	}
 
+	message->markInUse();
 	message->when = when;
 	sp<Message> curMessage = mMessages;
 	if (curMessage == nullptr || when == 0 || when < curMessage->when) {

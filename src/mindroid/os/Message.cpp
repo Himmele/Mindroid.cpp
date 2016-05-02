@@ -42,6 +42,7 @@ Message::Message() :
 		arg1(0),
 		arg2(0),
 		obj(nullptr),
+		flags(0),
 		when(0),
 		data(nullptr),
 		target(nullptr),
@@ -56,6 +57,7 @@ sp<Message> Message::obtain() {
 			sp<Message> message = sMessagePool.pool;
 			sMessagePool.pool = message->nextMessage;
 			message->nextMessage = nullptr;
+			message->flags = 0;
 			sMessagePool.size--;
 			return message;
 		}
@@ -136,6 +138,7 @@ void Message::recycle() {
 		result->cancel();
 	}
 
+	flags = FLAG_IN_USE;
 	what = 0;
 	arg1 = 0;
 	arg2 = 0;

@@ -167,7 +167,7 @@ public:
 	static sp<Message> obtain(const sp<Handler>& handler, int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj);
 
 	/**
-	 * Make this message like o. Performs a shallow copy of the data field. Does not copy the linked
+	 * Make this message like otherMessage. Performs a shallow copy of the data field. Does not copy the linked
 	 * list fields, nor the timestamp or target/callback of the original message.
 	 */
 	void copyFrom(const sp<Message>& otherMessage);
@@ -247,12 +247,23 @@ public:
 	void sendToTarget();
 
 private:
+	bool isInUse() {
+		return ((flags & FLAG_IN_USE) == FLAG_IN_USE);
+	}
+
+	void markInUse() {
+		flags |= FLAG_IN_USE;
+	}
+
 	/**
 	 * Return a Message instance to the global pool. You MUST NOT touch the Message after calling
 	 * this function -- it has effectively been freed.
 	 */
 	void recycle();
 
+	static const int32_t FLAG_IN_USE = 1 << 0;
+
+	int32_t flags;
 	uint64_t when;
 	sp<Bundle> data;
 	sp<Handler> target;
