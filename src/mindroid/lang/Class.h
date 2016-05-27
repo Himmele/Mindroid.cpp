@@ -57,6 +57,24 @@ template<typename T>
 class Class final :
 		public Object {
 public:
+	static bool isInstance(const sp<Object>& o) {
+		if (o != nullptr) {
+			sp<T> t = dynamic_cast<T*>(o.getPointer());
+			return t != nullptr;
+		} else {
+			return false;
+		}
+	}
+
+	static sp<T> cast(const sp<Object>& o) {
+		if (o != nullptr) {
+			sp<T> t = dynamic_cast<T*>(o.getPointer());
+			return t;
+		} else {
+			return nullptr;
+		}
+	}
+
 	static sp<Class> forName(const char* className) {
 		return forName(String::valueOf(className));
 	}

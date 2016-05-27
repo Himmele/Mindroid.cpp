@@ -22,8 +22,6 @@
 
 namespace mindroid {
 
-class String;
-
 class File :
 		public Object {
 public:
@@ -202,6 +200,16 @@ public:
 	 * @return true on success.
 	 */
 	bool renameTo(const sp<File>& newPath);
+
+	/**
+	 * Returns a string containing a concise, human-readable description of this
+	 * file.
+	 *
+	 * @return a printable representation of this file.
+	 */
+	sp<String> toString() {
+		return mPath;
+	}
 
 private:
 	sp<String> mPath;

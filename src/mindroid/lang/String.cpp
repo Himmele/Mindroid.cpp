@@ -57,6 +57,10 @@ String::String(const char* string, size_t size) {
 	}
 }
 
+String::String(const char c) {
+	mStringBuffer = new StringBuffer(&c, 1);
+}
+
 size_t String::hashCode() const {
 	size_t hash = 0;
 	for (size_t i = 0; i < mStringBuffer->mSize; i++) {
@@ -292,12 +296,76 @@ sp<ArrayList<sp<String>>> String::split(const sp<String>& separator) const {
 	return split(separator->c_str());
 }
 
+sp<String> String::valueOf(int8_t value) {
+	size_t size = snprintf(NULL, 0, "%d", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%d", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(uint8_t value) {
+	size_t size = snprintf(NULL, 0, "%u", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%u", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(int16_t value) {
+	size_t size = snprintf(NULL, 0, "%d", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%d", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(uint16_t value) {
+	size_t size = snprintf(NULL, 0, "%u", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%u", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(int32_t value) {
+	size_t size = snprintf(NULL, 0, "%d", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%d", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(uint32_t value) {
+	size_t size = snprintf(NULL, 0, "%u", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%u", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(float value) {
+	size_t size = snprintf(NULL, 0, "%f", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%f", value);
+	return new String(stringBuffer);
+}
+
+sp<String> String::valueOf(double value) {
+	size_t size = snprintf(NULL, 0, "%f", value);
+	sp<StringBuffer> stringBuffer = new StringBuffer(size);
+	snprintf(stringBuffer->mData, size + 1, "%f", value);
+	return new String(stringBuffer);
+}
+
 sp<String> String::format(const char* format, ...) {
 	va_list args;
 	va_start(args, format);
 	sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
 	va_end(args);
 	return formattedString;
+}
+
+sp<String> String::replace(char oldChar, char newChar) {
+	sp<StringBuffer> stringBuffer = new StringBuffer(length());
+	for (size_t i = 0; i < length(); i++) {
+		stringBuffer->mData[i] = (stringBuffer->mData[i] == oldChar) ? newChar : stringBuffer->mData[i];
+	}
+	return new String(stringBuffer);
 }
 
 sp<String> String::append(const char* data, size_t size) const {

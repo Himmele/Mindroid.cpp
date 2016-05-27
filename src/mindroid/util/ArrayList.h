@@ -18,6 +18,7 @@
 #define MINDROID_ARRAYLIST_H_
 
 #include "mindroid/lang/Object.h"
+#include "mindroid/util/Set.h"
 #include "mindroid/util/Assert.h"
 #include <vector>
 
@@ -31,6 +32,24 @@ class ArrayList :
 		public Object {
 public:
 	ArrayList() { }
+
+	ArrayList(sp<ArrayList<T>> collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
+
+	ArrayList(sp<Set<T>> collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
 
 	virtual ~ArrayList() {
 		clear();
@@ -204,6 +223,24 @@ class ArrayList<sp<T>> :
 		public Object {
 public:
 	ArrayList() { }
+
+	ArrayList(const sp<ArrayList<sp<T>>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
+
+	ArrayList(const sp<Set<sp<T>>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
 
 	virtual ~ArrayList() {
 		clear();

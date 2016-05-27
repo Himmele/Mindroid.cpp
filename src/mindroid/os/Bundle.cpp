@@ -37,9 +37,9 @@ sp<Set<sp<String>>> Bundle::keySet() const {
 	}
 
 	sp<Set<sp<String>>> keys = new Set<sp<String>>();
-	auto iter = mMap->iterator();
-	while (iter.hasNext()) {
-		auto pair = iter.next();
+	auto itr = mMap->iterator();
+	while (itr.hasNext()) {
+		auto pair = itr.next();
 		keys->add(pair.getKey());
 	}
 	return keys;

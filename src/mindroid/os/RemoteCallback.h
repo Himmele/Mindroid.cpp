@@ -43,6 +43,10 @@ public:
 protected:
 	virtual void onResult(const sp<Bundle>& data) = 0;
 
+	sp<Handler> getHandler() {
+		return mHandler;
+	}
+
 private:
 	class Stub : public binder::RemoteCallback::Stub {
 	public:

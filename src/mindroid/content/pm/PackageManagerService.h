@@ -69,7 +69,6 @@ private:
 	sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);
 	sp<ServiceInfo> parseService(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* serviceNode);
 
-private:
 	static const char* const TAG;
 	static const char* MANIFEST_TAG;
 	static const char* APPLICATION_TAG;

@@ -26,11 +26,19 @@ LOCAL_SRC_FILES := \
 	src/mindroid/content/pm/PackageManagerService.cpp \
 	src/mindroid/content/Intent.cpp \
 	src/mindroid/io/File.cpp \
-	src/mindroid/lang/Object.cpp \
-	src/mindroid/lang/Thread.cpp \
-	src/mindroid/lang/String.cpp \
-	src/mindroid/lang/Closure.cpp \
+	src/mindroid/lang/Boolean.cpp \
+	src/mindroid/lang/Byte.cpp \
+	src/mindroid/lang/Character.cpp \
 	src/mindroid/lang/Class.cpp \
+	src/mindroid/lang/Closure.cpp \
+	src/mindroid/lang/Double.cpp \
+	src/mindroid/lang/Float.cpp \
+	src/mindroid/lang/Integer.cpp \
+	src/mindroid/lang/Long.cpp \
+	src/mindroid/lang/Object.cpp \
+	src/mindroid/lang/Short.cpp \
+	src/mindroid/lang/String.cpp \
+	src/mindroid/lang/Thread.cpp \
 	src/mindroid/net/DatagramSocket.cpp \
 	src/mindroid/net/SocketAddress.cpp \
 	src/mindroid/net/Socket.cpp \

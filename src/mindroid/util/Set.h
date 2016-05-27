@@ -32,6 +32,15 @@ class Set :
 public:
 	Set() { }
 
+	Set(const sp<Set<T>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
+
 	virtual ~Set() {
 		clear();
 	}
@@ -130,6 +139,15 @@ class Set<sp<T>> :
 		public Object {
 public:
 	Set() { }
+
+	Set(const sp<Set<sp<T>>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
 
 	virtual ~Set() {
 		clear();

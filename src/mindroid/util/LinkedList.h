@@ -18,6 +18,7 @@
 #define MINDROID_LINKEDLIST_H_
 
 #include "mindroid/lang/Object.h"
+#include "mindroid/util/Set.h"
 #include "mindroid/util/Assert.h"
 #include <list>
 
@@ -31,6 +32,24 @@ class LinkedList :
 		public Object {
 public:
 	LinkedList() { }
+
+	LinkedList(const sp<LinkedList<T>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
+
+	LinkedList(const sp<Set<T>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
 
 	virtual ~LinkedList() {
 		clear();
@@ -221,6 +240,24 @@ class LinkedList<sp<T>> :
 		public Object {
 public:
 	LinkedList() { }
+
+	LinkedList(const sp<LinkedList<sp<T>>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
+
+	LinkedList(const sp<Set<sp<T>>>& collection) {
+		if (collection != nullptr) {
+			auto itr = collection->iterator();
+			while (itr.hasNext()) {
+				add(itr.next());
+			}
+		}
+	}
 
 	virtual ~LinkedList() {
 		clear();

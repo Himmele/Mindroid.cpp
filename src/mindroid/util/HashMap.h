@@ -18,6 +18,7 @@
 #define MINDROID_HASHMAP_H_
 
 #include "mindroid/lang/Object.h"
+#include "mindroid/util/Set.h"
 #include "mindroid/util/Assert.h"
 #include <unordered_map>
 
@@ -70,6 +71,20 @@ public:
 
 	bool isEmpty() const {
 		return mMap.empty();
+	}
+
+	sp<Set<K>> keySet() {
+		if (isEmpty()) {
+			return nullptr;
+		}
+
+		sp<Set<K>> keys = new Set<K>();
+		auto itr = iterator();
+		while (itr.hasNext()) {
+			auto pair = itr.next();
+			keys->add(pair.getKey());
+		}
+		return keys;
 	}
 
 	V put(const K& key, const V& value) {
@@ -242,6 +257,20 @@ public:
 		return mMap.empty();
 	}
 
+	sp<Set<K>> keySet() {
+		if (isEmpty()) {
+			return nullptr;
+		}
+
+		sp<Set<K>> keys = new Set<K>();
+		auto itr = iterator();
+		while (itr.hasNext()) {
+			auto pair = itr.next();
+			keys->add(pair.getKey());
+		}
+		return keys;
+	}
+
 	sp<V> put(const K& key, const sp<V>& value) {
 		sp<V> oldValue = nullptr;
 		auto itr = mMap.find(key);
@@ -412,6 +441,20 @@ public:
 		return mMap.empty();
 	}
 
+	sp<Set<sp<K>>> keySet() {
+		if (isEmpty()) {
+			return nullptr;
+		}
+
+		sp<Set<sp<K>>> keys = new Set<sp<K>>();
+		auto itr = iterator();
+		while (itr.hasNext()) {
+			auto pair = itr.next();
+			keys->add(pair.getKey());
+		}
+		return keys;
+	}
+
 	V put(const sp<K>& key, const V& value) {
 		V oldValue = mMap[key];
 		auto itr = mMap.find(key);
@@ -580,6 +623,20 @@ public:
 
 	bool isEmpty() const {
 		return mMap.empty();
+	}
+
+	sp<Set<sp<K>>> keySet() {
+		if (isEmpty()) {
+			return nullptr;
+		}
+
+		sp<Set<sp<K>>> keys = new Set<sp<K>>();
+		auto itr = iterator();
+		while (itr.hasNext()) {
+			auto pair = itr.next();
+			keys->add(pair.getKey());
+		}
+		return keys;
 	}
 
 	sp<V> put(const sp<K>& key, const sp<V>& value) {

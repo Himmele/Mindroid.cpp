@@ -23,7 +23,11 @@ namespace mindroid {
 
 const sp<String> Context::SERVICE_MANAGER = String::valueOf("serviceManager");
 const sp<String> Context::PACKAGE_MANAGER = String::valueOf("packageManager");
+const sp<String> Context::ALARM_MANAGER = String::valueOf("alarmManager");
+const sp<String> Context::POWER_MANAGER = String::valueOf("powerManager");
 const sp<String> Context::LOCATION_SERVICE = String::valueOf("locationService");
+const sp<String> Context::AUDIO_SERVICE = String::valueOf("audioService");
 const sp<String> Context::TELEPHONY_SERVICE = String::valueOf("telephonyService");
+const sp<String> Context::MEDIA_PLAYER_SERVICE = String::valueOf("mediaPlayerService");
 
 } /* namespace mindroid */

@@ -129,7 +129,7 @@ sp<ArrayList<sp<ServiceInfo>>> PackageManagerService::parseApplication(sp<Applic
 	}
 
 	const XMLElement* element;
-	for(element = applicationNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
+	for (element = applicationNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
 		if (XMLUtil::StringEqual(SERVICE_TAG, element->Name())) {
 			sp<ServiceInfo> si = parseService(ai, element);
 			if (si != nullptr) {

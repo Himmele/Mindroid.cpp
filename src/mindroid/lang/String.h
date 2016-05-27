@@ -35,6 +35,7 @@ public:
 	String();
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
+	explicit String(const char c);
 	virtual ~String() { }
 	virtual size_t hashCode() const;
 
@@ -111,11 +112,30 @@ public:
 		return (string != nullptr) ? new String(string, size) : nullptr;
 	}
 
+	inline static sp<String> valueOf(bool b) {
+		return new String(b ? "true" : "false");
+	}
+
+	inline static sp<String> valueOf(char c) {
+		return new String(c);
+	}
+
+	static sp<String> valueOf(int8_t value);
+	static sp<String> valueOf(uint8_t value);
+	static sp<String> valueOf(int16_t value);
+	static sp<String> valueOf(uint16_t value);
+	static sp<String> valueOf(int32_t value);
+	static sp<String> valueOf(uint32_t value);
+	static sp<String> valueOf(float value);
+	static sp<String> valueOf(double value);
+
 	static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
 
 	static size_t length(const char* string) {
 		return strlen(string);
 	}
+
+	sp<String> replace(char oldChar, char newChar);
 
 	sp<String> append(const char* string) const {
 		return append(string, strlen(string));
