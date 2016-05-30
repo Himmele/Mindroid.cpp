@@ -31,9 +31,16 @@ template<typename T>
 class ArrayList :
 		public Object {
 public:
-	ArrayList() { }
+	ArrayList() :
+			mList() {
+	}
 
-	ArrayList(sp<ArrayList<T>> collection) {
+	ArrayList(size_t initialCapacity) :
+			mList(initialCapacity) {
+	}
+
+	ArrayList(sp<ArrayList<T>> collection) :
+			mList() {
 		if (collection != nullptr) {
 			auto itr = collection->iterator();
 			while (itr.hasNext()) {
@@ -42,7 +49,8 @@ public:
 		}
 	}
 
-	ArrayList(sp<Set<T>> collection) {
+	ArrayList(sp<Set<T>> collection) :
+			mList() {
 		if (collection != nullptr) {
 			auto itr = collection->iterator();
 			while (itr.hasNext()) {
@@ -222,9 +230,16 @@ template<typename T>
 class ArrayList<sp<T>> :
 		public Object {
 public:
-	ArrayList() { }
+	ArrayList() :
+			mList() {
+	}
 
-	ArrayList(const sp<ArrayList<sp<T>>>& collection) {
+	ArrayList(size_t initialCapacity) :
+			mList(initialCapacity) {
+	}
+
+	ArrayList(const sp<ArrayList<sp<T>>>& collection) :
+			mList() {
 		if (collection != nullptr) {
 			auto itr = collection->iterator();
 			while (itr.hasNext()) {
@@ -233,7 +248,8 @@ public:
 		}
 	}
 
-	ArrayList(const sp<Set<sp<T>>>& collection) {
+	ArrayList(const sp<Set<sp<T>>>& collection) :
+			mList() {
 		if (collection != nullptr) {
 			auto itr = collection->iterator();
 			while (itr.hasNext()) {

@@ -363,8 +363,9 @@ void SharedPreferencesImpl::parseStringSet(sp<HashMap<sp<String>, sp<Variant>>>&
 
 bool SharedPreferencesImpl::writeMap(const sp<File>& file, const sp<HashMap<sp<String>, sp<Variant>>>& map) {
 	XMLDocument doc;
+	doc.InsertFirstChild(doc.NewDeclaration());
 	XMLElement* rootNode = doc.NewElement(MAP_TAG);
-	doc.InsertFirstChild(rootNode);
+	doc.InsertEndChild(rootNode);
 
 	auto itr = mMap->iterator();
 	while (itr.hasNext()) {

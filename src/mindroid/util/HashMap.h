@@ -32,9 +32,16 @@ template<typename K, typename V>
 class HashMap :
 		public Object {
 public:
-	HashMap() { }
+	HashMap() :
+			mMap() {
+	}
 
-	HashMap(const sp<HashMap<K, V>>& map) {
+	HashMap(size_t initialCapacity) :
+			mMap(initialCapacity) {
+	}
+
+	HashMap(const sp<HashMap<K, V>>& map) :
+			mMap() {
 		putAll(map);
 	}
 
@@ -216,9 +223,16 @@ template<typename K, typename V>
 class HashMap<K, sp<V>> :
 		public Object {
 public:
-	HashMap() { }
+	HashMap() :
+			mMap() {
+	}
 
-	HashMap(const sp<HashMap<K, sp<V>>>& map) {
+	HashMap(size_t initialCapacity) :
+			mMap(initialCapacity) {
+	}
+
+	HashMap(const sp<HashMap<K, sp<V>>>& map) :
+			mMap() {
 		putAll(map);
 	}
 
@@ -400,9 +414,16 @@ template<typename K, typename V>
 class HashMap<sp<K>, V> :
 		public Object {
 public:
-	HashMap() { }
+	HashMap() :
+			mMap() {
+	}
 
-	HashMap(const sp<HashMap<sp<K>, V>>& map) {
+	HashMap(size_t initialCapacity) :
+			mMap(initialCapacity) {
+	}
+
+	HashMap(const sp<HashMap<sp<K>, V>>& map) :
+			mMap() {
 		putAll(map);
 	}
 
@@ -584,9 +605,16 @@ template<typename K, typename V>
 class HashMap<sp<K>, sp<V>> :
 		public Object {
 public:
-	HashMap() { }
+	HashMap() :
+			mMap() {
+	}
 
-	HashMap(const sp<HashMap<sp<K>, sp<V>>>& map) {
+	HashMap(size_t initialCapacity) :
+			mMap(initialCapacity) {
+	}
+
+	HashMap(const sp<HashMap<sp<K>, sp<V>>>& map) :
+			mMap() {
 		putAll(map);
 	}
 
