@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_REMOTEEXCEPTION_H_
-#define MINDROID_REMOTEEXCEPTION_H_
+#ifndef MINDROID_RUNTIMEEXCEPTION_H_
+#define MINDROID_RUNTIMEEXCEPTION_H_
 
 #include "mindroid/lang/Exception.h"
 
 namespace mindroid {
 
 /**
- * Parent exception for all Binder remote-invocation errors.
+ * RuntimeException is the superclass of those exceptions that can be thrown during the normal operation.
  */
-class RemoteException : public Exception {
+class RuntimeException : public Exception {
 public:
-	RemoteException() = default;
+	RuntimeException() = default;
 
-	RemoteException(const char* message) : Exception(message) {
+	RuntimeException(const char* message) : Exception(message) {
 	}
 
-	RemoteException(const sp<String>& message) : Exception(message) {
+	RuntimeException(const sp<String>& message) : Exception(message) {
 	}
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_REMOTEEXCEPTION_H_ */
+#endif /* MINDROID_RUNTIMEEXCEPTION_H_ */

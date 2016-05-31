@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_REMOTEEXCEPTION_H_
-#define MINDROID_REMOTEEXCEPTION_H_
+#ifndef MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
+#define MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
 
-#include "mindroid/lang/Exception.h"
+#include "mindroid/lang/RuntimeException.h"
 
 namespace mindroid {
 
 /**
- * Parent exception for all Binder remote-invocation errors.
+ * Thrown to indicate that the requested operation is not supported.
  */
-class RemoteException : public Exception {
+class UnsupportedOperationException : public RuntimeException {
 public:
-	RemoteException() = default;
+	UnsupportedOperationException() = default;
 
-	RemoteException(const char* message) : Exception(message) {
+	UnsupportedOperationException(const char* message) : RuntimeException(message) {
 	}
 
-	RemoteException(const sp<String>& message) : Exception(message) {
+	UnsupportedOperationException(const sp<String>& message) : RuntimeException(message) {
 	}
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_REMOTEEXCEPTION_H_ */
+#endif /* MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_ */

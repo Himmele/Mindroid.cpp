@@ -221,6 +221,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 		public:
 			Callback(const sp<Handler>& handler, const sp<String>& serviceName) :
 					RemoteCallback(handler),
+					mSelf(this),
 					mServiceName(serviceName) {
 			}
 
@@ -232,10 +233,13 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 				} else {
 					Log::w(ServiceManager::TAG, "Service %s cannot be stopped", mServiceName->c_str());
 				}
+
+				mSelf = nullptr;
 			}
 
 		private:
-			sp<String> mServiceName;
+			sp<Callback> mSelf;
+			const sp<String> mServiceName;
 		};
 
 		sp<Callback> callback = new Callback(mServiceManager->mMainHandler, serviceRecord->name);
@@ -421,6 +425,7 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
 		public:
 			Callback(const sp<Handler> handler, const wp<ServiceManager>& serviceManager, const sp<Intent>& service) :
 					RemoteCallback(handler),
+					mSelf(this),
 					mServiceManager(serviceManager),
 					mService(service) {
 			}
@@ -441,11 +446,14 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
 						}
 					}
 				}
+
+				mSelf = nullptr;
 			}
 
 		private:
-			wp<ServiceManager> mServiceManager;
-			sp<Intent> mService;
+			sp<Callback> mSelf;
+			const wp<ServiceManager> mServiceManager;
+			const sp<Intent> mService;
 		};
 
 		sp<Callback> callback = new Callback(mMainHandler, this, service);
@@ -471,6 +479,7 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
 	public:
 		Callback(const sp<Handler>& handler, const sp<String>& serviceName, const sp<String>& processName) :
 				RemoteCallback(handler),
+				mSelf(this),
 				mServiceName(serviceName),
 				mProcessName(processName) {
 		}
@@ -483,11 +492,14 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
 			} else {
 				Log::w(TAG, "Service %s cannot be started in process %s", mServiceName->c_str(), mProcessName->c_str());
 			}
+
+			mSelf = nullptr;
 		}
 
 	private:
-		sp<String> mServiceName;
-		sp<String> mProcessName;
+		sp<Callback> mSelf;
+		const sp<String> mServiceName;
+		const sp<String> mProcessName;
 	};
 
 	sp<Callback> callback = new Callback(mMainHandler, serviceRecord->name, serviceRecord->processRecord->name);

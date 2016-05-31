@@ -19,6 +19,7 @@
 #define MINDROID_REMOTECALLBACK_H_
 
 #include "mindroid/lang/Object.h"
+#include "mindroid/lang/RuntimeException.h"
 #include "mindroid/os/IRemoteCallback.h"
 
 namespace mindroid {
@@ -30,13 +31,15 @@ class RemoteCallback :
 		public Object {
 public:
 	RemoteCallback(const sp<Handler> handler) :
-			mHandler(handler),
-			mCallback(new Stub(this)) {
+			mHandler(handler) {
 	}
 
 	virtual ~RemoteCallback() = default;
 
 	sp<IRemoteCallback> asInterface() {
+		if (mCallback == nullptr) {
+			mCallback = new Stub(this);
+		}
 		return mCallback;
 	}
 
@@ -50,18 +53,21 @@ protected:
 private:
 	class Stub : public binder::RemoteCallback::Stub {
 	public:
-		Stub(const sp<RemoteCallback>& remoteCallback) :
+		Stub(const wp<RemoteCallback>& remoteCallback) :
 				mRemoteCallback(remoteCallback) {
 		}
 
 		virtual void sendResult(const sp<Bundle>& data) {
-			sp<RemoteCallback> remoteCallback = mRemoteCallback;
-			remoteCallback->mHandler->post([=] { remoteCallback->onResult(data); });
-			mRemoteCallback = nullptr;
+			sp<RemoteCallback> remoteCallback = mRemoteCallback.get();
+			if (remoteCallback != nullptr) {
+				remoteCallback->mHandler->post([=] { remoteCallback->onResult(data); });
+			} else {
+				throw RuntimeException("RemoteCallback::Stub is calling back to a dead RemoteCallback");
+			}
 		};
 
 	private:
-		sp<RemoteCallback> mRemoteCallback;
+		wp<RemoteCallback> mRemoteCallback;
 	};
 
 	sp<Handler> mHandler;

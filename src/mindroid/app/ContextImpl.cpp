@@ -111,6 +111,7 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
 		public:
 			Callback(const sp<Handler>& handler, const sp<Intent>& service, const sp<ServiceConnection>& conn) :
 				RemoteCallback(handler),
+				mSelf(this),
 				mService(service),
 				mConn(conn) {
 			}
@@ -124,9 +125,12 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
 				} else {
 					Log::e(ContextImpl::TAG, "Cannot bind to service %s", mService->getComponent()->toShortString()->c_str());
 				}
+
+				mSelf = nullptr;
 			}
 
 		private:
+			sp<Callback> mSelf;
 			const sp<Intent> mService;
 			const sp<ServiceConnection> mConn;
 		};
