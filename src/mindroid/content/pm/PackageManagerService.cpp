@@ -18,6 +18,8 @@
 #include "mindroid/content/pm/PackageManagerService.h"
 #include "mindroid/os/Environment.h"
 #include "mindroid/os/ServiceManager.h"
+#include "mindroid/io/File.h"
+#include "mindroid/io/FilenameFilter.h"
 #include "mindroid/lang/Class.h"
 #include "mindroid/util/Log.h"
 #include "tinyxml2/tinyxml2.h"
@@ -36,11 +38,21 @@ void PackageManagerService::onCreate() {
 }
 
 int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
-	sp<String> manifest = intent->getStringExtra("manifest");
-	if (manifest == nullptr) {
-		manifest = String::valueOf("MindroidManifest.xml");
+	class ManifestFilenameFilter : public FilenameFilter {
+	public:
+		bool accept(const sp<File>& dir, const sp<String>& filename) override {
+			return filename->toLowerCase()->endsWith(".xml");
+		}
+	};
+	sp<ArrayList<sp<File>>> apps = Environment::getAppsDirectory()->listFiles(new ManifestFilenameFilter());
+	if (apps != nullptr) {
+		auto itr = apps->iterator();
+		while (itr.hasNext()) {
+			sp<File> manifest = itr.next();
+			parseManifest(manifest);
+		}
 	}
-	parseManifest(new File(Environment::getAppsDirectory(), manifest));
+
 	return 0;
 }
 

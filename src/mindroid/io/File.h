@@ -22,6 +22,8 @@
 
 namespace mindroid {
 
+class FilenameFilter;
+
 class File :
 		public Object {
 public:
@@ -175,6 +177,41 @@ public:
 	 * @return {@code true} if this file is a file, {@code false} otherwise.
 	 */
 	bool isFile();
+
+	/**
+	 * Returns the length of this file in bytes.
+	 * Returns 0 if the file does not exist.
+	 * The result for a directory is not defined.
+	 *
+	 * @return the number of bytes in this file.
+	 */
+	size_t length();
+
+	/**
+	 * Returns an array of files contained in the directory represented by this
+	 * file. The result is {@code null} if this file is not a directory. The
+	 * paths of the files in the array are absolute if the path of this file is
+	 * absolute, they are relative otherwise.
+	 *
+	 * @return an array of files or {@code null}.
+	 */
+	sp<ArrayList<sp<File>>> listFiles();
+
+	/**
+	 * Gets a list of the files in the directory represented by this file. This
+	 * list is then filtered through a FilenameFilter and files with matching
+	 * names are returned as an array of files. Returns {@code null} if this
+	 * file is not a directory. If {@code filter} is {@code null} then all
+	 * filenames match.
+	 * <p>
+	 * The entries {@code .} and {@code ..} representing the current and parent
+	 * directories are not returned as part of the list.
+	 *
+	 * @param filter
+	 *            the filter to match names against, may be {@code null}.
+	 * @return an array of files or {@code null}.
+	 */
+	sp<ArrayList<sp<File>>> listFiles(const sp<FilenameFilter>& filter);
 
 	/**
 	 * Creates the directory named by this file, assuming its parents exist.

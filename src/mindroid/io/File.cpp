@@ -15,10 +15,12 @@
  */
 
 #include "mindroid/io/File.h"
+#include "mindroid/io/FilenameFilter.h"
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <dirent.h>
 
 namespace mindroid {
 
@@ -142,6 +144,53 @@ bool File::isFile() {
 		return S_ISREG(status.st_mode);
 	} else {
 		return false;
+	}
+}
+
+size_t File::length() {
+	struct stat status;
+	if (stat(mPath->c_str(), &status) == 0) {
+		return status.st_size;
+	} else {
+		return 0;
+	}
+}
+
+sp<ArrayList<sp<File>>> File::listFiles() {
+	DIR* direcrory = opendir(mPath->c_str());
+	if (direcrory != nullptr) {
+		sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
+		struct dirent* file;
+		while ((file = readdir(direcrory)) != nullptr) {
+			if (!strncmp(file->d_name, ".", strlen(".") + 1)) continue;
+			if (!strncmp(file->d_name, "..", strlen("..") + 1)) continue;
+
+			list->add(new File(this, file->d_name));
+		}
+		closedir(direcrory);
+		return list;
+	} else {
+		return nullptr;
+	}
+}
+
+sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
+	DIR* direcrory = opendir(mPath->c_str());
+	if (direcrory != nullptr) {
+		sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
+		struct dirent* file;
+		while ((file = readdir(direcrory)) != nullptr) {
+			if (!strncmp(file->d_name, ".", strlen(".") + 1)) continue;
+			if (!strncmp(file->d_name, "..", strlen("..") + 1)) continue;
+
+			if (filter->accept(this, String::valueOf(file->d_name))) {
+				list->add(new File(this, file->d_name));
+			}
+		}
+		closedir(direcrory);
+		return list;
+	} else {
+		return nullptr;
 	}
 }
 
