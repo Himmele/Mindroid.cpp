@@ -130,9 +130,7 @@ public:
 	 *
 	 * @return elapsed milliseconds since boot.
 	 */
-	static uint64_t elapsedRealtime() {
-		return uptimeMillis();
-	}
+	static uint64_t elapsedRealtime();
 
 	/**
 	 * Returns nanoseconds since boot, including time spent in sleep.

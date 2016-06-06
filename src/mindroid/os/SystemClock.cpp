@@ -30,4 +30,10 @@ uint64_t SystemClock::uptimeMillis() {
 	return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
 }
 
+uint64_t SystemClock::elapsedRealtime() {
+	timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+	return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
+}
+
 } /* namespace mindroid */

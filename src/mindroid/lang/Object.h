@@ -19,6 +19,7 @@
 #define MINDROID_OBJECT_H_
 
 #include <cstdint>
+#include <inttypes.h>
 #include <cstddef>
 #include <cassert>
 #include <sys/types.h>
