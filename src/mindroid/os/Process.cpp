@@ -96,10 +96,9 @@ bool Process::isAlive() const {
 
 void Process::ProcessImpl::createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) {
 	sp<Service> service = nullptr;
-	sp<String> componentName = nullptr;
 	sp<Bundle> result = new Bundle();
 
-	componentName = String::format("%s::%s", intent->getComponent()->getPackageName()->c_str(), intent->getComponent()->getClassName()->c_str());
+	sp<String> componentName = String::format("%s::%s", intent->getComponent()->getPackageName()->c_str(), intent->getComponent()->getClassName()->c_str());
 	if (intent->getBooleanExtra("systemService", false)) {
 		sp<Class<Service>> clazz = Class<Service>::forName(componentName);
 		service = clazz->newInstance();
@@ -131,12 +130,13 @@ void Process::ProcessImpl::createService(const sp<Intent>& intent, const sp<IRem
 
 	if (service != nullptr) {
 		service->attach(new ContextImpl(mProcess->mMainThread, intent->getComponent()), binder::Process::Stub::asInterface(this), intent->getComponent()->getClassName());
+		service->onCreate();
+		result->putBoolean("result", true);
+
 		{
 			AutoLock autoLock(mProcess->mLock);
 			mProcess->mServices->put(intent->getComponent(), service);
 		}
-		service->onCreate();
-		result->putBoolean("result", true);
 	} else {
 		Log::e(Process::TAG, "Cannot find and instantiate class %s", componentName->c_str());
 		result->putBoolean("result", false);
@@ -169,7 +169,7 @@ void Process::ProcessImpl::stopService(const sp<Intent>& intent) {
 
 void Process::ProcessImpl::stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) {
 	sp<Service> service;
-	bool result = false;
+	sp<Bundle> result = new Bundle();
 
 	{
 		AutoLock autoLock(mProcess->mLock);
@@ -177,6 +177,8 @@ void Process::ProcessImpl::stopService(const sp<Intent>& intent, const sp<IRemot
 	}
 	if (service != nullptr) {
 		service->onDestroy();
+		result->putBoolean("result", true);
+
 		sp<Context> context = service->getBaseContext();
 		context->cleanup();
 		{
@@ -184,13 +186,12 @@ void Process::ProcessImpl::stopService(const sp<Intent>& intent, const sp<IRemot
 			mProcess->mServices->remove(intent->getComponent());
 			mProcess->mCondition->signalAll();
 		}
-		result = true;
+	} else {
+		result->putBoolean("result", false);
 	}
 
 	if (callback != nullptr) {
-		sp<Bundle> data = new Bundle();
-		data->putBoolean("result", result);
-		callback->sendResult(data);
+		callback->sendResult(result);
 	}
 }
 
@@ -219,7 +220,7 @@ void Process::ProcessImpl::unbindService(const sp<Intent>& intent) {
 
 void Process::ProcessImpl::unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) {
 	sp<Service> service;
-	bool result = false;
+	sp<Bundle> result = new Bundle();
 
 	{
 		AutoLock autoLock(mProcess->mLock);
@@ -227,13 +228,13 @@ void Process::ProcessImpl::unbindService(const sp<Intent>& intent, const sp<IRem
 	}
 	if (service != nullptr) {
 		service->onUnbind(intent);
-		result = true;
+		result->putBoolean("result", true);
+	} else {
+		result->putBoolean("result", false);
 	}
 
 	if (callback != nullptr) {
-		sp<Bundle> data = new Bundle();
-		data->putBoolean("result", result);
-		callback->sendResult(data);
+		callback->sendResult(result);
 	}
 }
 
