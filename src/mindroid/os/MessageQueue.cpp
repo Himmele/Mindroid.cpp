@@ -16,6 +16,7 @@
  */
 
 #include "mindroid/lang/Runnable.h"
+#include "mindroid/lang/Integer.h"
 #include "mindroid/lang/Math.h"
 #include "mindroid/os/SystemClock.h"
 #include "mindroid/os/MessageQueue.h"
@@ -115,7 +116,7 @@ sp<Message> MessageQueue::dequeueMessage() {
 
 		if (message != nullptr) {
 			if (now < message->when) {
-				mCondition->await(Math::min(message->when - now, INT_MAX));
+				mCondition->await(Math::min(message->when - now, (uint64_t) Integer::MAX_VALUE));
 			} else {
 				mMessages = message->nextMessage;
 				message->nextMessage = nullptr;

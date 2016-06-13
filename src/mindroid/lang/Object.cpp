@@ -217,7 +217,10 @@ Object::~Object() {
 }
 
 bool Object::equals(const sp<Object>& other) const {
-	return hashCode() == other->hashCode();
+	if (other == nullptr) {
+		return false;
+	}
+	return this == other.getPointer();
 }
 
 size_t Object::hashCode() const {

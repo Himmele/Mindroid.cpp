@@ -15,6 +15,7 @@
  */
 
 #include "mindroid/lang/String.h"
+#include "mindroid/lang/Class.h"
 #include <cstdio>
 
 namespace mindroid {
@@ -59,6 +60,19 @@ String::String(const char* string, size_t size) {
 
 String::String(const char c) {
 	mStringBuffer = new StringBuffer(&c, 1);
+}
+
+bool String::equals(const sp<Object>& other) const {
+	if (other == this) {
+		return true;
+	}
+
+	if (Class<String>::isInstance(other)) {
+		sp<String> s = Class<String>::cast(other);
+		return this->equals(s);
+	} else {
+		return false;
+	}
 }
 
 size_t String::hashCode() const {

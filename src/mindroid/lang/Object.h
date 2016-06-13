@@ -36,6 +36,7 @@ template<typename T> class wp;
 
 class Object {
 public:
+	Object();
 	void incStrongReference(const void* id) const;
 	void decStrongReference(const void* id) const;
 
@@ -84,7 +85,6 @@ public:
 	virtual size_t hashCode() const;
 
 protected:
-	Object();
 	virtual ~Object();
 	Object(const Object&) = delete;
 	Object& operator=(const Object&) = delete;

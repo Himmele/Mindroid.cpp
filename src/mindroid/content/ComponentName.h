@@ -21,6 +21,7 @@
 
 #include "mindroid/lang/Object.h"
 #include "mindroid/lang/String.h"
+#include "mindroid/lang/Class.h"
 
 namespace mindroid {
 
@@ -89,7 +90,19 @@ public:
 		return false;
     }
 
-    virtual size_t hashCode() const {
+    bool equals(const sp<Object>& obj) const override {
+		if (obj != nullptr) {
+			if (Class<ComponentName>::isInstance(obj)) {
+				sp<ComponentName> other = Class<ComponentName>::cast(obj);
+				return mPackage->equals(other->mPackage) && mClass->equals(other->mClass);
+			} else {
+				return false;
+			}
+		}
+		return false;
+	}
+
+    size_t hashCode() const override {
         return mPackage->hashCode() + mClass->hashCode();
     }
 

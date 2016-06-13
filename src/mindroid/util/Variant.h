@@ -169,7 +169,8 @@ public:
 	Variant(const Variant&) = delete;
 	Variant& operator=(const Variant&) = delete;
 
-	virtual size_t hashCode() const;
+	bool equals(const sp<mindroid::Object>& other) const override;
+	size_t hashCode() const override;
 
 	inline bool isBool() const {
 		return mType == Bool;

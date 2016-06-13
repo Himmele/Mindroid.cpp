@@ -15,6 +15,7 @@
  */
 
 #include "mindroid/util/Variant.h"
+#include "mindroid/lang/Class.h"
 
 namespace mindroid {
 
@@ -37,6 +38,61 @@ Variant::~Variant() {
 	default:
 		break;
 	}
+}
+
+bool Variant::equals(const sp<mindroid::Object>& other) const {
+	if (other != nullptr) {
+		if (Class<Variant>::isInstance(other)) {
+			sp<Variant> v = Class<Variant>::cast(other);
+			if (mType == v->mType) {
+				switch (mType) {
+				case Null:
+					return true;
+				case Bool:
+					return mValue.boolValue == v->mValue.boolValue;
+				case Byte:
+					return mValue.byteValue == v->mValue.byteValue;
+				case Char:
+					return mValue.charValue == v->mValue.charValue;
+				case Short:
+					return mValue.shortValue == v->mValue.shortValue;
+				case UnsignedShort:
+					return mValue.unsignedShortValue == v->mValue.unsignedShortValue;
+				case Int:
+					return mValue.intValue == v->mValue.intValue;
+				case UnsignedInt:
+					return mValue.unsignedIntValue == v->mValue.unsignedIntValue;
+				case Long:
+					return mValue.longValue == v->mValue.longValue;
+				case UnsignedLong:
+					return mValue.unsignedLongValue == v->mValue.unsignedLongValue;
+				case Float:
+					return mValue.floatValue == v->mValue.floatValue;
+				case Double:
+					return mValue.doubleValue == v->mValue.doubleValue;
+				case String:
+				case StringSet:
+				case StringArrayList:
+				case IntegerArrayList:
+				case Object:
+					if (mValue.object != nullptr) {
+						return mValue.object->equals(v->mValue.object);
+					} else {
+						return v->mValue.object == nullptr;
+					}
+				case Binder:
+					if (mValue.binder != nullptr) {
+						return mValue.binder->equals(v->mValue.binder);
+					} else {
+						return v->mValue.binder == nullptr;
+					}
+				default:
+					return false;
+				}
+			}
+		}
+	}
+	return false;
 }
 
 size_t Variant::hashCode() const {
@@ -75,17 +131,14 @@ size_t Variant::hashCode() const {
 		} else {
 			return 0;
 		}
-		break;
 	case Binder:
 		if (mValue.binder != nullptr) {
 			return mValue.binder->hashCode();
 		} else {
 			return 0;
 		}
-		break;
 	default:
 		return 0;
-		break;
 	}
 }
 

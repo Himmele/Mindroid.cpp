@@ -37,7 +37,9 @@ public:
 	explicit String(const char* string, size_t size);
 	explicit String(const char c);
 	virtual ~String() { }
-	virtual size_t hashCode() const;
+
+	bool equals(const sp<Object>& other) const override;
+	size_t hashCode() const override;
 
 	bool equals(const char* string) const;
 	bool equals(const sp<String>& string) const;

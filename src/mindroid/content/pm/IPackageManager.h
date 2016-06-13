@@ -21,6 +21,7 @@
 #include "mindroid/content/pm/PackageInfo.h"
 #include "mindroid/content/pm/ResolveInfo.h"
 #include "mindroid/os/Binder.h"
+#include "mindroid/lang/Class.h"
 #include "mindroid/util/ArrayList.h"
 
 namespace mindroid {
@@ -67,7 +68,18 @@ public:
 				return mRemote;
 			}
 			
-			virtual size_t hashCode() const {
+			bool equals(const sp<Object>& obj) const override {
+				if (obj == nullptr) return false;
+				if (obj == this) return true;
+				if (Class<Proxy>::isInstance(obj)) {
+					sp<Proxy> other = Class<Proxy>::cast(obj);
+					return mRemote->equals(other->mRemote);
+				} else {
+					return false;
+				}
+			}
+
+			size_t hashCode() const override {
 				return mRemote->hashCode();
 			}
 
@@ -86,7 +98,18 @@ public:
 				return mRemote;
 			}
 			
-			virtual size_t hashCode() const {
+			bool equals(const sp<Object>& obj) const override {
+				if (obj == nullptr) return false;
+				if (obj == this) return true;
+				if (Class<SmartProxy>::isInstance(obj)) {
+					sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
+					return mRemote->equals(other->mRemote);
+				} else {
+					return false;
+				}
+			}
+
+			size_t hashCode() const override {
 				return mRemote->hashCode();
 			}
 
