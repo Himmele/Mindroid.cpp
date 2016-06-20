@@ -21,6 +21,7 @@
 #include "mindroid/lang/Object.h"
 #include "mindroid/lang/RuntimeException.h"
 #include "mindroid/os/IRemoteCallback.h"
+#include "mindroid/util/Log.h"
 
 namespace mindroid {
 
@@ -62,7 +63,7 @@ private:
 			if (remoteCallback != nullptr) {
 				remoteCallback->mHandler->post([=] { remoteCallback->onResult(data); });
 			} else {
-				throw RuntimeException("RemoteCallback::Stub is calling back to a dead RemoteCallback");
+				Log::w("RemoteCallback", "RemoteCallback::Stub is calling back to a dead RemoteCallback");
 			}
 		};
 

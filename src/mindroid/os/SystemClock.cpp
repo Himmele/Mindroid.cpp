@@ -32,7 +32,7 @@ uint64_t SystemClock::uptimeMillis() {
 
 uint64_t SystemClock::elapsedRealtime() {
 	timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
+	clock_gettime(CLOCK_MONOTONIC, &now);
 	return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
 }
 
