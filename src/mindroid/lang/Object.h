@@ -526,7 +526,7 @@ wp<T>& wp<T>::operator=(const wp<T>& other) {
 
 template<typename T>
 wp<T>& wp<T>::operator=(const sp<T>& other) {
-	WeakReference* newReference = other != nullptr ? other->createWeakRef(this) : nullptr;
+	WeakReference* newReference = other != nullptr ? other->createWeakReference(this) : nullptr;
 	T* otherPointer(other.mPointer);
 	if (mPointer) {
 		mReference->decWeakReference(this);
@@ -538,7 +538,7 @@ wp<T>& wp<T>::operator=(const sp<T>& other) {
 
 template<typename T> template<typename U>
 wp<T>& wp<T>::operator=(U* other) {
-	WeakReference* newReference = other ? other->createWeakRef(this) : nullptr;
+	WeakReference* newReference = other ? other->createWeakReference(this) : nullptr;
 	if (mPointer) {
 		mReference->decWeakReference(this);
 	}
@@ -564,7 +564,7 @@ wp<T>& wp<T>::operator=(const wp<U>& other) {
 
 template<typename T> template<typename U>
 wp<T>& wp<T>::operator=(const sp<U>& other) {
-	WeakReference* newReference = other != nullptr ? other->createWeakRef(this) : nullptr;
+	WeakReference* newReference = other != nullptr ? other->createWeakReference(this) : nullptr;
 	U* otherPointer(other.mPointer);
 	if (mPointer) {
 		mReference->decWeakReference(this);

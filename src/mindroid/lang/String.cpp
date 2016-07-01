@@ -375,7 +375,7 @@ sp<String> String::format(const char* format, ...) {
 }
 
 sp<String> String::replace(char oldChar, char newChar) {
-	sp<StringBuffer> stringBuffer = new StringBuffer(length());
+	sp<StringBuffer> stringBuffer = new StringBuffer(c_str(), length());
 	for (size_t i = 0; i < length(); i++) {
 		stringBuffer->mData[i] = (stringBuffer->mData[i] == oldChar) ? newChar : stringBuffer->mData[i];
 	}

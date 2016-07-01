@@ -67,13 +67,13 @@ public:
 
         virtual sp<Editor> putString(const sp<String>& key, const sp<String>& value) {
         	AutoLock autoLock(mSharedPreferences->mLock);
-			mModifications->put(key, new Variant(value));
+			mModifications->put(key, (value == nullptr) ? nullptr : new Variant(value));
 			return this;
         }
         
         virtual sp<Editor> putStringSet(const sp<String>& key, const sp<Set<sp<String>>>& values) {
         	AutoLock autoLock(mSharedPreferences->mLock);
-			mModifications->put(key, new Variant(values));
+			mModifications->put(key, (values == nullptr) ? nullptr : new Variant(object_cast<Set<sp<String>>>(new Set<sp<String>>(values))));
 			return this;
         }
         
@@ -103,7 +103,7 @@ public:
 
         virtual sp<Editor> remove(const sp<String>& key) {
         	AutoLock autoLock(mSharedPreferences->mLock);
-			mModifications->put(key, new Variant());
+			mModifications->put(key, nullptr);
 			return this;
         }
 

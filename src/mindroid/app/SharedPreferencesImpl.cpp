@@ -70,7 +70,7 @@ sp<Set<sp<String>>> SharedPreferencesImpl::getStringSet(const sp<String>& key, c
 	sp<Variant> value = mMap->get(key);
 	if (value != nullptr) {
 		if (value->isStringSet()) {
-			return value->getStringSet();
+			return new Set<sp<String>>(value->getStringSet());
 		} else {
 			return defValues;
 		}
@@ -154,7 +154,7 @@ bool SharedPreferencesImpl::EditorImpl::commit() {
 		sp<String> k = pair.getKey();
 		sp<Variant> v = pair.getValue();
 		// "null" is the magic value for entry removal.
-		if (v->isNull()) {
+		if (v == nullptr || v->isNull()) {
 			if (!mSharedPreferences->mMap->containsKey(k)) {
 				continue;
 			}
