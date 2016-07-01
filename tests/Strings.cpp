@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "mindroid/lang/String.h"
+#include "mindroid/lang/Integer.h"
 
 using namespace mindroid;
 
@@ -105,4 +106,16 @@ TEST(Mindroid, Strings) {
 		itr.remove();
 	}
 	ASSERT_EQ(strings->size(), 0);
+
+	sp<String> s13 = new String("Hello");
+	sp<String> s14 = new String("Hello");
+	ASSERT_EQ(s13->equals(s14), true);
+	ASSERT_EQ(s13->equals("Hello"), true);
+	sp<String> s15 = new String("World");
+	ASSERT_EQ(s13->equals(s15), false);
+	ASSERT_EQ(s13->equals(nullptr), false);
+	sp<Object> o = new Object();
+	ASSERT_EQ(s13->equals(o), false);
+	sp<Integer> integer = new Integer(123);
+	ASSERT_EQ(s13->equals(object_cast<Object>(integer)), false);
 }

@@ -33,4 +33,12 @@ TEST(Mindroid, SharedPreferences) {
 	ASSERT_EQ(set->contains(String::valueOf("1")), true);
 	ASSERT_EQ(set->contains(String::valueOf("2")), true);
 	ASSERT_EQ(set->contains(String::valueOf("3")), true);
+
+	sharedPreferences->edit()
+			->remove("String")
+			->putStringSet("Set", nullptr)
+			->commit();
+
+	ASSERT_EQ(sharedPreferences->getString("String", nullptr), nullptr);
+	ASSERT_EQ(sharedPreferences->getString("Set", nullptr), nullptr);
 }
