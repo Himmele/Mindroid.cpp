@@ -35,6 +35,7 @@ public:
 	String();
 	explicit String(const char* string);
 	explicit String(const char* string, size_t size);
+	explicit String(const uint8_t* string, size_t size) : String(reinterpret_cast<const char*>(string), size) { }
 	explicit String(const char c);
 	virtual ~String() { }
 
@@ -147,7 +148,15 @@ public:
 		return append(string->c_str(), strlen(string->c_str()));
 	}
 
-	sp<String> append(const char* data, size_t size) const;
+	sp<String> append(const char* string, size_t size) const;
+
+	sp<String> append(const char* string, size_t offset, size_t size) const;
+
+	sp<String> append(const sp<String>& string, size_t offset, size_t size) const {
+		Assert::assertTrue("IndexOutOfBoundsException", offset + size <= string->length());
+		return append(string->c_str(), offset, size);
+	}
+
 	sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf, 2, 3)));
 
 private:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 E.S.R. Labs
+ * Copyright (C) 2016 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,6 +221,26 @@ public:
 	 *         {@code false} on failure or if the directory already existed.
 	 */
 	bool mkdir();
+
+	/**
+	 * Creates a new, empty file on the file system according to the path
+	 * information stored in this file. This method returns true if it creates
+	 * a file, false if the file already existed. Note that it returns false
+	 * even if the file is not a file (because it's a directory, say).
+	 *
+	 * <p>This method is not generally useful. For creating temporary files,
+	 * use {@link #createTempFile} instead. For reading/writing files, use {@link FileInputStream},
+	 * {@link FileOutputStream}, or {@link RandomAccessFile}, all of which can create files.
+	 *
+	 * <p>Note that this method does <i>not</i> throw {@code IOException} if the file
+	 * already exists, even if it's not a regular file. Callers should always check the
+	 * return value, and may additionally want to call {@link #isFile}.
+	 *
+	 * @return true if the file has been created, false if it
+	 *         already exists.
+	 * @throws IOException if it's not possible to create the file.
+	 */
+	bool createNewFile();
 
 	/**
 	 * Renames this file to {@code newPath}. This operation is supported for both

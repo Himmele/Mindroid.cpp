@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_EXCEPTION_H_
-#define MINDROID_EXCEPTION_H_
-
-#include "mindroid/lang/String.h"
-#include <exception>
+#include "mindroid/util/logging/ConsoleHandler.h"
+#include <cstdio>
 
 namespace mindroid {
 
-class Exception :
-		public std::exception {
-public:
-	Exception() = default;
-
-	Exception(const char* message) : mMessage(String::valueOf(message)) {
+void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
+	sp<String> output;
+	if ((mFlags & FLAG_TIMESTAMP) == FLAG_TIMESTAMP) {
+		output = record->toString();
+	} else {
+		output = record->toShortString();
 	}
 
-	Exception(const sp<String>& message) : mMessage(message) {
-	}
+	printf("%s\n", output->c_str());
+	fflush(stdout);
+}
 
-	sp<String> getMessage() {
-		return mMessage;
-	}
+void ConsoleHandler::setFlag(uint32_t flag) {
+	mFlags |= flag;
+}
 
-private:
-	sp<String> mMessage;
-};
+void ConsoleHandler::removeFlag(uint32_t flag) {
+	mFlags &= ~flag;
+}
 
 } /* namespace mindroid */
-
-#endif /* MINDROID_EXCEPTION_H_ */

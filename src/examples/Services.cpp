@@ -1,4 +1,5 @@
 #include "mindroid/app/Service.h"
+#include "mindroid/util/logging/Logger.h"
 #include "mindroid/content/pm/PackageManagerService.h"
 #include "mindroid/os/ServiceManager.h"
 #include "mindroid/os/Environment.h"
@@ -114,15 +115,27 @@ const char* const Service2::TAG = "Service2";
 
 } /* namespace test */
 
+CLASS(mindroid, Logger);
 CLASS(mindroid, PackageManagerService);
 CLASS(test, Service1);
 CLASS(test, Service2);
 
+sp<ArrayList<sp<String>>> getLogBuffers(const sp<String>& lb);
+
 void startSystemSerices(sp<IServiceManager> serviceManager) {
+	sp<Intent> logger = new Intent();
+	logger->setComponent(new ComponentName("mindroid", "Logger"))
+			->putExtra("name", "Logger")
+			->putExtra("process", "main")
+			->putStringArrayListExtra("logBuffers", getLogBuffers(String::valueOf("main, events, debug")))
+			->putExtra("timestamps", true)
+			->putExtra("priority", Log::DEBUG);
+	serviceManager->startSystemService(logger);
+
 	sp<Intent> packageManager = new Intent();
 	packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"))
-			->putExtra("process", "main")
-			->putExtra("service", "PackageManager");
+			->putExtra("name", "PackageManager")
+			->putExtra("process", "main");
 	serviceManager->startSystemService(packageManager);
 	ServiceManager::waitForSystemService(Context::PACKAGE_MANAGER);
 }
@@ -152,11 +165,13 @@ void startServices(sp<IServiceManager> serviceManager) {
 
 void shutdownSystemSerices(sp<IServiceManager> serviceManager) {
 	sp<Intent> packageManager = new Intent();
-	packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"))
-			->putExtra("process", "main")
-			->putExtra("service", "PackageManager");
+	packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"));
 	serviceManager->stopSystemService(packageManager);
 	ServiceManager::waitForSystemServiceShutdown(Context::PACKAGE_MANAGER);
+
+	sp<Intent> logger = new Intent();
+	logger->setComponent(new ComponentName("mindroid", "Logger"));
+	serviceManager->stopSystemService(logger);
 }
 
 void shutdownServices(sp<IServiceManager> serviceManager) {
@@ -180,6 +195,17 @@ void shutdownServices(sp<IServiceManager> serviceManager) {
 			}
 		}
 	}
+}
+
+sp<ArrayList<sp<String>>> getLogBuffers(const sp<String>& lb) {
+	sp<ArrayList<sp<String>>> logBuffers = new ArrayList<sp<String>>();
+	sp<ArrayList<sp<String>>> strings = lb->split(",");
+	auto itr = strings->iterator();
+	while (itr.hasNext()) {
+		sp<String> logBuffer = itr.next()->trim();
+		logBuffers->add(logBuffer);
+	}
+	return logBuffers;
 }
 
 static sp<ServiceManager> sServiceManager;

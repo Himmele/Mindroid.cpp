@@ -382,9 +382,16 @@ sp<String> String::replace(char oldChar, char newChar) {
 	return new String(stringBuffer);
 }
 
-sp<String> String::append(const char* data, size_t size) const {
-	if (data != nullptr && size > 0) {
-		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, data, size));
+sp<String> String::append(const char* string, size_t size) const {
+	if (string != nullptr && size > 0) {
+		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string, size));
+	}
+	return const_cast<String*>(this);
+}
+
+sp<String> String::append(const char* string, size_t offset, size_t size) const {
+	if (string != nullptr && size > 0) {
+		return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string + offset, size));
 	}
 	return const_cast<String*>(this);
 }

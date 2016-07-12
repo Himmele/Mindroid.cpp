@@ -82,6 +82,10 @@ bool Thread::isAlive() const {
 	return mSelf != nullptr;
 }
 
+int32_t Thread::getId() const {
+	return (int32_t) pthread_self();
+}
+
 void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
 	sched_param schedulingParameters;
 	memset(&schedulingParameters, 0, sizeof(schedulingParameters));

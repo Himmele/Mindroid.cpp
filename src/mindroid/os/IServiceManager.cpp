@@ -47,13 +47,13 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, 
 		break;
 	}
 	case MSG_UNBIND_SERVICE: {
-		sp<Intent> service = object_cast<Intent>(data->getObject("service"));
+		sp<Intent> intent = object_cast<Intent>(data->getObject("intent"));
 		sp<ServiceConnection> conn = object_cast<ServiceConnection>(data->getObject("conn"));
 		sp<IBinder> binder = nullptr;
 		if (binder == nullptr) {
-			unbindService(service, conn);
+			unbindService(intent, conn);
 		} else {
-			unbindService(service, conn, binder::RemoteCallback::Stub::asInterface(binder));
+			unbindService(intent, conn, binder::RemoteCallback::Stub::asInterface(binder));
 		}
 		break;
 	}
@@ -98,16 +98,16 @@ bool ServiceManager::Stub::Proxy::bindService(const sp<Intent>& service, const s
 	return promise->get();
 }
 
-void ServiceManager::Stub::Proxy::unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) {
+void ServiceManager::Stub::Proxy::unbindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn) {
 	sp<Bundle> data = new Bundle();
-	data->putObject("service", service);
+	data->putObject("intent", intent);
 	data->putObject("conn", conn);
 	mRemote->transact(MSG_UNBIND_SERVICE, data, nullptr, FLAG_ONEWAY);
 }
 
-void ServiceManager::Stub::Proxy::unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) {
+void ServiceManager::Stub::Proxy::unbindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) {
 	sp<Bundle> data = new Bundle();
-	data->putObject("service", service);
+	data->putObject("intent", intent);
 	data->putObject("conn", conn);
 	data->putBinder("binder", callback->asBinder());
 	mRemote->transact(MSG_UNBIND_SERVICE, data, nullptr, FLAG_ONEWAY);

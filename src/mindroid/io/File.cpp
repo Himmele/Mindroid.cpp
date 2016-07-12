@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 E.S.R. Labs
+ * Copyright (C) 2016 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
 
@@ -196,6 +197,16 @@ sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
 
 bool File::mkdir() {
 	return ::mkdir(mPath->c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+}
+
+bool File::createNewFile() {
+	int fd = open(mPath->c_str(), O_RDWR | O_CREAT | O_TRUNC, 0600);
+	if (fd != -1) {
+		close(fd);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool File::renameTo(const sp<File>& newPath) {

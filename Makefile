@@ -76,7 +76,10 @@ SRCS = \
 	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \
 	src/mindroid/util/concurrent/Semaphore.cpp \
 	src/mindroid/util/Log.cpp \
-	src/mindroid/util/Logger.cpp
+	src/mindroid/util/logging/ConsoleHandler.cpp \
+	src/mindroid/util/logging/FileHandler.cpp \
+	src/mindroid/util/logging/LogBuffer.cpp \
+	src/mindroid/util/logging/Logger.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 LIB_OBJS = $(addprefix $(LIB_DIR)/,$(OBJS))

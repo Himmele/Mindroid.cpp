@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2013 Daniel Himmelein
- * Copyright (C) 2016 E.S.R. Labs
+ * Copyright (C) 2016 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ public:
 	static const sp<String> AUDIO_SERVICE;
 	static const sp<String> TELEPHONY_SERVICE;
 	static const sp<String> MEDIA_PLAYER_SERVICE;
-	
+	static const sp<String> MESSAGE_BROKER;
+
 	/**
      * File creation mode: the default mode.
      */

@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2006 The Android Open Source Project
  * Copyright (C) 2013 Daniel Himmelein
- * Copyright (C) 2016 E.S.R. Labs
+ * Copyright (C) 2016 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,5 +29,6 @@ const sp<String> Context::LOCATION_SERVICE = String::valueOf("locationService");
 const sp<String> Context::AUDIO_SERVICE = String::valueOf("audioService");
 const sp<String> Context::TELEPHONY_SERVICE = String::valueOf("telephonyService");
 const sp<String> Context::MEDIA_PLAYER_SERVICE = String::valueOf("mediaPlayerService");
+const sp<String> Context::MESSAGE_BROKER = String::valueOf("messageBroker");
 
 } /* namespace mindroid */

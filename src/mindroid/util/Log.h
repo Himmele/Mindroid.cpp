@@ -17,14 +17,19 @@
 #ifndef MINDROID_LOG_H_
 #define MINDROID_LOG_H_
 
-#include "mindroid/util/Logger.h"
-#include <cstdio>
-#include <cstdarg>
+#include "mindroid/util/logging/LogBuffer.h"
 
 namespace mindroid {
 
 class Log {
 public:
+	static const int32_t VERBOSE = 0;
+	static const int32_t DEBUG = 1;
+	static const int32_t INFO = 2;
+	static const int32_t WARN = 3;
+	static const int32_t ERROR = 4;
+	static const int32_t WTF = 5;
+
 	Log() noexcept = delete;
 	~Log() noexcept = delete;
 	Log(const Log&) = delete;
@@ -81,18 +86,92 @@ public:
 	 */
 	static int wtf(const char* tag, const char* format, ...);
 
-	/**
-	 * Set Logger instance that shall be used. If this method is not called a default
-	 * implementation that prints logcat style to stdout is used.
-	 * @param logger Logger instance to be set
-	 */
-	static void setLogger(const sp<Logger>& logger);
+	/** @hide */
+	static int println(int32_t logId, int32_t priority, const char* tag, const char* msg) {
+		return println(logId, priority, String::valueOf(tag), String::valueOf(msg));
+	}
+
+	/** @hide */
+	static int println(int32_t logId, int32_t priority, const sp<String>& tag, const sp<String>& msg) {
+		switch (logId) {
+		case LOG_ID_MAIN:
+			sMainLogBuffer->offer(priority, tag, msg);
+			return 0;
+		case LOG_ID_EVENTS:
+			sEventLogBuffer->offer(priority, tag, msg);
+			return 0;
+		case LOG_ID_DEBUG:
+			sDebugLogBuffer->offer(priority, tag, msg);
+			return 0;
+		default:
+			return -1;
+		}
+	}
+
+	/** @hide */
+	static int32_t parsePriority(const sp<String>& priority) {
+		char c;
+		if (priority->length() > 1 && priority->toUpperCase()->equals("WTF")) {
+			c = 'A';
+		} else {
+			c = priority->charAt(0);
+		}
+
+		switch (c) {
+		case 'V':
+			return Log::VERBOSE;
+		case 'D':
+			return Log::DEBUG;
+		case 'I':
+			return Log::INFO;
+		case 'W':
+			return Log::WARN;
+		case 'E':
+			return Log::ERROR;
+		case 'A':
+			return Log::WTF;
+		default:
+			return -1;
+		}
+	}
+
+	/** @hide */
+	static sp<String> toPriority(int32_t priority) {
+		const char logLevels[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
+		if (priority >= 0 && size_t(priority) < sizeof(logLevels)) {
+			return String::valueOf(logLevels[priority]);
+		} else {
+			return nullptr;
+		}
+	}
+
+	/** @hide */
+	static sp<LogBuffer> getLogBuffer(int32_t logId) {
+		switch (logId) {
+		case LOG_ID_MAIN:
+			return sMainLogBuffer;
+		case LOG_ID_EVENTS:
+			return sEventLogBuffer;
+		case LOG_ID_DEBUG:
+			return sDebugLogBuffer;
+		default:
+			return nullptr;
+		}
+	}
+
+	/** @hide */
+	static const int32_t LOG_ID_MAIN = 0;
+	/** @hide */
+	static const int32_t LOG_ID_EVENTS = 1;
+	/** @hide */
+	static const int32_t LOG_ID_DEBUG = 2;
 
 private:
-    static const int DEFAULT_LOG_ID = 0;
-    static const int LOG_MESSAGE_SIZE = 128;
+    static const int LOG_MESSAGE_SIZE = 256;
 
-    static sp<Logger> sLogger;
+	static sp<LogBuffer> sMainLogBuffer;
+	static sp<LogBuffer> sEventLogBuffer;
+	static sp<LogBuffer> sDebugLogBuffer;
 };
 
 } /* namespace mindroid */
