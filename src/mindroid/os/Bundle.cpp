@@ -27,7 +27,7 @@ Bundle::~Bundle() {
 	clear();
 }
 
-Bundle::Bundle(const sp<Bundle>& other) {
+Bundle::Bundle(const sp<Bundle>& other) : Bundle() {
 	putAll(other);
 }
 

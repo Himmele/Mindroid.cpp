@@ -50,8 +50,12 @@ public:
 	static sp<Integer> valueOf(const char* s, int32_t radix);
 	static sp<Integer> valueOf(const sp<String>& s, int32_t radix);
 
-	int32_t intValue() {
+	int32_t intValue() const {
 		return mValue;
+	}
+
+	int32_t value() const {
+		return intValue();
 	}
 
 private:

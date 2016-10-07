@@ -50,8 +50,12 @@ public:
 	static sp<Long> valueOf(const char* s, int32_t radix);
 	static sp<Long> valueOf(const sp<String>& s, int32_t radix);
 
-	int64_t longValue() {
+	int64_t longValue() const {
 		return mValue;
+	}
+
+	int64_t value() const {
+		return longValue();
 	}
 
 private:

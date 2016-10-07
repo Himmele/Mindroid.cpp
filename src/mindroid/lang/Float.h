@@ -48,8 +48,12 @@ public:
 	static sp<Float> valueOf(const char* s);
 	static sp<Float> valueOf(const sp<String>& s);
 
-	float floatValue() {
+	float floatValue() const {
 		return mValue;
+	}
+
+	float value() const {
+		return floatValue();
 	}
 
 private:

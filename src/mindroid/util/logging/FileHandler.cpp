@@ -129,7 +129,7 @@ FileHandler::FileHandler(const sp<String>& pattern) {
 	if (pattern == nullptr || pattern->length() == 0) {
 		Assert::fail("Pattern cannot be null or empty");
 	}
-	init(pattern, nullptr, DEFAULT_LIMIT, DEFAULT_COUNT);
+	init(pattern, false, DEFAULT_LIMIT, DEFAULT_COUNT);
 }
 
 FileHandler::FileHandler(const sp<String>& pattern, bool append) {
@@ -146,7 +146,7 @@ FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count
 	if (limit < 0 || count < 1) {
 		Assert::fail("limit < 0 || count < 1");
 	}
-	init(pattern, nullptr, limit, count);
+	init(pattern, false, limit, count);
 }
 
 FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append) {
@@ -201,13 +201,14 @@ FileHandler::Writer::~Writer() {
 }
 
 void FileHandler::Writer::write(const sp<String>& s) {
-	::write(mFd, s->c_str(), s->length());
-	mSize += s->length();
+	write(s, 0, s->length());
 }
 
 void FileHandler::Writer::write(const sp<String>& s, uint32_t offset, size_t length) {
-	::write(mFd, s->c_str() + offset, length);
-	mSize += length;
+	const ssize_t size = ::write(mFd, s->c_str() + offset, length);
+	if (size > 0) {
+		mSize += size;
+	}
 }
 
 void FileHandler::Writer::flush() {
@@ -226,8 +227,7 @@ int32_t FileHandler::Writer::getSize() {
 }
 
 void FileHandler::Writer::newLine() {
-	::write(mFd, "\r\n", 2);
-	mSize += 2;
+	write(String::valueOf("\r\n"));
 }
 
 } /* namespace mindroid */

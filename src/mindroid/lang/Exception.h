@@ -26,6 +26,7 @@ class Exception :
 		public std::exception {
 public:
 	Exception() = default;
+	~Exception() noexcept {}
 
 	Exception(const char* message) : mMessage(String::valueOf(message)) {
 	}

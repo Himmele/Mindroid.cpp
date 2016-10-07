@@ -22,8 +22,8 @@ namespace mindroid {
 
 const char* const Logger::TAG = "Logger";
 
-Logger::LoggerThread::LoggerThread(const sp<String>& name, int32_t logBufferId, bool consoleLogging, bool fileLogging, bool timestamps, int32_t priority,
-		const sp<String>& logDirectory, const sp<String>& logFileName, uint32_t logFileSizeLimit, uint32_t logFileCount) :
+Logger::LoggerThread::LoggerThread(const sp<String>& name, int32_t logBufferId, bool consoleLogging, bool fileLogging, bool timestamps,
+        int32_t priority, const sp<String>& logDirectory, const sp<String>& logFileName, uint32_t logFileSizeLimit, uint32_t logFileCount) :
 		Thread(name) {
 	mLogBuffer = Log::getLogBuffer(logBufferId);
 	mConsoleLogging = consoleLogging;
@@ -91,6 +91,7 @@ void Logger::onCreate() {
 
 int32_t Logger::onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
 	sp<ArrayList<sp<String>>> logBuffers = intent->getStringArrayListExtra("logBuffers");
+
 	if (logBuffers != nullptr) {
 		if (logBuffers->contains(String::valueOf("main"))) {
 			bool timestamps = intent->getBooleanExtra("timestamps", false);

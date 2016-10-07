@@ -30,7 +30,7 @@ public:
 		second(second) {
 	}
 
-	static Pair create(F first, S second) {
+	static sp<Pair> create(F first, S second) {
         return new Pair(first, second);
     }
 

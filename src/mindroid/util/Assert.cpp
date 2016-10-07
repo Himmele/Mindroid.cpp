@@ -16,6 +16,7 @@
 
 #include "mindroid/util/Assert.h"
 #include "mindroid/util/Log.h"
+#include "mindroid/lang/System.h"
 
 namespace mindroid {
 
@@ -136,6 +137,7 @@ void Assert::assertEquals(const char* message, void* expected, void* actual) {
 void Assert::fail(const char* message) {
 	Log::wtf(TAG, "%s", message);
 	assert(false);
+	System::exit(-1);
 }
 
 } /* namespace mindroid */

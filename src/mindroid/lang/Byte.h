@@ -50,8 +50,12 @@ public:
 	static sp<Byte> valueOf(const char* s, int32_t radix);
 	static sp<Byte> valueOf(const sp<String>& s, int32_t radix);
 
-	int8_t byteValue() {
+	int8_t byteValue() const {
 		return mValue;
+	}
+
+	int8_t value() const {
+		return byteValue();
 	}
 
 private:

@@ -40,7 +40,7 @@ public:
 
 	/**
 	 * Publish a {@code LogRecord}.
-	 * 
+	 *
 	 * @param record The log record.
 	 */
 	void publish(const sp<LogBuffer::LogRecord>& record);

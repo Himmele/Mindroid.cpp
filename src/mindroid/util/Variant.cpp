@@ -16,8 +16,17 @@
 
 #include "mindroid/util/Variant.h"
 #include "mindroid/lang/Class.h"
+#include "mindroid/os/Bundle.h"
 
 namespace mindroid {
+
+inline Variant::Variant(const sp<mindroid::Bundle>& bundle) :
+		mType(Bundle) {
+	if (bundle != nullptr) {
+		bundle->incStrongReference(this);
+	}
+	mValue.object = bundle.getPointer();
+}
 
 Variant::~Variant() {
 	switch (mType) {
@@ -26,6 +35,7 @@ Variant::~Variant() {
 	case StringArrayList:
 	case IntegerArrayList:
 	case Object:
+	case Bundle:
 		if (mValue.object != nullptr) {
 			mValue.object->decStrongReference(this);
 		}
@@ -38,6 +48,10 @@ Variant::~Variant() {
 	default:
 		break;
 	}
+}
+
+inline sp<mindroid::Bundle> Variant::getBundle() const {
+	return static_cast<mindroid::Bundle*>(mValue.object);
 }
 
 bool Variant::equals(const sp<mindroid::Object>& other) const {
@@ -75,6 +89,7 @@ bool Variant::equals(const sp<mindroid::Object>& other) const {
 				case StringArrayList:
 				case IntegerArrayList:
 				case Object:
+				case Bundle:
 					if (mValue.object != nullptr) {
 						return mValue.object->equals(v->mValue.object);
 					} else {
@@ -126,6 +141,7 @@ size_t Variant::hashCode() const {
 	case StringArrayList:
 	case IntegerArrayList:
 	case Object:
+	case Bundle:
 		if (mValue.object != nullptr) {
 			return mValue.object->hashCode();
 		} else {

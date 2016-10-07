@@ -10,7 +10,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES:= \
 	HelloWorld.cpp
 
-LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter -fexceptions
+LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
@@ -34,7 +34,7 @@ include $(BUILD_EXECUTABLE)
 # LOCAL_SRC_FILES:= \
 # 	ConcurrencyMess.cpp
 
-# LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter
+# LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter
 
 # LOCAL_SHARED_LIBRARIES := \
 # 	libutils \
@@ -58,7 +58,7 @@ include $(BUILD_EXECUTABLE)
 # LOCAL_SRC_FILES:= \
 # 	AsyncTasks.cpp
 
-# LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter
+# LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter
 
 # LOCAL_SHARED_LIBRARIES := \
 # 	libutils \
@@ -82,7 +82,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES:= \
 	Networking.cpp
 
-LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter -fexceptions
+LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
@@ -106,7 +106,7 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES:= \
 	Services.cpp
 
-LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter -fexceptions
+LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 
 LOCAL_SHARED_LIBRARIES := \
 	libutils \
@@ -118,7 +118,7 @@ LOCAL_STATIC_LIBRARIES := \
 
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := Services
-LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter -fexceptions
+LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 LOCAL_STRIP_MODULE := keep_symbols
 
 include $(BUILD_EXECUTABLE)

@@ -59,6 +59,14 @@ public:
 		}
 	}
 
+	ArrayList(const T* collection, size_t size) :
+			mList() {
+		if (collection != nullptr) {
+			mList.reserve(size);
+			mList.assign(collection, collection + size);
+		}
+	}
+
 	virtual ~ArrayList() {
 		clear();
 	}
@@ -161,6 +169,10 @@ public:
 
 	size_t size() const {
 		return mList.size();
+	}
+
+	const T* c_arr() const {
+		return &mList[0];
 	}
 
 	class Iterator {

@@ -42,8 +42,12 @@ public:
 	static sp<Boolean> valueOf(const char* s);
 	static sp<Boolean> valueOf(const sp<String>& s);
 
-	bool booleanValue() {
+	bool booleanValue() const {
 		return mValue;
+	}
+
+	bool value() const {
+		return booleanValue();
 	}
 
 private:

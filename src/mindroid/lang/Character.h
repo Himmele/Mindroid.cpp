@@ -40,8 +40,12 @@ public:
 
 	static sp<Character> valueOf(const char c);
 
-	char charValue() {
+	char charValue() const {
 		return mValue;
+	}
+
+	char value() const {
+		return charValue();
 	}
 
 private:

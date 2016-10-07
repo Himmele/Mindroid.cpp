@@ -50,8 +50,12 @@ public:
 	static sp<Short> valueOf(const char* s, int32_t radix);
 	static sp<Short> valueOf(const sp<String>& s, int32_t radix);
 
-	int16_t shortValue() {
+	int16_t shortValue() const {
 		return mValue;
+	}
+
+	int16_t value() const {
+		return shortValue();
 	}
 
 private:

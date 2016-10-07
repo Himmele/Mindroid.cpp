@@ -25,6 +25,8 @@
 
 namespace mindroid {
 
+class Bundle;
+
 class Variant :
 		public Object {
 public:
@@ -45,8 +47,8 @@ public:
 		StringSet,
 		StringArrayList,
 		IntegerArrayList,
-		Bundle,
 		Object,
+		Bundle,
 		Binder
 	};
 
@@ -155,6 +157,8 @@ public:
 		}
 		mValue.object = object.getPointer();
 	}
+
+	inline Variant(const sp<mindroid::Bundle>& bundle);
 
 	inline Variant(const sp<mindroid::IBinder>& binder) :
 			mType(Binder) {
@@ -299,6 +303,12 @@ public:
 	inline sp<mindroid::Object> getObject() const {
 		return static_cast<mindroid::Object*>(mValue.object);
 	}
+
+	inline bool isBundle() const {
+		return mType == Bundle;
+	}
+
+	inline sp<mindroid::Bundle> getBundle() const;
 
 	inline bool isBinder() const {
 		return mType == Binder;

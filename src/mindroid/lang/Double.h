@@ -50,8 +50,12 @@ public:
 	static sp<Double> valueOf(const char* s);
 	static sp<Double> valueOf(const sp<String>& s);
 
-	double doubleValue() {
+	double doubleValue() const {
 		return mValue;
+	}
+
+	double value() const {
+		return doubleValue();
 	}
 
 private:

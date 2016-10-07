@@ -16,6 +16,7 @@
  */
 
 #include "mindroid/os/SystemClock.h"
+#include "mindroid/util/Assert.h"
 #include "mindroid/util/concurrent/locks/ReentrantLock.h"
 #include "mindroid/util/concurrent/locks/ConditionImpl.h"
 #include <cstdlib>
@@ -42,6 +43,7 @@ sp<Condition> ReentrantLock::newCondition() {
 }
 
 bool ReentrantLock::tryLock(uint64_t timeoutMillis) {
+#ifndef ANDROID
 	timespec time;
 	clock_gettime(CLOCK_MONOTONIC, &time);
 	time.tv_sec += timeoutMillis / 1000;
@@ -51,6 +53,11 @@ bool ReentrantLock::tryLock(uint64_t timeoutMillis) {
 		time.tv_nsec -= 1000000000;
 	}
 	return (pthread_mutex_timedlock(&mMutex, &time) == 0);
+#else
+	// Old Bionic versions lack pthread_mutex_timedlock.
+	Assert::assertTrue(timeoutMillis <= UINT_MAX);
+	return pthread_mutex_lock_timeout_np(&mMutex, (unsigned) timeoutMillis);
+#endif
 }
 
 void ReentrantLock::unlock() {

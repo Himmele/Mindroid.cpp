@@ -339,8 +339,9 @@ void SharedPreferencesImpl::parseFloat(sp<HashMap<sp<String>, sp<Variant>>>& map
 void SharedPreferencesImpl::parseString(sp<HashMap<sp<String>, sp<Variant>>>& map, const XMLElement* element) {
 	const XMLAttribute* name = element->FindAttribute(NAME_ATTR);
 	const XMLNode* value = element->FirstChild();
-	if (name != nullptr && value != nullptr) {
-		map->put(String::valueOf(name->Value()), new Variant(value->Value()));
+	if (name != nullptr) {
+		sp<String> str = value == nullptr ? String::valueOf("") : String::valueOf(value->Value());
+		map->put(String::valueOf(name->Value()), new Variant(str));
 	}
 }
 
