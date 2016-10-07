@@ -72,10 +72,11 @@ LOCAL_SRC_FILES := \
 	src/mindroid/util/logging/LogBuffer.cpp \
 	src/mindroid/util/logging/Logger.cpp
 
-LOCAL_CFLAGS := -D__ANDROID__ -Wno-unused-parameter -fexceptions
+LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 LOCAL_PRELINK_MODULE := false
 LOCAL_MODULE:= libmindroid
-
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/src
+LOCAL_RTTI_FLAG := -frtti
 include $(BUILD_STATIC_LIBRARY)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))

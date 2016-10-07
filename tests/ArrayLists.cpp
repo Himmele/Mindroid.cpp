@@ -109,3 +109,18 @@ TEST(Mindroid, ArrayListOfString) {
 	ASSERT_STREQ(list->get(1)->c_str(), "abc");
 	ASSERT_EQ(list->size(), 2);
 }
+
+TEST(Mindroid, ArrayListFromCArray) {
+	const uint8_t data_bytes[] = {0x00, 0xaa, 0xbb, 0xcc, 0xdd, 0xee};
+	const size_t size = sizeof(data_bytes) / sizeof(uint8_t);
+
+	sp<ArrayList<uint8_t>> list = new ArrayList<uint8_t>(data_bytes, size);
+	ASSERT_EQ(list->size(), size);
+
+	for (size_t i = 0; i < list->size(); ++i) {
+		ASSERT_EQ(list->get(i), data_bytes[i]);
+	}
+
+	sp<ArrayList<uint32_t>> list_empty = new ArrayList<uint32_t>(nullptr, 255);
+	ASSERT_EQ(list_empty->size(), 0);
+}
