@@ -17,14 +17,10 @@
 #include "mindroid/util/logging/ConsoleHandler.h"
 #include "mindroid/util/Log.h"
 #include <cstdio>
-#if defined(ANDROID)
-#include <android/log.h>
-#endif
 
 namespace mindroid {
 
 void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
-#ifndef ANDROID
 	sp<String> message;
 	if ((mFlags & FLAG_TIMESTAMP) == FLAG_TIMESTAMP) {
 		message = record->toString();
@@ -34,30 +30,6 @@ void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
 
 	printf("%s\n", message->c_str());
 	fflush(stdout);
-#else
-	int priority = ANDROID_LOG_DEFAULT;
-	switch (record->getPriority()) {
-	case Log::VERBOSE:
-		priority = ANDROID_LOG_VERBOSE;
-		break;
-	case Log::DEBUG:
-		priority = ANDROID_LOG_DEBUG;
-		break;
-	case Log::INFO:
-		priority = ANDROID_LOG_INFO;
-		break;
-	case Log::WARN:
-		priority = ANDROID_LOG_WARN;
-		break;
-	case Log::ERROR:
-		priority = ANDROID_LOG_ERROR;
-		break;
-	case Log::WTF:
-		priority = ANDROID_LOG_FATAL;
-		break;
-	}
-	__android_log_write(priority, record->getTag()->c_str(), record->getMessage()->c_str());
-#endif
 }
 
 void ConsoleHandler::setFlag(uint32_t flag) {

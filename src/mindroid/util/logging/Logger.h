@@ -47,8 +47,8 @@ public:
 		sp<String> mLogFileName;
 		uint32_t mLogFileSizeLimit;
 		uint32_t mLogFileCount;
-		sp<ConsoleHandler> mConsoleHander;
-		sp<FileHandler> mFileHander;
+		sp<ConsoleHandler> mConsoleHandler;
+		sp<FileHandler> mFileHandler;
 	};
 
 	void onCreate() override;

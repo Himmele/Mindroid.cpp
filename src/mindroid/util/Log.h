@@ -18,6 +18,9 @@
 #define MINDROID_LOG_H_
 
 #include "mindroid/util/logging/LogBuffer.h"
+#if defined(ANDROID)
+#include <android/log.h>
+#endif
 
 namespace mindroid {
 
@@ -93,6 +96,31 @@ public:
 
 	/** @hide */
 	static int println(int32_t logId, int32_t priority, const sp<String>& tag, const sp<String>& msg) {
+#ifdef ANDROID
+		int androidPriority = ANDROID_LOG_DEFAULT;
+		switch (priority) {
+		case Log::VERBOSE:
+			androidPriority = ANDROID_LOG_VERBOSE;
+			break;
+		case Log::DEBUG:
+			androidPriority = ANDROID_LOG_DEBUG;
+			break;
+		case Log::INFO:
+			androidPriority = ANDROID_LOG_INFO;
+			break;
+		case Log::WARN:
+			androidPriority = ANDROID_LOG_WARN;
+			break;
+		case Log::ERROR:
+			androidPriority = ANDROID_LOG_ERROR;
+			break;
+		case Log::WTF:
+			androidPriority = ANDROID_LOG_FATAL;
+			break;
+		}
+		__android_log_write(androidPriority, tag->c_str(), msg->c_str());
+#endif
+
 		switch (logId) {
 		case LOG_ID_MAIN:
 			sMainLogBuffer->offer(priority, tag, msg);

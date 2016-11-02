@@ -42,11 +42,11 @@ void Logger::LoggerThread::run() {
 	while (!isInterrupted()) {
 		sp<LogBuffer::LogRecord> logRecord = mLogBuffer->take(mPriority);
 		if (logRecord != nullptr) {
-			if (mConsoleHander != nullptr) {
-				mConsoleHander->publish(logRecord);
+			if (mConsoleHandler != nullptr) {
+				mConsoleHandler->publish(logRecord);
 			}
-			if (mFileHander != nullptr) {
-				mFileHander->publish(logRecord);
+			if (mFileHandler != nullptr) {
+				mFileHandler->publish(logRecord);
 			}
 		}
 	}
@@ -56,27 +56,27 @@ void Logger::LoggerThread::run() {
 
 void Logger::LoggerThread::open() {
 	if (mConsoleLogging) {
-		mConsoleHander = new ConsoleHandler();
+		mConsoleHandler = new ConsoleHandler();
 		if (mTimestamps) {
-			mConsoleHander->setFlag(ConsoleHandler::FLAG_TIMESTAMP);
+			mConsoleHandler->setFlag(ConsoleHandler::FLAG_TIMESTAMP);
 		}
 	}
 
 	if (mFileLogging) {
-		mFileHander = new FileHandler(String::format("%s%c%s", mLogDirectory->c_str(), File::separatorChar, mLogFileName->c_str()),
+		mFileHandler = new FileHandler(String::format("%s%c%s", mLogDirectory->c_str(), File::separatorChar, mLogFileName->c_str()),
 				mLogFileSizeLimit, mLogFileCount, true);
 	}
 }
 
 void Logger::LoggerThread::close() {
-	if (mConsoleHander != nullptr) {
-		mConsoleHander->close();
-		mConsoleHander = nullptr;
+	if (mConsoleHandler != nullptr) {
+		mConsoleHandler->close();
+		mConsoleHandler = nullptr;
 	}
 
-	if (mFileHander != nullptr) {
-		mFileHander->close();
-		mFileHander = nullptr;
+	if (mFileHandler != nullptr) {
+		mFileHandler->close();
+		mFileHandler = nullptr;
 	}
 }
 

@@ -1,11 +1,13 @@
+.bake
+build/
+build_*
+Debug
+/Release/
+.settings
+out
 bin
 lib
-.settings
 *.o
 *.d
 *.so
-build_*
-.bake
-Debug
-Release
 
