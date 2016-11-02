@@ -61,11 +61,8 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.569412181.1953599925" name="Networking.cpp" rcbsApplicability="disable" resourcePath="src/examples/Networking.cpp" toolsToInvoke="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1774552170">
-						<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450.1774552170" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.555681450"/>
-					</fileInfo>
 					<sourceEntries>
-						<entry excluding="src/examples/Networking.cpp|src/examples/HelloWorld.cpp|src/examples/Delegates.cpp|src/examples/ConcurrencyMess.cpp|src/examples/Closures.cpp|src/examples/AsyncTasks.cpp|samples/HelloWorld.cpp|tests/Tests.cpp|samples/Networking.cpp|samples/Delegates.cpp|samples/ConcurrencyMess.cpp|samples/Closures.cpp|samples/AsyncTasks.cpp|samples/LooperThreadTest.cpp|samples/AsyncTaskTest.cpp|tests/ConcurrencyTest.cpp|tests/ListTest.cpp|tests/AsyncTaskTest.cpp|tests/LooperThreadTest.cpp|tests/DelegateTest.cpp|tests/RefCountingTest.cpp|StringTest.cpp|RefCountingTest.cpp|NetworkTest.cpp|LooperThreadExample.cpp|ListTest.cpp|DelegateExample.cpp|BundleTest.cpp|AsyncTaskExample.cpp|DelegateTest.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="StringTest.cpp|tests|samples/AsyncTaskTest.cpp|ListTest.cpp|src/examples/Delegates.cpp|samples/AsyncTasks.cpp|DelegateTest.cpp|NetworkTest.cpp|src/examples/Networking.cpp|samples/Networking.cpp|tests/ListTest.cpp|samples/Delegates.cpp|src/examples/Closures.cpp|src/examples/HelloWorld.cpp|DelegateExample.cpp|src/examples/ConcurrencyMess.cpp|samples/LooperThreadTest.cpp|BundleTest.cpp|tests/Tests.cpp|tests/AsyncTaskTest.cpp|tests/ConcurrencyTest.cpp|RefCountingTest.cpp|tests/DelegateTest.cpp|tests/LooperThreadTest.cpp|samples/HelloWorld.cpp|LooperThreadExample.cpp|src/examples/AsyncTasks.cpp|tests/RefCountingTest.cpp|samples/Closures.cpp|src/examples/Services.cpp|samples/ConcurrencyMess.cpp|AsyncTaskExample.cpp" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>
