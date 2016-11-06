@@ -99,14 +99,14 @@ public:
 	 *
 	 * @return {@code true} if this file can be executed, {@code false} otherwise.
 	 */
-	bool canExecute();
+	bool canExecute() const;
 
 	/**
 	 * Indicates whether the current context is allowed to read from this file.
 	 *
 	 * @return {@code true} if this file can be read, {@code false} otherwise.
 	 */
-	bool canRead();
+	bool canRead() const;
 
 	/**
 	 * Indicates whether the current context is allowed to write to this file.
@@ -114,7 +114,7 @@ public:
 	 * @return {@code true} if this file can be written, {@code false}
 	 *         otherwise.
 	 */
-	bool canWrite();
+	bool canWrite() const;
 
 	/**
 	 * Removes this file. Directories must be empty before they will be deleted.
@@ -129,7 +129,17 @@ public:
 	 *
 	 * @return {@code true} if this file exists, {@code false} otherwise.
 	 */
-	bool exists();
+	bool exists() const;
+
+	/**
+     * Returns the absolute path of this file. An absolute path is a path that starts at a root
+     * of the file system.
+     *
+     * <p>A common use for absolute paths is when passing paths to a {@code Process} as
+     * command-line arguments, to remove the requirement implied by relative paths, that the
+     * child must have the same working directory as its parent.
+     */
+    sp<String> getAbsolutePath();
 
 	/**
 	 * Returns the name of the file or directory represented by this file.
@@ -162,13 +172,24 @@ public:
 	sp<String> getPath();
 
 	/**
+     * Indicates if this file's pathname is absolute. Whether a pathname is
+     * absolute is platform specific. On Mindroid, absolute paths start with
+     * the character '/'.
+     *
+     * @return {@code true} if this file's pathname is absolute, {@code false}
+     *         otherwise.
+     * @see #getPath
+     */
+    bool isAbsolute() const;
+
+	/**
 	 * Indicates if this file represents a <em>directory</em> on the
 	 * underlying file system.
 	 *
 	 * @return {@code true} if this file is a directory, {@code false}
 	 *         otherwise.
 	 */
-	bool isDirectory();
+	bool isDirectory() const;
 
 	/**
 	 * Indicates if this file represents a <em>file</em> on the underlying
@@ -176,7 +197,7 @@ public:
 	 *
 	 * @return {@code true} if this file is a file, {@code false} otherwise.
 	 */
-	bool isFile();
+	bool isFile() const;
 
 	/**
 	 * Returns the length of this file in bytes.
@@ -185,7 +206,7 @@ public:
 	 *
 	 * @return the number of bytes in this file.
 	 */
-	size_t length();
+	size_t length() const;
 
 	/**
 	 * Returns an array of files contained in the directory represented by this
@@ -269,6 +290,8 @@ public:
 	}
 
 private:
+	static sp<String> join(sp<String>& prefix, sp<String>& suffix);
+
 	sp<String> mPath;
 	sp<String> mParent;
 	sp<String> mName;

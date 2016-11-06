@@ -51,7 +51,8 @@ public:
 	static const sp<String> TELEPHONY_SERVICE;
 	static const sp<String> MEDIA_PLAYER_SERVICE;
 	static const sp<String> MESSAGE_BROKER;
-
+	static const sp<String> VOICE_SERVICE;
+	
 	/**
      * File creation mode: the default mode.
      */

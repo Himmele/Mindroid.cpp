@@ -75,8 +75,6 @@ private:
     virtual void cleanup();
 
     static const char* const TAG;
-    static sp<ReentrantLock> sLock;
-    static sp<HashMap<sp<String>, sp<SharedPreferences>>> sSharedPreferences;
     sp<IServiceManager> mServiceManager;
     sp<HandlerThread> mMainThread;
     sp<Handler> mHandler;

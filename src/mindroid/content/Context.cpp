@@ -30,5 +30,6 @@ const sp<String> Context::AUDIO_SERVICE = String::valueOf("audioService");
 const sp<String> Context::TELEPHONY_SERVICE = String::valueOf("telephonyService");
 const sp<String> Context::MEDIA_PLAYER_SERVICE = String::valueOf("mediaPlayerService");
 const sp<String> Context::MESSAGE_BROKER = String::valueOf("messageBroker");
+const sp<String> Context::VOICE_SERVICE = String::valueOf("voiceService");
 
 } /* namespace mindroid */

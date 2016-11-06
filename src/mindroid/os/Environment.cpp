@@ -16,6 +16,7 @@
  */
 
 #include "mindroid/os/Environment.h"
+#include "mindroid/app/SharedPreferencesImpl.h"
 
 namespace mindroid {
 
@@ -28,7 +29,6 @@ Environment::Environment() :
 		DATA_DIRECTORY(new File(ROOT_DIRECTORY, "data")),
 		PREFERENCES_DIRECTORY(new File(ROOT_DIRECTORY, "prefs")),
 		LOG_DIRECTORY(new File(ROOT_DIRECTORY, "logs")) {
-	sInstance = this;
 }
 
 void Environment::setRootDirectory(const sp<String>& rootDirectory) {
@@ -38,6 +38,19 @@ void Environment::setRootDirectory(const sp<String>& rootDirectory) {
 	self->DATA_DIRECTORY = new File(self->ROOT_DIRECTORY, "data");
 	self->PREFERENCES_DIRECTORY = new File(self->ROOT_DIRECTORY, "prefs");
 	self->LOG_DIRECTORY = new File(self->ROOT_DIRECTORY, "logs");
+}
+
+sp<SharedPreferences> Environment::getSharedPreferences(const sp<File>& sharedPrefsFile, int32_t mode) {
+    Environment* self = getInstance();
+    sp<SharedPreferences> sp;
+    AutoLock autoLock(self->mLock);
+    sp = self->mSharedPrefs->get(sharedPrefsFile->getAbsolutePath());
+    if (sp == nullptr) {
+        sp = new SharedPreferencesImpl(sharedPrefsFile, mode);
+        self->mSharedPrefs->put(sharedPrefsFile->getAbsolutePath(), sp);
+        return sp;
+    }
+    return sp;
 }
 
 Environment* Environment::getInstance() {

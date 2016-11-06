@@ -16,6 +16,7 @@
 
 #include "mindroid/io/File.h"
 #include "mindroid/io/FilenameFilter.h"
+#include "mindroid/lang/System.h"
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -72,15 +73,15 @@ File::File(const sp<String>& dirPath, const sp<String>& name) {
 	mPath = pathName->append(name);
 }
 
-bool File::canExecute() {
+bool File::canExecute() const {
 	return (access(mPath->c_str(), X_OK) == 0);
 }
 
-bool File::canRead() {
+bool File::canRead() const {
 	return (access(mPath->c_str(), R_OK) == 0);
 }
 
-bool File::canWrite() {
+bool File::canWrite() const {
 	return (access(mPath->c_str(), W_OK) == 0);
 }
 
@@ -88,9 +89,17 @@ bool File::remove() {
 	return (unlink(mPath->c_str()) == 0);
 }
 
-bool File::exists() {
+bool File::exists() const {
 	struct stat status;
 	return (stat(mPath->c_str(), &status) == 0);
+}
+
+sp<String> File::getAbsolutePath() {
+    if (isAbsolute()) {
+        return mPath;
+    }
+    sp<String> userDir = System::getProperty("user.dir");
+    return mPath->isEmpty() ? userDir : join(userDir, mPath);
 }
 
 sp<String> File::getName() {
@@ -130,7 +139,11 @@ sp<String> File::getPath() {
 	return mPath;
 }
 
-bool File::isDirectory() {
+bool File::isAbsolute() const {
+    return mPath->length() > 0 && mPath->charAt(0) == separatorChar;
+}
+
+bool File::isDirectory() const {
 	struct stat status;
 	if (stat(mPath->c_str(), &status) == 0) {
 		return S_ISDIR(status.st_mode);
@@ -139,7 +152,7 @@ bool File::isDirectory() {
 	}
 }
 
-bool File::isFile() {
+bool File::isFile() const {
 	struct stat status;
 	if (stat(mPath->c_str(), &status) == 0) {
 		return S_ISREG(status.st_mode);
@@ -148,7 +161,7 @@ bool File::isFile() {
 	}
 }
 
-size_t File::length() {
+size_t File::length() const {
 	struct stat status;
 	if (stat(mPath->c_str(), &status) == 0) {
 		return status.st_size;
@@ -211,6 +224,26 @@ bool File::createNewFile() {
 
 bool File::renameTo(const sp<File>& newPath) {
 	return (::rename(mPath->c_str(), newPath->mPath->c_str()) == 0);
+}
+
+sp<String> File::join(sp<String>& prefix, sp<String>& suffix) {
+    if (prefix != nullptr) {
+        if (suffix != nullptr) {
+            if (suffix->length() > 0) {
+                if (prefix->endsWith(separator) && suffix->startsWith(separator)) {
+                    suffix = suffix->substring(1);
+                }
+                if (!prefix->endsWith(separator) && !suffix->startsWith(separator)) {
+                    prefix = String::format("%s%s", prefix->c_str(), separator->c_str());
+                }
+            }
+            return String::format("%s%s", prefix->c_str(), suffix->c_str());
+        } else {
+            return prefix;
+        }
+    } else {
+        return suffix;
+    }
 }
 
 } /* namespace mindroid */

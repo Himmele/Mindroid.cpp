@@ -27,8 +27,6 @@
 namespace mindroid {
 
 const char* const ContextImpl::TAG = "ContextImpl";
-sp<ReentrantLock> ContextImpl::sLock = new ReentrantLock();
-sp<HashMap<sp<String>, sp<SharedPreferences>>> ContextImpl::sSharedPreferences = new HashMap<sp<String>, sp<SharedPreferences>>();
 
 ContextImpl::ContextImpl(const sp<HandlerThread>& mainThread, const sp<ComponentName>& component) :
 		mServiceConnections(new HashMap<sp<ServiceConnection>, sp<Intent>>()) {
@@ -54,16 +52,7 @@ sp<String> ContextImpl::getPackageName() {
 }
 
 sp<SharedPreferences> ContextImpl::getSharedPreferences(const sp<String>& name, int32_t mode) {
-	sp<SharedPreferences> sharedPreferences;
-	AutoLock autoLock(sLock);
-	sharedPreferences = sSharedPreferences->get(name);
-	if (sharedPreferences == nullptr) {
-		sp<File> sharedPrefsFile = getSharedPrefsFile(name);
-		sharedPreferences = new SharedPreferencesImpl(sharedPrefsFile, mode);
-		sSharedPreferences->put(name, sharedPreferences);
-		return sharedPreferences;
-	}
-    return sharedPreferences;
+    return Environment::getSharedPreferences(getSharedPrefsFile(name),mode);
 }
 
 sp<IBinder> ContextImpl::getSystemService(const sp<String>& name) {

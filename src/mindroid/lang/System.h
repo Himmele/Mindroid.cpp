@@ -17,10 +17,14 @@
 #ifndef MINDROID_SYSTEM_H_
 #define MINDROID_SYSTEM_H_
 
+#include "mindroid/lang/String.h"
+#include "mindroid/util/HashMap.h"
+#include "mindroid/util/concurrent/locks/ReentrantLock.h"
 #include <cstdint>
 #include <ctime>
 #include <stdlib.h>
 #include <string.h>
+#include <pthread.h>
 
 #ifndef CLOCK_REALTIME
 #define CLOCK_REALTIME  0
@@ -34,7 +38,6 @@ namespace mindroid {
 
 class System final {
 public:
-	System() noexcept = delete;
 	~System() noexcept = delete;
 	System(const System&) = delete;
 	System& operator=(const System&) = delete;
@@ -96,11 +99,70 @@ public:
 	}
 
 	/**
+     * Returns the value of a particular system property or {@code null} if no
+     * such property exists.
+     *
+     * <p>The following properties are always provided by Mindroid:</p>
+     * <tr><td>os.arch</td>            <td>OS architecture</td>                   <td>{@code armv7l}</td></tr>
+     * <tr><td>os.name</td>            <td>OS (kernel) name</td>                  <td>{@code Linux}</td></tr>
+     * <tr><td>os.version</td>         <td>OS (kernel) version</td>               <td>{@code 2.6.32.9-g103d848}</td></tr>
+     * <tr><td>user.dir</td>           <td>Base of non-absolute paths</td>        <td>{@code /}</td></tr>
+     * </table>
+     *
+     * <p> All of the above properties except for <b>cannot be modified</b>.
+     * Any attempt to change them will be a no-op.
+     *
+     * @param propertyName
+     *            the name of the system property to look up.
+     * @return the value of the specified system property or {@code null} if the
+     *         property doesn't exist.
+     */
+	static sp<String> getProperty(const char* propertyName) {
+	    return getProperty(String::valueOf(propertyName), nullptr);
+	}
+    static sp<String> getProperty(const sp<String>& propertyName) {
+        return getProperty(propertyName, nullptr);
+    }
+
+    /**
+     * Returns the value of a particular system property. The {@code
+     * defaultValue} will be returned if no such property has been found.
+     */
+    static sp<String> getProperty(const char* name, const char* defaultValue) {
+        return getProperty(String::valueOf(name), String::valueOf(defaultValue));
+    }
+    static sp<String> getProperty(const sp<String>& name, const sp<String>& defaultValue);
+
+    /**
+     * Sets the value of a particular system property. Most system properties
+     * are read only and cannot be cleared or modified. See {@link #getProperty} for a
+     * list of such properties.
+     *
+     * @return the old value of the property or {@code null} if the property
+     *         didn't exist.
+     */
+    static sp<String> setProperty(const char* name, const char* value) {
+        return setProperty(String::valueOf(name), String::valueOf(value));
+    }
+    static sp<String> setProperty(const sp<String>& name, const sp<String>& value);
+
+	/**
 	 * Causes the process to stop running and the program to exit with the given exit status.
 	 */
 	static void exit(int32_t status) {
 		::exit(status);
 	}
+
+private:
+	System();
+
+	static System* getInstance();
+
+	sp<ReentrantLock> mLock = new ReentrantLock();
+	sp<HashMap<sp<String>, sp<String>>> mSystemProperties = new HashMap<sp<String>, sp<String>>();
+
+	static pthread_mutex_t sMutex;
+	static System* sInstance;
 };
 
 } /* namespace mindroid */

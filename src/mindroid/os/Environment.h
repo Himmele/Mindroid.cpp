@@ -19,6 +19,7 @@
 #define MINDROID_ENVIRONMENT_H_
 
 #include "mindroid/lang/String.h"
+#include "mindroid/content/SharedPreferences.h"
 #include "mindroid/io/File.h"
 #include <pthread.h>
 
@@ -81,6 +82,42 @@ public:
     	getInstance()->LOG_DIRECTORY = new File(directory);
     }
 
+    /**
+     * Retrieve and hold the contents of the preferences file 'fileName', returning a SharedPreferences
+     * through which you can retrieve and modify its values. Only one instance of the
+     * SharedPreferences object is returned to any callers for the same name, meaning they will see
+     * each other's edits as soon as they are made.
+     *
+     * @param baseDir The base directory of the preferences file.
+     * @param fileName Desired preferences file name. If a preferences file by this name does not exist, it
+     * will be created when you retrieve an editor (SharedPreferences.edit()) and then commit
+     * changes (Editor.commit()).
+     * @param mode Operating mode. Use 0 or {@link #MODE_PRIVATE} for the default operation.
+     *
+     * @return Returns the single SharedPreferences instance that can be used to retrieve and modify
+     * the preference values.
+     */
+    static sp<SharedPreferences> getSharedPreferences(const sp<File>& baseDir, const sp<String>& fileName, int32_t mode) {
+        sp<File> sharedPrefsFile = new File(baseDir, fileName);
+        return getSharedPreferences(sharedPrefsFile, mode);
+    }
+
+    /**
+     * Retrieve and hold the contents of the preferences file 'fileName', returning a SharedPreferences
+     * through which you can retrieve and modify its values. Only one instance of the
+     * SharedPreferences object is returned to any callers for the same name, meaning they will see
+     * each other's edits as soon as they are made.
+     *
+     * @param sharedPrefsFile Desired preferences file. If a preferences file by this name does not exist, it
+     * will be created when you retrieve an editor (SharedPreferences.edit()) and then commit
+     * changes (Editor.commit()).
+     * @param mode Operating mode. Use 0 or {@link #MODE_PRIVATE} for the default operation.
+     *
+     * @return Returns the single SharedPreferences instance that can be used to retrieve and modify
+     * the preference values.
+     */
+    static sp<SharedPreferences> getSharedPreferences(const sp<File>& sharedPrefsFile, int32_t mode);
+
 private:
     Environment();
 
@@ -91,6 +128,8 @@ private:
     sp<File> DATA_DIRECTORY;
     sp<File> PREFERENCES_DIRECTORY;
     sp<File> LOG_DIRECTORY;
+    sp<ReentrantLock> mLock = new ReentrantLock();
+    sp<HashMap<sp<String>, sp<SharedPreferences>>> mSharedPrefs = new HashMap<sp<String>, sp<SharedPreferences>>();
 
     static pthread_mutex_t sMutex;
     static Environment* sInstance;
