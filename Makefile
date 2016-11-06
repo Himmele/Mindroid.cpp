@@ -47,6 +47,7 @@ SRCS = \
 	src/mindroid/lang/Object.cpp \
 	src/mindroid/lang/Short.cpp \
 	src/mindroid/lang/String.cpp \
+	src/mindroid/lang/System.cpp \
 	src/mindroid/lang/Thread.cpp \
 	src/mindroid/net/DatagramSocket.cpp \
 	src/mindroid/net/SocketAddress.cpp \
