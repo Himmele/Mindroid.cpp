@@ -22,13 +22,13 @@
 namespace mindroid {
 
 class Cancellable :
-		public Object {
+        public Object {
 public:
-	virtual ~Cancellable() = default;
+    virtual ~Cancellable() = default;
 
-	virtual bool cancel() = 0;
+    virtual bool cancel() = 0;
 
-	virtual bool isCancelled() const = 0;
+    virtual bool isCancelled() const = 0;
 };
 
 } /* namespace mindroid */

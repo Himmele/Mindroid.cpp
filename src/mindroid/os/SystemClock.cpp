@@ -21,24 +21,24 @@
 namespace mindroid {
 
 void SystemClock::sleep(uint64_t ms) {
-	Thread::sleep(ms);
+    Thread::sleep(ms);
 }
 
 uint64_t SystemClock::uptimeMillis() {
-	timespec now;
-	clock_gettime(CLOCK_MONOTONIC, &now);
-	return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
+    timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
 }
 
 uint64_t SystemClock::elapsedRealtime() {
-	timespec now;
+    timespec now;
 #ifdef CLOCK_BOOTTIME
-	clock_gettime(CLOCK_BOOTTIME, &now);
+    clock_gettime(CLOCK_BOOTTIME, &now);
 #else
-	#warning SystemClock does not support CLOCK_BOOTTIME
-	clock_gettime(CLOCK_MONOTONIC, &now);
+    #warning SystemClock does not support CLOCK_BOOTTIME
+    clock_gettime(CLOCK_MONOTONIC, &now);
 #endif
-	return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
+    return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
 }
 
 } /* namespace mindroid */

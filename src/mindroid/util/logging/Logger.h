@@ -27,39 +27,39 @@ namespace mindroid {
 
 class Logger : public Service {
 public:
-	class LoggerThread : public Thread {
-	public:
-		LoggerThread(const sp<String>& name, int32_t logBufferId, bool consoleLogging, bool fileLogging, bool timestamps, int32_t priority,
-				const sp<String>& logDirectory, const sp<String>& logFileName, uint32_t logFileSizeLimit, uint32_t logFileCount);
+    class LoggerThread : public Thread {
+    public:
+        LoggerThread(const sp<String>& name, int32_t logBufferId, bool consoleLogging, bool fileLogging, bool timestamps, int32_t priority,
+                const sp<String>& logDirectory, const sp<String>& logFileName, uint32_t logFileSizeLimit, uint32_t logFileCount);
 
-		void run() override;
-		void open();
-		void close();
-		void quit();
+        void run() override;
+        void open();
+        void close();
+        void quit();
 
-	private:
-		sp<LogBuffer> mLogBuffer;
-		bool mConsoleLogging;
-		bool mFileLogging;
-		bool mTimestamps;
-		int32_t mPriority = Log::VERBOSE;
-		sp<String> mLogDirectory;
-		sp<String> mLogFileName;
-		uint32_t mLogFileSizeLimit;
-		uint32_t mLogFileCount;
-		sp<ConsoleHandler> mConsoleHandler;
-		sp<FileHandler> mFileHandler;
-	};
+    private:
+        sp<LogBuffer> mLogBuffer;
+        bool mConsoleLogging;
+        bool mFileLogging;
+        bool mTimestamps;
+        int32_t mPriority = Log::VERBOSE;
+        sp<String> mLogDirectory;
+        sp<String> mLogFileName;
+        uint32_t mLogFileSizeLimit;
+        uint32_t mLogFileCount;
+        sp<ConsoleHandler> mConsoleHandler;
+        sp<FileHandler> mFileHandler;
+    };
 
-	void onCreate() override;
-	int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) override;
-	void onDestroy() override;
-	sp<IBinder> onBind(const sp<Intent>& intent) override;
+    void onCreate() override;
+    int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) override;
+    void onDestroy() override;
+    sp<IBinder> onBind(const sp<Intent>& intent) override;
 
 private:
-	static const char* const TAG;
-	sp<LoggerThread> mMainLoggerThread;
-	sp<LoggerThread> mDebugLoggerThread;
+    static const char* const TAG;
+    sp<LoggerThread> mMainLoggerThread;
+    sp<LoggerThread> mDebugLoggerThread;
 };
 
 } /* namespace mindroid */

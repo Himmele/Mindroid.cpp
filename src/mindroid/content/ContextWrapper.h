@@ -34,7 +34,7 @@ namespace mindroid {
  * be subclassed to modify behavior without changing the original Context.
  */
 class ContextWrapper :
-		public Context {
+        public Context {
 public:
     ContextWrapper(const sp<Context>& baseContext) {
         mBaseContext = baseContext;
@@ -48,8 +48,8 @@ public:
     }
 
     virtual sp<PackageManager> getPackageManager() {
-		return mBaseContext->getPackageManager();
-	}
+        return mBaseContext->getPackageManager();
+    }
 
     virtual sp<Looper> getMainLooper() {
         return mBaseContext->getMainLooper();
@@ -60,11 +60,11 @@ public:
     }
     
     virtual sp<File> getSharedPrefsFile(const sp<String>& name) {
-		return mBaseContext->getSharedPrefsFile(name);
-	}
+        return mBaseContext->getSharedPrefsFile(name);
+    }
 
     virtual sp<SharedPreferences> getSharedPreferences(const char* name, int32_t mode) {
-    	return getSharedPreferences(String::valueOf(name), mode);
+        return getSharedPreferences(String::valueOf(name), mode);
     }
 
     virtual sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode) {
@@ -72,36 +72,36 @@ public:
     }
     
     virtual sp<IBinder> getSystemService(const char* name) {
-    	return getSystemService(String::valueOf(name));
+        return getSystemService(String::valueOf(name));
     }
 
     virtual sp<IBinder> getSystemService(const sp<String>& name) {
-		return mBaseContext->getSystemService(name);
-	}
+        return mBaseContext->getSystemService(name);
+    }
 
     virtual sp<ComponentName> startService(const sp<Intent>& service) {
-    	return mBaseContext->startService(service);
+        return mBaseContext->startService(service);
     }
     
     virtual bool stopService(const sp<Intent>& service) {
-    	return mBaseContext->stopService(service);
+        return mBaseContext->stopService(service);
     }
     
     virtual bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int flags) {
-    	return mBaseContext->bindService(service, conn, flags);
+        return mBaseContext->bindService(service, conn, flags);
     }
     
     virtual void unbindService(const sp<ServiceConnection>& conn) {
-    	mBaseContext->unbindService(conn);
+        mBaseContext->unbindService(conn);
     }
 
 protected:
     /**
-	 * Set the base context for this ContextWrapper. All calls will then be delegated to the base
-	 * context. Throws IllegalStateException if a base context has already been set.
-	 *
-	 * @param baseContext The new base context for this wrapper.
-	 */
+     * Set the base context for this ContextWrapper. All calls will then be delegated to the base
+     * context. Throws IllegalStateException if a base context has already been set.
+     *
+     * @param baseContext The new base context for this wrapper.
+     */
     void attachBaseContext(const sp<Context> baseContext);
 
 private:

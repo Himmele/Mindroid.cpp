@@ -19,23 +19,29 @@
 #define MINDROID_IINTERFACE_H_
 
 #include "mindroid/lang/Object.h"
+#include "mindroid/os/IBinder.h"
 
 namespace mindroid {
-
-class IBinder;
 
 /**
  * Base class for Binder interfaces. When defining a new interface, you must derive it from
  * IInterface.
  */
 class IInterface :
-		public virtual Object {
+        public virtual Object {
 public:
-	/**
-	 * Retrieve the Binder object associated with this interface. You must use this instead of a
-	 * plain cast, so that proxy objects can return the correct result.
-	 */
-	virtual sp<IBinder> asBinder() = 0;
+    /**
+     * Retrieve the Binder object associated with this interface. You must use this instead of a
+     * plain cast, so that proxy objects can return the correct result.
+     */
+    virtual sp<IBinder> asBinder() = 0;
+
+    /**
+     * Release the unmanaged Binder resources associated with this interface.
+     */
+    void dispose() {
+        asBinder()->dispose();
+    }
 };
 
 template<typename INTERFACE>

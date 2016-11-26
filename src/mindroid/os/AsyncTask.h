@@ -26,16 +26,16 @@
 namespace mindroid {
 
 class AsyncTaskBase :
-		public Object {
+        public Object {
 public:
-	static sp<SerialExecutor> SERIAL_EXECUTOR;
-	static sp<ThreadPoolExecutor> THREAD_POOL_EXECUTOR;
+    static sp<SerialExecutor> SERIAL_EXECUTOR;
+    static sp<ThreadPoolExecutor> THREAD_POOL_EXECUTOR;
 
 protected:
-	static sp<ReentrantLock> sLock;
+    static sp<ReentrantLock> sLock;
 
 private:
-	static const uint32_t THREAD_POOL_SIZE = 4;
+    static const uint32_t THREAD_POOL_SIZE = 4;
 };
 
 /**
@@ -80,25 +80,25 @@ private:
  *
  * <pre class="prettyprint">
  * private class DownloadFilesTask extends AsyncTask&lt;URL, Integer, Long&gt; {
- * 	protected Long doInBackground(Object urls) {
- * 		int count = urls.length;
- * 		long totalSize = 0;
- * 		for (int i = 0; i &lt; count; i++) {
- * 			totalSize += Downloader.downloadFile(urls[i]);
- * 			publishProgress((int) ((i / (float) count) * 100));
- * 			// Escape early if cancel() is called
- * 			if (isCancelled()) break;
- * 		}
- * 		return totalSize;
- * 	}
+ *     protected Long doInBackground(Object urls) {
+ *         int count = urls.length;
+ *         long totalSize = 0;
+ *         for (int i = 0; i &lt; count; i++) {
+ *             totalSize += Downloader.downloadFile(urls[i]);
+ *             publishProgress((int) ((i / (float) count) * 100));
+ *             // Escape early if cancel() is called
+ *             if (isCancelled()) break;
+ *         }
+ *         return totalSize;
+ *     }
  *
- * 	protected void onProgressUpdate(Integer... progress) {
- * 		setProgressPercent(progress[0]);
- * 	}
+ *     protected void onProgressUpdate(Integer... progress) {
+ *         setProgressPercent(progress[0]);
+ *     }
  *
- * 	protected void onPostExecute(Long result) {
- * 		showDialog(&quot;Downloaded &quot; + result + &quot; bytes&quot;);
- * 	}
+ *     protected void onPostExecute(Long result) {
+ *         showDialog(&quot;Downloaded &quot; + result + &quot; bytes&quot;);
+ *     }
  * }
  * </pre>
  *
@@ -189,278 +189,278 @@ private:
  */
 template<typename Params, typename Progress, typename Result>
 class AsyncTask :
-		public AsyncTaskBase {
+        public AsyncTaskBase {
 public:
-	AsyncTask() :
-			mExecutor(nullptr),
-			mCancelled(false) {
-		mHandler = new InternalHandler();
-		mWorkerRunnable = new WorkerRunnable(this);
-	}
+    AsyncTask() :
+            mExecutor(nullptr),
+            mCancelled(false) {
+        mHandler = new InternalHandler();
+        mWorkerRunnable = new WorkerRunnable(this);
+    }
 
-	virtual ~AsyncTask() = default;
+    virtual ~AsyncTask() = default;
 
-	AsyncTask(const AsyncTask&) = delete;
-	AsyncTask& operator=(const AsyncTask&) = delete;
+    AsyncTask(const AsyncTask&) = delete;
+    AsyncTask& operator=(const AsyncTask&) = delete;
 
-	sp<AsyncTask<Params, Progress, Result>> execute(Params params) {
-		if (mExecutor == nullptr) {
-			mExecutor = SERIAL_EXECUTOR;
-			onPreExecute();
-			mWorkerRunnable->mParams = params;
-			mExecutor->execute(mWorkerRunnable);
-			return this;
-		} else {
-			return nullptr;
-		}
-	}
+    sp<AsyncTask<Params, Progress, Result>> execute(Params params) {
+        if (mExecutor == nullptr) {
+            mExecutor = SERIAL_EXECUTOR;
+            onPreExecute();
+            mWorkerRunnable->mParams = params;
+            mExecutor->execute(mWorkerRunnable);
+            return this;
+        } else {
+            return nullptr;
+        }
+    }
 
-	sp<AsyncTask<Params, Progress, Result>> executeOnExecutor(const sp<Executor>& executor, Params params) {
-		if (mExecutor == nullptr) {
-			mExecutor = executor;
-			onPreExecute();
-			mWorkerRunnable->mParams = params;
-			mExecutor->execute(mWorkerRunnable);
-			return this;
-		} else {
-			return nullptr;
-		}
-	}
+    sp<AsyncTask<Params, Progress, Result>> executeOnExecutor(const sp<Executor>& executor, Params params) {
+        if (mExecutor == nullptr) {
+            mExecutor = executor;
+            onPreExecute();
+            mWorkerRunnable->mParams = params;
+            mExecutor->execute(mWorkerRunnable);
+            return this;
+        } else {
+            return nullptr;
+        }
+    }
 
-	/**
-	 * <p>
-	 * Attempts to cancel execution of this task. This attempt will fail if the task has already
-	 * completed, already been cancelled, or could not be cancelled for some other reason. If
-	 * successful, and this task has not started when <tt>cancel</tt> is called, this task should
-	 * never run. If the task has already started, then the <tt>mayInterruptIfRunning</tt> parameter
-	 * determines whether the thread executing this task should be interrupted in an attempt to stop
-	 * the task.
-	 * </p>
-	 *
-	 * <p>
-	 * Calling this method will result in {@link #onCancelled(Object)} being invoked on the UI
-	 * thread after {@link #doInBackground(Object)} returns. Calling this method guarantees that
-	 * {@link #onPostExecute(Object)} is never invoked. After invoking this method, you should check
-	 * the value returned by {@link #isCancelled()} periodically from
-	 * {@link #doInBackground(Object)} to finish the task as early as possible.
-	 * </p>
-	 *
-	 * @param mayInterruptIfRunning <tt>true</tt> if the thread executing this task should be
-	 * interrupted; otherwise, in-progress tasks are allowed to complete.
-	 *
-	 * @return <tt>false</tt> if the task could not be cancelled, typically because it has already
-	 * completed normally; <tt>true</tt> otherwise
-	 *
-	 * @see #isCancelled()
-	 * @see #onCancelled(Object)
-	 */
-	bool cancel() {
-		bool isAlreadyCancelled = isCancelled();
-		AutoLock autoLock(sLock);
-		if (mExecutor != nullptr && !isAlreadyCancelled) {
-			bool result = mExecutor->cancel(mWorkerRunnable);
-			if (result) {
-				mCancelled = true;
-				sp<Message> message = mHandler->obtainMessage(ON_TASK_CANCELLED_MESSAGE);
-				message->obj = mWorkerRunnable;
-				message->sendToTarget();
-			}
-			return result;
-		} else {
-			return false;
-		}
-	}
+    /**
+     * <p>
+     * Attempts to cancel execution of this task. This attempt will fail if the task has already
+     * completed, already been cancelled, or could not be cancelled for some other reason. If
+     * successful, and this task has not started when <tt>cancel</tt> is called, this task should
+     * never run. If the task has already started, then the <tt>mayInterruptIfRunning</tt> parameter
+     * determines whether the thread executing this task should be interrupted in an attempt to stop
+     * the task.
+     * </p>
+     *
+     * <p>
+     * Calling this method will result in {@link #onCancelled(Object)} being invoked on the UI
+     * thread after {@link #doInBackground(Object)} returns. Calling this method guarantees that
+     * {@link #onPostExecute(Object)} is never invoked. After invoking this method, you should check
+     * the value returned by {@link #isCancelled()} periodically from
+     * {@link #doInBackground(Object)} to finish the task as early as possible.
+     * </p>
+     *
+     * @param mayInterruptIfRunning <tt>true</tt> if the thread executing this task should be
+     * interrupted; otherwise, in-progress tasks are allowed to complete.
+     *
+     * @return <tt>false</tt> if the task could not be cancelled, typically because it has already
+     * completed normally; <tt>true</tt> otherwise
+     *
+     * @see #isCancelled()
+     * @see #onCancelled(Object)
+     */
+    bool cancel() {
+        bool isAlreadyCancelled = isCancelled();
+        AutoLock autoLock(sLock);
+        if (mExecutor != nullptr && !isAlreadyCancelled) {
+            bool result = mExecutor->cancel(mWorkerRunnable);
+            if (result) {
+                mCancelled = true;
+                sp<Message> message = mHandler->obtainMessage(ON_TASK_CANCELLED_MESSAGE);
+                message->obj = mWorkerRunnable;
+                message->sendToTarget();
+            }
+            return result;
+        } else {
+            return false;
+        }
+    }
 
-	/**
-	 * Returns <tt>true</tt> if this task was cancelled before it completed normally. If you are
-	 * calling {@link #cancel(boolean)} on the task, the value returned by this method should be
-	 * checked periodically from {@link #doInBackground(Object)} to end the task as soon as
-	 * possible.
-	 *
-	 * @return <tt>true</tt> if task was cancelled before it completed
-	 *
-	 * @see #cancel(boolean)
-	 */
-	bool isCancelled() {
-		AutoLock autoLock(sLock);
-		return mCancelled;
-	}
+    /**
+     * Returns <tt>true</tt> if this task was cancelled before it completed normally. If you are
+     * calling {@link #cancel(boolean)} on the task, the value returned by this method should be
+     * checked periodically from {@link #doInBackground(Object)} to end the task as soon as
+     * possible.
+     *
+     * @return <tt>true</tt> if task was cancelled before it completed
+     *
+     * @see #cancel(boolean)
+     */
+    bool isCancelled() {
+        AutoLock autoLock(sLock);
+        return mCancelled;
+    }
 
 protected:
-	/**
-	 * Override this method to perform a computation on a background thread. The specified
-	 * parameters are the parameters passed to {@link #execute} by the caller of this task.
-	 *
-	 * This method can call {@link #publishProgress} to publish updates on the Handler thread.
-	 *
-	 * @param params The parameters of the task.
-	 *
-	 * @return A result, defined by the subclass of this task.
-	 *
-	 * @see #onPreExecute()
-	 * @see #onPostExecute
-	 * @see #publishProgress
-	 */
-	virtual Result doInBackground(Params params) = 0;
+    /**
+     * Override this method to perform a computation on a background thread. The specified
+     * parameters are the parameters passed to {@link #execute} by the caller of this task.
+     *
+     * This method can call {@link #publishProgress} to publish updates on the Handler thread.
+     *
+     * @param params The parameters of the task.
+     *
+     * @return A result, defined by the subclass of this task.
+     *
+     * @see #onPreExecute()
+     * @see #onPostExecute
+     * @see #publishProgress
+     */
+    virtual Result doInBackground(Params params) = 0;
 
-	/**
-	 * Runs on the Handler thread before {@link #doInBackground}.
-	 *
-	 * @see #onPostExecute
-	 * @see #doInBackground
-	 */
-	virtual void onPreExecute() {
-	}
+    /**
+     * Runs on the Handler thread before {@link #doInBackground}.
+     *
+     * @see #onPostExecute
+     * @see #doInBackground
+     */
+    virtual void onPreExecute() {
+    }
 
-	/**
-	 * <p>
-	 * Runs on the Handler thread after {@link #doInBackground}. The specified result is the value
-	 * returned by {@link #doInBackground}.
-	 * </p>
-	 *
-	 * <p>
-	 * This method won't be invoked if the task was cancelled.
-	 * </p>
-	 *
-	 * @param result The result of the operation computed by {@link #doInBackground}.
-	 *
-	 * @see #onPreExecute
-	 * @see #doInBackground
-	 * @see #onCancelled(Object)
-	 */
-	virtual void onPostExecute(Result result) {
-	}
+    /**
+     * <p>
+     * Runs on the Handler thread after {@link #doInBackground}. The specified result is the value
+     * returned by {@link #doInBackground}.
+     * </p>
+     *
+     * <p>
+     * This method won't be invoked if the task was cancelled.
+     * </p>
+     *
+     * @param result The result of the operation computed by {@link #doInBackground}.
+     *
+     * @see #onPreExecute
+     * @see #doInBackground
+     * @see #onCancelled(Object)
+     */
+    virtual void onPostExecute(Result result) {
+    }
 
-	/**
-	 * Runs on the Handler thread after {@link #publishProgress} is invoked. The specified values are the
-	 * values passed to {@link #publishProgress}.
-	 *
-	 * @param values The values indicating progress.
-	 *
-	 * @see #publishProgress
-	 * @see #doInBackground
-	 */
-	virtual void onProgressUpdate(Progress values) {
-	}
+    /**
+     * Runs on the Handler thread after {@link #publishProgress} is invoked. The specified values are the
+     * values passed to {@link #publishProgress}.
+     *
+     * @param values The values indicating progress.
+     *
+     * @see #publishProgress
+     * @see #doInBackground
+     */
+    virtual void onProgressUpdate(Progress values) {
+    }
 
-	/**
-	 * <p>
-	 * Applications should preferably override {@link #onCancelled(Object)}. This method is invoked
-	 * by the default implementation of {@link #onCancelled(Object)}.
-	 * </p>
-	 *
-	 * <p>
-	 * Runs on the Handler thread after {@link #cancel(boolean)} is invoked and
-	 * {@link #doInBackground(Object)} has finished.
-	 * </p>
-	 *
-	 * @see #onCancelled(Object)
-	 * @see #cancel(boolean)
-	 * @see #isCancelled()
-	 */
-	virtual void onCancelled() {
-	}
+    /**
+     * <p>
+     * Applications should preferably override {@link #onCancelled(Object)}. This method is invoked
+     * by the default implementation of {@link #onCancelled(Object)}.
+     * </p>
+     *
+     * <p>
+     * Runs on the Handler thread after {@link #cancel(boolean)} is invoked and
+     * {@link #doInBackground(Object)} has finished.
+     * </p>
+     *
+     * @see #onCancelled(Object)
+     * @see #cancel(boolean)
+     * @see #isCancelled()
+     */
+    virtual void onCancelled() {
+    }
 
-	/**
-	 * This method can be invoked from {@link #doInBackground} to publish updates on the UI thread
-	 * while the background computation is still running. Each call to this method will trigger the
-	 * execution of {@link #onProgressUpdate} on the UI thread.
-	 *
-	 * {@link #onProgressUpdate} will note be called if the task has been canceled.
-	 *
-	 * @param values The progress values to update the UI with.
-	 *
-	 * @see #onProgressUpdate
-	 * @see #doInBackground
-	 */
-	void publishProgress(Progress values) {
-		if (!isCancelled()) {
-			sp<Message> message = mHandler->obtainMessage(ON_PROGRESS_UPDATE_MESSAGE);
-			message->obj = object_cast<AsyncTaskResult>(new AsyncTaskResult(this, values));
-			message->sendToTarget();
-		}
-	}
+    /**
+     * This method can be invoked from {@link #doInBackground} to publish updates on the UI thread
+     * while the background computation is still running. Each call to this method will trigger the
+     * execution of {@link #onProgressUpdate} on the UI thread.
+     *
+     * {@link #onProgressUpdate} will note be called if the task has been canceled.
+     *
+     * @param values The progress values to update the UI with.
+     *
+     * @see #onProgressUpdate
+     * @see #doInBackground
+     */
+    void publishProgress(Progress values) {
+        if (!isCancelled()) {
+            sp<Message> message = mHandler->obtainMessage(ON_PROGRESS_UPDATE_MESSAGE);
+            message->obj = object_cast<AsyncTaskResult>(new AsyncTaskResult(this, values));
+            message->sendToTarget();
+        }
+    }
 
-	Params params() {
-		return mWorkerRunnable->mParams;
-	}
+    Params params() {
+        return mWorkerRunnable->mParams;
+    }
 
-	Result result() {
-		return mWorkerRunnable->mResult;
-	}
+    Result result() {
+        return mWorkerRunnable->mResult;
+    }
 
 private:
-	class InternalHandler :
-			public Handler {
-	public:
-		virtual void handleMessage(const sp<Message>& message) {
-			switch (message->what) {
-			case ON_POST_EXECUTE_MESSAGE: {
-				sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
-				runnable->mTask->onPostExecute(runnable->mResult);
-				break;
-			}
-			case ON_PROGRESS_UPDATE_MESSAGE: {
-				sp<AsyncTaskResult> result = object_cast<AsyncTaskResult>(message->obj);
-				result->mTask->onProgressUpdate(result->mValue);
-				break;
-			}
-			case ON_TASK_CANCELLED_MESSAGE: {
-				sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
-				runnable->mTask->onCancelled();
-				break;
-			}
-			}
-		}
-	};
+    class InternalHandler :
+            public Handler {
+    public:
+        virtual void handleMessage(const sp<Message>& message) {
+            switch (message->what) {
+            case ON_POST_EXECUTE_MESSAGE: {
+                sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
+                runnable->mTask->onPostExecute(runnable->mResult);
+                break;
+            }
+            case ON_PROGRESS_UPDATE_MESSAGE: {
+                sp<AsyncTaskResult> result = object_cast<AsyncTaskResult>(message->obj);
+                result->mTask->onProgressUpdate(result->mValue);
+                break;
+            }
+            case ON_TASK_CANCELLED_MESSAGE: {
+                sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
+                runnable->mTask->onCancelled();
+                break;
+            }
+            }
+        }
+    };
 
-	class WorkerRunnable :
-			public Runnable {
-	public:
-		WorkerRunnable(const sp<AsyncTask<Params, Progress, Result>>& task) :
-				mTask(task) {
-		}
+    class WorkerRunnable :
+            public Runnable {
+    public:
+        WorkerRunnable(const sp<AsyncTask<Params, Progress, Result>>& task) :
+                mTask(task) {
+        }
 
-		virtual void run() {
-			mResult = mTask->doInBackground(mParams);
-			if (!mTask->isCancelled()) {
-				sp<Message> message = mTask->mHandler->obtainMessage(ON_POST_EXECUTE_MESSAGE);
-				message->obj = object_cast<WorkerRunnable>(this);
-				message->sendToTarget();
-			}
-		}
+        virtual void run() {
+            mResult = mTask->doInBackground(mParams);
+            if (!mTask->isCancelled()) {
+                sp<Message> message = mTask->mHandler->obtainMessage(ON_POST_EXECUTE_MESSAGE);
+                message->obj = object_cast<WorkerRunnable>(this);
+                message->sendToTarget();
+            }
+        }
 
-		Params mParams;
-		Result mResult;
+        Params mParams;
+        Result mResult;
 
-	private:
-		sp<AsyncTask<Params, Progress, Result>> mTask;
+    private:
+        sp<AsyncTask<Params, Progress, Result>> mTask;
 
-		friend class InternalHandler;
-	};
+        friend class InternalHandler;
+    };
 
-	class AsyncTaskResult :
-			public Object {
-	public:
-		AsyncTaskResult(const sp<AsyncTask<Params, Progress, Result>>& task, Progress& value) :
-				mTask(task), mValue(value) {
-		}
+    class AsyncTaskResult :
+            public Object {
+    public:
+        AsyncTaskResult(const sp<AsyncTask<Params, Progress, Result>>& task, Progress& value) :
+                mTask(task), mValue(value) {
+        }
 
-	private:
-		sp<AsyncTask<Params, Progress, Result>> mTask;
-		Progress mValue;
+    private:
+        sp<AsyncTask<Params, Progress, Result>> mTask;
+        Progress mValue;
 
-		friend class InternalHandler;
-	};
+        friend class InternalHandler;
+    };
 
-	sp<Executor> mExecutor;
-	sp<InternalHandler> mHandler;
-	sp<WorkerRunnable> mWorkerRunnable;
-	bool mCancelled;
+    sp<Executor> mExecutor;
+    sp<InternalHandler> mHandler;
+    sp<WorkerRunnable> mWorkerRunnable;
+    bool mCancelled;
 
-	static const int32_t ON_POST_EXECUTE_MESSAGE = 1;
-	static const int32_t ON_PROGRESS_UPDATE_MESSAGE = 2;
-	static const int32_t ON_TASK_CANCELLED_MESSAGE = 3;
+    static const int32_t ON_POST_EXECUTE_MESSAGE = 1;
+    static const int32_t ON_PROGRESS_UPDATE_MESSAGE = 2;
+    static const int32_t ON_TASK_CANCELLED_MESSAGE = 3;
 };
 
 } /* namespace mindroid */

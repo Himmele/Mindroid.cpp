@@ -29,7 +29,7 @@ sp<Float> Float::valueOf(const char* s) {
 }
 
 sp<Float> Float::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 } /* namespace mindroid */

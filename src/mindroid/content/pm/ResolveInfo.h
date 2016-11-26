@@ -29,15 +29,15 @@ namespace mindroid {
  * collected from the MindroidManifest.xml.
  */
 class ResolveInfo :
-		public Object {
+        public Object {
 public:
-	ResolveInfo() = default;
+    ResolveInfo() = default;
 
-	/**
-	 * The service that corresponds to this resolution match, if this resolution is for a service.
-	 * {@link #serviceInfo} will be non-null.
-	 */
-	sp<ServiceInfo> serviceInfo;
+    /**
+     * The service that corresponds to this resolution match, if this resolution is for a service.
+     * {@link #serviceInfo} will be non-null.
+     */
+    sp<ServiceInfo> serviceInfo;
 };
 
 } /* namespace mindroid */

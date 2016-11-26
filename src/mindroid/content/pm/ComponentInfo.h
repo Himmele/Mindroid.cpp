@@ -30,43 +30,43 @@ namespace mindroid {
  * between all application components.
  */
 class ComponentInfo :
-		public Object {
+        public Object {
 public:
-	ComponentInfo() = default;
+    ComponentInfo() = default;
 
-	/**
-	 * Public name of this item. From the "mindroid:name" attribute.
-	 */
-	sp<String> name;
+    /**
+     * Public name of this item. From the "mindroid:name" attribute.
+     */
+    sp<String> name;
 
-	/**
-	 * Name of the package that this item is in.
-	 */
-	sp<String> packageName;
+    /**
+     * Name of the package that this item is in.
+     */
+    sp<String> packageName;
 
-	/**
-	 * Global information about the application/package this component is a part of.
-	 */
+    /**
+     * Global information about the application/package this component is a part of.
+     */
     sp<ApplicationInfo> applicationInfo;
     
     /**
-	 * The name of the process this component should run in. From the "mindroid:process" attribute
-	 * or, if not set, the same as <var>applicationInfo.processName</var>.
-	 */
+     * The name of the process this component should run in. From the "mindroid:process" attribute
+     * or, if not set, the same as <var>applicationInfo.processName</var>.
+     */
     sp<String> processName;
     
     /**
-	 * Indicates whether or not this component may be instantiated. Note that this value can be
-	 * overriden by the one in its parent {@link ApplicationInfo}.
-	 */
+     * Indicates whether or not this component may be instantiated. Note that this value can be
+     * overriden by the one in its parent {@link ApplicationInfo}.
+     */
     bool enabled = true;
 
     /**
-	 * Return whether this component and its enclosing application are enabled.
-	 */
-	bool isEnabled() {
-		return enabled && applicationInfo->enabled;
-	}
+     * Return whether this component and its enclosing application are enabled.
+     */
+    bool isEnabled() {
+        return enabled && applicationInfo->enabled;
+    }
 
 protected:
     /**

@@ -34,27 +34,27 @@ class IBinder;
  * your process.
  */
 class ServiceConnection :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Called when a connection to the Service has been established, with the
-	 * {@link mindroid.os.IBinder} of the communication channel to the Service.
-	 *
-	 * @param name The concrete component name of the service that has been connected.
-	 *
-	 * @param service The IBinder of the Service's communication channel, which you can now make
-	 * calls on.
-	 */
+    /**
+     * Called when a connection to the Service has been established, with the
+     * {@link mindroid.os.IBinder} of the communication channel to the Service.
+     *
+     * @param name The concrete component name of the service that has been connected.
+     *
+     * @param service The IBinder of the Service's communication channel, which you can now make
+     * calls on.
+     */
     virtual void onServiceConnected(const sp<ComponentName>& name, const sp<IBinder>& service) = 0;
 
     /**
-	 * Called when a connection to the Service has been lost. This typically happens when the
-	 * process hosting the service has crashed or been killed. This does <em>not</em> remove the
-	 * ServiceConnection itself -- this binding to the service will remain active, and you will
-	 * receive a call to {@link #onServiceConnected} when the Service is next running.
-	 *
-	 * @param name The concrete component name of the service whose connection has been lost.
-	 */
+     * Called when a connection to the Service has been lost. This typically happens when the
+     * process hosting the service has crashed or been killed. This does <em>not</em> remove the
+     * ServiceConnection itself -- this binding to the service will remain active, and you will
+     * receive a call to {@link #onServiceConnected} when the Service is next running.
+     *
+     * @param name The concrete component name of the service whose connection has been lost.
+     */
     virtual void onServiceDisconnected(const sp<ComponentName>& name) = 0;
 };
 

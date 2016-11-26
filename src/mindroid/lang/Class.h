@@ -28,90 +28,90 @@ class Factory;
 
 class Classes {
 public:
-	void put(const sp<String>& name, Factory* factory);
-	Factory* get(const sp<String>& name);
+    void put(const sp<String>& name, Factory* factory);
+    Factory* get(const sp<String>& name);
 
-	static Classes* getInstance();
+    static Classes* getInstance();
 
 private:
-	Classes() : mClasses(new HashMap<sp<String>, Factory*>()) { }
+    Classes() : mClasses(new HashMap<sp<String>, Factory*>()) { }
 
-	static pthread_mutex_t sMutex;
-	static Classes* sInstance;
+    static pthread_mutex_t sMutex;
+    static Classes* sInstance;
 
-	sp<HashMap<sp<String>, Factory*>> mClasses;
+    sp<HashMap<sp<String>, Factory*>> mClasses;
 };
 
 class Factory {
 public:
-	Factory(const char* name) {
-		Classes::getInstance()->put(String::valueOf(name), this);
-	}
+    Factory(const char* name) {
+        Classes::getInstance()->put(String::valueOf(name), this);
+    }
 
-	virtual ~Factory() = default;
+    virtual ~Factory() = default;
 
-	virtual sp<Object> newInstance() = 0;
+    virtual sp<Object> newInstance() = 0;
 };
 
 template<typename T>
 class Class final :
-		public Object {
+        public Object {
 public:
-	static bool isInstance(const sp<Object>& o) {
-		if (o != nullptr) {
-			sp<T> t = dynamic_cast<T*>(o.getPointer());
-			return t != nullptr;
-		} else {
-			return false;
-		}
-	}
+    static bool isInstance(const sp<Object>& o) {
+        if (o != nullptr) {
+            sp<T> t = dynamic_cast<T*>(o.getPointer());
+            return t != nullptr;
+        } else {
+            return false;
+        }
+    }
 
-	static sp<T> cast(const sp<Object>& o) {
-		if (o != nullptr) {
-			sp<T> t = dynamic_cast<T*>(o.getPointer());
-			return t;
-		} else {
-			return nullptr;
-		}
-	}
+    static sp<T> cast(const sp<Object>& o) {
+        if (o != nullptr) {
+            sp<T> t = dynamic_cast<T*>(o.getPointer());
+            return t;
+        } else {
+            return nullptr;
+        }
+    }
 
-	static sp<Class> forName(const char* className) {
-		return forName(String::valueOf(className));
-	}
+    static sp<Class> forName(const char* className) {
+        return forName(String::valueOf(className));
+    }
 
-	static sp<Class> forName(const sp<String>& className) {
-		return new Class(className);
-	}
+    static sp<Class> forName(const sp<String>& className) {
+        return new Class(className);
+    }
 
-	sp<String> getName() {
-		return mName;
-	}
+    sp<String> getName() {
+        return mName;
+    }
 
-	sp<T> newInstance() {
-		Factory* factory = Classes::getInstance()->get(mName);
-		if (factory != nullptr) {
-			return object_cast<T>(factory->newInstance());
-		} else {
-			return nullptr;
-		}
-	}
+    sp<T> newInstance() {
+        Factory* factory = Classes::getInstance()->get(mName);
+        if (factory != nullptr) {
+            return object_cast<T>(factory->newInstance());
+        } else {
+            return nullptr;
+        }
+    }
 
 private:
-	Class(const sp<String>& name) : mName(name) {
-	}
+    Class(const sp<String>& name) : mName(name) {
+    }
 
-	sp<String> mName;
+    sp<String> mName;
 };
 
 #define CLASS(Package, Clazz) \
 class Clazz##Factory : public Factory { \
 public: \
-	Clazz##Factory() : Factory(#Package"::"#Clazz) { \
-	} \
+    Clazz##Factory() : Factory(#Package"::"#Clazz) { \
+    } \
     \
-	virtual sp<Object> newInstance() { \
-		return new Package::Clazz(); \
-	} \
+    virtual sp<Object> newInstance() { \
+        return new Package::Clazz(); \
+    } \
 }; \
 static volatile Clazz##Factory s##Clazz##Factory;
 

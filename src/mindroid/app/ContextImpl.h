@@ -25,6 +25,7 @@
 #include "mindroid/content/SharedPreferences.h"
 #include "mindroid/io/File.h"
 #include "mindroid/os/HandlerThread.h"
+#include "mindroid/os/RemoteCallback.h"
 
 namespace mindroid {
 
@@ -36,7 +37,7 @@ class PackageManager;
  * context object for Activity and other application components.
  */
 class ContextImpl :
-		public Context {
+        public Context {
 public:
     ContextImpl(const sp<HandlerThread>& mainThread, const sp<ComponentName>& component);
     
@@ -49,17 +50,17 @@ public:
     sp<String> getPackageName();
     
     sp<File> getSharedPrefsFile(const sp<String>& name) {
-    	return makeFilename(getPreferencesDir(), String::format("%s.xml", name->c_str()));
-	}
+        return makeFilename(getPreferencesDir(), String::format("%s.xml", name->c_str()));
+    }
 
     sp<SharedPreferences> getSharedPreferences(const char* name, int32_t mode) {
-    	return getSharedPreferences(String::valueOf(name), mode);
+        return getSharedPreferences(String::valueOf(name), mode);
     }
 
     sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode);
     
     sp<IBinder> getSystemService(const char* name) {
-    	return getSystemService(String::valueOf(name));
+        return getSystemService(String::valueOf(name));
     }
 
     sp<IBinder> getSystemService(const sp<String>& name);
@@ -80,6 +81,7 @@ private:
     sp<Handler> mHandler;
     sp<ComponentName> mComponent;
     sp<HashMap<sp<ServiceConnection>, sp<Intent>>> mServiceConnections;
+    sp<ArrayList<sp<RemoteCallback>>> mServiceConnectionCallbacks;
     sp<PackageManager> mPackageManager;
 };
 

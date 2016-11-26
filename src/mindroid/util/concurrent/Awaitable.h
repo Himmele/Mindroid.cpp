@@ -25,13 +25,13 @@
 namespace mindroid {
 
 class Awaitable :
-		public Cancellable {
+        public Cancellable {
 public:
-	virtual ~Awaitable() = default;
+    virtual ~Awaitable() = default;
 
-	virtual void await() const = 0;
+    virtual void await() const = 0;
 
-	virtual void await(uint64_t timeout) const = 0;
+    virtual void await(uint64_t timeout) const = 0;
 };
 
 } /* namespace mindroid */

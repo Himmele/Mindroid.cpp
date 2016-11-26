@@ -22,75 +22,75 @@
 namespace mindroid {
 
 Thread::Thread(const sp<Runnable>& runnable, const sp<String>& name) :
-		mName(name),
-		mRunnable(runnable),
-		mStarted(false),
-		mInterrupted(false) {
+        mName(name),
+        mRunnable(runnable),
+        mStarted(false),
+        mInterrupted(false) {
 }
 
 Thread::Thread(pthread_t thread) :
-		mThread(thread),
-		mStarted(true),
-		mInterrupted(false) {
+        mThread(thread),
+        mStarted(true),
+        mInterrupted(false) {
 }
 
 bool Thread::start() {
-	if (!mStarted) {
-		mSelf = this;
-		if (pthread_create(&mThread, nullptr, &Thread::exec, this) != 0) {
-			mSelf.clear();
-		}
-		if (mName != nullptr) {
-			pthread_setname_np(mThread, mName->c_str());
-		}
-		mStarted = (mSelf != nullptr);
-		return mStarted;
-	}
-	return false;
+    if (!mStarted) {
+        mSelf = this;
+        if (pthread_create(&mThread, nullptr, &Thread::exec, this) != 0) {
+            mSelf.clear();
+        }
+        if (mName != nullptr) {
+            pthread_setname_np(mThread, mName->c_str());
+        }
+        mStarted = (mSelf != nullptr);
+        return mStarted;
+    }
+    return false;
 }
 
 void Thread::sleep(uint32_t milliseconds) {
-	::usleep((milliseconds % 1000) * 1000);
-	::sleep(milliseconds / 1000);
+    ::usleep((milliseconds % 1000) * 1000);
+    ::sleep(milliseconds / 1000);
 }
 
 void Thread::join() const {
-	pthread_join(mThread, nullptr);
+    pthread_join(mThread, nullptr);
 }
 
 void* Thread::exec(void* args) {
-	Thread* const self = (Thread*) args;
-	sp<Runnable> runnable = (self->mRunnable != nullptr) ? self->mRunnable : self;
-	runnable->run();
-	self->mSelf.clear();
-	return nullptr;
+    Thread* const self = (Thread*) args;
+    sp<Runnable> runnable = (self->mRunnable != nullptr) ? self->mRunnable : self;
+    runnable->run();
+    self->mSelf.clear();
+    return nullptr;
 }
 
 void Thread::interrupt() {
-	mInterrupted = true;
+    mInterrupted = true;
 }
 
 bool Thread::isInterrupted() const {
-	return mInterrupted;
+    return mInterrupted;
 }
 
 sp<Thread> Thread::currentThread() {
-	return new Thread(pthread_self());
+    return new Thread(pthread_self());
 }
 
 bool Thread::isAlive() const {
-	return mSelf != nullptr;
+    return mSelf != nullptr;
 }
 
-int32_t Thread::getId() const {
-	return (int32_t) pthread_self();
+pthread_t Thread::getId() const {
+    return pthread_self();
 }
 
 void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
-	sched_param schedulingParameters;
-	memset(&schedulingParameters, 0, sizeof(schedulingParameters));
-	schedulingParameters.sched_priority = priority;
-	pthread_setschedparam(mThread, policy, &schedulingParameters);
+    sched_param schedulingParameters;
+    memset(&schedulingParameters, 0, sizeof(schedulingParameters));
+    schedulingParameters.sched_priority = priority;
+    pthread_setschedparam(mThread, policy, &schedulingParameters);
 }
 
 } /* namespace mindroid */

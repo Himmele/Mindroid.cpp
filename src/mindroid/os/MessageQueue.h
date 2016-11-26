@@ -37,30 +37,30 @@ class Runnable;
  * Looper.myQueue()}.
  */
 class MessageQueue final :
-		public Object {
+        public Object {
 public:
-	MessageQueue(bool quitAllowed);
-	virtual ~MessageQueue();
+    MessageQueue(bool quitAllowed);
+    virtual ~MessageQueue();
     MessageQueue(const MessageQueue&) = delete;
     MessageQueue& operator=(const MessageQueue&) = delete;
 
     bool quit();
-	bool enqueueMessage(const sp<Message>& message, uint64_t when);
-	sp<Message> dequeueMessage();
-	bool hasMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
-	bool hasMessages(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
-	bool removeMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
-	bool removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
-	bool removeCallbacksAndMessages(const sp<Handler>& handler, const sp<Object>& object);
+    bool enqueueMessage(const sp<Message>& message, uint64_t when);
+    sp<Message> dequeueMessage();
+    bool hasMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
+    bool hasMessages(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
+    bool removeMessages(const sp<Handler>& handler, int32_t what, const sp<Object>& object);
+    bool removeCallbacks(const sp<Handler>& handler, const sp<Runnable>& runnable, const sp<Object>& object);
+    bool removeCallbacksAndMessages(const sp<Handler>& handler, const sp<Object>& object);
 
 private:
-	static const char* const TAG;
+    static const char* const TAG;
 
-	sp<Message> mMessages;
-	sp<ReentrantLock> mLock;
-	sp<Condition> mCondition;
-	const bool mQuitAllowed;
-	bool mQuitting;
+    sp<Message> mMessages;
+    sp<ReentrantLock> mLock;
+    sp<Condition> mCondition;
+    const bool mQuitAllowed;
+    bool mQuitting;
 };
 
 } /* namespace mindroid */

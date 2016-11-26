@@ -26,13 +26,13 @@ namespace mindroid {
  */
 class TimeoutException : public Exception {
 public:
-	TimeoutException() = default;
+    TimeoutException() = default;
 
-	TimeoutException(const char* message) : Exception(message) {
-	}
+    TimeoutException(const char* message) : Exception(message) {
+    }
 
-	TimeoutException(const sp<String>& message) : Exception(message) {
-	}
+    TimeoutException(const sp<String>& message) : Exception(message) {
+    }
 };
 
 } /* namespace mindroid */

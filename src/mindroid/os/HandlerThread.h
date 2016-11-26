@@ -31,46 +31,46 @@ class Condition;
  * handler classes. Note that start() must still be called.
  */
 class HandlerThread :
-		public Thread {
+        public Thread {
 public:
-	HandlerThread();
-	HandlerThread(const char* name);
-	HandlerThread(const sp<String>& name);
-	virtual ~HandlerThread() = default;
+    HandlerThread();
+    HandlerThread(const char* name);
+    HandlerThread(const sp<String>& name);
+    virtual ~HandlerThread() = default;
 
-	HandlerThread(const HandlerThread&) = delete;
-	HandlerThread& operator=(const HandlerThread&) = delete;
+    HandlerThread(const HandlerThread&) = delete;
+    HandlerThread& operator=(const HandlerThread&) = delete;
 
-	virtual void run();
+    virtual void run();
 
-	/**
-	 * This method returns the Looper associated with this thread. If this thread not been started
-	 * or for any reason is isAlive() returns false, this method will return null. If this thread
-	 * has been started, this method will block until the looper has been initialized.
-	 *
-	 * @return The looper.
-	 */
-	sp<Looper> getLooper();
+    /**
+     * This method returns the Looper associated with this thread. If this thread not been started
+     * or for any reason is isAlive() returns false, this method will return null. If this thread
+     * has been started, this method will block until the looper has been initialized.
+     *
+     * @return The looper.
+     */
+    sp<Looper> getLooper();
 
-	/**
-	 * Ask the currently running looper to quit. If the thread has not been started or has finished
-	 * (that is if {@link #getLooper} returns null), then false is returned. Otherwise the looper is
-	 * asked to quit and true is returned.
-	 */
-	bool quit();
+    /**
+     * Ask the currently running looper to quit. If the thread has not been started or has finished
+     * (that is if {@link #getLooper} returns null), then false is returned. Otherwise the looper is
+     * asked to quit and true is returned.
+     */
+    bool quit();
 
 protected:
-	/**
-	 * Call back method that can be explicitly overridden if needed to execute some setup before
-	 * Looper loops.
-	 */
-	virtual void onLooperPrepared() {
-	}
+    /**
+     * Call back method that can be explicitly overridden if needed to execute some setup before
+     * Looper loops.
+     */
+    virtual void onLooperPrepared() {
+    }
 
 private:
-	sp<ReentrantLock> mLock;
-	sp<Condition> mCondition;
-	sp<Looper> mLooper;
+    sp<ReentrantLock> mLock;
+    sp<Condition> mCondition;
+    sp<Looper> mLooper;
 };
 
 } /* namespace mindroid */

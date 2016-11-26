@@ -23,101 +23,101 @@
 namespace mindroid {
 
 class IRemoteCallback :
-		public IInterface {
+        public IInterface {
 public:
-	virtual void sendResult(const sp<Bundle>& data) = 0;
+    virtual void sendResult(const sp<Bundle>& data) = 0;
 };
 
 namespace binder {
 
 class RemoteCallback {
 public:
-	class Stub : public Binder, public IRemoteCallback {
-	public:
-		Stub() {
-			this->attachInterface(this, String::valueOf(DESCRIPTOR));
-		}
+    class Stub : public Binder, public IRemoteCallback {
+    public:
+        Stub() {
+            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+        }
 
-		static sp<IRemoteCallback> asInterface(const sp<IBinder>& binder) {
-			if (binder == nullptr) {
-				return nullptr;
-			}
-			return new RemoteCallback::Stub::SmartProxy(binder);
-		}
+        static sp<IRemoteCallback> asInterface(const sp<IBinder>& binder) {
+            if (binder == nullptr) {
+                return nullptr;
+            }
+            return new RemoteCallback::Stub::SmartProxy(binder);
+        }
 
-		virtual sp<IBinder> asBinder() {
-			return this;
-		}
+        virtual sp<IBinder> asBinder() {
+            return this;
+        }
 
-	protected:
-		virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
+    protected:
+        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
 
-	private:
-		class Proxy : public IRemoteCallback {
-		public:
-			Proxy(const sp<IBinder>& remote) {
-				mRemote = remote;
-			}
+    private:
+        class Proxy : public IRemoteCallback {
+        public:
+            Proxy(const sp<IBinder>& remote) {
+                mRemote = remote;
+            }
 
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
 
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<Proxy>::isInstance(obj)) {
-					sp<Proxy> other = Class<Proxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<Proxy>::isInstance(obj)) {
+                    sp<Proxy> other = Class<Proxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
 
-			virtual void sendResult(const sp<Bundle>& data);
+            virtual void sendResult(const sp<Bundle>& data);
 
-		private:
-			sp<IBinder> mRemote;
-		};
+        private:
+            sp<IBinder> mRemote;
+        };
 
-		class SmartProxy : public IRemoteCallback {
-		public:
-			SmartProxy(const sp<IBinder>& remote);
+        class SmartProxy : public IRemoteCallback {
+        public:
+            SmartProxy(const sp<IBinder>& remote);
 
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
 
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<SmartProxy>::isInstance(obj)) {
-					sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<SmartProxy>::isInstance(obj)) {
+                    sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
 
-			virtual void sendResult(const sp<Bundle>& data);
+            virtual void sendResult(const sp<Bundle>& data);
 
-		private:
-			sp<IBinder> mRemote;
-			sp<IRemoteCallback> mStub;
-			sp<IRemoteCallback> mProxy;
-		};
+        private:
+            sp<IBinder> mRemote;
+            sp<IRemoteCallback> mStub;
+            sp<IRemoteCallback> mProxy;
+        };
 
-		static const char* const DESCRIPTOR;
-		static const int32_t MSG_SEND_RESULT = 1;
-	};
+        static const char* const DESCRIPTOR;
+        static const int32_t MSG_SEND_RESULT = 1;
+    };
 };
 
 } /* namespace binder */

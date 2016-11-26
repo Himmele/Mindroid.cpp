@@ -28,30 +28,30 @@ namespace mindroid {
  * information collected from the MindroidManifest.xml's &lt;service&gt; tags.
  */
 class ServiceInfo :
-		public ComponentInfo {
+        public ComponentInfo {
 public:
-	ServiceInfo() = default;
+    ServiceInfo() = default;
 
-	/**
-	 * Bit in {@link #flags}: If set, the service will automatically be started by the system after
-	 * boot completed.
-	 */
-	static const int32_t FLAG_AUTO_START = 0x0001;
+    /**
+     * Bit in {@link #flags}: If set, the service will automatically be started by the system after
+     * boot completed.
+     */
+    static const int32_t FLAG_AUTO_START = 0x0001;
 
-	/**
-	 * Bit in {@link #flags}: If set, the service is marked as system service.
-	 */
-	static const int32_t FLAG_SYSTEM_SERVICE = 0x40000000;
+    /**
+     * Bit in {@link #flags}: If set, the service is marked as system service.
+     */
+    static const int32_t FLAG_SYSTEM_SERVICE = 0x40000000;
 
-	/**
-	 * Options that have been set in the service declaration in the manifest. These include:
-	 * {@link #FLAG_AUTO_START}.
-	 */
-	int32_t flags = 0;
+    /**
+     * Options that have been set in the service declaration in the manifest. These include:
+     * {@link #FLAG_AUTO_START}.
+     */
+    int32_t flags = 0;
 
-	bool hasFlag(int32_t flag) {
-		return (flags & flag) == flag;
-	}
+    bool hasFlag(int32_t flag) {
+        return (flags & flag) == flag;
+    }
 };
 
 } /* namespace mindroid */

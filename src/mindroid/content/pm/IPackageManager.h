@@ -29,104 +29,104 @@ namespace mindroid {
 class Intent;
 
 class IPackageManager :
-		public IInterface {
+        public IInterface {
 public:
-	virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) = 0;
-	virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) = 0;
+    virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) = 0;
+    virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) = 0;
 };
 
 namespace binder {
 
 class PackageManager {
 public:
-	class Stub : public Binder, public IPackageManager {
-	public:
-		Stub() {
-			this->attachInterface(this, String::valueOf(DESCRIPTOR));
-		}
-		
-		static sp<IPackageManager> asInterface(const sp<IBinder>& binder) {
-			if(binder == nullptr) {
-				return nullptr;
-			}
-			return new PackageManager::Stub::SmartProxy(binder);
-		}
-		
-		virtual sp<IBinder> asBinder() {
-			return this;
-		}
-		
-		virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
+    class Stub : public Binder, public IPackageManager {
+    public:
+        Stub() {
+            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+        }
 
-		class Proxy : public IPackageManager {
-		public:
-			Proxy(const sp<IBinder>& remote) {
-				mRemote = remote;
-			}
-			
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
-			
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<Proxy>::isInstance(obj)) {
-					sp<Proxy> other = Class<Proxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+        static sp<IPackageManager> asInterface(const sp<IBinder>& binder) {
+            if(binder == nullptr) {
+                return nullptr;
+            }
+            return new PackageManager::Stub::SmartProxy(binder);
+        }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+        virtual sp<IBinder> asBinder() {
+            return this;
+        }
 
-			virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-			virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
 
-		private:
-			sp<IBinder> mRemote;
-		};
-		
-		class SmartProxy : public IPackageManager {
-		public:
-			SmartProxy(const sp<IBinder>& remote);
-			
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
-			
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<SmartProxy>::isInstance(obj)) {
-					sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+        class Proxy : public IPackageManager {
+        public:
+            Proxy(const sp<IBinder>& remote) {
+                mRemote = remote;
+            }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
 
-			virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-			virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<Proxy>::isInstance(obj)) {
+                    sp<Proxy> other = Class<Proxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
 
-		private:
-			sp<IBinder> mRemote;
-			sp<IPackageManager> mStub;
-			sp<IPackageManager> mProxy;
-		};
-		
-	private:
-		static const char* const DESCRIPTOR;
-		static const int32_t MSG_GET_INSTALLED_PACKAGES = 1;
-		static const int32_t MSG_RESOLVE_SERVICE = 2;
-	};
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
+
+            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
+            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+
+        private:
+            sp<IBinder> mRemote;
+        };
+
+        class SmartProxy : public IPackageManager {
+        public:
+            SmartProxy(const sp<IBinder>& remote);
+
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
+
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<SmartProxy>::isInstance(obj)) {
+                    sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
+
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
+
+            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
+            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+
+        private:
+            sp<IBinder> mRemote;
+            sp<IPackageManager> mStub;
+            sp<IPackageManager> mProxy;
+        };
+
+    private:
+        static const char* const DESCRIPTOR;
+        static const int32_t MSG_GET_INSTALLED_PACKAGES = 1;
+        static const int32_t MSG_RESOLVE_SERVICE = 2;
+    };
 };
 
 } /* namespace binder */

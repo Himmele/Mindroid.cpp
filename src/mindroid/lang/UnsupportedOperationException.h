@@ -27,13 +27,13 @@ namespace mindroid {
  */
 class UnsupportedOperationException : public RuntimeException {
 public:
-	UnsupportedOperationException() = default;
+    UnsupportedOperationException() = default;
 
-	UnsupportedOperationException(const char* message) : RuntimeException(message) {
-	}
+    UnsupportedOperationException(const char* message) : RuntimeException(message) {
+    }
 
-	UnsupportedOperationException(const sp<String>& message) : RuntimeException(message) {
-	}
+    UnsupportedOperationException(const sp<String>& message) : RuntimeException(message) {
+    }
 };
 
 } /* namespace mindroid */

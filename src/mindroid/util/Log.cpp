@@ -25,63 +25,63 @@ sp<LogBuffer> Log::sEventLogBuffer = new LogBuffer(LOG_ID_EVENTS, 262144); // 25
 sp<LogBuffer> Log::sDebugLogBuffer = new LogBuffer(LOG_ID_DEBUG, 262144); // 256KB
 
 int Log::v(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, VERBOSE, tag, msg);
+    return println(LOG_ID_MAIN, VERBOSE, tag, msg);
 }
 
 int Log::d(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, DEBUG, tag, msg);
+    return println(LOG_ID_MAIN, DEBUG, tag, msg);
 }
 
 int Log::i(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, INFO, tag, msg);
+    return println(LOG_ID_MAIN, INFO, tag, msg);
 }
 
 int Log::w(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, WARN, tag, msg);
+    return println(LOG_ID_MAIN, WARN, tag, msg);
 }
 
 int Log::e(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, ERROR, tag, msg);
+    return println(LOG_ID_MAIN, ERROR, tag, msg);
 }
 
 int Log::wtf(const char* tag, const char* format, ...) {
-	char msg[LOG_MESSAGE_SIZE];
-	va_list args;
-	va_start(args, format);
-	vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
-	va_end(args);
+    char msg[LOG_MESSAGE_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
+    va_end(args);
 
-	return println(LOG_ID_MAIN, WTF, tag, msg);
+    return println(LOG_ID_MAIN, WTF, tag, msg);
 }
 
 } /* namespace mindroid */

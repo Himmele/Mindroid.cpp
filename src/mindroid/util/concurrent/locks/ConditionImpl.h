@@ -26,25 +26,25 @@ namespace mindroid {
 class Lock;
 
 class ConditionImpl :
-		public Condition {
+        public Condition {
 public:
-	virtual ~ConditionImpl();
-	ConditionImpl(const ConditionImpl&) = delete;
-	ConditionImpl& operator=(const ConditionImpl&) = delete;
-	virtual void await();
-	virtual bool await(uint64_t timeoutMillis);
-	virtual void signal();
-	virtual void signalAll();
+    virtual ~ConditionImpl();
+    ConditionImpl(const ConditionImpl&) = delete;
+    ConditionImpl& operator=(const ConditionImpl&) = delete;
+    virtual void await();
+    virtual bool await(uint64_t timeoutMillis);
+    virtual void signal();
+    virtual void signalAll();
 
 private:
-	ConditionImpl(const sp<Lock>& lock);
+    ConditionImpl(const sp<Lock>& lock);
 
-	pthread_cond_t mCondition;
-	pthread_condattr_t mAttributes;
-	sp<Lock> mLock;
-	pthread_mutex_t* mMutex;
+    pthread_cond_t mCondition;
+    pthread_condattr_t mAttributes;
+    sp<Lock> mLock;
+    pthread_mutex_t* mMutex;
 
-	friend class ReentrantLock;
+    friend class ReentrantLock;
 };
 
 } /* namespace mindroid */

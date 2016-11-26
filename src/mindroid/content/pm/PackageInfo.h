@@ -32,38 +32,38 @@ namespace mindroid {
  * collected from MindroidManifest.xml.
  */
 class PackageInfo :
-		public Object {
+        public Object {
 public:
-	PackageInfo() = default;
+    PackageInfo() = default;
 
-	/**
-	 * The name of this package. From the &lt;manifest&gt; tag's "name" attribute.
-	 */
-	sp<String> packageName;
+    /**
+     * The name of this package. From the &lt;manifest&gt; tag's "name" attribute.
+     */
+    sp<String> packageName;
 
-	/**
-	 * The version number of this package, as specified by the &lt;manifest&gt; tag's
-	 * {@link MindroidManifest_versionCode versionCode} attribute.
-	 */
-	int32_t versionCode;
+    /**
+     * The version number of this package, as specified by the &lt;manifest&gt; tag's
+     * {@link MindroidManifest_versionCode versionCode} attribute.
+     */
+    int32_t versionCode;
 
-	/**
-	 * The version name of this package, as specified by the &lt;manifest&gt; tag's
-	 * {@link MindroidManifest_versionName versionName} attribute.
-	 */
-	sp<String> versionName;
+    /**
+     * The version name of this package, as specified by the &lt;manifest&gt; tag's
+     * {@link MindroidManifest_versionName versionName} attribute.
+     */
+    sp<String> versionName;
 
-	/**
-	 * Information collected from the &lt;application&gt; tag, or null if there was none.
-	 */
-	sp<ApplicationInfo> applicationInfo;
+    /**
+     * Information collected from the &lt;application&gt; tag, or null if there was none.
+     */
+    sp<ApplicationInfo> applicationInfo;
 
-	/**
-	 * Array of all {@link MindroidManifestService &lt;service&gt;} tags included under
-	 * &lt;application&gt;, or null if there were none. This is only filled in if the flag
-	 * {@link PackageManager#GET_SERVICES} was set.
-	 */
-	sp<ArrayList<sp<ServiceInfo>>> services;
+    /**
+     * Array of all {@link MindroidManifestService &lt;service&gt;} tags included under
+     * &lt;application&gt;, or null if there were none. This is only filled in if the flag
+     * {@link PackageManager#GET_SERVICES} was set.
+     */
+    sp<ArrayList<sp<ServiceInfo>>> services;
 };
 
 } /* namespace mindroid */

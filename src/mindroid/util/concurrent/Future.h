@@ -23,39 +23,39 @@ namespace mindroid {
 
 template<typename T>
 class Future :
-		public Awaitable {
+        public Awaitable {
 public:
-	virtual T get() const = 0;
+    virtual T get() const = 0;
 
-	virtual T get(uint64_t timeout) const = 0;
+    virtual T get(uint64_t timeout) const = 0;
 
-	virtual bool isDone() const = 0;
+    virtual bool isDone() const = 0;
 
-	template<typename Functor>
-	sp<Future> done(Functor func) {
-		try {
-			await();
-			if (isDone()) {
-				func();
-			}
-		} catch (const CancellationException& e) {
-		} catch (const ExecutionException& e) {
-		}
-		return this;
-	}
+    template<typename Functor>
+    sp<Future> done(Functor func) {
+        try {
+            await();
+            if (isDone()) {
+                func();
+            }
+        } catch (const CancellationException& e) {
+        } catch (const ExecutionException& e) {
+        }
+        return this;
+    }
 
-	template<typename Functor>
-	sp<Future> fail(Functor func) {
-		try {
-			await();
-			if (isCancelled()) {
-				func();
-			}
-		} catch (...) {
-			func();
-		}
-		return this;
-	}
+    template<typename Functor>
+    sp<Future> fail(Functor func) {
+        try {
+            await();
+            if (isCancelled()) {
+                func();
+            }
+        } catch (...) {
+            func();
+        }
+        return this;
+    }
 };
 
 } /* namespace mindroid */

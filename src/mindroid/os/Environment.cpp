@@ -24,20 +24,20 @@ pthread_mutex_t Environment::sMutex = PTHREAD_MUTEX_INITIALIZER;
 Environment* Environment::sInstance = nullptr;
 
 Environment::Environment() :
-		ROOT_DIRECTORY(new File(".")),
-		APPS_DIRECTORY(new File(ROOT_DIRECTORY, "apps")),
-		DATA_DIRECTORY(new File(ROOT_DIRECTORY, "data")),
-		PREFERENCES_DIRECTORY(new File(ROOT_DIRECTORY, "prefs")),
-		LOG_DIRECTORY(new File(ROOT_DIRECTORY, "logs")) {
+        ROOT_DIRECTORY(new File(".")),
+        APPS_DIRECTORY(new File(ROOT_DIRECTORY, "apps")),
+        DATA_DIRECTORY(new File(ROOT_DIRECTORY, "data")),
+        PREFERENCES_DIRECTORY(new File(ROOT_DIRECTORY, "prefs")),
+        LOG_DIRECTORY(new File(ROOT_DIRECTORY, "logs")) {
 }
 
 void Environment::setRootDirectory(const sp<String>& rootDirectory) {
-	Environment* self = getInstance();
-	self->ROOT_DIRECTORY = new File(rootDirectory);
-	self->APPS_DIRECTORY = new File(self->ROOT_DIRECTORY, "apps");
-	self->DATA_DIRECTORY = new File(self->ROOT_DIRECTORY, "data");
-	self->PREFERENCES_DIRECTORY = new File(self->ROOT_DIRECTORY, "prefs");
-	self->LOG_DIRECTORY = new File(self->ROOT_DIRECTORY, "logs");
+    Environment* self = getInstance();
+    self->ROOT_DIRECTORY = new File(rootDirectory);
+    self->APPS_DIRECTORY = new File(self->ROOT_DIRECTORY, "apps");
+    self->DATA_DIRECTORY = new File(self->ROOT_DIRECTORY, "data");
+    self->PREFERENCES_DIRECTORY = new File(self->ROOT_DIRECTORY, "prefs");
+    self->LOG_DIRECTORY = new File(self->ROOT_DIRECTORY, "logs");
 }
 
 sp<SharedPreferences> Environment::getSharedPreferences(const sp<File>& sharedPrefsFile, int32_t mode) {
@@ -54,12 +54,12 @@ sp<SharedPreferences> Environment::getSharedPreferences(const sp<File>& sharedPr
 }
 
 Environment* Environment::getInstance() {
-	pthread_mutex_lock(&sMutex);
-	if (sInstance == nullptr) {
-		sInstance = new Environment();
-	}
-	pthread_mutex_unlock(&sMutex);
-	return sInstance;
+    pthread_mutex_lock(&sMutex);
+    if (sInstance == nullptr) {
+        sInstance = new Environment();
+    }
+    pthread_mutex_unlock(&sMutex);
+    return sInstance;
 }
 
 } /* namespace mindroid */

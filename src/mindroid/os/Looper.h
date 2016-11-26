@@ -57,79 +57,79 @@ class Runnable;
  * </pre>
  */
 class Looper final :
-		public Object {
+        public Object {
 public:
-	virtual ~Looper() {
-	}
+    virtual ~Looper() {
+    }
 
-	Looper(const Looper&) = delete;
-	Looper& operator=(const Looper&) = delete;
+    Looper(const Looper&) = delete;
+    Looper& operator=(const Looper&) = delete;
 
-	/**
-	 * Initialize the current thread as a looper. This gives you a chance to create handlers that
-	 * then reference this looper, before actually starting the loop. Be sure to call
-	 * {@link #loop()} after calling this method, and end it by calling {@link #quit()}.
-	 */
-	static bool prepare() {
-		return prepare(true);
-	}
+    /**
+     * Initialize the current thread as a looper. This gives you a chance to create handlers that
+     * then reference this looper, before actually starting the loop. Be sure to call
+     * {@link #loop()} after calling this method, and end it by calling {@link #quit()}.
+     */
+    static bool prepare() {
+        return prepare(true);
+    }
 
-	static bool prepare(bool quitAllowed);
+    static bool prepare(bool quitAllowed);
 
-	/**
-	 * Run the message queue in this thread. Be sure to call {@link #quit()} to end the loop.
-	 */
-	static void loop();
+    /**
+     * Run the message queue in this thread. Be sure to call {@link #quit()} to end the loop.
+     */
+    static void loop();
 
-	/**
-	 * Return the Looper object associated with the current thread. Returns null if the calling
-	 * thread is not associated with a Looper.
-	 */
-	static sp<Looper> myLooper();
+    /**
+     * Return the Looper object associated with the current thread. Returns null if the calling
+     * thread is not associated with a Looper.
+     */
+    static sp<Looper> myLooper();
 
-	/**
-	 * Return the {@link MessageQueue} object associated with the current thread. This must be
-	 * called from a thread running a Looper, or a NullPointerException will be thrown.
-	 */
-	static sp<MessageQueue> myQueue() { return myLooper()->mMessageQueue; }
+    /**
+     * Return the {@link MessageQueue} object associated with the current thread. This must be
+     * called from a thread running a Looper, or a NullPointerException will be thrown.
+     */
+    static sp<MessageQueue> myQueue() { return myLooper()->mMessageQueue; }
 
-	/**
-	 * Returns true if the current thread is this looper's thread.
-	 */
-	bool isCurrentThread() {
-		return Thread::currentThread()->mThread == mThread->mThread;
-	}
+    /**
+     * Returns true if the current thread is this looper's thread.
+     */
+    bool isCurrentThread() {
+        return pthread_equal(pthread_self(), mThread->mThread) != 0;
+    }
 
-	/**
-	 * Quits the looper.
-	 *
-	 * Causes the {@link #loop} method to terminate as soon as possible.
-	 */
-	void quit();
+    /**
+     * Quits the looper.
+     *
+     * Causes the {@link #loop} method to terminate as soon as possible.
+     */
+    void quit();
 
-	/**
-	 * Return the Thread associated with this Looper.
-	 */
-	sp<Thread> getThread() { return mThread; }
+    /**
+     * Return the Thread associated with this Looper.
+     */
+    sp<Thread> getThread() { return mThread; }
 
-	/** @hide */
-	sp<MessageQueue> getQueue() {
-		return mMessageQueue;
-	}
+    /** @hide */
+    sp<MessageQueue> getQueue() {
+        return mMessageQueue;
+    }
 
 private:
-	Looper(bool quitAllowed);
-	static void init();
-	static void finalize(void* looper);
+    Looper(bool quitAllowed);
+    static void init();
+    static void finalize(void* looper);
 
-	sp<Looper> mSelf;
-	sp<MessageQueue> mMessageQueue;
-	sp<Thread> mThread;
+    sp<Looper> mSelf;
+    sp<MessageQueue> mMessageQueue;
+    sp<Thread> mThread;
 
-	static pthread_once_t sTlsOneTimeInitializer;
-	static pthread_key_t sTlsKey;
+    static pthread_once_t sTlsOneTimeInitializer;
+    static pthread_key_t sTlsKey;
 
-	friend class Handler;
+    friend class Handler;
 };
 
 } /* namespace mindroid */

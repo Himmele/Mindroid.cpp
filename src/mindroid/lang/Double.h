@@ -24,42 +24,42 @@ namespace mindroid {
 class String;
 
 class Double :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Constant for the maximum {@code double} value, (2 - 2<sup>-52</sup>) *
-	 * 2<sup>1023</sup>.
-	 */
-	static const double MAX_VALUE;
-	/**
-	 * Constant for the minimum {@code double} value, 2<sup>-1074</sup>.
-	 */
-	static const double MIN_VALUE;
+    /**
+     * Constant for the maximum {@code double} value, (2 - 2<sup>-52</sup>) *
+     * 2<sup>1023</sup>.
+     */
+    static const double MAX_VALUE;
+    /**
+     * Constant for the minimum {@code double} value, 2<sup>-1074</sup>.
+     */
+    static const double MIN_VALUE;
 
-	/* 4.94065645841246544e-324 gets rounded to 9.88131e-324 */
+    /* 4.94065645841246544e-324 gets rounded to 9.88131e-324 */
 
-	/**
-	 * Constant for the number of bits needed to represent a {@code double} in
-	 * two's complement form.
-	 */
-	static const int32_t SIZE = 64;
+    /**
+     * Constant for the number of bits needed to represent a {@code double} in
+     * two's complement form.
+     */
+    static const int32_t SIZE = 64;
 
-	explicit Double(double value) : mValue(value) {
-	}
+    explicit Double(double value) : mValue(value) {
+    }
 
-	static sp<Double> valueOf(const char* s);
-	static sp<Double> valueOf(const sp<String>& s);
+    static sp<Double> valueOf(const char* s);
+    static sp<Double> valueOf(const sp<String>& s);
 
-	double doubleValue() const {
-		return mValue;
-	}
+    double doubleValue() const {
+        return mValue;
+    }
 
-	double value() const {
-		return doubleValue();
-	}
+    double value() const {
+        return doubleValue();
+    }
 
 private:
-	double mValue;
+    double mValue;
 };
 
 } /* namespace mindroid */

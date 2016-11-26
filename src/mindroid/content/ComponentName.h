@@ -34,27 +34,27 @@ class Context;
  * 
  */
 class ComponentName final :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Create a new component identifier.
-	 *
-	 * @param pkg The name of the package that the component exists in. Can not be null.
-	 * @param cls The name of the class inside of <var>pkg</var> that implements the component. Can
-	 * not be null.
-	 */
-	ComponentName(const char* pkg, const char* cls);
+    /**
+     * Create a new component identifier.
+     *
+     * @param pkg The name of the package that the component exists in. Can not be null.
+     * @param cls The name of the class inside of <var>pkg</var> that implements the component. Can
+     * not be null.
+     */
+    ComponentName(const char* pkg, const char* cls);
     ComponentName(const sp<String>& pkg, const sp<String>& cls);
 
-	/**
-	 * Create a new component identifier from a Context and class name.
-	 *
-	 * @param pkg A Context for the package implementing the component, from which the actual
-	 * package name will be retrieved.
-	 * @param cls The name of the class inside of <var>pkg</var> that implements the component.
-	 */
+    /**
+     * Create a new component identifier from a Context and class name.
+     *
+     * @param pkg A Context for the package implementing the component, from which the actual
+     * package name will be retrieved.
+     * @param cls The name of the class inside of <var>pkg</var> that implements the component.
+     */
     ComponentName(const sp<Context>& pkg, const char* cls);
-	ComponentName(const sp<Context>& pkg, const sp<String>& cls);
+    ComponentName(const sp<Context>& pkg, const sp<String>& cls);
 
     /**
      * Return the package name of this component.
@@ -75,7 +75,7 @@ public:
      * as a prefix.
      */
     sp<String> toShortString() {
-    	return String::format("{%s/%s}", mPackage->c_str(), mClass->c_str());
+        return String::format("{%s/%s}", mPackage->c_str(), mClass->c_str());
     }
     
     sp<String> toString() {
@@ -83,24 +83,24 @@ public:
     }
 
     bool equals(const sp<ComponentName>& other) {
-		if (other != nullptr) {
-			return mPackage->equals(other->mPackage)
-					&& mClass->equals(other->mClass);
-		}
-		return false;
+        if (other != nullptr) {
+            return mPackage->equals(other->mPackage)
+                    && mClass->equals(other->mClass);
+        }
+        return false;
     }
 
     bool equals(const sp<Object>& obj) const override {
-		if (obj != nullptr) {
-			if (Class<ComponentName>::isInstance(obj)) {
-				sp<ComponentName> other = Class<ComponentName>::cast(obj);
-				return mPackage->equals(other->mPackage) && mClass->equals(other->mClass);
-			} else {
-				return false;
-			}
-		}
-		return false;
-	}
+        if (obj != nullptr) {
+            if (Class<ComponentName>::isInstance(obj)) {
+                sp<ComponentName> other = Class<ComponentName>::cast(obj);
+                return mPackage->equals(other->mPackage) && mClass->equals(other->mClass);
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
     size_t hashCode() const override {
         return mPackage->hashCode() + mClass->hashCode();

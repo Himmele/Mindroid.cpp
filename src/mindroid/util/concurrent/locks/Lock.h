@@ -25,44 +25,44 @@ namespace mindroid {
 class Condition;
 
 class Lock :
-		public Object {
+        public Object {
 public:
-	Lock() = default;
-	virtual ~Lock() = default;
-	Lock(const Lock&) = delete;
-	Lock& operator=(const Lock&) = delete;
-	virtual void lock() = 0;
-	virtual sp<Condition> newCondition() = 0;
-	virtual bool tryLock(uint64_t timeoutMillis) = 0;
-	virtual void unlock() = 0;
+    Lock() = default;
+    virtual ~Lock() = default;
+    Lock(const Lock&) = delete;
+    Lock& operator=(const Lock&) = delete;
+    virtual void lock() = 0;
+    virtual sp<Condition> newCondition() = 0;
+    virtual bool tryLock(uint64_t timeoutMillis) = 0;
+    virtual void unlock() = 0;
 
 protected:
-	virtual pthread_mutex_t* getMutex() = 0;
+    virtual pthread_mutex_t* getMutex() = 0;
 
-	friend class ConditionImpl;
+    friend class ConditionImpl;
 };
 
 class AutoLock {
 public:
-	AutoLock(const sp<Lock>& lock) :
-			mLock(lock) {
-		mLock->lock();
-	}
+    AutoLock(const sp<Lock>& lock) :
+            mLock(lock) {
+        mLock->lock();
+    }
 
-	~AutoLock() {
-		mLock->unlock();
-	}
+    ~AutoLock() {
+        mLock->unlock();
+    }
 
-	AutoLock(const AutoLock&) = delete;
-	AutoLock& operator=(const AutoLock&) = delete;
+    AutoLock(const AutoLock&) = delete;
+    AutoLock& operator=(const AutoLock&) = delete;
 
 private:
-	sp<Lock> mLock;
+    sp<Lock> mLock;
 
-	void* operator new(size_t);
-	void* operator new[](size_t);
-	void operator delete(void*);
-	void operator delete[](void*);
+    void* operator new(size_t);
+    void* operator new[](size_t);
+    void operator delete(void*);
+    void operator delete[](void*);
 };
 
 } /* namespace mindroid */

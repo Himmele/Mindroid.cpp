@@ -25,16 +25,16 @@ namespace mindroid {
 class Lock;
 
 class Condition :
-		public Object {
+        public Object {
 public:
-	Condition() = default;
-	virtual ~Condition() = default;
-	Condition(const Condition&) = delete;
-	Condition& operator=(const Condition&) = delete;
-	virtual void await() = 0;
-	virtual bool await(uint64_t timeoutMillis) = 0;
-	virtual void signal() = 0;
-	virtual void signalAll() = 0;
+    Condition() = default;
+    virtual ~Condition() = default;
+    Condition(const Condition&) = delete;
+    Condition& operator=(const Condition&) = delete;
+    virtual void await() = 0;
+    virtual bool await(uint64_t timeoutMillis) = 0;
+    virtual void signal() = 0;
+    virtual void signalAll() = 0;
 };
 
 } /* namespace mindroid */

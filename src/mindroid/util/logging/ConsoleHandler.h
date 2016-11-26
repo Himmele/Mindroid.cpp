@@ -26,32 +26,32 @@ namespace mindroid {
  */
 class ConsoleHandler : public Object {
 public:
-	/**
-	 * Constructs a {@code ConsoleHandler} object.
-	 */
-	ConsoleHandler() {
-	}
+    /**
+     * Constructs a {@code ConsoleHandler} object.
+     */
+    ConsoleHandler() {
+    }
 
-	/**
-	 * Flushes and closes all opened files.
-	 */
-	void close() {
-	}
+    /**
+     * Flushes and closes all opened files.
+     */
+    void close() {
+    }
 
-	/**
-	 * Publish a {@code LogRecord}.
-	 *
-	 * @param record The log record.
-	 */
-	void publish(const sp<LogBuffer::LogRecord>& record);
+    /**
+     * Publish a {@code LogRecord}.
+     *
+     * @param record The log record.
+     */
+    void publish(const sp<LogBuffer::LogRecord>& record);
 
-	void setFlag(uint32_t flag);
-	void removeFlag(uint32_t flag);
+    void setFlag(uint32_t flag);
+    void removeFlag(uint32_t flag);
 
-	static const uint32_t FLAG_TIMESTAMP = 1;
+    static const uint32_t FLAG_TIMESTAMP = 1;
 
 private:
-	uint32_t mFlags = 0;
+    uint32_t mFlags = 0;
 };
 
 } /* namespace mindroid */

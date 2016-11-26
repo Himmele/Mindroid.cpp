@@ -39,45 +39,50 @@ class Variant;
  * @see Binder
  */
 class IBinder :
-		public virtual Object {
+        public virtual Object {
 public:
-	/**
-	 * Flag to {@link #transact}: this is a one-way call, meaning that the caller returns
-	 * immediately, without waiting for a result from the callee. Applies only if the caller and
-	 * callee are in different processes.
-	 */
-	static const int32_t FLAG_ONEWAY = 0x00000001;
+    /**
+     * Flag to {@link #transact}: this is a one-way call, meaning that the caller returns
+     * immediately, without waiting for a result from the callee. Applies only if the caller and
+     * callee are in different processes.
+     */
+    static const int32_t FLAG_ONEWAY = 0x00000001;
 
-	/**
-	 * Get the canonical name of the interface supported by this binder.
-	 */
-	virtual sp<String> getInterfaceDescriptor() = 0;
+    /**
+     * Get the canonical name of the interface supported by this binder.
+     */
+    virtual sp<String> getInterfaceDescriptor() = 0;
 
-	/**
-	 * Attempt to retrieve a local implementation of an interface for this Binder object. If null is
-	 * returned, you will need to instantiate a proxy class to marshall calls through the transact()
-	 * method.
-	 */
-	virtual sp<IInterface> queryLocalInterface(const char* descriptor) = 0;
-	virtual sp<IInterface> queryLocalInterface(const sp<String>& descriptor) = 0;
+    /**
+     * Attempt to retrieve a local implementation of an interface for this Binder object. If null is
+     * returned, you will need to instantiate a proxy class to marshall calls through the transact()
+     * method.
+     */
+    virtual sp<IInterface> queryLocalInterface(const char* descriptor) = 0;
+    virtual sp<IInterface> queryLocalInterface(const sp<String>& descriptor) = 0;
 
-	/**
-	 * Perform a generic operation with the object.
-	 *
-	 * @param what The action to perform.
-	 * @param data data to send to the target. Must not be null.
-	 * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
-	 * for a one-way RPC.
-	 * @return data to be received from the target. May either contain the result or an exception.
-	 */
-	virtual void transact(int32_t what, const sp<Awaitable>& result, int32_t flags) = 0;
-	virtual void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
-	virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) = 0;
-	virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
-	virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
-	virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
+    /**
+     * Perform a generic operation with the object.
+     *
+     * @param what The action to perform.
+     * @param data data to send to the target. Must not be null.
+     * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
+     * for a one-way RPC.
+     * @return data to be received from the target. May either contain the result or an exception.
+     */
+    virtual void transact(int32_t what, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
 
-	virtual bool runsOnSameThread() = 0;
+    virtual bool runsOnSameThread() = 0;
+
+    /**
+     * Release unmanaged Binder resources.
+     */
+    virtual void dispose() = 0;
 };
 
 } /* namespace mindroid */

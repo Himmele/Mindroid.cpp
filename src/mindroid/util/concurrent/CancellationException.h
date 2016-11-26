@@ -27,13 +27,13 @@ namespace mindroid {
  */
 class CancellationException : public Exception {
 public:
-	CancellationException() = default;
+    CancellationException() = default;
 
-	CancellationException(const char* message) : Exception(message) {
-	}
+    CancellationException(const char* message) : Exception(message) {
+    }
 
-	CancellationException(const sp<String>& message) : Exception(message) {
-	}
+    CancellationException(const sp<String>& message) : Exception(message) {
+    }
 };
 
 } /* namespace mindroid */

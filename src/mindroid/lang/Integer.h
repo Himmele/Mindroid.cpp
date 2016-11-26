@@ -24,42 +24,42 @@ namespace mindroid {
 class String;
 
 class Integer :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Constant for the maximum {@code int} value, 2<sup>31</sup>-1.
-	 */
-	static const int32_t MAX_VALUE = 0x7FFFFFFF;
+    /**
+     * Constant for the maximum {@code int} value, 2<sup>31</sup>-1.
+     */
+    static const int32_t MAX_VALUE = 0x7FFFFFFF;
 
-	/**
-	 * Constant for the minimum {@code int} value, -2<sup>31</sup>.
-	 */
-	static const int32_t MIN_VALUE = 0x80000000;
+    /**
+     * Constant for the minimum {@code int} value, -2<sup>31</sup>.
+     */
+    static const int32_t MIN_VALUE = 0x80000000;
 
-	/**
-	 * Constant for the number of bits needed to represent an {@code int} in
-	 * two's complement form.
-	 */
-	static const int32_t SIZE = 32;
+    /**
+     * Constant for the number of bits needed to represent an {@code int} in
+     * two's complement form.
+     */
+    static const int32_t SIZE = 32;
 
-	explicit Integer(int32_t value) : mValue(value) {
-	}
+    explicit Integer(int32_t value) : mValue(value) {
+    }
 
-	static sp<Integer> valueOf(const char* s);
-	static sp<Integer> valueOf(const sp<String>& s);
-	static sp<Integer> valueOf(const char* s, int32_t radix);
-	static sp<Integer> valueOf(const sp<String>& s, int32_t radix);
+    static sp<Integer> valueOf(const char* s);
+    static sp<Integer> valueOf(const sp<String>& s);
+    static sp<Integer> valueOf(const char* s, int32_t radix);
+    static sp<Integer> valueOf(const sp<String>& s, int32_t radix);
 
-	int32_t intValue() const {
-		return mValue;
-	}
+    int32_t intValue() const {
+        return mValue;
+    }
 
-	int32_t value() const {
-		return intValue();
-	}
+    int32_t value() const {
+        return intValue();
+    }
 
 private:
-	int32_t mValue;
+    int32_t mValue;
 };
 
 } /* namespace mindroid */

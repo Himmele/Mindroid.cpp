@@ -29,205 +29,205 @@ namespace mindroid {
  */
 template<typename T>
 class LinkedList :
-		public Object {
+        public Object {
 public:
-	LinkedList() { }
+    LinkedList() { }
 
-	LinkedList(const sp<LinkedList<T>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    LinkedList(const sp<LinkedList<T>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	LinkedList(const sp<Set<T>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    LinkedList(const sp<Set<T>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	virtual ~LinkedList() {
-		clear();
-	}
+    virtual ~LinkedList() {
+        clear();
+    }
 
-	bool add(const T& value) {
-		mList.push_back(value);
-		return true;
-	}
+    bool add(const T& value) {
+        mList.push_back(value);
+        return true;
+    }
 
-	void add(size_t index, const T& value) {
-		Assert::assertTrue(index <= size());
-		if (index < size()) {
-			typename std::list<T>::iterator itr = mList.begin();
-			size_t i = 0;
-			while (itr != mList.end()) {
-				if (i == index) {
-					mList.insert(itr, value);
-					break;
-				}
-				++itr;
-				++i;
-			}
-		} else {
-			add(value);
-		}
-	}
+    void add(size_t index, const T& value) {
+        Assert::assertTrue(index <= size());
+        if (index < size()) {
+            typename std::list<T>::iterator itr = mList.begin();
+            size_t i = 0;
+            while (itr != mList.end()) {
+                if (i == index) {
+                    mList.insert(itr, value);
+                    break;
+                }
+                ++itr;
+                ++i;
+            }
+        } else {
+            add(value);
+        }
+    }
 
-	void clear() {
-		mList.clear();
-	}
+    void clear() {
+        mList.clear();
+    }
 
-	bool contains(const T& value) const {
-		typename std::list<T>::const_iterator itr = mList.begin();
-		while (itr != mList.end()) {
-			if (*itr == value) {
-				return true;
-			}
-			++itr;
-		}
-		return false;
-	}
+    bool contains(const T& value) const {
+        typename std::list<T>::const_iterator itr = mList.begin();
+        while (itr != mList.end()) {
+            if (*itr == value) {
+                return true;
+            }
+            ++itr;
+        }
+        return false;
+    }
 
-	T get(size_t index) {
-		Assert::assertTrue(index < size());
-		typename std::list<T>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				break;
-			}
-			++itr;
-			++i;
-		}
-		return *itr;
-	}
+    T get(size_t index) {
+        Assert::assertTrue(index < size());
+        typename std::list<T>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                break;
+            }
+            ++itr;
+            ++i;
+        }
+        return *itr;
+    }
 
-	ssize_t indexOf(const T& value) const {
-		typename std::list<T>::const_iterator itr = mList.begin();
-		ssize_t i = 0;
-		while (itr != mList.end()) {
-			if (*itr == value) {
-				return i;
-			}
-			++itr;
-			++i;
-		}
-		return -1;
-	}
+    ssize_t indexOf(const T& value) const {
+        typename std::list<T>::const_iterator itr = mList.begin();
+        ssize_t i = 0;
+        while (itr != mList.end()) {
+            if (*itr == value) {
+                return i;
+            }
+            ++itr;
+            ++i;
+        }
+        return -1;
+    }
 
-	bool isEmpty() const {
-		return mList.empty();
-	}
+    bool isEmpty() const {
+        return mList.empty();
+    }
 
-	T remove(size_t index) {
-		Assert::assertTrue(index < size());
-		typename std::list<T>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				T value = *itr;
-				mList.erase(itr);
-				return value;
-			}
-			++itr;
-			++i;
-		}
-		return nullptr;
-	}
+    T remove(size_t index) {
+        Assert::assertTrue(index < size());
+        typename std::list<T>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                T value = *itr;
+                mList.erase(itr);
+                return value;
+            }
+            ++itr;
+            ++i;
+        }
+        return nullptr;
+    }
 
-	bool remove(const T& value) {
-		typename std::list<T>::iterator itr = mList.begin();
-		while (itr != mList.end()) {
-			if (*itr == value) {
-				mList.erase(itr);
-				return true;
-			}
-			++itr;
-		}
-		return false;
-	}
+    bool remove(const T& value) {
+        typename std::list<T>::iterator itr = mList.begin();
+        while (itr != mList.end()) {
+            if (*itr == value) {
+                mList.erase(itr);
+                return true;
+            }
+            ++itr;
+        }
+        return false;
+    }
 
-	T set(size_t index, const T& value) {
-		Assert::assertTrue(index < size());
-		typename std::list<T>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				T oldValue = *itr;
-				*itr = value;
-				return oldValue;
-			}
-			++itr;
-			++i;
-		}
-		return nullptr;
-	}
+    T set(size_t index, const T& value) {
+        Assert::assertTrue(index < size());
+        typename std::list<T>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                T oldValue = *itr;
+                *itr = value;
+                return oldValue;
+            }
+            ++itr;
+            ++i;
+        }
+        return nullptr;
+    }
 
-	size_t size() const {
-		return mList.size();
-	}
+    size_t size() const {
+        return mList.size();
+    }
 
-	class Iterator {
-	public:
-		Iterator(std::list<T>& list) :
-				mForwardIterator(false),
-				mList(&list),
-				mIterator(mList->begin()) {
-		}
+    class Iterator {
+    public:
+        Iterator(std::list<T>& list) :
+                mForwardIterator(false),
+                mList(&list),
+                mIterator(mList->begin()) {
+        }
 
-		~Iterator() { }
+        ~Iterator() { }
 
-		Iterator& operator=(const Iterator& iterator) {
-			mForwardIterator = iterator.mForwardIterator;
-			mList = iterator.mList;
-			mIterator = iterator.mIterator;
-			return *this;
-		}
+        Iterator& operator=(const Iterator& iterator) {
+            mForwardIterator = iterator.mForwardIterator;
+            mList = iterator.mList;
+            mIterator = iterator.mIterator;
+            return *this;
+        }
 
-		bool hasNext() const {
-			if (!mForwardIterator) {
-				return mIterator != mList->end();
-			} else {
-				typename std::list<T>::iterator itr = mIterator;
-				return ++itr != mList->end();
-			}
-		}
+        bool hasNext() const {
+            if (!mForwardIterator) {
+                return mIterator != mList->end();
+            } else {
+                typename std::list<T>::iterator itr = mIterator;
+                return ++itr != mList->end();
+            }
+        }
 
-		T next() {
-			if (!mForwardIterator) {
-				mForwardIterator = true;
-			} else {
-				++mIterator;
-			}
-			return *mIterator;
-		}
+        T next() {
+            if (!mForwardIterator) {
+                mForwardIterator = true;
+            } else {
+                ++mIterator;
+            }
+            return *mIterator;
+        }
 
-		bool remove() {
-			if (mForwardIterator) {
-				mIterator = mList->erase(mIterator);
-				mForwardIterator = false;
-				return true;
-			}
-			return false;
-		}
+        bool remove() {
+            if (mForwardIterator) {
+                mIterator = mList->erase(mIterator);
+                mForwardIterator = false;
+                return true;
+            }
+            return false;
+        }
 
-	private:
-		bool mForwardIterator;
-		std::list<T>* mList;
-		typename std::list<T>::iterator mIterator;
-	};
+    private:
+        bool mForwardIterator;
+        std::list<T>* mList;
+        typename std::list<T>::iterator mIterator;
+    };
 
-	inline Iterator iterator() {
-		return Iterator(mList);
-	}
+    inline Iterator iterator() {
+        return Iterator(mList);
+    }
 
 private:
-	std::list<T> mList;
+    std::list<T> mList;
 };
 
 
@@ -237,208 +237,212 @@ private:
  */
 template<typename T>
 class LinkedList<sp<T>> :
-		public Object {
+        public Object {
 public:
-	LinkedList() { }
+    LinkedList() { }
 
-	LinkedList(const sp<LinkedList<sp<T>>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    LinkedList(const sp<LinkedList<sp<T>>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	LinkedList(const sp<Set<sp<T>>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    LinkedList(const sp<Set<sp<T>>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	virtual ~LinkedList() {
-		clear();
-	}
+    virtual ~LinkedList() {
+        clear();
+    }
 
-	bool add(const sp<T>& value) {
-		mList.push_back(value);
-		return true;
-	}
+    bool add(const sp<T>& value) {
+        mList.push_back(value);
+        return true;
+    }
 
-	void add(size_t index, const sp<T>& value) {
-		Assert::assertTrue(index <= size());
-		if (index < size()) {
-			typename std::list<sp<T>>::iterator itr = mList.begin();
-			size_t i = 0;
-			while (itr != mList.end()) {
-				if (i == index) {
-					mList.insert(itr, value);
-					break;
-				}
-				++itr;
-				++i;
-			}
-		} else {
-			add(value);
-		}
-	}
+    void add(size_t index, const sp<T>& value) {
+        Assert::assertTrue(index <= size());
+        if (index < size()) {
+            typename std::list<sp<T>>::iterator itr = mList.begin();
+            size_t i = 0;
+            while (itr != mList.end()) {
+                if (i == index) {
+                    mList.insert(itr, value);
+                    break;
+                }
+                ++itr;
+                ++i;
+            }
+        } else {
+            add(value);
+        }
+    }
 
-	void clear() {
-		mList.clear();
-	}
+    void clear() {
+        mList.clear();
+    }
 
-	bool contains(const sp<T>& value) const {
-		typename std::list<sp<T>>::const_iterator itr = mList.begin();
-		while (itr != mList.end()) {
-			const mindroid::sp<mindroid::Object>& o = *itr;
-			if (o->equals(value)) {
-				return true;
-			}
-			++itr;
-		}
-		return false;
-	}
+    bool contains(const sp<T>& value) const {
+        if (value != nullptr) {
+            typename std::list<sp<T>>::const_iterator itr = mList.begin();
+            while (itr != mList.end()) {
+                const mindroid::sp<mindroid::Object>& o = *itr;
+                if (o->equals(value)) {
+                    return true;
+                }
+                ++itr;
+            }
+        }
+        return false;
+    }
 
-	sp<T> get(size_t index) {
-		Assert::assertTrue(index < size());
-		typename std::list<sp<T>>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				break;
-			}
-			++itr;
-			++i;
-		}
-		return *itr;
-	}
+    sp<T> get(size_t index) {
+        Assert::assertTrue(index < size());
+        typename std::list<sp<T>>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                break;
+            }
+            ++itr;
+            ++i;
+        }
+        return *itr;
+    }
 
-	ssize_t indexOf(const sp<T>& value) const {
-		typename std::list<sp<T>>::const_iterator itr = mList.cbegin();
-		ssize_t i = 0;
-		while (itr != mList.end()) {
-			const mindroid::sp<mindroid::Object>& o = *itr;
-			if (o->equals(value)) {
-				return i;
-			}
-			++itr;
-			++i;
-		}
-		return -1;
-	}
+    ssize_t indexOf(const sp<T>& value) const {
+        typename std::list<sp<T>>::const_iterator itr = mList.cbegin();
+        ssize_t i = 0;
+        while (itr != mList.end()) {
+            const mindroid::sp<mindroid::Object>& o = *itr;
+            if (o->equals(value)) {
+                return i;
+            }
+            ++itr;
+            ++i;
+        }
+        return -1;
+    }
 
-	bool isEmpty() const {
-		return mList.empty();
-	}
+    bool isEmpty() const {
+        return mList.empty();
+    }
 
-	sp<T> remove(size_t index) {
-		Assert::assertTrue(index < size());
-		typename std::list<sp<T>>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				sp<T> value = *itr;
-				mList.erase(itr);
-				return value;
-			}
-			++itr;
-			++i;
-		}
-		return nullptr;
-	}
+    sp<T> remove(size_t index) {
+        Assert::assertTrue(index < size());
+        typename std::list<sp<T>>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                sp<T> value = *itr;
+                mList.erase(itr);
+                return value;
+            }
+            ++itr;
+            ++i;
+        }
+        return nullptr;
+    }
 
-	bool remove(const sp<T>& value) {
-		typename std::list<sp<T>>::iterator itr = mList.begin();
-		while (itr != mList.end()) {
-			const mindroid::sp<mindroid::Object>& o = *itr;
-			if (o->equals(value)) {
-				mList.erase(itr);
-				return true;
-			}
-			++itr;
-		}
-		return false;
-	}
+    bool remove(const sp<T>& value) {
+        if (value != nullptr) {
+            typename std::list<sp<T>>::iterator itr = mList.begin();
+            while (itr != mList.end()) {
+                const mindroid::sp<mindroid::Object>& o = *itr;
+                if (o->equals(value)) {
+                    mList.erase(itr);
+                    return true;
+                }
+                ++itr;
+            }
+        }
+        return false;
+    }
 
-	sp<T> set(size_t index, const sp<T>& value) {
-		Assert::assertTrue(index < size());
-		typename std::list<sp<T>>::iterator itr = mList.begin();
-		size_t i = 0;
-		while (itr != mList.end()) {
-			if (i == index) {
-				sp<T> oldValue = *itr;
-				*itr = value;
-				return oldValue;
-			}
-			++itr;
-			++i;
-		}
-		return nullptr;
-	}
+    sp<T> set(size_t index, const sp<T>& value) {
+        Assert::assertTrue(index < size());
+        typename std::list<sp<T>>::iterator itr = mList.begin();
+        size_t i = 0;
+        while (itr != mList.end()) {
+            if (i == index) {
+                sp<T> oldValue = *itr;
+                *itr = value;
+                return oldValue;
+            }
+            ++itr;
+            ++i;
+        }
+        return nullptr;
+    }
 
-	size_t size() const {
-		return mList.size();
-	}
+    size_t size() const {
+        return mList.size();
+    }
 
-	class Iterator {
-	public:
-		Iterator(std::list<sp<T>>& list) :
-				mForwardIterator(false),
-				mList(&list),
-				mIterator(mList->begin()) {
-		}
+    class Iterator {
+    public:
+        Iterator(std::list<sp<T>>& list) :
+                mForwardIterator(false),
+                mList(&list),
+                mIterator(mList->begin()) {
+        }
 
-		~Iterator() { }
+        ~Iterator() { }
 
-		Iterator& operator=(const Iterator& iterator) {
-			mForwardIterator = iterator.mForwardIterator;
-			mList = iterator.mList;
-			mIterator = iterator.mIterator;
-			return *this;
-		}
+        Iterator& operator=(const Iterator& iterator) {
+            mForwardIterator = iterator.mForwardIterator;
+            mList = iterator.mList;
+            mIterator = iterator.mIterator;
+            return *this;
+        }
 
-		bool hasNext() const {
-			if (!mForwardIterator) {
-				return mIterator != mList->end();
-			} else {
-				typename std::list<sp<T>>::iterator itr = mIterator;
-				return ++itr != mList->end();
-			}
-		}
+        bool hasNext() const {
+            if (!mForwardIterator) {
+                return mIterator != mList->end();
+            } else {
+                typename std::list<sp<T>>::iterator itr = mIterator;
+                return ++itr != mList->end();
+            }
+        }
 
-		sp<T> next() {
-			if (!mForwardIterator) {
-				mForwardIterator = true;
-			} else {
-				++mIterator;
-			}
-			return *mIterator;
-		}
+        sp<T> next() {
+            if (!mForwardIterator) {
+                mForwardIterator = true;
+            } else {
+                ++mIterator;
+            }
+            return *mIterator;
+        }
 
-		bool remove() {
-			if (mForwardIterator) {
-				mIterator = mList->erase(mIterator);
-				mForwardIterator = false;
-				return true;
-			}
-			return false;
-		}
+        bool remove() {
+            if (mForwardIterator) {
+                mIterator = mList->erase(mIterator);
+                mForwardIterator = false;
+                return true;
+            }
+            return false;
+        }
 
-	private:
-		bool mForwardIterator;
-		std::list<sp<T>>* mList;
-		typename std::list<sp<T>>::iterator mIterator;
-	};
+    private:
+        bool mForwardIterator;
+        std::list<sp<T>>* mList;
+        typename std::list<sp<T>>::iterator mIterator;
+    };
 
-	inline Iterator iterator() {
-		return Iterator(mList);
-	}
+    inline Iterator iterator() {
+        return Iterator(mList);
+    }
 
 private:
-	std::list<sp<T>> mList;
+    std::list<sp<T>> mList;
 };
 
 } /* namespace mindroid */

@@ -23,44 +23,44 @@
 namespace mindroid {
 
 SocketAddress::SocketAddress() :
-		mIsUnresolved(true) {
-	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
+        mIsUnresolved(true) {
+    memset(&mSocketAddress, 0, sizeof(mSocketAddress));
 }
 
 SocketAddress::SocketAddress(uint16_t port) :
-		mIsUnresolved(false) {
-	memset(&mSocketAddress, 0, sizeof(mSocketAddress));
-	mSocketAddress.sin_family = AF_INET;
-	mSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-	mSocketAddress.sin_port = htons(port);
+        mIsUnresolved(false) {
+    memset(&mSocketAddress, 0, sizeof(mSocketAddress));
+    mSocketAddress.sin_family = AF_INET;
+    mSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
+    mSocketAddress.sin_port = htons(port);
 }
 
 SocketAddress::SocketAddress(const sp<String>& host, uint16_t port) :
-		mIsUnresolved(true) {
-	struct addrinfo hints, *result;
-	int status;
+        mIsUnresolved(true) {
+    struct addrinfo hints, *result;
+    int status;
 
-	memset(&hints, 0, sizeof(hints));
-	hints.ai_family = AF_UNSPEC;
-	hints.ai_socktype = SOCK_STREAM;
-	status = getaddrinfo(host->c_str(), nullptr, &hints, &result);
-	mIsUnresolved = (status != 0);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
+    status = getaddrinfo(host->c_str(), nullptr, &hints, &result);
+    mIsUnresolved = (status != 0);
 
-	if (!mIsUnresolved) {
-		memset(&mSocketAddress, 0, sizeof(mSocketAddress));
-		mSocketAddress.sin_family = AF_INET;
-		mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
-		mSocketAddress.sin_port = htons(port);
-		freeaddrinfo(result);
-	}
+    if (!mIsUnresolved) {
+        memset(&mSocketAddress, 0, sizeof(mSocketAddress));
+        mSocketAddress.sin_family = AF_INET;
+        mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
+        mSocketAddress.sin_port = htons(port);
+        freeaddrinfo(result);
+    }
 }
 
 sp<String> SocketAddress::getHostName() const {
-	char* host = new char[NI_MAXHOST];
-	getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), nullptr, 0, 0);
-	sp<String> h = String::valueOf(host);
-	delete[] host;
-	return h;
+    char* host = new char[NI_MAXHOST];
+    getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), nullptr, 0, 0);
+    sp<String> h = String::valueOf(host);
+    delete[] host;
+    return h;
 }
 
 } /* namespace mindroid */

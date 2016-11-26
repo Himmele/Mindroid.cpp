@@ -25,15 +25,15 @@ sp<Long> Long::valueOf(const char* s) {
 }
 
 sp<Long> Long::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 sp<Long> Long::valueOf(const char* s, int32_t radix) {
-	return new Long(strtol(s, nullptr, radix));
+    return new Long(strtol(s, nullptr, radix));
 }
 
 sp<Long> Long::valueOf(const sp<String>& s, int32_t radix) {
-	return valueOf(s->c_str(), radix);
+    return valueOf(s->c_str(), radix);
 }
 
 } /* namespace mindroid */

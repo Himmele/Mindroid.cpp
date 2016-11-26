@@ -31,50 +31,50 @@ class ComponentName;
 class IPackageManager;
 
 class Process :
-		public Object {
+        public Object {
 public:
-	Process(const sp<String>& name);
+    Process(const sp<String>& name);
 
-	sp<IProcess> start();
-	void stop(uint64_t timeout);
+    sp<IProcess> start();
+    void stop(uint64_t timeout);
 
-	sp<String> getName() {
-		return mName;
-	}
+    sp<String> getName() {
+        return mName;
+    }
 
-	sp<HandlerThread> getMainThread() {
-		return mMainThread;
-	}
+    sp<HandlerThread> getMainThread() {
+        return mMainThread;
+    }
 
-	bool isAlive() const;
+    bool isAlive() const;
 
 private:
-	class ProcessImpl : public binder::Process::Stub {
-	public:
-		ProcessImpl(sp<Process> process) : mProcess(process) {
-		}
+    class ProcessImpl : public binder::Process::Stub {
+    public:
+        ProcessImpl(sp<Process> process) : mProcess(process) {
+        }
 
-		void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-		void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback);
-		void stopService(const sp<Intent>& intent);
-		void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-		void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
-		void unbindService(const sp<Intent>& intent);
-		void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+        void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+        void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback);
+        void stopService(const sp<Intent>& intent);
+        void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+        void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
+        void unbindService(const sp<Intent>& intent);
+        void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
 
-	private:
-		sp<Process> mProcess;
-	};
+    private:
+        sp<Process> mProcess;
+    };
 
-	static const char* const TAG;
-	sp<String> mName;
-	sp<HandlerThread> mMainThread;
-	sp<Handler> mMainHandler;
-	sp<binder::Process::Stub> mStub;
-	sp<IPackageManager> mPackageManager;
-	sp<HashMap<sp<ComponentName>, sp<Service>>> mServices;
-	sp<ReentrantLock> mLock;
-	sp<Condition> mCondition;
+    static const char* const TAG;
+    sp<String> mName;
+    sp<HandlerThread> mMainThread;
+    sp<Handler> mMainHandler;
+    sp<binder::Process::Stub> mStub;
+    sp<IPackageManager> mPackageManager;
+    sp<HashMap<sp<ComponentName>, sp<Service>>> mServices;
+    sp<ReentrantLock> mLock;
+    sp<Condition> mCondition;
 };
 
 } /* namespace mindroid */

@@ -23,67 +23,67 @@
 namespace mindroid {
 
 Socket::Socket() :
-		mIsConnected(false),
-		mIsClosed(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+        mIsConnected(false),
+        mIsClosed(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 }
 
 Socket::Socket(const sp<String>& host, uint16_t port) :
-		mIsConnected(false),
-		mIsClosed(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-	connect(host, port);
+        mIsConnected(false),
+        mIsClosed(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+    connect(host, port);
 }
 
 Socket::~Socket() {
-	close();
+    close();
 }
 
 int Socket::connect(const sp<String>& host, uint16_t port) {
-	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
-	int rc = -1;
-	if (mSocketId >= 0 && !socketAddress->isUnresolved()) {
-		if ((rc = ::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress))) == 0) {
-			mIsConnected = true;
-			return rc;
-		} else {
-			return rc;
-		}
-	} else {
-		return rc;
-	}
+    sp<SocketAddress> socketAddress = new SocketAddress(host, port);
+    int rc = -1;
+    if (mSocketId >= 0 && !socketAddress->isUnresolved()) {
+        if ((rc = ::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress))) == 0) {
+            mIsConnected = true;
+            return rc;
+        } else {
+            return rc;
+        }
+    } else {
+        return rc;
+    }
 }
 
 ssize_t Socket::read(uint8_t* data, size_t size) {
-	return ::recv(mSocketId, reinterpret_cast<char*>(data), size, 0);
+    return ::recv(mSocketId, reinterpret_cast<char*>(data), size, 0);
 }
 
 ssize_t Socket::readFully(uint8_t* data, size_t size) {
-	size_t curSize = 0;
-	ssize_t result = 0;
-	while (curSize < size) {
-		result = ::recv(mSocketId, reinterpret_cast<char*>(data + curSize), size - curSize, 0);
-		if (result > 0) {
-			curSize += result;
-		} else {
-			break;
-		}
-	}
-	return (result > 0) ? size : result;
+    size_t curSize = 0;
+    ssize_t result = 0;
+    while (curSize < size) {
+        result = ::recv(mSocketId, reinterpret_cast<char*>(data + curSize), size - curSize, 0);
+        if (result > 0) {
+            curSize += result;
+        } else {
+            break;
+        }
+    }
+    return (result > 0) ? size : result;
 }
 
 bool Socket::write(const void* data, size_t size) {
-	return (size_t) ::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
+    return (size_t) ::send(mSocketId, reinterpret_cast<const char*>(data), size, 0) == size;
 }
 
 void Socket::close() {
-	mIsClosed = true;
-	mIsConnected = false;
-	if (mSocketId >= 0) {
-		::shutdown(mSocketId, SHUT_RDWR);
-		::close(mSocketId);
-		mSocketId = -1;
-	}
+    mIsClosed = true;
+    mIsConnected = false;
+    if (mSocketId >= 0) {
+        ::shutdown(mSocketId, SHUT_RDWR);
+        ::close(mSocketId);
+        mSocketId = -1;
+    }
 }
 
 } /* namespace mindroid */

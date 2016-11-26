@@ -25,15 +25,15 @@ sp<Byte> Byte::valueOf(const char* s) {
 }
 
 sp<Byte> Byte::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 sp<Byte> Byte::valueOf(const char* s, int32_t radix) {
-	return new Byte(strtol(s, nullptr, radix));
+    return new Byte(strtol(s, nullptr, radix));
 }
 
 sp<Byte> Byte::valueOf(const sp<String>& s, int32_t radix) {
-	return valueOf(s->c_str(), radix);
+    return valueOf(s->c_str(), radix);
 }
 
 } /* namespace mindroid */

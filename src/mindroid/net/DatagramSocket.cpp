@@ -23,70 +23,70 @@
 namespace mindroid {
 
 DatagramSocket::DatagramSocket() :
-		mSocketId(-1),
-		mIsBound(false),
-		mIsClosed(false) {
-	mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
+        mSocketId(-1),
+        mIsBound(false),
+        mIsClosed(false) {
+    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
 }
 
 DatagramSocket::DatagramSocket(uint16_t port) :
-		mSocketId(-1),
-		mIsBound(false),
-		mIsClosed(false) {
-	mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
-	bind(port);
+        mSocketId(-1),
+        mIsBound(false),
+        mIsClosed(false) {
+    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
+    bind(port);
 }
 
 DatagramSocket::DatagramSocket(const sp<String>& host, uint16_t port) :
-		mSocketId(-1),
-		mIsBound(false),
-		mIsClosed(false) {
-	mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
-	bind(host, port);
+        mSocketId(-1),
+        mIsBound(false),
+        mIsClosed(false) {
+    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
+    bind(host, port);
 }
 
 DatagramSocket::~DatagramSocket() {
-	close();
+    close();
 }
 
 bool DatagramSocket::bind(uint16_t port) {
-	sp<SocketAddress> socketAddress = new SocketAddress(port);
-	mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
-	return mIsBound;
+    sp<SocketAddress> socketAddress = new SocketAddress(port);
+    mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
+    return mIsBound;
 }
 
 bool DatagramSocket::bind(const sp<String>& host, uint16_t port) {
-	sp<SocketAddress> socketAddress = new SocketAddress(host, port);
-	mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
-	return mIsBound;
+    sp<SocketAddress> socketAddress = new SocketAddress(host, port);
+    mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
+    return mIsBound;
 }
 
 ssize_t DatagramSocket::recv(uint8_t* data, size_t size) {
-	return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, nullptr, 0);
+    return ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0, nullptr, 0);
 }
 
 ssize_t DatagramSocket::recv(uint8_t* data, size_t size, sp<SocketAddress>& sender) {
-	socklen_t socketSize = sizeof(sender->mSocketAddress);
-	ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0,
-			(struct sockaddr*) &sender->mSocketAddress, &socketSize);
-	sender->mIsUnresolved = false;
-	return result;
+    socklen_t socketSize = sizeof(sender->mSocketAddress);
+    ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0,
+            (struct sockaddr*) &sender->mSocketAddress, &socketSize);
+    sender->mIsUnresolved = false;
+    return result;
 }
 
 bool DatagramSocket::send(const void* data, size_t size, const sp<SocketAddress>& receiver) {
-	socklen_t socketSize = sizeof(receiver->mSocketAddress);
-	return (size_t) ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0,
-			(struct sockaddr*) &receiver->mSocketAddress, socketSize) == size;
+    socklen_t socketSize = sizeof(receiver->mSocketAddress);
+    return (size_t) ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0,
+            (struct sockaddr*) &receiver->mSocketAddress, socketSize) == size;
 }
 
 void DatagramSocket::close() {
-	mIsClosed = true;
-	mIsBound = false;
-	if (mSocketId >= 0) {
-		::shutdown(mSocketId, SHUT_RDWR);
-		::close(mSocketId);
-		mSocketId = -1;
-	}
+    mIsClosed = true;
+    mIsBound = false;
+    if (mSocketId >= 0) {
+        ::shutdown(mSocketId, SHUT_RDWR);
+        ::close(mSocketId);
+        mSocketId = -1;
+    }
 }
 
 } /* namespace mindroid */

@@ -25,15 +25,15 @@ sp<Short> Short::valueOf(const char* s) {
 }
 
 sp<Short> Short::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 sp<Short> Short::valueOf(const char* s, int32_t radix) {
-	return new Short(strtol(s, nullptr, radix));
+    return new Short(strtol(s, nullptr, radix));
 }
 
 sp<Short> Short::valueOf(const sp<String>& s, int32_t radix) {
-	return valueOf(s->c_str(), radix);
+    return valueOf(s->c_str(), radix);
 }
 
 } /* namespace mindroid */

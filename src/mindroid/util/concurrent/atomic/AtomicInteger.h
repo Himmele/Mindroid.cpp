@@ -28,22 +28,22 @@ namespace mindroid {
  */
 class AtomicInteger {
 public:
-	AtomicInteger() noexcept = delete;
+    AtomicInteger() noexcept = delete;
     ~AtomicInteger() noexcept = delete;
     AtomicInteger(const AtomicInteger&) = delete;
     AtomicInteger& operator=(const AtomicInteger&) = delete;
 
-	static int32_t getAndIncrement(volatile int32_t* address);
+    static int32_t getAndIncrement(volatile int32_t* address);
 
-	static int32_t getAndDecrement(volatile int32_t* address);
+    static int32_t getAndDecrement(volatile int32_t* address);
 
-	static int32_t getAndAdd(int32_t value, volatile int32_t* address);
+    static int32_t getAndAdd(int32_t value, volatile int32_t* address);
 
-	static int32_t getAndAnd(int32_t value, volatile int32_t* address);
+    static int32_t getAndAnd(int32_t value, volatile int32_t* address);
 
-	static int32_t getAndOr(int32_t value, volatile int32_t* address);
+    static int32_t getAndOr(int32_t value, volatile int32_t* address);
 
-	static int32_t compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address);
+    static int32_t compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address);
 };
 
 } /* namespace mindroid */

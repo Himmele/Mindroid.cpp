@@ -136,7 +136,7 @@ class ComponentName;
  * service has been started or has clients bound to it.
  */
 class Service :
-		public ContextWrapper {
+        public ContextWrapper {
 public:
     Service() : ContextWrapper(nullptr) {
     }
@@ -144,57 +144,57 @@ public:
     virtual ~Service() = default;
 
     /**
-	 * Called by the system when the service is first created. Do not call this method directly.
-	 */
+     * Called by the system when the service is first created. Do not call this method directly.
+     */
     virtual void onCreate() {
     }
     
     /**
-	 * Called by the system every time a client explicitly starts the service by calling
-	 * {@link mindroid.content.Context#startService}, providing the arguments it supplied and a
-	 * unique integer token representing the start request. Do not call this method directly.
-	 *
-	 * @param intent The Intent supplied to {@link mindroid.content.Context#startService}, as given.
-	 * @param flags Additional data about this start request. Currently this is always 0.
-	 * @param startId A unique integer representing this specific request to start.
-	 *
-	 * @return The return value should always be 0.
-	 */
+     * Called by the system every time a client explicitly starts the service by calling
+     * {@link mindroid.content.Context#startService}, providing the arguments it supplied and a
+     * unique integer token representing the start request. Do not call this method directly.
+     *
+     * @param intent The Intent supplied to {@link mindroid.content.Context#startService}, as given.
+     * @param flags Additional data about this start request. Currently this is always 0.
+     * @param startId A unique integer representing this specific request to start.
+     *
+     * @return The return value should always be 0.
+     */
     virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
         return 0;
     }
     
     /**
-	 * Called by the system to notify a Service that it is no longer used and is being removed. The
-	 * service should clean up any resources it holds (threads, registered receivers, etc) at this
-	 * point. Upon return, there will be no more calls in to this Service object and it is
-	 * effectively dead. Do not call this method directly.
-	 */
+     * Called by the system to notify a Service that it is no longer used and is being removed. The
+     * service should clean up any resources it holds (threads, registered receivers, etc) at this
+     * point. Upon return, there will be no more calls in to this Service object and it is
+     * effectively dead. Do not call this method directly.
+     */
     virtual void onDestroy() {
     }
     
     /**
-	 * Return the communication channel to the service. May return null if clients can not bind to
-	 * the service. The returned {@link mindroid.os.IBinder} is usually for a complex interface.
-	 *
-	 * @param intent The Intent that was used to bind to this service, as given to
-	 * {@link mindroid.content.Context#bindService Context.bindService}. Note that any extras that
-	 * were included with the Intent at that point will <em>not</em> be seen here.
-	 *
-	 * @return Return an IBinder through which clients can call on to the service.
-	 */
+     * Return the communication channel to the service. May return null if clients can not bind to
+     * the service. The returned {@link mindroid.os.IBinder} is usually for a complex interface.
+     *
+     * @param intent The Intent that was used to bind to this service, as given to
+     * {@link mindroid.content.Context#bindService Context.bindService}. Note that any extras that
+     * were included with the Intent at that point will <em>not</em> be seen here.
+     *
+     * @return Return an IBinder through which clients can call on to the service.
+     */
     virtual sp<IBinder> onBind(const sp<Intent>& intent) = 0;
     
     /**
-	 * Called when all clients have disconnected from a particular interface published by the
-	 * service. The default implementation does nothing and returns false.
-	 *
-	 * @param intent The Intent that was used to bind to this service, as given to
-	 * {@link mindroid.content.Context#bindService Context.bindService}. Note that any extras that
-	 * were included with the Intent at that point will <em>not</em> be seen here.
-	 *
-	 * @return Should always return true.
-	 */
+     * Called when all clients have disconnected from a particular interface published by the
+     * service. The default implementation does nothing and returns false.
+     *
+     * @param intent The Intent that was used to bind to this service, as given to
+     * {@link mindroid.content.Context#bindService Context.bindService}. Note that any extras that
+     * were included with the Intent at that point will <em>not</em> be seen here.
+     *
+     * @return Should always return true.
+     */
     virtual bool onUnbind(const sp<Intent>& intent) {
         return true;
     }
@@ -208,8 +208,8 @@ public:
     }
     
     /**
-	 * Stop the service, if it was previously started.
-	 */
+     * Stop the service, if it was previously started.
+     */
     void stopSelf(int32_t startId);
     
     /**

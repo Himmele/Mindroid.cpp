@@ -23,19 +23,19 @@
 namespace mindroid {
 
 void Service::stopSelf(int32_t startId) {
-	sp<Intent> intent = new Intent();
-	intent->setComponent(new ComponentName(object_cast<Context>(this), mClassName));
-	try {
-		mProcess->stopService(intent);
-	} catch (const RemoteException& e) {
-		Assert::fail("System failure");
-	}
+    sp<Intent> intent = new Intent();
+    intent->setComponent(new ComponentName(object_cast<Context>(this), mClassName));
+    try {
+        mProcess->stopService(intent);
+    } catch (const RemoteException& e) {
+        Assert::fail("System failure");
+    }
 }
     
 void Service::attach(const sp<Context>& context, const sp<IProcess>& process, const sp<String>& className) {
-	mProcess = process;
-	mClassName = className;
-	attachBaseContext(context);
+    mProcess = process;
+    mClassName = className;
+    attachBaseContext(context);
 }
 
 } /* namespace mindroid */

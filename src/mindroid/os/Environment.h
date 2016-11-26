@@ -30,14 +30,14 @@ namespace mindroid {
  */
 class Environment final {
 public:
-	/**
+    /**
      * Sets the Mindroid root directory.
      * 
      * @hide
      */
-	static void setRootDirectory(const char* rootDirectory) {
-		setRootDirectory(String::valueOf(rootDirectory));
-	}
+    static void setRootDirectory(const char* rootDirectory) {
+        setRootDirectory(String::valueOf(rootDirectory));
+    }
     static void setRootDirectory(const sp<String>& rootDirectory);
 
     /**
@@ -79,7 +79,7 @@ public:
      * Sets the Mindroid log directory.
      */
     static void setLogDirectory(const sp<String>& directory) {
-    	getInstance()->LOG_DIRECTORY = new File(directory);
+        getInstance()->LOG_DIRECTORY = new File(directory);
     }
 
     /**

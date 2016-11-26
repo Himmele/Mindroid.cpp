@@ -27,13 +27,13 @@ namespace mindroid {
  */
 class RuntimeException : public Exception {
 public:
-	RuntimeException() = default;
+    RuntimeException() = default;
 
-	RuntimeException(const char* message) : Exception(message) {
-	}
+    RuntimeException(const char* message) : Exception(message) {
+    }
 
-	RuntimeException(const sp<String>& message) : Exception(message) {
-	}
+    RuntimeException(const sp<String>& message) : Exception(message) {
+    }
 };
 
 } /* namespace mindroid */

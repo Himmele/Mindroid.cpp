@@ -24,31 +24,31 @@
 namespace mindroid {
 
 class SocketAddress :
-		public Object
+        public Object
 {
 public:
-	SocketAddress();
-	SocketAddress(uint16_t port);
-	SocketAddress(const char* host, uint16_t port) :
-			SocketAddress(String::valueOf(host), port) {
-	}
-	SocketAddress(const sp<String>& host, uint16_t port);
-	virtual ~SocketAddress() = default;
+    SocketAddress();
+    SocketAddress(uint16_t port);
+    SocketAddress(const char* host, uint16_t port) :
+            SocketAddress(String::valueOf(host), port) {
+    }
+    SocketAddress(const sp<String>& host, uint16_t port);
+    virtual ~SocketAddress() = default;
 
-	SocketAddress(const SocketAddress&) = delete;
-	SocketAddress& operator=(const SocketAddress&) = delete;
+    SocketAddress(const SocketAddress&) = delete;
+    SocketAddress& operator=(const SocketAddress&) = delete;
 
-	sp<String> getHostName() const;
-	uint16_t getPort() const { return ntohs(mSocketAddress.sin_port); }
-	bool isUnresolved() const { return mIsUnresolved; }
+    sp<String> getHostName() const;
+    uint16_t getPort() const { return ntohs(mSocketAddress.sin_port); }
+    bool isUnresolved() const { return mIsUnresolved; }
 
 private:
-	struct sockaddr_in mSocketAddress;
-	bool mIsUnresolved;
+    struct sockaddr_in mSocketAddress;
+    bool mIsUnresolved;
 
-	friend class ServerSocket;
-	friend class Socket;
-	friend class DatagramSocket;
+    friend class ServerSocket;
+    friend class Socket;
+    friend class DatagramSocket;
 };
 
 } /* namespace mindroid */

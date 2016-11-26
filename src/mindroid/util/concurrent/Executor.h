@@ -24,15 +24,15 @@ namespace mindroid {
 class Runnable;
 
 class Executor :
-		public Object {
+        public Object {
 public:
-	Executor() = default;
-	virtual ~Executor() = default;
-	Executor(const Executor&) = delete;
-	Executor& operator=(const Executor&) = delete;
+    Executor() = default;
+    virtual ~Executor() = default;
+    Executor(const Executor&) = delete;
+    Executor& operator=(const Executor&) = delete;
 
-	virtual void execute(const sp<Runnable>& runnable) = 0;
-	virtual bool cancel(const sp<Runnable>& runnable) = 0;
+    virtual void execute(const sp<Runnable>& runnable) = 0;
+    virtual bool cancel(const sp<Runnable>& runnable) = 0;
 };
 
 } /* namespace mindroid */

@@ -28,105 +28,105 @@ namespace mindroid {
  */
 template<typename T>
 class Set :
-		public Object {
+        public Object {
 public:
-	Set() { }
+    Set() { }
 
-	Set(const sp<Set<T>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    Set(const sp<Set<T>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	virtual ~Set() {
-		clear();
-	}
+    virtual ~Set() {
+        clear();
+    }
 
-	bool add(const T& value) {
-		auto pair = mSet.insert(value);
-		return pair.second;
-	}
+    bool add(const T& value) {
+        auto pair = mSet.insert(value);
+        return pair.second;
+    }
 
-	void clear() {
-		mSet.clear();
-	}
+    void clear() {
+        mSet.clear();
+    }
 
-	bool contains(const T& value) const {
-		typename std::set<T>::const_iterator itr = mSet.find(value);
-		return itr != mSet.end();
-	}
+    bool contains(const T& value) const {
+        typename std::set<T>::const_iterator itr = mSet.find(value);
+        return itr != mSet.end();
+    }
 
-	bool isEmpty() const {
-		return mSet.empty();
-	}
+    bool isEmpty() const {
+        return mSet.empty();
+    }
 
-	bool remove(const T& value) {
-		return mSet.erase(value) == 1;
-	}
+    bool remove(const T& value) {
+        return mSet.erase(value) == 1;
+    }
 
-	size_t size() const {
-		return mSet.size();
-	}
+    size_t size() const {
+        return mSet.size();
+    }
 
-	class Iterator {
-	public:
-		Iterator(std::set<T>& set) :
-				mForwardIterator(false),
-				mSet(&set),
-				mIterator(mSet->begin()) {
-		}
+    class Iterator {
+    public:
+        Iterator(std::set<T>& set) :
+                mForwardIterator(false),
+                mSet(&set),
+                mIterator(mSet->begin()) {
+        }
 
-		~Iterator() { }
+        ~Iterator() { }
 
-		Iterator& operator=(const Iterator& iterator) {
-			mForwardIterator = iterator.mForwardIterator;
-			mSet = iterator.mSet;
-			mIterator = iterator.mIterator;
-			return *this;
-		}
+        Iterator& operator=(const Iterator& iterator) {
+            mForwardIterator = iterator.mForwardIterator;
+            mSet = iterator.mSet;
+            mIterator = iterator.mIterator;
+            return *this;
+        }
 
-		bool hasNext() const {
-			if (!mForwardIterator) {
-				return mIterator != mSet->end();
-			} else {
-				typename std::set<T>::iterator itr = mIterator;
-				return ++itr != mSet->end();
-			}
-		}
+        bool hasNext() const {
+            if (!mForwardIterator) {
+                return mIterator != mSet->end();
+            } else {
+                typename std::set<T>::iterator itr = mIterator;
+                return ++itr != mSet->end();
+            }
+        }
 
-		T next() {
-			if (!mForwardIterator) {
-				mForwardIterator = true;
-			} else {
-				++mIterator;
-			}
-			return *mIterator;
-		}
+        T next() {
+            if (!mForwardIterator) {
+                mForwardIterator = true;
+            } else {
+                ++mIterator;
+            }
+            return *mIterator;
+        }
 
-		bool remove() {
-			if (mForwardIterator) {
-				mIterator = mSet->erase(mIterator);
-				mForwardIterator = false;
-				return true;
-			}
-			return false;
-		}
+        bool remove() {
+            if (mForwardIterator) {
+                mIterator = mSet->erase(mIterator);
+                mForwardIterator = false;
+                return true;
+            }
+            return false;
+        }
 
-	private:
-		bool mForwardIterator;
-		std::set<T>* mSet;
-		typename std::set<T>::iterator mIterator;
-	};
+    private:
+        bool mForwardIterator;
+        std::set<T>* mSet;
+        typename std::set<T>::iterator mIterator;
+    };
 
-	inline Iterator iterator() {
-		return Iterator(mSet);
-	}
+    inline Iterator iterator() {
+        return Iterator(mSet);
+    }
 
 private:
-	std::set<T> mSet;
+    std::set<T> mSet;
 };
 
 
@@ -136,105 +136,105 @@ private:
  */
 template<typename T>
 class Set<sp<T>> :
-		public Object {
+        public Object {
 public:
-	Set() { }
+    Set() { }
 
-	Set(const sp<Set<sp<T>>>& collection) {
-		if (collection != nullptr) {
-			auto itr = collection->iterator();
-			while (itr.hasNext()) {
-				add(itr.next());
-			}
-		}
-	}
+    Set(const sp<Set<sp<T>>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+    }
 
-	virtual ~Set() {
-		clear();
-	}
+    virtual ~Set() {
+        clear();
+    }
 
-	bool add(const sp<T>& value) {
-		auto pair = mSet.insert(value);
-		return pair.second;
-	}
+    bool add(const sp<T>& value) {
+        auto pair = mSet.insert(value);
+        return pair.second;
+    }
 
-	void clear() {
-		mSet.clear();
-	}
+    void clear() {
+        mSet.clear();
+    }
 
-	bool contains(const sp<T>& value) const {
-		typename std::set<sp<T>, LessThanComparator<sp<T>>>::const_iterator itr = mSet.find(value);
-		return itr != mSet.end();
-	}
+    bool contains(const sp<T>& value) const {
+        typename std::set<sp<T>, LessThanComparator<sp<T>>>::const_iterator itr = mSet.find(value);
+        return itr != mSet.end();
+    }
 
-	bool isEmpty() const {
-		return mSet.empty();
-	}
+    bool isEmpty() const {
+        return mSet.empty();
+    }
 
-	bool remove(const sp<T>& value) {
-		return mSet.erase(value) == 1;
-	}
+    bool remove(const sp<T>& value) {
+        return mSet.erase(value) == 1;
+    }
 
-	size_t size() const {
-		return mSet.size();
-	}
+    size_t size() const {
+        return mSet.size();
+    }
 
-	class Iterator {
-	public:
-		Iterator(std::set<sp<T>, LessThanComparator<sp<T>>>& set) :
-				mForwardIterator(false),
-				mSet(&set),
-				mIterator(mSet->begin()) {
-		}
+    class Iterator {
+    public:
+        Iterator(std::set<sp<T>, LessThanComparator<sp<T>>>& set) :
+                mForwardIterator(false),
+                mSet(&set),
+                mIterator(mSet->begin()) {
+        }
 
-		~Iterator() { }
+        ~Iterator() { }
 
-		Iterator& operator=(const Iterator& iterator) {
-			mForwardIterator = iterator.mForwardIterator;
-			mSet = iterator.mSet;
-			mIterator = iterator.mIterator;
-			return *this;
-		}
+        Iterator& operator=(const Iterator& iterator) {
+            mForwardIterator = iterator.mForwardIterator;
+            mSet = iterator.mSet;
+            mIterator = iterator.mIterator;
+            return *this;
+        }
 
-		bool hasNext() const {
-			if (!mForwardIterator) {
-				return mIterator != mSet->end();
-			} else {
-				typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator itr = mIterator;
-				return ++itr != mSet->end();
-			}
-		}
+        bool hasNext() const {
+            if (!mForwardIterator) {
+                return mIterator != mSet->end();
+            } else {
+                typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator itr = mIterator;
+                return ++itr != mSet->end();
+            }
+        }
 
-		sp<T> next() {
-			if (!mForwardIterator) {
-				mForwardIterator = true;
-			} else {
-				++mIterator;
-			}
-			return *mIterator;
-		}
+        sp<T> next() {
+            if (!mForwardIterator) {
+                mForwardIterator = true;
+            } else {
+                ++mIterator;
+            }
+            return *mIterator;
+        }
 
-		bool remove() {
-			if (mForwardIterator) {
-				mIterator = mSet->erase(mIterator);
-				mForwardIterator = false;
-				return true;
-			}
-			return false;
-		}
+        bool remove() {
+            if (mForwardIterator) {
+                mIterator = mSet->erase(mIterator);
+                mForwardIterator = false;
+                return true;
+            }
+            return false;
+        }
 
-	private:
-		bool mForwardIterator;
-		std::set<sp<T>, LessThanComparator<sp<T>>>* mSet;
-		typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator mIterator;
-	};
+    private:
+        bool mForwardIterator;
+        std::set<sp<T>, LessThanComparator<sp<T>>>* mSet;
+        typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator mIterator;
+    };
 
-	inline Iterator iterator() {
-		return Iterator(mSet);
-	}
+    inline Iterator iterator() {
+        return Iterator(mSet);
+    }
 
 private:
-	std::set<sp<T>, LessThanComparator<sp<T>>> mSet;
+    std::set<sp<T>, LessThanComparator<sp<T>>> mSet;
 };
 
 } /* namespace mindroid */

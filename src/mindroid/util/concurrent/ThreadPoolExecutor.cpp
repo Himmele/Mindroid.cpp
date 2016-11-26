@@ -19,63 +19,63 @@
 namespace mindroid {
 
 ThreadPoolExecutor::ThreadPoolExecutor(uint32_t threadPoolSize) :
-		THREAD_POOL_SIZE(threadPoolSize),
-		mWorkerThreads(nullptr),
-		mQueue(new LinkedBlockingQueue<sp<Runnable>>()) {
-	start();
+        THREAD_POOL_SIZE(threadPoolSize),
+        mWorkerThreads(nullptr),
+        mQueue(new LinkedBlockingQueue<sp<Runnable>>()) {
+    start();
 }
 
 ThreadPoolExecutor::~ThreadPoolExecutor() {
-	shutdown();
+    shutdown();
 }
 
 void ThreadPoolExecutor::start() {
-	if (mWorkerThreads == nullptr) {
-		mWorkerThreads = new sp<WorkerThread>[THREAD_POOL_SIZE];
-		for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
-			mWorkerThreads[i] = new WorkerThread(String::valueOf("ThreadPoolExecutor[Worker i]"));
-			mWorkerThreads[i]->setQueue(mQueue);
-			mWorkerThreads[i]->start();
-		}
-	}
+    if (mWorkerThreads == nullptr) {
+        mWorkerThreads = new sp<WorkerThread>[THREAD_POOL_SIZE];
+        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
+            mWorkerThreads[i] = new WorkerThread(String::valueOf("ThreadPoolExecutor[Worker i]"));
+            mWorkerThreads[i]->setQueue(mQueue);
+            mWorkerThreads[i]->start();
+        }
+    }
 }
 
 void ThreadPoolExecutor::shutdown() {
-	if (mWorkerThreads != nullptr) {
-		for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
-			mWorkerThreads[i]->interrupt();
-			mQueue->put(nullptr);
-		}
-		for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
-			mWorkerThreads[i]->join();
-			mWorkerThreads[i] = nullptr;
-		}
-		delete[] mWorkerThreads;
-		mWorkerThreads = nullptr;
-	}
+    if (mWorkerThreads != nullptr) {
+        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
+            mWorkerThreads[i]->interrupt();
+            mQueue->put(nullptr);
+        }
+        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
+            mWorkerThreads[i]->join();
+            mWorkerThreads[i] = nullptr;
+        }
+        delete[] mWorkerThreads;
+        mWorkerThreads = nullptr;
+    }
 }
 
 void ThreadPoolExecutor::WorkerThread::run() {
-	while (!isInterrupted()) {
-		sp<Runnable> runnable = mQueue->take();
-		if (runnable != nullptr) {
-			runnable->run();
-		} else {
-			break;
-		}
-	}
+    while (!isInterrupted()) {
+        sp<Runnable> runnable = mQueue->take();
+        if (runnable != nullptr) {
+            runnable->run();
+        } else {
+            break;
+        }
+    }
 }
 
 void ThreadPoolExecutor::WorkerThread::setQueue(const sp<LinkedBlockingQueue<sp<Runnable>>>& queue) {
-	mQueue = queue;
+    mQueue = queue;
 }
 
 void ThreadPoolExecutor::execute(const sp<Runnable>& runnable) {
-	mQueue->put(runnable);
+    mQueue->put(runnable);
 }
 
 bool ThreadPoolExecutor::cancel(const sp<Runnable>& runnable) {
-	return mQueue->remove(runnable);
+    return mQueue->remove(runnable);
 }
 
 } /* namespace mindroid */

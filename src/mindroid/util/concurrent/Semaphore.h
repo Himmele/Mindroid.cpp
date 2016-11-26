@@ -23,18 +23,18 @@
 namespace mindroid {
 
 class Semaphore :
-		public Object {
+        public Object {
 public:
-	Semaphore(uint32_t value = 0);
-	~Semaphore();
-	Semaphore(const Semaphore&) = delete;
-	Semaphore& operator=(const Semaphore&) = delete;
-	void acquire();
-	void release();
-	bool tryAcquire(uint64_t timeoutMillis);
+    Semaphore(uint32_t value = 0);
+    ~Semaphore();
+    Semaphore(const Semaphore&) = delete;
+    Semaphore& operator=(const Semaphore&) = delete;
+    void acquire();
+    void release();
+    bool tryAcquire(uint64_t timeoutMillis);
 
 private:
-	sem_t mSemaphore;
+    sem_t mSemaphore;
 };
 
 } /* namespace mindroid */

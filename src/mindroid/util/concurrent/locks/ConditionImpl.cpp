@@ -24,46 +24,46 @@
 namespace mindroid {
 
 ConditionImpl::ConditionImpl(const sp<Lock>& lock) :
-		mLock(lock),
-		mMutex(lock->getMutex()) {
-	pthread_condattr_init(&mAttributes);
+        mLock(lock),
+        mMutex(lock->getMutex()) {
+    pthread_condattr_init(&mAttributes);
 #ifndef PTHREAD_USE_TIMEDWAIT_NP
-	pthread_condattr_setclock(&mAttributes, CLOCK_MONOTONIC);
+    pthread_condattr_setclock(&mAttributes, CLOCK_MONOTONIC);
 #endif
-	pthread_cond_init(&mCondition, &mAttributes);
+    pthread_cond_init(&mCondition, &mAttributes);
 }
 
 ConditionImpl::~ConditionImpl() {
-	pthread_cond_destroy(&mCondition);
-	pthread_condattr_destroy(&mAttributes);
+    pthread_cond_destroy(&mCondition);
+    pthread_condattr_destroy(&mAttributes);
 }
 
 void ConditionImpl::await() {
-	pthread_cond_wait(&mCondition, mMutex);
+    pthread_cond_wait(&mCondition, mMutex);
 }
 
 bool ConditionImpl::await(uint64_t timeoutMillis) {
-	timespec time;
-	clock_gettime(CLOCK_MONOTONIC, &time);
-	time.tv_sec += timeoutMillis / 1000;
-	time.tv_nsec += (timeoutMillis % 1000) * 1000000;
-	if (time.tv_nsec >= 1000000000) {
-		time.tv_sec++;
-		time.tv_nsec -= 1000000000;
-	}
+    timespec time;
+    clock_gettime(CLOCK_MONOTONIC, &time);
+    time.tv_sec += timeoutMillis / 1000;
+    time.tv_nsec += (timeoutMillis % 1000) * 1000000;
+    if (time.tv_nsec >= 1000000000) {
+        time.tv_sec++;
+        time.tv_nsec -= 1000000000;
+    }
 #ifdef PTHREAD_USE_TIMEDWAIT_NP
-	return (pthread_cond_timedwait_monotonic(&mCondition, mMutex, &time) == 0);
+    return (pthread_cond_timedwait_monotonic(&mCondition, mMutex, &time) == 0);
 #else
-	return (pthread_cond_timedwait(&mCondition, mMutex, &time) == 0);
+    return (pthread_cond_timedwait(&mCondition, mMutex, &time) == 0);
 #endif
 }
 
 void ConditionImpl::signal() {
-	pthread_cond_signal(&mCondition);
+    pthread_cond_signal(&mCondition);
 }
 
 void ConditionImpl::signalAll() {
-	pthread_cond_broadcast(&mCondition);
+    pthread_cond_broadcast(&mCondition);
 }
 
 } /* namespace mindroid */

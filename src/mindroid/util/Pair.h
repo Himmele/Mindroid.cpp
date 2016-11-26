@@ -23,19 +23,19 @@ namespace mindroid {
 
 template<typename F, typename S>
 class Pair :
-		public Object {
+        public Object {
 public:
-	Pair(F first, S second) :
-		first(first),
-		second(second) {
-	}
+    Pair(F first, S second) :
+        first(first),
+        second(second) {
+    }
 
-	static sp<Pair> create(F first, S second) {
+    static sp<Pair> create(F first, S second) {
         return new Pair(first, second);
     }
 
-	F first;
-	S second;
+    F first;
+    S second;
 };
 
 } /* namespace mindroid */

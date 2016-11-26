@@ -38,12 +38,12 @@ System::System() {
 }
 
 System* System::getInstance() {
-	pthread_mutex_lock(&sMutex);
-	if (sInstance == nullptr) {
-		sInstance = new System();
-	}
-	pthread_mutex_unlock(&sMutex);
-	return sInstance;
+    pthread_mutex_lock(&sMutex);
+    if (sInstance == nullptr) {
+        sInstance = new System();
+    }
+    pthread_mutex_unlock(&sMutex);
+    return sInstance;
 }
 
 sp<String> System::getProperty(const sp<String>& name, const sp<String>& defaultValue) {

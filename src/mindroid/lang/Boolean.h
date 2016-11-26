@@ -24,34 +24,34 @@ namespace mindroid {
 class String;
 
 class Boolean :
-		public Object {
+        public Object {
 public:
-	/**
-	 * The Boolean object corresponding to the primitive value false.
-	 */
-	static const sp<Boolean> FALSE;
+    /**
+     * The Boolean object corresponding to the primitive value false.
+     */
+    static const sp<Boolean> FALSE;
 
-	/**
-	 * The Boolean object corresponding to the primitive value true.
-	 */
-	static const sp<Boolean> TRUE;
+    /**
+     * The Boolean object corresponding to the primitive value true.
+     */
+    static const sp<Boolean> TRUE;
 
-	explicit Boolean(bool value) : mValue(value) {
-	}
+    explicit Boolean(bool value) : mValue(value) {
+    }
 
-	static sp<Boolean> valueOf(const char* s);
-	static sp<Boolean> valueOf(const sp<String>& s);
+    static sp<Boolean> valueOf(const char* s);
+    static sp<Boolean> valueOf(const sp<String>& s);
 
-	bool booleanValue() const {
-		return mValue;
-	}
+    bool booleanValue() const {
+        return mValue;
+    }
 
-	bool value() const {
-		return booleanValue();
-	}
+    bool value() const {
+        return booleanValue();
+    }
 
 private:
-	bool mValue;
+    bool mValue;
 };
 
 } /* namespace mindroid */

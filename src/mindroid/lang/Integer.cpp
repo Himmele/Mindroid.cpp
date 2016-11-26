@@ -25,15 +25,15 @@ sp<Integer> Integer::valueOf(const char* s) {
 }
 
 sp<Integer> Integer::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 sp<Integer> Integer::valueOf(const char* s, int32_t radix) {
-	return new Integer(strtol(s, nullptr, radix));
+    return new Integer(strtol(s, nullptr, radix));
 }
 
 sp<Integer> Integer::valueOf(const sp<String>& s, int32_t radix) {
-	return valueOf(s->c_str(), radix);
+    return valueOf(s->c_str(), radix);
 }
 
 } /* namespace mindroid */

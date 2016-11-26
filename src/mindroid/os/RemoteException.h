@@ -27,13 +27,13 @@ namespace mindroid {
  */
 class RemoteException : public Exception {
 public:
-	RemoteException() = default;
+    RemoteException() = default;
 
-	RemoteException(const char* message) : Exception(message) {
-	}
+    RemoteException(const char* message) : Exception(message) {
+    }
 
-	RemoteException(const sp<String>& message) : Exception(message) {
-	}
+    RemoteException(const sp<String>& message) : Exception(message) {
+    }
 };
 
 } /* namespace mindroid */

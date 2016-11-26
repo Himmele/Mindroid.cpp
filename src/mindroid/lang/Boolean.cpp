@@ -28,7 +28,7 @@ sp<Boolean> Boolean::valueOf(const char* s) {
 }
 
 sp<Boolean> Boolean::valueOf(const sp<String>& s) {
-	return valueOf(s->c_str());
+    return valueOf(s->c_str());
 }
 
 } /* namespace mindroid */

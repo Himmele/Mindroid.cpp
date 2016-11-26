@@ -25,35 +25,35 @@ namespace mindroid {
 class ServerSocket;
 
 class Socket :
-		public Object {
+        public Object {
 public:
-	Socket();
-	Socket(const char* host, uint16_t port) :
-			Socket(String::valueOf(host), port) {
-	}
-	Socket(const sp<String>& host, uint16_t port);
-	virtual ~Socket();
-	Socket(const Socket&) = delete;
-	Socket& operator=(const Socket&) = delete;
+    Socket();
+    Socket(const char* host, uint16_t port) :
+            Socket(String::valueOf(host), port) {
+    }
+    Socket(const sp<String>& host, uint16_t port);
+    virtual ~Socket();
+    Socket(const Socket&) = delete;
+    Socket& operator=(const Socket&) = delete;
 
-	int connect(const char* host, uint16_t port) {
-		return connect(String::valueOf(host), port);
-	}
-	int connect(const sp<String>& host, uint16_t port);
-	ssize_t read(uint8_t* data, size_t size);
-	ssize_t readFully(uint8_t* data, size_t size);
-	bool write(const void* data, size_t size);
-	void close();
-	bool isConnected() const { return mIsConnected; }
-	bool isClosed() const { return mIsClosed; }
-	int getId() const { return mSocketId; }
+    int connect(const char* host, uint16_t port) {
+        return connect(String::valueOf(host), port);
+    }
+    int connect(const sp<String>& host, uint16_t port);
+    ssize_t read(uint8_t* data, size_t size);
+    ssize_t readFully(uint8_t* data, size_t size);
+    bool write(const void* data, size_t size);
+    void close();
+    bool isConnected() const { return mIsConnected; }
+    bool isClosed() const { return mIsClosed; }
+    int getId() const { return mSocketId; }
 
 private:
-	int mSocketId;
-	bool mIsConnected;
-	bool mIsClosed;
+    int mSocketId;
+    bool mIsConnected;
+    bool mIsClosed;
 
-	friend class ServerSocket;
+    friend class ServerSocket;
 };
 
 } /* namespace mindroid */

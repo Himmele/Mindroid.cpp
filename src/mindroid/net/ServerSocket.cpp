@@ -25,99 +25,99 @@
 namespace mindroid {
 
 ServerSocket::ServerSocket() :
-		mIsBound(false),
-		mIsClosed(false),
-		mReuseAddress(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+        mIsBound(false),
+        mIsClosed(false),
+        mReuseAddress(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
 }
 
 ServerSocket::ServerSocket(uint16_t port) :
-		mIsBound(false),
-		mIsClosed(false),
-		mReuseAddress(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-	bind(port);
+        mIsBound(false),
+        mIsClosed(false),
+        mReuseAddress(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+    bind(port);
 }
 
 ServerSocket::ServerSocket(uint16_t port, int backlog) :
-		mIsBound(false),
-		mIsClosed(false),
-		mReuseAddress(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-	bind(port, backlog);
+        mIsBound(false),
+        mIsClosed(false),
+        mReuseAddress(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+    bind(port, backlog);
 }
 
 ServerSocket::ServerSocket(const sp<String>& host, uint16_t port, int backlog) :
-		mIsBound(false),
-		mIsClosed(false),
-		mReuseAddress(false) {
-	mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-	bind(host, port, backlog);
+        mIsBound(false),
+        mIsClosed(false),
+        mReuseAddress(false) {
+    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+    bind(host, port, backlog);
 }
 
 ServerSocket::~ServerSocket() {
-	close();
+    close();
 }
 
 bool ServerSocket::bind(uint16_t port, int backlog) {
-	return bind(nullptr, port, backlog);
+    return bind(nullptr, port, backlog);
 }
 
 bool ServerSocket::bind(const sp<String>& host, uint16_t port, int backlog) {
-	if (mIsBound) {
-		return false;
-	}
+    if (mIsBound) {
+        return false;
+    }
 
-	if (mSocketId < 0) {
-		return false;
-	}
+    if (mSocketId < 0) {
+        return false;
+    }
 
-	int value = mReuseAddress;
-	setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+    int value = mReuseAddress;
+    setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
 
-	sp<SocketAddress> socketAddress = (host == nullptr) ?
-			new SocketAddress(port) : new SocketAddress(host, port);
+    sp<SocketAddress> socketAddress = (host == nullptr) ?
+            new SocketAddress(port) : new SocketAddress(host, port);
 
-	if (::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
-		if (::listen(mSocketId, backlog) == 0) {
-			mIsBound = true;
-			return true;
-		} else {
-			::close(mSocketId);
-			mSocketId = -1;
-			return false;
-		}
-	} else {
-		::close(mSocketId);
-		mSocketId = -1;
-		return false;
-	}
+    if (::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
+        if (::listen(mSocketId, backlog) == 0) {
+            mIsBound = true;
+            return true;
+        } else {
+            ::close(mSocketId);
+            mSocketId = -1;
+            return false;
+        }
+    } else {
+        ::close(mSocketId);
+        mSocketId = -1;
+        return false;
+    }
 }
 
 sp<Socket> ServerSocket::accept() {
-	sp<Socket> socket = new Socket();
-	socket->mSocketId = ::accept(mSocketId, 0, 0);
-	if (socket->mSocketId < 0) {
-		return nullptr;
-	} else {
-		socket->mIsConnected = true;
-		return socket;
-	}
+    sp<Socket> socket = new Socket();
+    socket->mSocketId = ::accept(mSocketId, 0, 0);
+    if (socket->mSocketId < 0) {
+        return nullptr;
+    } else {
+        socket->mIsConnected = true;
+        return socket;
+    }
 }
 
 void ServerSocket::close() {
-	mIsClosed = true;
-	mIsBound = false;
-	if (mSocketId >= 0) {
-		// Unblock calls like accept, etc. -> http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
-		::shutdown(mSocketId, SHUT_RDWR);
-		::close(mSocketId);
-		mSocketId = -1;
-	}
+    mIsClosed = true;
+    mIsBound = false;
+    if (mSocketId >= 0) {
+        // Unblock calls like accept, etc. -> http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
+        ::shutdown(mSocketId, SHUT_RDWR);
+        ::close(mSocketId);
+        mSocketId = -1;
+    }
 }
 
 void ServerSocket::setReuseAddress(bool reuse) {
-	mReuseAddress = reuse;
+    mReuseAddress = reuse;
 }
 
 } /* namespace mindroid */

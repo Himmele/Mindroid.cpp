@@ -21,23 +21,23 @@
 namespace mindroid {
 
 void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
-	sp<String> message;
-	if ((mFlags & FLAG_TIMESTAMP) == FLAG_TIMESTAMP) {
-		message = record->toString();
-	} else {
-		message = record->toShortString();
-	}
+    sp<String> message;
+    if ((mFlags & FLAG_TIMESTAMP) == FLAG_TIMESTAMP) {
+        message = record->toString();
+    } else {
+        message = record->toShortString();
+    }
 
-	printf("%s\n", message->c_str());
-	fflush(stdout);
+    printf("%s\n", message->c_str());
+    fflush(stdout);
 }
 
 void ConsoleHandler::setFlag(uint32_t flag) {
-	mFlags |= flag;
+    mFlags |= flag;
 }
 
 void ConsoleHandler::removeFlag(uint32_t flag) {
-	mFlags &= ~flag;
+    mFlags &= ~flag;
 }
 
 } /* namespace mindroid */

@@ -22,55 +22,55 @@
 namespace mindroid {
 
 HandlerThread::HandlerThread() :
-		Thread(),
-		mLock(new ReentrantLock()),
-		mCondition(mLock->newCondition()),
-		mLooper(nullptr) {
+        Thread(),
+        mLock(new ReentrantLock()),
+        mCondition(mLock->newCondition()),
+        mLooper(nullptr) {
 }
 
 HandlerThread::HandlerThread(const char* name) :
-		Thread(name),
-		mLock(new ReentrantLock()),
-		mCondition(mLock->newCondition()),
-		mLooper(nullptr) {
+        Thread(name),
+        mLock(new ReentrantLock()),
+        mCondition(mLock->newCondition()),
+        mLooper(nullptr) {
 }
 
 HandlerThread::HandlerThread(const sp<String>& name) :
-		Thread(name),
-		mLock(new ReentrantLock()),
-		mCondition(mLock->newCondition()),
-		mLooper(nullptr) {
+        Thread(name),
+        mLock(new ReentrantLock()),
+        mCondition(mLock->newCondition()),
+        mLooper(nullptr) {
 }
 
 void HandlerThread::run() {
-	Looper::prepare();
-	mLock->lock();
-	mLooper = Looper::myLooper();
-	mCondition->signalAll();
-	mLock->unlock();
-	onLooperPrepared();
-	Looper::loop();
+    Looper::prepare();
+    mLock->lock();
+    mLooper = Looper::myLooper();
+    mCondition->signalAll();
+    mLock->unlock();
+    onLooperPrepared();
+    Looper::loop();
 }
 
 sp<Looper> HandlerThread::getLooper() {
-	AutoLock autoLock(mLock);
-	if (!isAlive()) {
-		return nullptr;
-	}
+    AutoLock autoLock(mLock);
+    if (!isAlive()) {
+        return nullptr;
+    }
 
-	while (isAlive() && mLooper == nullptr) {
-		mCondition->await();
-	}
-	return mLooper;
+    while (isAlive() && mLooper == nullptr) {
+        mCondition->await();
+    }
+    return mLooper;
 }
 
 bool HandlerThread::quit() {
-	sp<Looper> looper = getLooper();
-	if (looper != nullptr) {
-		looper->quit();
-		return true;
-	}
-	return false;
+    sp<Looper> looper = getLooper();
+    if (looper != nullptr) {
+        looper->quit();
+        return true;
+    }
+    return false;
 }
 
 } /* namespace mindroid */

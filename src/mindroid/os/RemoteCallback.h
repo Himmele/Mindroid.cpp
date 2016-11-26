@@ -29,50 +29,78 @@ namespace mindroid {
  * @hide
  */
 class RemoteCallback :
-		public Object {
+        public Object {
 public:
-	RemoteCallback(const sp<Handler> handler) :
-			mHandler(handler) {
-	}
+    class OnResultListener : public Object {
+    public:
+        virtual void onResult(const sp<Bundle>& result) = 0;
 
-	virtual ~RemoteCallback() = default;
+        sp<RemoteCallback> getCallback() {
+            return mCallback.lock();
+        }
 
-	sp<IRemoteCallback> asInterface() {
-		if (mCallback == nullptr) {
-			mCallback = new Stub(this);
-		}
-		return mCallback;
-	}
+    private:
+        wp<RemoteCallback> mCallback;
 
-protected:
-	virtual void onResult(const sp<Bundle>& data) = 0;
+        friend class RemoteCallback;
+    };
 
-	sp<Handler> getHandler() {
-		return mHandler;
-	}
+    RemoteCallback(const sp<OnResultListener>& listener) :
+            RemoteCallback(listener, nullptr) {
+    }
+
+    RemoteCallback(const sp<OnResultListener>& listener, const sp<Handler>& handler) {
+        if (listener == nullptr) {
+            Assert::assertNotNull("Listener cannot be null", listener);
+        }
+        listener->mCallback = this;
+        mCallback = new Stub(listener, handler);
+    }
+
+    virtual ~RemoteCallback() {
+        mCallback->dispose();
+    }
+
+    sp<IRemoteCallback> asInterface() {
+        return mCallback;
+    }
+
+    bool equals(const sp<Object>& other) const override {
+        if (other == nullptr) return false;
+        if (other == this) return true;
+        if (Class<RemoteCallback>::isInstance(other)) {
+            sp<RemoteCallback> o = Class<RemoteCallback>::cast(other);
+            return mCallback->asBinder()->equals(o->mCallback->asBinder());
+        } else {
+            return false;
+        }
+    }
+
+    size_t hashCode() const override {
+        return mCallback->asBinder()->hashCode();
+    }
 
 private:
-	class Stub : public binder::RemoteCallback::Stub {
-	public:
-		Stub(const wp<RemoteCallback>& remoteCallback) :
-				mRemoteCallback(remoteCallback) {
-		}
+    class Stub : public binder::RemoteCallback::Stub {
+    public:
+        Stub(const sp<OnResultListener>& listener, const sp<Handler>& handler) :
+                mListener(listener), mHandler(handler) {
+        }
 
-		virtual void sendResult(const sp<Bundle>& data) {
-			sp<RemoteCallback> remoteCallback = mRemoteCallback.get();
-			if (remoteCallback != nullptr) {
-				remoteCallback->mHandler->post([=] { remoteCallback->onResult(data); });
-			} else {
-				Log::w("RemoteCallback", "RemoteCallback::Stub is calling back to a dead RemoteCallback");
-			}
-		};
+        virtual void sendResult(const sp<Bundle>& result) {
+            if (mHandler != nullptr) {
+                mHandler->post([=] { mListener->onResult(result); });
+            } else {
+                mListener->onResult(result);
+            }
+        };
 
-	private:
-		wp<RemoteCallback> mRemoteCallback;
-	};
+    private:
+        sp<OnResultListener> mListener;
+        sp<Handler> mHandler;
+    };
 
-	sp<Handler> mHandler;
-	sp<IRemoteCallback> mCallback;
+    sp<IRemoteCallback> mCallback;
 };
 
 } /* namespace mindroid */

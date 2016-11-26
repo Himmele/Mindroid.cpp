@@ -25,25 +25,25 @@
 namespace mindroid {
 
 class ReentrantLock :
-		public Lock {
+        public Lock {
 public:
-	ReentrantLock();
-	virtual ~ReentrantLock();
-	ReentrantLock(const ReentrantLock&) = delete;
-	ReentrantLock& operator=(const ReentrantLock&) = delete;
-	virtual void lock();
-	virtual sp<Condition> newCondition();
-	virtual bool tryLock(uint64_t timeoutMillis);
-	virtual void unlock();
+    ReentrantLock();
+    virtual ~ReentrantLock();
+    ReentrantLock(const ReentrantLock&) = delete;
+    ReentrantLock& operator=(const ReentrantLock&) = delete;
+    virtual void lock();
+    virtual sp<Condition> newCondition();
+    virtual bool tryLock(uint64_t timeoutMillis);
+    virtual void unlock();
 
 protected:
-	virtual pthread_mutex_t* getMutex() {
-		return &mMutex;
-	}
+    virtual pthread_mutex_t* getMutex() {
+        return &mMutex;
+    }
 
 private:
-	pthread_mutex_t mMutex;
-	pthread_mutexattr_t mAttributes;
+    pthread_mutex_t mMutex;
+    pthread_mutexattr_t mAttributes;
 };
 
 } /* namespace mindroid */

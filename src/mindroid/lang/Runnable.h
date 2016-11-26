@@ -18,14 +18,28 @@
 #define MINDROID_RUNNABLE_H_
 
 #include "mindroid/lang/Object.h"
+#include <functional>
 
 namespace mindroid {
 
 class Runnable :
-		public Object {
+        public Object {
 public:
-	virtual ~Runnable() = default;
-	virtual void run() = 0;
+    Runnable(const std::function<void (void)>& func) : mFunc(func) { }
+    Runnable(std::function<void (void)>&& func) : mFunc(std::move(func)) { }
+
+    virtual ~Runnable() = default;
+    virtual void run() {
+        if (mFunc) {
+            mFunc();
+        }
+    }
+
+protected:
+    Runnable() : mFunc(nullptr) { }
+
+private:
+    const std::function<void (void)> mFunc;
 };
 
 } /* namespace mindroid */

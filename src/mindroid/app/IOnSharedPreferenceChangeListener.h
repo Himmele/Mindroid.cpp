@@ -27,100 +27,100 @@ namespace mindroid {
 class SharedPreferences;
 
 class IOnSharedPreferenceChangeListener :
-		public IInterface {
+        public IInterface {
 public:
-	virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) = 0;
+    virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) = 0;
 };
 
 namespace binder {
 
 class OnSharedPreferenceChangeListener {
 public:
-	class Stub : public Binder, public IOnSharedPreferenceChangeListener {
-	public:
-		Stub() {
-			this->attachInterface(this, String::valueOf(DESCRIPTOR));
-		}
+    class Stub : public Binder, public IOnSharedPreferenceChangeListener {
+    public:
+        Stub() {
+            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+        }
 
-		static sp<IOnSharedPreferenceChangeListener> asInterface(const sp<IBinder>& binder) {
-			if (binder == nullptr) {
-				return nullptr;
-			}
-			return new OnSharedPreferenceChangeListener::Stub::SmartProxy(binder);
-		}
+        static sp<IOnSharedPreferenceChangeListener> asInterface(const sp<IBinder>& binder) {
+            if (binder == nullptr) {
+                return nullptr;
+            }
+            return new OnSharedPreferenceChangeListener::Stub::SmartProxy(binder);
+        }
 
-		virtual sp<IBinder> asBinder() {
-			return this;
-		}
+        virtual sp<IBinder> asBinder() {
+            return this;
+        }
 
-		virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
+        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
 
-		class Proxy : public IOnSharedPreferenceChangeListener {
-		public:
-			Proxy(const sp<IBinder>& remote) {
-				mRemote = remote;
-			}
+        class Proxy : public IOnSharedPreferenceChangeListener {
+        public:
+            Proxy(const sp<IBinder>& remote) {
+                mRemote = remote;
+            }
 
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
 
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<Proxy>::isInstance(obj)) {
-					sp<Proxy> other = Class<Proxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<Proxy>::isInstance(obj)) {
+                    sp<Proxy> other = Class<Proxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
 
-			virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
+            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
 
-		private:
-			sp<IBinder> mRemote;
-		};
+        private:
+            sp<IBinder> mRemote;
+        };
 
-		class SmartProxy : public IOnSharedPreferenceChangeListener {
-		public:
-			SmartProxy(const sp<IBinder>& remote);
+        class SmartProxy : public IOnSharedPreferenceChangeListener {
+        public:
+            SmartProxy(const sp<IBinder>& remote);
 
-			virtual sp<IBinder> asBinder() {
-				return mRemote;
-			}
+            virtual sp<IBinder> asBinder() {
+                return mRemote;
+            }
 
-			bool equals(const sp<Object>& obj) const override {
-				if (obj == nullptr) return false;
-				if (obj == this) return true;
-				if (Class<SmartProxy>::isInstance(obj)) {
-					sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
-					return mRemote->equals(other->mRemote);
-				} else {
-					return false;
-				}
-			}
+            bool equals(const sp<Object>& obj) const override {
+                if (obj == nullptr) return false;
+                if (obj == this) return true;
+                if (Class<SmartProxy>::isInstance(obj)) {
+                    sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
+                    return mRemote->equals(other->mRemote);
+                } else {
+                    return false;
+                }
+            }
 
-			size_t hashCode() const override {
-				return mRemote->hashCode();
-			}
+            size_t hashCode() const override {
+                return mRemote->hashCode();
+            }
 
-			virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
+            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
 
-		private:
-			sp<IBinder> mRemote;
-			sp<IOnSharedPreferenceChangeListener> mStub;
-			sp<IOnSharedPreferenceChangeListener> mProxy;
-		};
+        private:
+            sp<IBinder> mRemote;
+            sp<IOnSharedPreferenceChangeListener> mStub;
+            sp<IOnSharedPreferenceChangeListener> mProxy;
+        };
 
-	private:
-		static const char* const DESCRIPTOR;
-		static const int32_t MSG_ON_SHARED_PREFERENCE_CHANGED = 1;
-	};
+    private:
+        static const char* const DESCRIPTOR;
+        static const int32_t MSG_ON_SHARED_PREFERENCE_CHANGED = 1;
+    };
 };
 
 } /* namespace binder */

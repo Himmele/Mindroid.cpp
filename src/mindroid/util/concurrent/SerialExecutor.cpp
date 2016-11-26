@@ -21,23 +21,23 @@
 namespace mindroid {
 
 SerialExecutor::SerialExecutor() :
-		mHandler(nullptr) {
-	mHandlerThread = new HandlerThread("SerialExecutor");
-	mHandlerThread->start();
-	mHandler = new Handler(mHandlerThread->getLooper());
+        mHandler(nullptr) {
+    mHandlerThread = new HandlerThread("SerialExecutor");
+    mHandlerThread->start();
+    mHandler = new Handler(mHandlerThread->getLooper());
 }
 
 SerialExecutor::~SerialExecutor() {
-	mHandlerThread->getLooper()->quit();
-	mHandlerThread->join();
+    mHandlerThread->getLooper()->quit();
+    mHandlerThread->join();
 }
 
 void SerialExecutor::execute(const sp<Runnable>& runnable) {
-	mHandler->obtainMessage(runnable)->sendToTarget();
+    mHandler->obtainMessage(runnable)->sendToTarget();
 }
 
 bool SerialExecutor::cancel(const sp<Runnable>& runnable) {
-	return mHandler->removeCallbacks(runnable);
+    return mHandler->removeCallbacks(runnable);
 }
 
 } /* namespace mindroid */

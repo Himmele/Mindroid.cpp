@@ -24,42 +24,42 @@ namespace mindroid {
 class String;
 
 class Long :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Constant for the maximum {@code long} value, 2<sup>63</sup>-1.
-	 */
-	static const int64_t MAX_VALUE = 0x7FFFFFFFFFFFFFFFL;
+    /**
+     * Constant for the maximum {@code long} value, 2<sup>63</sup>-1.
+     */
+    static const int64_t MAX_VALUE = 0x7FFFFFFFFFFFFFFFL;
 
-	/**
-	 * Constant for the minimum {@code long} value, -2<sup>63</sup>.
-	 */
-	static const int64_t MIN_VALUE = 0x8000000000000000L;
+    /**
+     * Constant for the minimum {@code long} value, -2<sup>63</sup>.
+     */
+    static const int64_t MIN_VALUE = 0x8000000000000000L;
 
-	/**
-	 * Constant for the number of bits needed to represent a {@code long} in
+    /**
+     * Constant for the number of bits needed to represent a {@code long} in
      * two's complement form.
-	 */
-	static const int32_t SIZE = 64;
+     */
+    static const int32_t SIZE = 64;
 
-	explicit Long(int64_t value) : mValue(value) {
-	}
+    explicit Long(int64_t value) : mValue(value) {
+    }
 
-	static sp<Long> valueOf(const char* s);
-	static sp<Long> valueOf(const sp<String>& s);
-	static sp<Long> valueOf(const char* s, int32_t radix);
-	static sp<Long> valueOf(const sp<String>& s, int32_t radix);
+    static sp<Long> valueOf(const char* s);
+    static sp<Long> valueOf(const sp<String>& s);
+    static sp<Long> valueOf(const char* s, int32_t radix);
+    static sp<Long> valueOf(const sp<String>& s, int32_t radix);
 
-	int64_t longValue() const {
-		return mValue;
-	}
+    int64_t longValue() const {
+        return mValue;
+    }
 
-	int64_t value() const {
-		return longValue();
-	}
+    int64_t value() const {
+        return longValue();
+    }
 
 private:
-	int64_t mValue;
+    int64_t mValue;
 };
 
 } /* namespace mindroid */

@@ -99,47 +99,47 @@ namespace mindroid {
  */
 class SystemClock {
 public:
-	/**
-	 * This class is uninstantiable.
-	 */
-	SystemClock() noexcept = delete;
-	~SystemClock() noexcept = delete;
-	SystemClock(const SystemClock&) = delete;
-	SystemClock& operator=(const SystemClock&) = delete;
+    /**
+     * This class is uninstantiable.
+     */
+    SystemClock() noexcept = delete;
+    ~SystemClock() noexcept = delete;
+    SystemClock(const SystemClock&) = delete;
+    SystemClock& operator=(const SystemClock&) = delete;
 
-	/**
-	 * Waits a given number of milliseconds (of uptimeMillis) before returning. Similar to
-	 * {@link java.lang.Thread#sleep(long)}, but does not throw {@link InterruptedException};
-	 * {@link Thread#interrupt()} events are deferred until the next interruptible operation. Does
-	 * not return until at least the specified number of milliseconds has elapsed.
-	 *
-	 * @param ms to sleep before returning, in milliseconds of uptime.
-	 */
-	static void sleep(uint64_t ms);
+    /**
+     * Waits a given number of milliseconds (of uptimeMillis) before returning. Similar to
+     * {@link java.lang.Thread#sleep(long)}, but does not throw {@link InterruptedException};
+     * {@link Thread#interrupt()} events are deferred until the next interruptible operation. Does
+     * not return until at least the specified number of milliseconds has elapsed.
+     *
+     * @param ms to sleep before returning, in milliseconds of uptime.
+     */
+    static void sleep(uint64_t ms);
 
-	/**
-	 * Returns milliseconds since boot, not counting time spent in deep sleep. <b>Note:</b> This
-	 * value may get reset occasionally (before it would otherwise wrap around).
-	 *
-	 * @return milliseconds of non-sleep uptime since boot.
-	 */
-	static uint64_t uptimeMillis();
+    /**
+     * Returns milliseconds since boot, not counting time spent in deep sleep. <b>Note:</b> This
+     * value may get reset occasionally (before it would otherwise wrap around).
+     *
+     * @return milliseconds of non-sleep uptime since boot.
+     */
+    static uint64_t uptimeMillis();
 
-	/**
-	 * Returns milliseconds since boot, including time spent in sleep.
-	 *
-	 * @return elapsed milliseconds since boot.
-	 */
-	static uint64_t elapsedRealtime();
+    /**
+     * Returns milliseconds since boot, including time spent in sleep.
+     *
+     * @return elapsed milliseconds since boot.
+     */
+    static uint64_t elapsedRealtime();
 
-	/**
-	 * Returns nanoseconds since boot, including time spent in sleep.
-	 *
-	 * @return elapsed nanoseconds since boot.
-	 */
-	static uint64_t elapsedRealtimeNanos() {
-		return elapsedRealtime() * 1000000;
-	}
+    /**
+     * Returns nanoseconds since boot, including time spent in sleep.
+     *
+     * @return elapsed nanoseconds since boot.
+     */
+    static uint64_t elapsedRealtimeNanos() {
+        return elapsedRealtime() * 1000000;
+    }
 };
 
 } /* namespace mindroid */

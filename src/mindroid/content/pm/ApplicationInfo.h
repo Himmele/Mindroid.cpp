@@ -28,37 +28,37 @@ namespace mindroid {
  * collected from the MindroidManifest.xml's &lt;application&gt; tag.
  */
 class ApplicationInfo :
-		public Object {
+        public Object {
 public:
-	ApplicationInfo() = default;
+    ApplicationInfo() = default;
 
-	/**
-	 * Public name of this item. From the "mindroid:name" attribute.
-	 */
-	sp<String> name;
+    /**
+     * Public name of this item. From the "mindroid:name" attribute.
+     */
+    sp<String> name;
 
-	/**
-	 * Name of the package that this item is in.
-	 */
-	sp<String> packageName;
+    /**
+     * Name of the package that this item is in.
+     */
+    sp<String> packageName;
 
-	/**
-	 * The name of the process this application should run in. From the "process" attribute or, if
-	 * not set, the same as <var>packageName</var>.
-	 */
+    /**
+     * The name of the process this application should run in. From the "process" attribute or, if
+     * not set, the same as <var>packageName</var>.
+     */
     sp<String> processName;
     
     /**
-	 * The app's declared version code.
-	 *
-	 * @hide
-	 */
-	int32_t versionCode;
+     * The app's declared version code.
+     *
+     * @hide
+     */
+    int32_t versionCode;
 
-	/**
-	 * When false, indicates that all components within this application are considered disabled,
-	 * regardless of their individually set enabled status.
-	 */
+    /**
+     * When false, indicates that all components within this application are considered disabled,
+     * regardless of their individually set enabled status.
+     */
     bool enabled = true;
 };
 

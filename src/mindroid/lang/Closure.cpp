@@ -20,9 +20,9 @@
 namespace mindroid {
 
 void Closure::cancel() {
-	if (mFunc) {
-		mHandler->removeCallbacks(this);
-	}
+    if (mFunc) {
+        mHandler->removeCallbacks(this);
+    }
 }
 
 } /* namespace mindroid */

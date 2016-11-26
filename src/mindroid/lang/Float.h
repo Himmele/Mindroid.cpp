@@ -24,40 +24,40 @@ namespace mindroid {
 class String;
 
 class Float :
-		public Object {
+        public Object {
 public:
-	/**
-	 * Constant for the maximum {@code float} value, (2 - 2<sup>-23</sup>) * 2<sup>127</sup>.
-	 */
-	static const float MAX_VALUE;
+    /**
+     * Constant for the maximum {@code float} value, (2 - 2<sup>-23</sup>) * 2<sup>127</sup>.
+     */
+    static const float MAX_VALUE;
 
-	/**
-	 * Constant for the minimum {@code float} value, 2<sup>-149</sup>.
-	 */
-	static const float MIN_VALUE;
+    /**
+     * Constant for the minimum {@code float} value, 2<sup>-149</sup>.
+     */
+    static const float MIN_VALUE;
 
-	/**
-	 * Constant for the number of bits needed to represent a {@code float} in
-	 * two's complement form.
-	 */
-	static const int32_t SIZE = 32;
+    /**
+     * Constant for the number of bits needed to represent a {@code float} in
+     * two's complement form.
+     */
+    static const int32_t SIZE = 32;
 
-	explicit Float(float value) : mValue(value) {
-	}
+    explicit Float(float value) : mValue(value) {
+    }
 
-	static sp<Float> valueOf(const char* s);
-	static sp<Float> valueOf(const sp<String>& s);
+    static sp<Float> valueOf(const char* s);
+    static sp<Float> valueOf(const sp<String>& s);
 
-	float floatValue() const {
-		return mValue;
-	}
+    float floatValue() const {
+        return mValue;
+    }
 
-	float value() const {
-		return floatValue();
-	}
+    float value() const {
+        return floatValue();
+    }
 
 private:
-	float mValue;
+    float mValue;
 };
 
 } /* namespace mindroid */

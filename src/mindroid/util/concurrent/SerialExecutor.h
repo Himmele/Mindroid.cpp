@@ -25,19 +25,19 @@ namespace mindroid {
 class Handler;
 
 class SerialExecutor :
-		public Executor {
+        public Executor {
 public:
-	SerialExecutor();
-	virtual ~SerialExecutor();
-	SerialExecutor(const SerialExecutor&) = delete;
-	SerialExecutor& operator=(const SerialExecutor&) = delete;
+    SerialExecutor();
+    virtual ~SerialExecutor();
+    SerialExecutor(const SerialExecutor&) = delete;
+    SerialExecutor& operator=(const SerialExecutor&) = delete;
 
-	virtual void execute(const sp<Runnable>& runnable);
-	virtual bool cancel(const sp<Runnable>& runnable);
+    virtual void execute(const sp<Runnable>& runnable);
+    virtual bool cancel(const sp<Runnable>& runnable);
 
 private:
-	sp<HandlerThread> mHandlerThread;
-	sp<Handler> mHandler;
+    sp<HandlerThread> mHandlerThread;
+    sp<Handler> mHandler;
 };
 
 } /* namespace mindroid */

@@ -34,47 +34,47 @@ namespace mindroid {
 class File;
 
 class PackageManagerService :
-		public Service {
+        public Service {
 public:
-	PackageManagerService() :
-		mPackages(new HashMap<sp<String>, sp<PackageInfo>>()),
-		mComponents(new HashMap<sp<ComponentName>, sp<ComponentInfo>>()) {
-	}
+    PackageManagerService() :
+        mPackages(new HashMap<sp<String>, sp<PackageInfo>>()),
+        mComponents(new HashMap<sp<ComponentName>, sp<ComponentInfo>>()) {
+    }
 
-	virtual ~PackageManagerService() = default;
+    virtual ~PackageManagerService() = default;
 
-	virtual void onCreate();
-	virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId);
-	virtual void onDestroy();
-	
-	virtual sp<IBinder> onBind(const sp<Intent>& intent) {
-		return mBinder;
-	}
-	
+    virtual void onCreate();
+    virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId);
+    virtual void onDestroy();
+
+    virtual sp<IBinder> onBind(const sp<Intent>& intent) {
+        return mBinder;
+    }
+
 private:
-	class PackageManagerImpl : public binder::PackageManager::Stub {
-	public:
-		PackageManagerImpl(const sp<PackageManagerService>& packageManagerService) : mPackageManagerService(packageManagerService) { }
+    class PackageManagerImpl : public binder::PackageManager::Stub {
+    public:
+        PackageManagerImpl(const sp<PackageManagerService>& packageManagerService) : mPackageManagerService(packageManagerService) { }
 
-		virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-		virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+        virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
+        virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
 
-	private:
-		sp<PackageManagerService> mPackageManagerService;
-	};
-	
-	sp<binder::PackageManager::Stub> mBinder = new PackageManagerImpl(this);
+    private:
+        sp<PackageManagerService> mPackageManagerService;
+    };
 
-	void parseManifest(const sp<File>& file);
-	sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);
-	sp<ServiceInfo> parseService(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* serviceNode);
+    sp<binder::PackageManager::Stub> mBinder = new PackageManagerImpl(this);
 
-	static const char* const TAG;
-	static const char* MANIFEST_TAG;
-	static const char* APPLICATION_TAG;
-	static const char* SERVICE_TAG;
-	sp<HashMap<sp<String>, sp<PackageInfo>>> mPackages;
-	sp<HashMap<sp<ComponentName>, sp<ComponentInfo>>> mComponents;
+    void parseManifest(const sp<File>& file);
+    sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);
+    sp<ServiceInfo> parseService(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* serviceNode);
+
+    static const char* const TAG;
+    static const char* MANIFEST_TAG;
+    static const char* APPLICATION_TAG;
+    static const char* SERVICE_TAG;
+    sp<HashMap<sp<String>, sp<PackageInfo>>> mPackages;
+    sp<HashMap<sp<ComponentName>, sp<ComponentInfo>>> mComponents;
 };
 
 } /* namespace mindroid */
