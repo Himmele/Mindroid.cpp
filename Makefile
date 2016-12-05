@@ -5,7 +5,7 @@ LD := g++
 AS := gas
 AR := ar
 RM := rm
-INCLUDES := -I. -Isrc
+INCLUDES := -I. -Isrc -Igoogletest/include
 CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions
 LDFLAGS := 
 LIB_DIR := lib
@@ -15,7 +15,7 @@ BIN_DIR := bin
 	
 .PHONY: clean
 
-all: tinyxml2 Mindroid.cpp Tests Services
+all: tinyxml2 Mindroid.cpp googletest Tests Services
 
 clean:
 	$(RM) -rf $(LIB_DIR)
@@ -113,6 +113,23 @@ $(LIB_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+#==== Google Test ====
+
+GOOGLETEST_SRCS := $(wildcard googletest/src/gtest-all.cc)
+GOOGLETEST_OBJS = $(GOOGLETEST_SRCS:.cc=.o)
+GOOGLETEST_LIB_OBJS = $(addprefix $(LIB_DIR)/,$(GOOGLETEST_OBJS))
+
+googletest = $(LIB_DIR)/libgoogletest.a
+
+googletest: $(googletest)
+ 
+$(googletest): $(GOOGLETEST_LIB_OBJS) 
+	$(AR) -r $@ $^
+
+$(LIB_DIR)/%.o: %.cc
+	@mkdir -p $(@D)
+	$(CXX) $(CFLAGS) $(INCLUDES) -Igoogletest -c $< -o $@
+
 #==== Tests ====
 
 TEST_SRCS := $(wildcard tests/*.cpp)
@@ -121,10 +138,10 @@ TEST_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(TEST_OBJS))
 
 Tests = $(BIN_DIR)/Tests
 
-Tests: $(Tests)
+Tests: $(Tests) Mindroid.cpp tinyxml2 googletest
 
 $(Tests): $(TEST_BIN_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^ -Llib -Lgtest -lmindroid -ltinyxml2 -lgtest -lpthread -lrt
+	$(LD) $(LDFLAGS) -o $@ $^ -Llib -lmindroid -ltinyxml2 -lgoogletest -lpthread -lrt
 	
 $(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
