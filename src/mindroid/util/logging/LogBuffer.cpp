@@ -119,7 +119,7 @@ sp<LogBuffer::LogRecord> LogBuffer::take(const int32_t minPriority) {
                 return nullptr;
             }
         }
-        uint32_t size;
+        uint32_t size = 0;
         read(&size, 4);
         uint8_t record[size];
         read(record, size);
@@ -144,7 +144,7 @@ sp<LogBuffer::LogRecord> LogBuffer::poll(const int32_t minPriority) {
         while (isEmpty()) {
             return nullptr;
         }
-        uint32_t size;
+        uint32_t size = 0;
         read(&size, 4);
         uint8_t record[size];
         read(record, size);
@@ -196,7 +196,7 @@ size_t LogBuffer::remainingCapacity() {
 void LogBuffer::free(const size_t size) {
     size_t freeCapacity = remainingCapacity();
     while (freeCapacity < size) {
-        uint32_t curSize;
+        uint32_t curSize = 0;
         read(&curSize, 4);
         mReadIndex = (mReadIndex + curSize) % mSize;
         freeCapacity += (curSize + 4);

@@ -179,7 +179,6 @@ private:
     sp<File> mBackupFile;
     sp<ReentrantLock> mLock;
     sp<HashMap<sp<String>, sp<Variant>>> mMap;
-    int32_t mMode;
     sp<HashMap<sp<SharedPreferences::OnSharedPreferenceChangeListener>, sp<IOnSharedPreferenceChangeListener>>> mListeners;
 };
 

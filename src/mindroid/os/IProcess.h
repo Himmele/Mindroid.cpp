@@ -69,7 +69,7 @@ public:
                 mRemote = remote;
             }
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -88,13 +88,13 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback);
-            virtual void stopService(const sp<Intent>& intent);
-            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
-            virtual void unbindService(const sp<Intent>& intent);
-            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
+            virtual void stopService(const sp<Intent>& intent) override;
+            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+            virtual void unbindService(const sp<Intent>& intent) override;
+            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
 
         private:
             sp<IBinder> mRemote;
@@ -104,7 +104,7 @@ public:
         public:
             SmartProxy(const sp<IBinder>& remote);
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -123,13 +123,13 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback);
-            virtual void stopService(const sp<Intent>& intent);
-            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
-            virtual void unbindService(const sp<Intent>& intent);
-            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
+            virtual void stopService(const sp<Intent>& intent) override;
+            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+            virtual void unbindService(const sp<Intent>& intent) override;
+            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
 
         private:
             sp<IBinder> mRemote;

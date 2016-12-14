@@ -49,11 +49,11 @@ public:
             return new OnSharedPreferenceChangeListener::Stub::SmartProxy(binder);
         }
 
-        virtual sp<IBinder> asBinder() {
+        virtual sp<IBinder> asBinder() override {
             return this;
         }
 
-        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
+        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) override;
 
         class Proxy : public IOnSharedPreferenceChangeListener {
         public:
@@ -61,7 +61,7 @@ public:
                 mRemote = remote;
             }
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -80,7 +80,7 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
+            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) override;
 
         private:
             sp<IBinder> mRemote;
@@ -90,7 +90,7 @@ public:
         public:
             SmartProxy(const sp<IBinder>& remote);
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -109,7 +109,7 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key);
+            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) override;
 
         private:
             sp<IBinder> mRemote;

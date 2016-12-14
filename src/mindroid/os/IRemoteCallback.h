@@ -59,7 +59,7 @@ public:
                 mRemote = remote;
             }
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -78,7 +78,7 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void sendResult(const sp<Bundle>& data);
+            virtual void sendResult(const sp<Bundle>& data) override;
 
         private:
             sp<IBinder> mRemote;
@@ -88,7 +88,7 @@ public:
         public:
             SmartProxy(const sp<IBinder>& remote);
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -107,7 +107,7 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void sendResult(const sp<Bundle>& data);
+            virtual void sendResult(const sp<Bundle>& data) override;
 
         private:
             sp<IBinder> mRemote;

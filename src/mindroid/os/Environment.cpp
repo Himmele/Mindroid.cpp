@@ -53,6 +53,12 @@ sp<SharedPreferences> Environment::getSharedPreferences(const sp<File>& sharedPr
     return sp;
 }
 
+void Environment::clearSharedPreferences() {
+    Environment* self = getInstance();
+    AutoLock autoLock(self->mLock);
+    self->mSharedPrefs->clear();
+}
+
 Environment* Environment::getInstance() {
     pthread_mutex_lock(&sMutex);
     if (sInstance == nullptr) {

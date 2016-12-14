@@ -64,7 +64,7 @@ public:
                 mRemote = remote;
             }
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -83,8 +83,8 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) override;
+            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) override;
 
         private:
             sp<IBinder> mRemote;
@@ -94,7 +94,7 @@ public:
         public:
             SmartProxy(const sp<IBinder>& remote);
 
-            virtual sp<IBinder> asBinder() {
+            virtual sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
@@ -113,8 +113,8 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+            virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) override;
+            virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) override;
 
         private:
             sp<IBinder> mRemote;

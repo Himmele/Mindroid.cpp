@@ -40,7 +40,6 @@ const char* const SharedPreferencesImpl::VALUE_ATTR = "value";
 SharedPreferencesImpl::SharedPreferencesImpl(const sp<File>& file, int32_t mode) :
         mFile(file),
         mLock(new ReentrantLock()),
-        mMode(mode),
         mListeners(new HashMap<sp<SharedPreferences::OnSharedPreferenceChangeListener>, sp<IOnSharedPreferenceChangeListener>>()) {
     mBackupFile = makeBackupFile(file);
     AutoLock autoLock(mLock);

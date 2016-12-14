@@ -118,6 +118,11 @@ public:
      */
     static sp<SharedPreferences> getSharedPreferences(const sp<File>& sharedPrefsFile, int32_t mode);
 
+    /**
+     * Clear shared preferences cache.
+     */
+    static void clearSharedPreferences();
+
 private:
     Environment();
 
