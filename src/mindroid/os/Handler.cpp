@@ -23,30 +23,22 @@
 
 namespace mindroid {
 
-Handler::Handler() {
-    mLooper = Looper::myLooper();
-    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
-    mMessageQueue = mLooper->mMessageQueue;
-    mCallback = nullptr;
+Handler::Handler() : Handler(Looper::myLooper()) {
 }
 
-Handler::Handler(const sp<Callback>& callback) {
-    mLooper = Looper::myLooper();
-    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
-    mMessageQueue = mLooper->mMessageQueue;
-    mCallback = callback;
+Handler::Handler(const sp<Callback>& callback) : Handler(Looper::myLooper(), callback) {
 }
 
 Handler::Handler(const sp<Looper>& looper) {
     mLooper = looper;
-    Assert::assertNotNull(looper);
+    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
     mMessageQueue = looper->mMessageQueue;
     mCallback = nullptr;
 }
 
 Handler::Handler(const sp<Looper>& looper, const sp<Callback>& callback) {
     mLooper = looper;
-    Assert::assertNotNull(looper);
+    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
     mMessageQueue = looper->mMessageQueue;
     mCallback = callback;
 }
