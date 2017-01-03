@@ -54,10 +54,13 @@ private:
 
     class Messenger : public IMessenger {
     public:
-        Messenger(const sp<Binder>& binder) {
+        Messenger(const sp<Binder>& binder) : Messenger(binder, Looper::myLooper()) {
+        }
+
+        Messenger(const sp<Binder>& binder, const sp<Looper>& looper) {
             class BinderHandler : public Handler {
             public:
-                BinderHandler(const sp<Binder>& binder) : mBinder(binder) {
+                BinderHandler(const sp<Binder>& binder, const sp<Looper>& looper) : Handler(looper), mBinder(binder) {
                 }
 
                 void handleMessage(const sp<Message>& message) override {
@@ -68,7 +71,7 @@ private:
                 sp<Binder> mBinder;
             };
 
-            mHandler = new BinderHandler(binder);
+            mHandler = new BinderHandler(binder, looper);
         }
 
         bool runsOnSameThread() override {
@@ -109,6 +112,10 @@ public:
         mTarget = new Messenger(this);
     }
     
+    Binder(const sp<Looper>& looper) {
+        mTarget = new Messenger(this, looper);
+    }
+
     Binder(const sp<Executor>& executor) {
         mTarget = new ThreadPoolMessenger(this, executor);
     }
