@@ -17,9 +17,11 @@
 
 #include "mindroid/util/concurrent/locks/ConditionImpl.h"
 #include "mindroid/util/concurrent/locks/Lock.h"
+#include "mindroid/util/Assert.h"
 #include "mindroid/os/SystemClock.h"
 #include <cstdlib>
 #include <ctime>
+#include <errno.h>
 
 namespace mindroid {
 
@@ -39,7 +41,9 @@ ConditionImpl::~ConditionImpl() {
 }
 
 void ConditionImpl::await() {
-    pthread_cond_wait(&mCondition, mMutex);
+    int32_t errorCode = pthread_cond_wait(&mCondition, mMutex);
+    Assert::assertFalse("IllegalMonitorStateException: EPERM", errorCode == EPERM);
+    Assert::assertTrue("IllegalMonitorStateException: EINVAL", errorCode == 0);
 }
 
 bool ConditionImpl::await(uint64_t timeoutMillis) {
@@ -51,11 +55,19 @@ bool ConditionImpl::await(uint64_t timeoutMillis) {
         time.tv_sec++;
         time.tv_nsec -= 1000000000;
     }
+    int32_t errorCode;
 #ifdef PTHREAD_USE_TIMEDWAIT_NP
-    return (pthread_cond_timedwait_monotonic(&mCondition, mMutex, &time) == 0);
+    errorCode = pthread_cond_timedwait_monotonic(&mCondition, mMutex, &time);
 #else
-    return (pthread_cond_timedwait(&mCondition, mMutex, &time) == 0);
+    errorCode = pthread_cond_timedwait(&mCondition, mMutex, &time);
 #endif
+    if (errorCode == ETIMEDOUT) {
+        return false;
+    } else {
+        Assert::assertFalse("IllegalMonitorStateException: EPERM", errorCode == EPERM);
+        Assert::assertTrue("IllegalMonitorStateException: EINVAL", errorCode == 0);
+        return true;
+    }
 }
 
 void ConditionImpl::signal() {

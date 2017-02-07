@@ -153,6 +153,10 @@ private:
             mListener->onSharedPreferenceChanged(sharedPreferences, key);
         }
 
+        void dispose() {
+            Binder::dispose();
+        }
+
     private:
         sp<OnSharedPreferenceChangeListener> mListener;
     };
