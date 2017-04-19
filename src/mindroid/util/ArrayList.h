@@ -35,8 +35,8 @@ public:
             mList() {
     }
 
-    ArrayList(size_t initialCapacity) :
-            mList(initialCapacity) {
+    ArrayList(size_t initialCapacity) : mList() {
+        mList.reserve(initialCapacity);
     }
 
     ArrayList(sp<ArrayList<T>> collection) :
