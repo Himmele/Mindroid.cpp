@@ -247,7 +247,8 @@ public:
     }
 
     ArrayList(size_t initialCapacity) :
-            mList(initialCapacity) {
+            mList() {
+        mList.reserve(initialCapacity);
     }
 
     ArrayList(const sp<ArrayList<sp<T>>>& collection) :
