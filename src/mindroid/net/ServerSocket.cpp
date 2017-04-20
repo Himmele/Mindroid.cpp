@@ -16,7 +16,8 @@
 
 #include "mindroid/net/ServerSocket.h"
 #include "mindroid/net/Socket.h"
-#include "mindroid/net/SocketAddress.h"
+#include "mindroid/net/Socket4Address.h"
+#include "mindroid/net/Socket6Address.h"
 #include <sys/socket.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -24,34 +25,18 @@
 
 namespace mindroid {
 
-ServerSocket::ServerSocket() :
-        mIsBound(false),
-        mIsClosed(false),
-        mReuseAddress(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+ServerSocket::ServerSocket() {
 }
 
-ServerSocket::ServerSocket(uint16_t port) :
-        mIsBound(false),
-        mIsClosed(false),
-        mReuseAddress(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+ServerSocket::ServerSocket(uint16_t port) {
     bind(port);
 }
 
-ServerSocket::ServerSocket(uint16_t port, int backlog) :
-        mIsBound(false),
-        mIsClosed(false),
-        mReuseAddress(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+ServerSocket::ServerSocket(uint16_t port, int backlog) {
     bind(port, backlog);
 }
 
-ServerSocket::ServerSocket(const sp<String>& host, uint16_t port, int backlog) :
-        mIsBound(false),
-        mIsClosed(false),
-        mReuseAddress(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+ServerSocket::ServerSocket(const sp<String>& host, uint16_t port, int backlog) {
     bind(host, port, backlog);
 }
 
@@ -68,30 +53,30 @@ bool ServerSocket::bind(const sp<String>& host, uint16_t port, int backlog) {
         return false;
     }
 
-    if (mSocketId < 0) {
-        return false;
-    }
-
-    int value = mReuseAddress;
-    setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
-
-    sp<SocketAddress> socketAddress = (host == nullptr) ?
-            new SocketAddress(port) : new SocketAddress(host, port);
-
-    if (::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0) {
-        if (::listen(mSocketId, backlog) == 0) {
-            mIsBound = true;
-            return true;
+    sp<SocketAddress> socketAddress = SocketAddress::getSocketAddress(host, port);
+    if (socketAddress->getInetAddress() != nullptr) {
+        if (socketAddress->getInetAddress()->isInet6Address()) {
+            mSocketId = ::socket(AF_INET6, SOCK_STREAM, 0);
+            int optval = 0;
+            ::setsockopt(mSocketId, SOL_SOCKET, IPV6_V6ONLY, &optval, sizeof(optval));
         } else {
-            ::close(mSocketId);
-            mSocketId = -1;
-            return false;
+            mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
         }
-    } else {
+
+        int value = mReuseAddress;
+        if (::setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value)) == 0) {
+            if (::bind(mSocketId, socketAddress->getInetAddress()->getPointer(), socketAddress->getInetAddress()->getSize()) == 0) {
+                if (::listen(mSocketId, backlog) == 0) {
+                    mIsBound = true;
+                    return true;
+                }
+            }
+        }
+
         ::close(mSocketId);
         mSocketId = -1;
-        return false;
     }
+    return false;
 }
 
 sp<Socket> ServerSocket::accept() {
@@ -108,7 +93,7 @@ sp<Socket> ServerSocket::accept() {
 void ServerSocket::close() {
     mIsClosed = true;
     mIsBound = false;
-    if (mSocketId >= 0) {
+    if (mSocketId != -1) {
         // Unblock calls like accept, etc. -> http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
         ::shutdown(mSocketId, SHUT_RDWR);
         ::close(mSocketId);

@@ -15,52 +15,35 @@
  */
 
 #include "mindroid/net/SocketAddress.h"
-#include <cstring>
-#include <unistd.h>
-#include <arpa/inet.h>
+#include "mindroid/net/Socket4Address.h"
+#include "mindroid/net/Socket6Address.h"
+
 #include <netdb.h>
+#include <arpa/inet.h>
 
 namespace mindroid {
 
-SocketAddress::SocketAddress() :
-        mIsUnresolved(true) {
-    memset(&mSocketAddress, 0, sizeof(mSocketAddress));
-}
-
-SocketAddress::SocketAddress(uint16_t port) :
-        mIsUnresolved(false) {
-    memset(&mSocketAddress, 0, sizeof(mSocketAddress));
-    mSocketAddress.sin_family = AF_INET;
-    mSocketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
-    mSocketAddress.sin_port = htons(port);
-}
-
-SocketAddress::SocketAddress(const sp<String>& host, uint16_t port) :
-        mIsUnresolved(true) {
-    struct addrinfo hints, *result;
-    int status;
-
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    status = getaddrinfo(host->c_str(), nullptr, &hints, &result);
-    mIsUnresolved = (status != 0);
-
-    if (!mIsUnresolved) {
-        memset(&mSocketAddress, 0, sizeof(mSocketAddress));
-        mSocketAddress.sin_family = AF_INET;
-        mSocketAddress.sin_addr.s_addr = ((struct sockaddr_in *) (result->ai_addr))->sin_addr.s_addr;
-        mSocketAddress.sin_port = htons(port);
-        freeaddrinfo(result);
-    }
-}
-
 sp<String> SocketAddress::getHostName() const {
-    char* host = new char[NI_MAXHOST];
-    getnameinfo((sockaddr*) &mSocketAddress, sizeof(mSocketAddress), host, sizeof(host), nullptr, 0, 0);
-    sp<String> h = String::valueOf(host);
-    delete[] host;
-    return h;
+    char host[NI_MAXHOST] = { 0 };
+    if (mInetAddress != nullptr) {
+        getnameinfo(mInetAddress->getPointer(), mInetAddress->getSize(), host, sizeof(host), nullptr, 0, 0);
+    }
+    return String::valueOf(host);
+}
+
+sp<SocketAddress> SocketAddress::getSocketAddress(uint16_t port) {
+    return new Socket6Address(port);
+}
+
+sp<SocketAddress> SocketAddress::getSocketAddress(const sp<String>& host, uint16_t port) {
+    if (host == nullptr) {
+        return getSocketAddress(port);
+    }
+    struct sockaddr_in sa;
+    if (inet_pton(AF_INET, host->c_str(), &sa.sin_addr) != 0) {
+        return new Socket4Address(host, port);
+    }
+    return new Socket6Address(host, port);
 }
 
 } /* namespace mindroid */

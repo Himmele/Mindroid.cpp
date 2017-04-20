@@ -15,23 +15,16 @@
  */
 
 #include "mindroid/net/Socket.h"
-#include "mindroid/net/SocketAddress.h"
+#include "mindroid/net/Socket4Address.h"
+#include "mindroid/net/Socket6Address.h"
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
 
 namespace mindroid {
 
-Socket::Socket() :
-        mIsConnected(false),
-        mIsClosed(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-}
-
-Socket::Socket(const sp<String>& host, uint16_t port) :
-        mIsConnected(false),
-        mIsClosed(false) {
-    mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
+Socket::Socket(const sp<String>& host, uint16_t port) {
     connect(host, port);
 }
 
@@ -40,18 +33,19 @@ Socket::~Socket() {
 }
 
 int Socket::connect(const sp<String>& host, uint16_t port) {
-    sp<SocketAddress> socketAddress = new SocketAddress(host, port);
+    sp<SocketAddress> socketAddress = SocketAddress::getSocketAddress(host, port);
     int rc = -1;
-    if (mSocketId >= 0 && !socketAddress->isUnresolved()) {
-        if ((rc = ::connect(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress))) == 0) {
-            mIsConnected = true;
-            return rc;
-        } else {
-            return rc;
+    if (socketAddress->getInetAddress() != nullptr) {
+        if (mSocketId == -1) {
+            mSocketId = ::socket(socketAddress->getInetAddress()->isInet6Address() ? AF_INET6 : AF_INET, SOCK_STREAM, 0);
         }
-    } else {
-        return rc;
+        if (!socketAddress->isUnresolved()) {
+            if ((rc = ::connect(mSocketId, socketAddress->getInetAddress()->getPointer(), socketAddress->getInetAddress()->getSize())) == 0) {
+                mIsConnected = true;
+            }
+        }
     }
+    return rc;
 }
 
 ssize_t Socket::read(uint8_t* data, size_t size) {
@@ -79,7 +73,7 @@ bool Socket::write(const void* data, size_t size) {
 void Socket::close() {
     mIsClosed = true;
     mIsConnected = false;
-    if (mSocketId >= 0) {
+    if (mSocketId != -1) {
         ::shutdown(mSocketId, SHUT_RDWR);
         ::close(mSocketId);
         mSocketId = -1;

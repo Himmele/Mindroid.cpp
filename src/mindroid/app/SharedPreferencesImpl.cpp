@@ -25,7 +25,7 @@ using namespace tinyxml2;
 
 namespace mindroid {
 
-const char* const SharedPreferencesImpl::TAG = "SharedPreferencesImpl";
+const char* const SharedPreferencesImpl::TAG = "SharedPreferences";
 const char* const SharedPreferencesImpl::UTF_8 = "UTF-8";
 const char* const SharedPreferencesImpl::MAP_TAG = "map";
 const char* const SharedPreferencesImpl::BOOLEAN_TAG = "boolean";

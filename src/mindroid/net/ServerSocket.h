@@ -54,10 +54,10 @@ public:
     int getId() const { return mSocketId; }
 
 private:
-    int mSocketId;
-    bool mIsBound;
-    bool mIsClosed;
-    bool mReuseAddress;
+    int mSocketId = -1;
+    bool mIsBound = false;
+    bool mIsClosed = false;
+    bool mReuseAddress = false;
 };
 
 } /* namespace mindroid */

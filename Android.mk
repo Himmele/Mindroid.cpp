@@ -42,6 +42,8 @@ LOCAL_SRC_FILES := \
 	src/mindroid/lang/Thread.cpp \
 	src/mindroid/net/DatagramSocket.cpp \
 	src/mindroid/net/SocketAddress.cpp \
+	src/mindroid/net/Socket4Address.cpp \
+	src/mindroid/net/Socket6Address.cpp \
 	src/mindroid/net/Socket.cpp \
 	src/mindroid/net/ServerSocket.cpp \
 	src/mindroid/os/Environment.cpp \

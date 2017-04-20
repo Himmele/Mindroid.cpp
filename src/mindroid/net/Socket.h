@@ -27,7 +27,7 @@ class ServerSocket;
 class Socket :
         public Object {
 public:
-    Socket();
+    Socket() = default;
     Socket(const char* host, uint16_t port) :
             Socket(String::valueOf(host), port) {
     }
@@ -49,9 +49,9 @@ public:
     int getId() const { return mSocketId; }
 
 private:
-    int mSocketId;
-    bool mIsConnected;
-    bool mIsClosed;
+    int mSocketId = -1;
+    bool mIsConnected = false;
+    bool mIsClosed = false;
 
     friend class ServerSocket;
 };

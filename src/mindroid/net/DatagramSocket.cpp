@@ -18,6 +18,7 @@
 #include "mindroid/net/SocketAddress.h"
 #include <unistd.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <fcntl.h>
 
 namespace mindroid {
@@ -26,14 +27,12 @@ DatagramSocket::DatagramSocket() :
         mSocketId(-1),
         mIsBound(false),
         mIsClosed(false) {
-    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
 }
 
 DatagramSocket::DatagramSocket(uint16_t port) :
         mSocketId(-1),
         mIsBound(false),
         mIsClosed(false) {
-    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
     bind(port);
 }
 
@@ -41,7 +40,6 @@ DatagramSocket::DatagramSocket(const sp<String>& host, uint16_t port) :
         mSocketId(-1),
         mIsBound(false),
         mIsClosed(false) {
-    mSocketId = socket(AF_INET, SOCK_DGRAM, 0);
     bind(host, port);
 }
 
@@ -50,14 +48,30 @@ DatagramSocket::~DatagramSocket() {
 }
 
 bool DatagramSocket::bind(uint16_t port) {
-    sp<SocketAddress> socketAddress = new SocketAddress(port);
-    mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
+    if (mIsBound || mSocketId != -1 ) {
+        return false;
+    }
+    mSocketId = ::socket(AF_INET6, SOCK_DGRAM, 0);
+    int optval = 0;
+    ::setsockopt(mSocketId, SOL_SOCKET, IPV6_V6ONLY, &optval, sizeof(optval));
+    sp<SocketAddress> socketAddress = SocketAddress::getSocketAddress(port);
+    if (socketAddress->getInetAddress() != nullptr && mSocketId != -1) {
+        mIsBound = ::bind(mSocketId, socketAddress->getInetAddress()->getPointer(), socketAddress->getInetAddress()->getSize()) == 0;
+    }
     return mIsBound;
 }
 
 bool DatagramSocket::bind(const sp<String>& host, uint16_t port) {
-    sp<SocketAddress> socketAddress = new SocketAddress(host, port);
-    mIsBound = ::bind(mSocketId, (struct sockaddr*) &socketAddress->mSocketAddress, sizeof(socketAddress->mSocketAddress)) == 0;
+    if (mIsBound) {
+        return false;
+    }
+    sp<SocketAddress> socketAddress = SocketAddress::getSocketAddress(host, port);
+    if (socketAddress->getInetAddress() != nullptr) {
+        mSocketId = ::socket(socketAddress->getInetAddress()->isInet6Address() ? AF_INET6 : AF_INET, SOCK_DGRAM, 0);
+        if (mSocketId != -1) {
+            mIsBound = ::bind(mSocketId, socketAddress->getInetAddress()->getPointer(), socketAddress->getInetAddress()->getSize()) == 0;
+        }
+    }
     return mIsBound;
 }
 
@@ -66,23 +80,32 @@ ssize_t DatagramSocket::recv(uint8_t* data, size_t size) {
 }
 
 ssize_t DatagramSocket::recv(uint8_t* data, size_t size, sp<SocketAddress>& sender) {
-    socklen_t socketSize = sizeof(sender->mSocketAddress);
-    ssize_t result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0,
-            (struct sockaddr*) &sender->mSocketAddress, &socketSize);
-    sender->mIsUnresolved = false;
+    ssize_t result = 0;
+    socklen_t socketSize = sender->getInetAddress()->getSize();
+    if (sender->getInetAddress() != nullptr) {
+        result = ::recvfrom(mSocketId, reinterpret_cast<char*>(data), size, 0,
+                (sockaddr*)sender->getInetAddress()->getPointer(), &socketSize);
+        sender->mIsUnresolved = false;
+    }
     return result;
 }
 
 bool DatagramSocket::send(const void* data, size_t size, const sp<SocketAddress>& receiver) {
-    socklen_t socketSize = sizeof(receiver->mSocketAddress);
-    return (size_t) ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0,
-            (struct sockaddr*) &receiver->mSocketAddress, socketSize) == size;
+    if (receiver->getInetAddress() != nullptr) {
+        if (mSocketId == -1) {
+            mSocketId = ::socket(receiver->getInetAddress()->isInet6Address() ? AF_INET6 : AF_INET, SOCK_DGRAM, 0);
+        }
+        socklen_t socketSize = receiver->getInetAddress()->getSize();
+        return (size_t) ::sendto(mSocketId, reinterpret_cast<const char*>(data), size, 0,
+                receiver->getInetAddress()->getPointer(), socketSize) == size;
+    }
+    return false;
 }
 
 void DatagramSocket::close() {
     mIsClosed = true;
     mIsBound = false;
-    if (mSocketId >= 0) {
+    if (mSocketId != -1) {
         ::shutdown(mSocketId, SHUT_RDWR);
         ::close(mSocketId);
         mSocketId = -1;

@@ -15,7 +15,7 @@ Project {
         Files "../mindroid/**/*.cpp"
         IncludeDir ".."
 
-        Dependency tinyxml2, config: Default
+        Dependency tinyxml2, config: default
         ExternalLibrary pthread
 
         DefaultToolchain GCC {
