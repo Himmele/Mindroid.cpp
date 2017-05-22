@@ -47,7 +47,7 @@ public:
      * not set, the same as <var>packageName</var>.
      */
     sp<String> processName;
-    
+
     /**
      * The app's declared version code.
      *

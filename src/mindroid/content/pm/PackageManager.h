@@ -30,7 +30,7 @@ namespace mindroid {
 /**
  * Class for retrieving various kinds of information related to the application packages that are
  * currently installed on the device.
- * 
+ *
  * You can find this class through {@link Context#getPackageManager}.
  */
 class PackageManager :

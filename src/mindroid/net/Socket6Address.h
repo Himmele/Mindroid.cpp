@@ -38,7 +38,7 @@ private:
             Socket6Address(String::valueOf(host), port) {
     }
     Socket6Address(const sp<String>& host, uint16_t port);
-    
+
     Socket6Address(const Socket6Address&) = delete;
     Socket6Address& operator=(const Socket6Address&) = delete;
 

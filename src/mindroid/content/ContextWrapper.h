@@ -39,7 +39,7 @@ public:
     ContextWrapper(const sp<Context>& baseContext) {
         mBaseContext = baseContext;
     }
-    
+
     /**
      * @return the base context as set by the constructor or setBaseContext
      */
@@ -54,11 +54,11 @@ public:
     virtual sp<Looper> getMainLooper() {
         return mBaseContext->getMainLooper();
     }
-    
+
     virtual sp<String> getPackageName() {
         return mBaseContext->getPackageName();
     }
-    
+
     virtual sp<File> getSharedPrefsFile(const sp<String>& name) {
         return mBaseContext->getSharedPrefsFile(name);
     }
@@ -70,7 +70,7 @@ public:
     virtual sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode) {
         return mBaseContext->getSharedPreferences(name, mode);
     }
-    
+
     virtual sp<IBinder> getSystemService(const char* name) {
         return getSystemService(String::valueOf(name));
     }
@@ -82,15 +82,15 @@ public:
     virtual sp<ComponentName> startService(const sp<Intent>& service) {
         return mBaseContext->startService(service);
     }
-    
+
     virtual bool stopService(const sp<Intent>& service) {
         return mBaseContext->stopService(service);
     }
-    
+
     virtual bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int flags) {
         return mBaseContext->bindService(service, conn, flags);
     }
-    
+
     virtual void unbindService(const sp<ServiceConnection>& conn) {
         mBaseContext->unbindService(conn);
     }

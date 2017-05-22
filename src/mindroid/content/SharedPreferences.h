@@ -76,7 +76,7 @@ public:
         }
         virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) = 0;
     };
-    
+
     /**
      * Interface used for modifying values in a {@link SharedPreferences} object. All changes you
      * make in an editor are batched, and not copied back to the original {@link SharedPreferences}
@@ -99,7 +99,7 @@ public:
             return putString(String::valueOf(key), String::valueOf(value));
         }
         virtual sp<Editor> putString(const sp<String>& key, const sp<String>& value) = 0;
-        
+
         /**
          * Set a set of String values in the preferences editor, to be written back once
          * {@link #commit} is called.
@@ -113,7 +113,7 @@ public:
             return putStringSet(String::valueOf(key), values);
         }
         virtual sp<Editor> putStringSet(const sp<String>& key, const sp<Set<sp<String>>>& values) = 0;
-        
+
         /**
          * Set an int value in the preferences editor, to be written back once {@link #commit} or
          * {@link #apply} are called.
@@ -128,7 +128,7 @@ public:
             return putInt(String::valueOf(key), value);
         }
         virtual sp<Editor> putInt(const sp<String>& key, int32_t value) = 0;
-        
+
         /**
          * Set a long value in the preferences editor, to be written back once
          * {@link #commit} or {@link #apply} are called.
@@ -143,7 +143,7 @@ public:
             return putLong(String::valueOf(key), value);
         }
         virtual sp<Editor> putLong(const sp<String>& key, int64_t value) = 0;
-        
+
         /**
          * Set a float value in the preferences editor, to be written back once {@link #commit} or
          * {@link #apply} are called.
@@ -158,7 +158,7 @@ public:
             return putFloat(String::valueOf(key), value);
         }
         virtual sp<Editor> putFloat(const sp<String>& key, float value) = 0;
-        
+
         /**
          * Set a boolean value in the preferences editor, to be written back once {@link #commit} or
          * {@link #apply} are called.
@@ -286,7 +286,7 @@ public:
         return getString(String::valueOf(key), String::valueOf(defValue));
     }
     virtual sp<String> getString(const sp<String>& key, const sp<String>& defValue) = 0;
-    
+
     /**
      * Retrieve a set of String values from the preferences.
      *
@@ -307,7 +307,7 @@ public:
         return getStringSet(String::valueOf(key), defValues);
     }
     virtual sp<Set<sp<String>>> getStringSet(const sp<String>& key, const sp<Set<sp<String>>>& defValues) = 0;
-    
+
     /**
      * Retrieve an int value from the preferences.
      *
@@ -323,7 +323,7 @@ public:
         return getInt(String::valueOf(key), defValue);
     }
     virtual int32_t getInt(const sp<String>& key, int32_t defValue) = 0;
-    
+
     /**
      * Retrieve a long value from the preferences.
      *
@@ -339,7 +339,7 @@ public:
         return getLong(String::valueOf(key), defValue);
     }
     virtual int64_t getLong(const sp<String>& key, int64_t defValue) = 0;
-    
+
     /**
      * Retrieve a float value from the preferences.
      *
@@ -355,7 +355,7 @@ public:
         return getFloat(String::valueOf(key), defValue);
     }
     virtual float getFloat(const sp<String>& key, float defValue) = 0;
-    
+
     /**
      * Retrieve a boolean value from the preferences.
      *
@@ -382,7 +382,7 @@ public:
         return contains(String::valueOf(key));
     }
     virtual bool contains(const sp<String>& key) = 0;
-    
+
     /**
      * Create a new Editor for these preferences, through which you can make modifications to the
      * data in the preferences and atomically commit those changes back to the SharedPreferences
@@ -396,7 +396,7 @@ public:
      * values in this SharedPreferences object.
      */
     virtual sp<Editor> edit() = 0;
-    
+
     /**
      * Registers a callback to be invoked when a change happens to a preference.
      *
@@ -404,7 +404,7 @@ public:
      * @see #unregisterOnSharedPreferenceChangeListener
      */
     virtual void registerOnSharedPreferenceChangeListener(const sp<OnSharedPreferenceChangeListener>& listener) = 0;
-    
+
     /**
      * Unregisters a previous callback.
      *

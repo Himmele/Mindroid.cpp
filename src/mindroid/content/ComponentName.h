@@ -31,7 +31,7 @@ class Context;
  * Identifier for a specific application component {@link mindroid.app.Service}, Two pieces of
  * information, encapsulated here, are required to identify a component: the package (a String) it
  * exists in, and the class (a String) name inside of that package.
- * 
+ *
  */
 class ComponentName final :
         public Object {
@@ -62,14 +62,14 @@ public:
     sp<String> getPackageName() {
         return mPackage;
     }
-    
+
     /**
      * Return the class name of this component.
      */
     sp<String> getClassName() {
         return mClass;
     }
-    
+
     /**
      * Return string representation of this class without the class's name
      * as a prefix.
@@ -77,7 +77,7 @@ public:
     sp<String> toShortString() {
         return String::format("{%s/%s}", mPackage->c_str(), mClass->c_str());
     }
-    
+
     sp<String> toString() {
         return String::format("ComponentInfo{%s/%s}", mPackage->c_str(), mClass->c_str());
     }

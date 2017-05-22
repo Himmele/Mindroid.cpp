@@ -40,7 +40,7 @@ private:
 
     Socket4Address(const Socket4Address&) = delete;
     Socket4Address& operator=(const Socket4Address&) = delete;
-    
+
     friend class SocketAddress;
 };
 

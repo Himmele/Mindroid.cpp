@@ -23,33 +23,33 @@
 namespace mindroid {
 
 class Character :
-		public Object {
+        public Object {
 public:
-	/**
-	 * The minimum {@code Character} value.
-	 */
-	static const char MIN_VALUE = CHAR_MIN;
+    /**
+     * The minimum {@code Character} value.
+     */
+    static const char MIN_VALUE = CHAR_MIN;
 
-	/**
-	 * The maximum {@code Character} value.
-	 */
-	static const char MAX_VALUE = CHAR_MAX;
+    /**
+     * The maximum {@code Character} value.
+     */
+    static const char MAX_VALUE = CHAR_MAX;
 
-	explicit Character(char value) : mValue(value) {
-	}
+    explicit Character(char value) : mValue(value) {
+    }
 
-	static sp<Character> valueOf(const char c);
+    static sp<Character> valueOf(const char c);
 
-	char charValue() const {
-		return mValue;
-	}
+    char charValue() const {
+        return mValue;
+    }
 
-	char value() const {
-		return charValue();
-	}
+    char value() const {
+        return charValue();
+    }
 
 private:
-	char mValue;
+    char mValue;
 };
 
 } /* namespace mindroid */

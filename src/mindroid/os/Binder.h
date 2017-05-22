@@ -35,10 +35,10 @@ class Awaitable;
  * Base class for a remotable object, the core part of a lightweight remote procedure call mechanism
  * defined by {@link IBinder}. This class is an implementation of IBinder that provides the standard
  * support creating a local implementation of such an object.
- * 
+ *
  * You can derive directly from Binder to implement your own custom RPC protocol or simply
  * instantiate a raw Binder object directly to use as a token that can be shared across processes.
- * 
+ *
  * @see IBinder
  */
 class Binder :
@@ -111,7 +111,7 @@ public:
     Binder() {
         mTarget = new Messenger(this);
     }
-    
+
     Binder(const sp<Looper>& looper) {
         mTarget = new Messenger(this, looper);
     }

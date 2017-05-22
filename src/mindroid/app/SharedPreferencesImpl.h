@@ -70,31 +70,31 @@ public:
             mModifications->put(key, (value == nullptr) ? nullptr : new Variant(value));
             return this;
         }
-        
+
         virtual sp<Editor> putStringSet(const sp<String>& key, const sp<Set<sp<String>>>& values) {
             AutoLock autoLock(mSharedPreferences->mLock);
             mModifications->put(key, (values == nullptr) ? nullptr : new Variant(object_cast<Set<sp<String>>>(new Set<sp<String>>(values))));
             return this;
         }
-        
+
         virtual sp<Editor> putInt(const sp<String>& key, int32_t value) {
             AutoLock autoLock(mSharedPreferences->mLock);
             mModifications->put(key, new Variant(value));
             return this;
         }
-        
+
         virtual sp<Editor> putLong(const sp<String>& key, int64_t value) {
             AutoLock autoLock(mSharedPreferences->mLock);
             mModifications->put(key, new Variant(value));
             return this;
         }
-        
+
         virtual sp<Editor> putFloat(const sp<String>& key, float value) {
             AutoLock autoLock(mSharedPreferences->mLock);
             mModifications->put(key, new Variant(value));
             return this;
         }
-        
+
         virtual sp<Editor> putBoolean(const sp<String>& key, bool value) {
             AutoLock autoLock(mSharedPreferences->mLock);
             mModifications->put(key, new Variant(value));
@@ -124,7 +124,7 @@ public:
         sp<HashMap<sp<String>, sp<Variant>>> mModifications;
         bool mClearMap;
     };
-    
+
 
     void registerOnSharedPreferenceChangeListener(const sp<SharedPreferences::OnSharedPreferenceChangeListener>& listener);
     void unregisterOnSharedPreferenceChangeListener(const sp<SharedPreferences::OnSharedPreferenceChangeListener>& listener);
@@ -163,7 +163,7 @@ private:
 
     void loadSharedPrefs();
     bool storeSharedPrefs();
-    
+
     void notifySharedPreferenceChangeListeners(const sp<ArrayList<sp<String>>>& keys);
 
     sp<HashMap<sp<String>, sp<Variant>>> readMap(const sp<File>& file);
@@ -173,7 +173,7 @@ private:
     void parseFloat(sp<HashMap<sp<String>, sp<Variant>>>& map, const tinyxml2::XMLElement* element);
     void parseString(sp<HashMap<sp<String>, sp<Variant>>>& map, const tinyxml2::XMLElement* element);
     void parseStringSet(sp<HashMap<sp<String>, sp<Variant>>>& map, const tinyxml2::XMLElement* element);
-    
+
     bool writeMap(const sp<File>& file, const sp<HashMap<sp<String>, sp<Variant>>>& map);
     tinyxml2::XMLElement* writeValue(tinyxml2::XMLDocument& doc, const sp<String>& name, const sp<Variant>& value);
 

@@ -31,7 +31,7 @@ void Service::stopSelf(int32_t startId) {
         Assert::fail("System failure");
     }
 }
-    
+
 void Service::attach(const sp<Context>& context, const sp<IProcess>& process, const sp<String>& className) {
     mProcess = process;
     mClassName = className;

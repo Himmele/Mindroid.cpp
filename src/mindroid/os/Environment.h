@@ -32,7 +32,7 @@ class Environment final {
 public:
     /**
      * Sets the Mindroid root directory.
-     * 
+     *
      * @hide
      */
     static void setRootDirectory(const char* rootDirectory) {
@@ -53,28 +53,28 @@ public:
     static sp<File> getAppsDirectory() {
         return getInstance()->APPS_DIRECTORY;
     }
-    
+
     /**
      * Gets the Mindroid data directory.
      */
     static sp<File> getDataDirectory() {
         return getInstance()->DATA_DIRECTORY;
     }
-    
+
     /**
      * Gets the Mindroid preferences directory.
      */
     static sp<File> getPreferencesDirectory() {
         return getInstance()->PREFERENCES_DIRECTORY;
     }
-    
+
     /**
      * Gets the Mindroid log directory.
      */
     static sp<File> getLogDirectory() {
         return getInstance()->LOG_DIRECTORY;
     }
-    
+
     /**
      * Sets the Mindroid log directory.
      */

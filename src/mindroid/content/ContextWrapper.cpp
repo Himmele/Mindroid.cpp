@@ -25,5 +25,5 @@ void ContextWrapper::attachBaseContext(const sp<Context> baseContext) {
     Assert::assertTrue("Base context already set", mBaseContext == nullptr);
     mBaseContext = baseContext;
 }
-    
+
 } /* namespace mindroid */

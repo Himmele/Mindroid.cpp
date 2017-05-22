@@ -33,7 +33,7 @@ class ComponentName;
  * <code>MindroidManifest.xml</code>. Services can be started with
  * {@link mindroid.content.Context#startService Context.startService()} and
  * {@link mindroid.content.Context#bindService Context.bindService()}.
- * 
+ *
  * <p>
  * Note that services, like other application objects, run in the main thread of their hosting
  * process. This means that, if your service is going to do any CPU intensive or blocking (such as
@@ -41,7 +41,7 @@ class ComponentName;
  * on this can be found in <a href="{@docRoot}
  * guide/topics/fundamentals/processes-and-threads.html">Processes and Threads</a>.
  * </p>
- * 
+ *
  * <p>
  * Topics covered here:
  * <ol>
@@ -60,13 +60,13 @@ class ComponentName;
  * guide/topics/fundamentals/services.html">Services</a> developer guide.
  * </p>
  * </div>
- * 
+ *
  * <a name="WhatIsAService"></a> <h3>What is a Service?</h3>
  *
  * <p>
  * Most confusion about the Service class actually revolves around what it is <em>not</em>:
  * </p>
- * 
+ *
  * <ul>
  * <li>A Service is <b>not</b> a separate process. The Service object itself does not imply it is
  * running in its own process; unless otherwise specified, it runs in the same process as the
@@ -74,11 +74,11 @@ class ComponentName;
  * <li>A Service is <b>not</b> a thread. It is not a means itself to do work off of the main thread
  * (to avoid Application Not Responding errors).
  * </ul>
- * 
+ *
  * <p>
  * Thus a Service itself is actually very simple, providing two main features:
  * </p>
- * 
+ *
  * <ul>
  * <li>A facility for the application to tell the system <em>about</em> something it wants to be
  * doing in the background (even when the user is not directly interacting with the application).
@@ -89,16 +89,16 @@ class ComponentName;
  * corresponds to calls to {@link mindroid.content.Context#bindService Context.bindService()}, which
  * allows a long-standing connection to be made to the service in order to interact with it.
  * </ul>
- * 
+ *
  * <p>
  * When a Service component is actually created, for either of these reasons, all that the system
  * actually does is instantiate the component and call its {@link #onCreate} and any other
  * appropriate callbacks on the main thread. It is up to the Service to implement these with the
  * appropriate behavior, such as creating a secondary thread in which it does its work.
  * </p>
- * 
+ *
  * <a name="ServiceLifecycle"></a> <h3>Service Lifecycle</h3>
- * 
+ *
  * <p>
  * There are two reasons that a service can be run by the system. If someone calls
  * {@link mindroid.content.Context#startService Context.startService()} then the system will
@@ -111,7 +111,7 @@ class ComponentName;
  * Context.stopService() or stopSelf() is called; however, services can use their
  * {@link #stopSelf(int)} method to ensure the service is not stopped until started intents have
  * been processed.
- * 
+ *
  * <p>
  * Clients can also use {@link mindroid.content.Context#bindService Context.bindService()} to obtain
  * a persistent connection to a service. This likewise creates the service if it is not already
@@ -120,17 +120,17 @@ class ComponentName;
  * {@link #onBind} method, allowing the client to then make calls back to the service. The service
  * will remain running as long as the connection is established (whether or not the client retains a
  * reference on the service's IBinder).
- * 
+ *
  * <p>
  * A service can be both started and have connections bound to it. In such a case, the system will
  * keep the service running as long as either it is started <em>or</em> there are one or more
  * connections to it. Once neither of these situations hold, the service's {@link #onDestroy} method
  * is called and the service is effectively terminated. All cleanup (stopping threads, unregistering
  * receivers) should be complete upon returning from onDestroy().
- * 
+ *
  * <a name="ProcessLifecycle"></a>
  * <h3>Process Lifecycle</h3>
- * 
+ *
  * <p>
  * The Mindroid system will attempt to keep the process hosting a service around as long as the
  * service has been started or has clients bound to it.
@@ -140,7 +140,7 @@ class Service :
 public:
     Service() : ContextWrapper(nullptr) {
     }
-    
+
     virtual ~Service() = default;
 
     /**
@@ -148,7 +148,7 @@ public:
      */
     virtual void onCreate() {
     }
-    
+
     /**
      * Called by the system every time a client explicitly starts the service by calling
      * {@link mindroid.content.Context#startService}, providing the arguments it supplied and a
@@ -163,7 +163,7 @@ public:
     virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
         return 0;
     }
-    
+
     /**
      * Called by the system to notify a Service that it is no longer used and is being removed. The
      * service should clean up any resources it holds (threads, registered receivers, etc) at this
@@ -172,7 +172,7 @@ public:
      */
     virtual void onDestroy() {
     }
-    
+
     /**
      * Return the communication channel to the service. May return null if clients can not bind to
      * the service. The returned {@link mindroid.os.IBinder} is usually for a complex interface.
@@ -184,7 +184,7 @@ public:
      * @return Return an IBinder through which clients can call on to the service.
      */
     virtual sp<IBinder> onBind(const sp<Intent>& intent) = 0;
-    
+
     /**
      * Called when all clients have disconnected from a particular interface published by the
      * service. The default implementation does nothing and returns false.
@@ -198,7 +198,7 @@ public:
     virtual bool onUnbind(const sp<Intent>& intent) {
         return true;
     }
-    
+
     /**
      * Stop the service, if it was previously started.  This is the same as
      * calling {@link mindroid.content.Context#stopService} for this particular service.
@@ -206,17 +206,17 @@ public:
     void stopSelf() {
         stopSelf(-1);
     }
-    
+
     /**
      * Stop the service, if it was previously started.
      */
     void stopSelf(int32_t startId);
-    
+
     /**
      * @hide
      */
     void attach(const sp<Context>& context, const sp<IProcess>& process, const sp<String>& className);
-    
+
 private:
     sp<IProcess> mProcess;
     sp<String> mClassName;

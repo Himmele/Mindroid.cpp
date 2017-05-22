@@ -244,7 +244,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
             const sp<String> mServiceName;
         };
 
-        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(mServiceManager, serviceRecord->name), mServiceManager->mMainHandler);
+        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(mServiceManager, serviceRecord->name));
         mServiceManager->mServiceCallbacks->add(callback);
         try {
             process->stopService(service, callback->asInterface());
@@ -456,7 +456,7 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
             const sp<Intent> mService;
         };
 
-        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, service), mMainHandler);
+        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, service));
         mServiceCallbacks->add(callback);
         try {
             process->createService(service, callback->asInterface());
@@ -505,7 +505,7 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
         const sp<String> mProcessName;
     };
 
-    sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, serviceRecord->name, serviceRecord->processRecord->name), mMainHandler);
+    sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, serviceRecord->name, serviceRecord->processRecord->name));
     mServiceCallbacks->add(callback);
     try {
         serviceRecord->processRecord->process->startService(service, 0, mStartId++, callback->asInterface());

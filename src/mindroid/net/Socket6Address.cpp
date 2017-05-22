@@ -54,7 +54,7 @@ Socket6Address::Socket6Address(const sp<String>& host, uint16_t port) {
     }
 }
 
-uint16_t Socket6Address::getPort() const { 
+uint16_t Socket6Address::getPort() const {
     if (mInetAddress == nullptr) {
         return 0;
     }

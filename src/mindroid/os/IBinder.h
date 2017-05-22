@@ -35,7 +35,7 @@ class Variant;
  * mechanism designed for high performance when performing in-process and cross-process calls. This
  * interface describes the abstract protocol for interacting with a remotable object. Do not
  * implement this interface directly, instead extend from {@link Binder}.
- * 
+ *
  * @see Binder
  */
 class IBinder :

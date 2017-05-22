@@ -40,7 +40,7 @@ class ContextImpl :
         public Context {
 public:
     ContextImpl(const sp<HandlerThread>& mainThread, const sp<ComponentName>& component);
-    
+
     sp<PackageManager> getPackageManager();
 
     sp<Looper> getMainLooper() {
@@ -48,7 +48,7 @@ public:
     }
 
     sp<String> getPackageName();
-    
+
     sp<File> getSharedPrefsFile(const sp<String>& name) {
         return makeFilename(getPreferencesDir(), String::format("%s.xml", name->c_str()));
     }
@@ -58,18 +58,18 @@ public:
     }
 
     sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode);
-    
+
     sp<IBinder> getSystemService(const char* name) {
         return getSystemService(String::valueOf(name));
     }
 
     sp<IBinder> getSystemService(const sp<String>& name);
-    
+
     sp<ComponentName> startService(const sp<Intent>& service);
     bool stopService(const sp<Intent>& service);
     bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags);
     void unbindService(const sp<ServiceConnection>& conn);
-    
+
 private:
     sp<File> getPreferencesDir();
     sp<File> makeFilename(const sp<File>& baseDir, const sp<String>& name);

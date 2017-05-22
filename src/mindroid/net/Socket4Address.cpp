@@ -54,7 +54,7 @@ Socket4Address::Socket4Address(const sp<String>& host, uint16_t port) {
     }
 }
 
-uint16_t Socket4Address::getPort() const { 
+uint16_t Socket4Address::getPort() const {
     if (mInetAddress == nullptr) {
         return 0;
     }

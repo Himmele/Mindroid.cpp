@@ -57,7 +57,7 @@ public:
      * File creation mode: the default mode.
      */
     static const int32_t MODE_PRIVATE = 0x0000;
-    
+
     /**
      * File creation mode: for use with {@link #openFileOutput}, if the file already exists then
      * write data to the end of the existing file instead of erasing it.
@@ -86,7 +86,7 @@ public:
      * accessing the file system.
      */
     virtual sp<File> getSharedPrefsFile(const sp<String>& name) = 0;
-    
+
     /**
      * Retrieve and hold the contents of the preferences file 'name', returning a SharedPreferences
      * through which you can retrieve and modify its values. Only one instance of the
@@ -103,7 +103,7 @@ public:
      */
     virtual sp<SharedPreferences> getSharedPreferences(const char* name, int32_t mode) = 0;
     virtual sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode) = 0;
-    
+
     /**
      * Return the handle to a system-level service by name. The class of the returned object varies
      * by the requested name.

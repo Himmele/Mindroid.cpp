@@ -45,7 +45,7 @@ public:
      * Create an empty intent.
      */
     Intent() = default;
-    
+
     /**
      * Copy constructor.
      */
@@ -240,7 +240,7 @@ public:
     sp<String> getStringExtra(const sp<String>& name) {
         return mExtras == nullptr ? nullptr : mExtras->getString(name);
     }
-    
+
     /**
      * Retrieve extended data from the intent.
      *
@@ -455,7 +455,7 @@ public:
         return putExtra(String::valueOf(name), value);
     }
     sp<Intent> putExtra(const sp<String>& name, const sp<String>& value);
-    
+
     /**
      * Add extended data to the intent.
      *

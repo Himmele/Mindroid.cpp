@@ -48,13 +48,13 @@ public:
      * Global information about the application/package this component is a part of.
      */
     sp<ApplicationInfo> applicationInfo;
-    
+
     /**
      * The name of the process this component should run in. From the "mindroid:process" attribute
      * or, if not set, the same as <var>applicationInfo.processName</var>.
      */
     sp<String> processName;
-    
+
     /**
      * Indicates whether or not this component may be instantiated. Note that this value can be
      * overriden by the one in its parent {@link ApplicationInfo}.
