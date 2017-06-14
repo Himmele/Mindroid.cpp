@@ -1,4 +1,5 @@
 # GCC, the GNU Compiler Collection
+# RELRO: http://tk-blog.blogspot.de/2009/02/relro-not-so-well-known-memory.html
 CC := gcc
 CXX := g++
 LD := g++
@@ -6,13 +7,13 @@ AS := gas
 AR := ar
 RM := rm
 INCLUDES := -I. -Isrc -Igoogletest/include
-CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions
-LDFLAGS := 
+CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions -fstack-protector -Wa,--noexecstack -Werror=format-security -D_FORTIFY_SOURCE=2
+LDFLAGS := -pie -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
 LIB_DIR := lib
 BIN_DIR := bin
 
 #==== Misc ====
-	
+
 .PHONY: clean
 
 all: tinyxml2 Mindroid.cpp googletest Tests Services

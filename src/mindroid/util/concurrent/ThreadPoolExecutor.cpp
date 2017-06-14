@@ -18,8 +18,9 @@
 
 namespace mindroid {
 
-ThreadPoolExecutor::ThreadPoolExecutor(uint32_t threadPoolSize) :
-        THREAD_POOL_SIZE(threadPoolSize),
+ThreadPoolExecutor::ThreadPoolExecutor(const sp<String>& name, uint32_t size) :
+        mName(name),
+        mSize(size),
         mWorkerThreads(nullptr),
         mQueue(new LinkedBlockingQueue<sp<Runnable>>()) {
     start();
@@ -31,9 +32,10 @@ ThreadPoolExecutor::~ThreadPoolExecutor() {
 
 void ThreadPoolExecutor::start() {
     if (mWorkerThreads == nullptr) {
-        mWorkerThreads = new sp<WorkerThread>[THREAD_POOL_SIZE];
-        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
-            mWorkerThreads[i] = new WorkerThread(String::valueOf("ThreadPoolExecutor[Worker i]"));
+        mWorkerThreads = new sp<WorkerThread>[mSize];
+        for (uint32_t i = 0; i < mSize; i++) {
+            sp<String> name = String::format("%s%c%s%d%c", (mName != nullptr ? mName->c_str() : "ThreadPoolExecutor"), '[', "Worker", i, ']');
+            mWorkerThreads[i] = new WorkerThread(name);
             mWorkerThreads[i]->setQueue(mQueue);
             mWorkerThreads[i]->start();
         }
@@ -42,11 +44,11 @@ void ThreadPoolExecutor::start() {
 
 void ThreadPoolExecutor::shutdown() {
     if (mWorkerThreads != nullptr) {
-        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
+        for (uint32_t i = 0; i < mSize; i++) {
             mWorkerThreads[i]->interrupt();
             mQueue->put(nullptr);
         }
-        for (uint32_t i = 0; i < THREAD_POOL_SIZE; i++) {
+        for (uint32_t i = 0; i < mSize; i++) {
             mWorkerThreads[i]->join();
             mWorkerThreads[i] = nullptr;
         }

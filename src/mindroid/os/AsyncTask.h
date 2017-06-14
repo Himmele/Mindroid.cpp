@@ -28,14 +28,8 @@ namespace mindroid {
 class AsyncTaskBase :
         public Object {
 public:
-    static sp<SerialExecutor> SERIAL_EXECUTOR;
-    static sp<ThreadPoolExecutor> THREAD_POOL_EXECUTOR;
-
-protected:
-    static sp<ReentrantLock> sLock;
-
-private:
-    static const uint32_t THREAD_POOL_SIZE = 4;
+    static sp<Executor> SERIAL_EXECUTOR;
+    static sp<Executor> THREAD_POOL_EXECUTOR;
 };
 
 /**
@@ -196,6 +190,7 @@ public:
             mCancelled(false) {
         mHandler = new InternalHandler();
         mWorkerRunnable = new WorkerRunnable(this);
+        mLock = new ReentrantLock();
     }
 
     virtual ~AsyncTask() = default;
@@ -256,7 +251,7 @@ public:
      */
     bool cancel() {
         bool isAlreadyCancelled = isCancelled();
-        AutoLock autoLock(sLock);
+        AutoLock autoLock(mLock);
         if (mExecutor != nullptr && !isAlreadyCancelled) {
             bool result = mExecutor->cancel(mWorkerRunnable);
             if (result) {
@@ -282,7 +277,7 @@ public:
      * @see #cancel(boolean)
      */
     bool isCancelled() {
-        AutoLock autoLock(sLock);
+        AutoLock autoLock(mLock);
         return mCancelled;
     }
 
@@ -456,6 +451,7 @@ private:
     sp<Executor> mExecutor;
     sp<InternalHandler> mHandler;
     sp<WorkerRunnable> mWorkerRunnable;
+    sp<ReentrantLock> mLock;
     bool mCancelled;
 
     static const int32_t ON_POST_EXECUTE_MESSAGE = 1;

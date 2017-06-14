@@ -17,4 +17,26 @@ Project {
 
 		Dependency "src/tinyxml2", config: default
 	}
+
+	ExecutableConfig test {
+	    DefaultToolchain GCC {
+			Compiler CPP {
+				Flags "-O0 -g -Werror -Wall -Wno-unused-parameter -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
+				Define "__STDC_FORMAT_MACROS"
+			}
+			Compiler C {
+				Flags "-O0 -g -Werror -Wall -Wextra -Wno-unused-parameter -pthread"
+			}
+			Linker {
+				Flags add: "-pthread"
+			}
+		}
+
+		ArtifactName "test"
+		Dependency "Mindroid.cpp", config: default
+
+		Files "src/examples/AsyncTasks.cpp"
+		IncludeDir "."
+		IncludeDir "src"
+	}
 }

@@ -26,7 +26,10 @@ namespace mindroid {
 class ThreadPoolExecutor :
         public Executor {
 public:
-    ThreadPoolExecutor(uint32_t threadPoolSize);
+    ThreadPoolExecutor(const char* name, uint32_t size) :
+            ThreadPoolExecutor(String::valueOf(name), size) {
+    }
+    ThreadPoolExecutor(const sp<String>& name, uint32_t size);
     virtual ~ThreadPoolExecutor();
     ThreadPoolExecutor(const ThreadPoolExecutor&) = delete;
     ThreadPoolExecutor& operator=(const ThreadPoolExecutor&) = delete;
@@ -55,7 +58,8 @@ private:
     void start();
     void shutdown();
 
-    const uint32_t THREAD_POOL_SIZE;
+    sp<String> mName;
+    const uint32_t mSize;
     sp<WorkerThread>* mWorkerThreads;
     sp<LinkedBlockingQueue<sp<Runnable>>> mQueue;
 };

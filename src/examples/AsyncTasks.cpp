@@ -4,18 +4,23 @@
 #include "mindroid/os/Handler.h"
 #include "mindroid/os/Message.h"
 #include "mindroid/os/AsyncTask.h"
+#include "mindroid/os/ServiceManager.h"
+#include "mindroid/lang/Class.h"
 #include "mindroid/util/Log.h"
+#include "mindroid/util/logging/Logger.h"
 
 using namespace mindroid;
 
-class ExampleAsyncTask : public AsyncTask<int32_t, int32_t, int32_t> {
+CLASS(mindroid, Logger);
+
+class TestAsyncTask : public AsyncTask<int32_t, int32_t, int32_t> {
 public:
     virtual void onPreExecute() {
-        Log::d("ExampleAsyncTask", "onPreExecute on thread %d", (int32_t) pthread_self());
+        Log::d("TestAsyncTask", "onPreExecute on thread %d", (int32_t) pthread_self());
     }
 
     virtual int32_t doInBackground(int32_t param) {
-        Log::d("ExampleAsyncTask", "doInBackground on thread %d with param %d", (int32_t) pthread_self(), param);
+        Log::d("TestAsyncTask", "doInBackground on thread %d with param %d", (int32_t) pthread_self(), param);
         Thread::sleep(250);
         int32_t sum = 0;
         int32_t i;
@@ -31,37 +36,56 @@ public:
     }
 
     virtual void onProgressUpdate(int32_t value) {
-        Log::d("ExampleAsyncTask", "onProgressUpdate on thread %d with value %d", (int32_t) pthread_self(), value);
+        Log::d("TestAsyncTask", "onProgressUpdate on thread %d with value %d", (int32_t) pthread_self(), value);
     }
 
     virtual void onPostExecute(int32_t result) {
-        Log::d("ExampleAsyncTask", "onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
+        Log::d("TestAsyncTask", "onPostExecute on thread %d with result %d", (int32_t) pthread_self(), result);
     }
 
     virtual void onCancelled() {
-        Log::d("ExampleAsyncTask", "onCancelled on thread %d", (int32_t) pthread_self());
+        Log::d("TestAsyncTask", "onCancelled on thread %d", (int32_t) pthread_self());
     }
 };
 
 int main() {
-    sp<Handler> handler;
-    sp<ExampleAsyncTask> asyncTask1;
-    sp<ExampleAsyncTask> asyncTask2;
-
     Looper::prepare();
-    handler = new Handler(Looper::myLooper());
+
+    sp<ServiceManager> serviceManager = new ServiceManager();
+    serviceManager->start();
+    sp<IServiceManager> sm = ServiceManager::getServiceManager();
+
+    sp<Intent> logger = new Intent();
+    sp<ArrayList<sp<String>>> logBuffers = new ArrayList<sp<String>>();
+    logBuffers->add(String::valueOf("main"));
+    logger->setComponent(new ComponentName("mindroid", "Logger"))
+            ->putExtra("name", "Logger")
+            ->putExtra("process", "main")
+            ->putStringArrayListExtra("logBuffers", logBuffers)
+            ->putExtra("timestamps", true)
+            ->putExtra("priority", Log::DEBUG);
+    sm->startSystemService(logger);
+
+    sp<TestAsyncTask> asyncTask1;
+    sp<TestAsyncTask> asyncTask2;
+    sp<Handler> handler = new Handler(Looper::myLooper());
     handler->post([&] {
-            asyncTask1 = new ExampleAsyncTask();
+            asyncTask1 = new TestAsyncTask();
             asyncTask1->execute(1234567);
 
-            asyncTask2 = new ExampleAsyncTask();
+            asyncTask2 = new TestAsyncTask();
             asyncTask2->executeOnExecutor(AsyncTaskBase::THREAD_POOL_EXECUTOR, 123);
 
             handler->postDelayed([=] {
-                    Looper::myLooper()->quit();
+                Looper::myLooper()->quit();
             }, 2000);
     });
     Looper::loop();
+
+    logger->setComponent(new ComponentName("mindroid", "Logger"));
+    sm->stopSystemService(logger);
+
+    serviceManager->shutdown();
 
     return 0;
 }
