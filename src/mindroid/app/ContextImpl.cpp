@@ -154,7 +154,7 @@ void ContextImpl::unbindService(const sp<ServiceConnection>& conn) {
 
 sp<File> ContextImpl::getPreferencesDir() {
     if (!Environment::getPreferencesDirectory()->exists()) {
-        Environment::getPreferencesDirectory()->mkdir();
+        Environment::getPreferencesDirectory()->mkdirs();
     }
     return Environment::getPreferencesDirectory();
 }

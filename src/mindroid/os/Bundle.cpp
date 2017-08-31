@@ -329,16 +329,16 @@ sp<String> Bundle::getString(const sp<String>& key) const {
     return nullptr;
 }
 
-sp<String> Bundle::getString(const sp<String>& key, const char* defaultValue) const {
+sp<String> Bundle::getString(const sp<String>& key, const sp<String>& defaultValue) const {
     sp<Variant> value = mMap->get(key);
     if (value != nullptr) {
         if (value->isString()) {
             return value->getString();
         } else {
-            return String::valueOf(defaultValue);
+            return defaultValue;
         }
     }
-    return String::valueOf(defaultValue);
+    return defaultValue;
 }
 
 sp<ArrayList<sp<String>>> Bundle::getStringArrayList(const sp<String>& key) const {

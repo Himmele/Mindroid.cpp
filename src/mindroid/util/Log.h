@@ -24,7 +24,41 @@
 
 namespace mindroid {
 
-class Log {
+/**
+ * Mindroid logger.
+ *
+ * <p>
+ * Generally, use the Log.v() Log.d() Log.i() Log.w() and Log.e() methods.
+ *
+ * <p>
+ * The order in terms of verbosity, from least to most is ERROR, WARN, INFO, DEBUG, VERBOSE. Verbose
+ * should never be compiled into an application except during development. Debug logs are compiled
+ * in but stripped at runtime. Error, warning and info logs are always kept.
+ *
+ * <p>
+ * <b>Tip:</b> A good convention is to declare a <code>LOG_TAG</code> constant in your class:
+ *
+ * <pre>
+ * private static final String LOG_TAG = &quot;MyService&quot;;
+ * </pre>
+ *
+ * and use that in subsequent calls to the log methods.
+ * </p>
+ *
+ * <p>
+ * <b>Tip:</b> Don't forget that when you make a call like
+ *
+ * <pre>
+ * Log.v(LOG_TAG, &quot;index=&quot; + i);
+ * </pre>
+ *
+ * that when you're building the string to pass into Log.d, the compiler uses a StringBuilder and at
+ * least three allocations occur: the StringBuilder itself, the buffer, and the String object.
+ * Realistically, there is also another buffer allocation and copy, and even more pressure on the
+ * gc. That means that if your log message is filtered out, you might be doing significant work and
+ * incurring significant overhead.
+ */
+class Log final {
 public:
     static const int32_t VERBOSE = 0;
     static const int32_t DEBUG = 1;

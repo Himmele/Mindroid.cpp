@@ -52,6 +52,52 @@ public:
     Intent(const sp<Intent>& o);
 
     /**
+     * Create an intent with a given action.  All other fields (data, type,
+     * class) are null.  Note that the action <em>must</em> be in a
+     * namespace because Intents are used globally in the system -- for
+     * example the system VIEW action is android.intent.action.VIEW; an
+     * application's custom action would be something like
+     * com.google.app.myapp.CUSTOM_ACTION.
+     *
+     * @param action The Intent action, such as ACTION_VIEW.
+     */
+    Intent(const char* action) :
+            Intent(String::valueOf(action)) {
+    }
+    Intent(const sp<String>& action);
+
+    /**
+     * Create an intent for a specific component.  All other fields (action, data,
+     * type, class) are null, though they can be modified later with explicit
+     * calls.  This provides a convenient way to create an intent that is
+     * intended to execute a hard-coded class name, rather than relying on the
+     * system to find an appropriate class for you; see {@link #setComponent}
+     * for more information on the repercussions of this.
+     *
+     * @param packageContext A Context of the application package implementing
+     * this class.
+     * @param className The component class that is to be used for the intent.
+     *
+     * @see #setClass
+     * @see #setComponent
+     */
+    Intent(const sp<Context>& packageContext, const sp<String>& className);
+
+    /**
+     * Retrieve the general action to be performed, such as
+     * {@link #ACTION_VIEW}.  The action describes the general way the rest of
+     * the information in the intent should be interpreted -- most importantly,
+     * what to do with the data returned by {@link #getData}.
+     *
+     * @return The action of this intent or null if none is specified.
+     *
+     * @see #setAction
+     */
+    sp<String> getAction() {
+        return mAction;
+    }
+
+    /**
      * Returns true if an extra value is associated with the given name.
      *
      * @param name the extra's name
@@ -298,6 +344,22 @@ public:
      */
     sp<ComponentName> getComponent() {
         return mComponent;
+    }
+
+    /**
+     * Set the general action to be performed.
+     *
+     * @param action An action name, such as ACTION_VIEW.  Application-specific
+     *               actions should be prefixed with the vendor's package name.
+     *
+     * @return Returns the same Intent object, for chaining multiple calls
+     * into a single statement.
+     *
+     * @see #getAction
+     */
+    sp<Intent> setAction(const sp<String>& action) {
+        mAction = action;
+        return this;
     }
 
     /**
@@ -580,6 +642,7 @@ public:
     }
 
 private:
+    sp<String> mAction;
     sp<ComponentName> mComponent;
     sp<Bundle> mExtras;
 };

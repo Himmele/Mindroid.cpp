@@ -23,6 +23,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <errno.h>
 
 namespace mindroid {
 
@@ -132,7 +133,11 @@ sp<String> File::getParent() {
 
 sp<File> File::getParentFile() {
     sp<String> parent = getParent();
-    return new File(parent);
+    if (parent != nullptr) {
+        return new File(parent);
+    } else {
+        return nullptr;
+    }
 }
 
 sp<String> File::getPath() {
@@ -210,6 +215,21 @@ sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
 
 bool File::mkdir() {
     return ::mkdir(mPath->c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) == 0;
+}
+
+bool File::mkdirs() {
+    if (mkdir()) {
+        return true;
+    } else {
+        if (errno == ENOENT) {
+            sp<File> parent = getParentFile();
+            return parent != nullptr && parent->mkdirs() && mkdir();
+        } else if (errno == EEXIST) {
+            return false;
+        } else {
+            return false;
+        }
+    }
 }
 
 bool File::createNewFile() {

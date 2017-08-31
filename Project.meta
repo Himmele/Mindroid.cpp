@@ -17,7 +17,7 @@ Project {
 
 		Dependency "src/tinyxml2", config: default
 	}
-
+	
 	ExecutableConfig test {
 	    DefaultToolchain GCC {
 			Compiler CPP {
@@ -31,12 +31,12 @@ Project {
 				Flags add: "-pthread"
 			}
 		}
-
+		
 		ArtifactName "test"
-		Dependency "Mindroid.cpp", config: default
+		Dependency "Mindroid.cpp", config: default		
 
 		Files "src/examples/AsyncTasks.cpp"
 		IncludeDir "."
-		IncludeDir "src"
+		IncludeDir "src"		
 	}
 }

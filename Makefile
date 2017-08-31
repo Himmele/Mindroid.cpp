@@ -72,6 +72,7 @@ SRCS = \
 	src/mindroid/os/SystemClock.cpp \
 	src/mindroid/os/MessageQueue.cpp \
 	src/mindroid/util/Assert.cpp \
+	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Variant.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
 	src/mindroid/util/concurrent/atomic/AtomicInteger.cpp \

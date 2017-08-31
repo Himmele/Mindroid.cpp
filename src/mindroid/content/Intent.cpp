@@ -21,10 +21,19 @@
 namespace mindroid {
 
 Intent::Intent(const sp<Intent>& o) {
+    mAction = o->mAction;
     mComponent = o->mComponent;
     if (o->mExtras != nullptr) {
         mExtras = new Bundle(o->mExtras);
     }
+}
+
+Intent::Intent(const sp<String>& action) {
+    mAction = action;
+}
+
+Intent::Intent(const sp<Context>& packageContext, const sp<String>& className) {
+    mComponent = new ComponentName(packageContext, className);
 }
 
 sp<Intent> Intent::putExtra(const sp<String>& name, bool value) {

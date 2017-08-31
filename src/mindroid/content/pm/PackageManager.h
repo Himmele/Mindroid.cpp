@@ -23,6 +23,7 @@
 #include "mindroid/content/pm/ResolveInfo.h"
 #include "mindroid/content/pm/IPackageManager.h"
 #include "mindroid/lang/Object.h"
+#include "mindroid/os/ServiceManager.h"
 #include "mindroid/util/ArrayList.h"
 
 namespace mindroid {
@@ -41,6 +42,10 @@ public:
      * {@link PackageInfo#services}.
      */
     static const int32_t GET_SERVICES = 0x00000004;
+
+    PackageManager() {
+        mService = binder::PackageManager::Stub::asInterface(ServiceManager::getSystemService(Context::PACKAGE_MANAGER));
+    }
 
     PackageManager(const sp<Context>& context) {
         mService = binder::PackageManager::Stub::asInterface(context->getSystemService(Context::PACKAGE_MANAGER));

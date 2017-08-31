@@ -41,6 +41,61 @@ public:
     static void setRootDirectory(const sp<String>& rootDirectory);
 
     /**
+     * Sets the Mindroid apps directory.
+     */
+    static void setAppsDirectory(const char* directory) {
+        setAppsDirectory(String::valueOf(directory));
+    }
+    static void setAppsDirectory(const sp<String>& directory) {
+        Environment* self = getInstance();
+        self->APPS_DIRECTORY = new File(directory);
+    }
+
+    /**
+     * Sets the Mindroid data directory.
+     */
+    static void setDataDirectory(const char* directory) {
+        setDataDirectory(String::valueOf(directory));
+    }
+    static void setDataDirectory(const sp<String>& directory) {
+        Environment* self = getInstance();
+        self->DATA_DIRECTORY = new File(directory);
+    }
+
+    /**
+     * Sets the Mindroid preferences directory.
+     */
+    static void setPreferencesDirectory(const char* directory) {
+        setPreferencesDirectory(String::valueOf(directory));
+    }
+    static void setPreferencesDirectory(const sp<String>& directory) {
+        Environment* self = getInstance();
+        self->PREFERENCES_DIRECTORY = new File(directory);
+    }
+
+    /**
+     * Sets the Mindroid cache directory.
+     */
+    static void setCacheDirectory(const char* directory) {
+        setCacheDirectory(String::valueOf(directory));
+    }
+    static void setCacheDirectory(const sp<String>& directory) {
+        Environment* self = getInstance();
+        self->CACHE_DIRECTORY = new File(directory);
+    }
+
+    /**
+     * Sets the Mindroid log directory.
+     */
+    static void setLogDirectory(const char* directory) {
+        setLogDirectory(String::valueOf(directory));
+    }
+    static void setLogDirectory(const sp<String>& directory) {
+        Environment* self = getInstance();
+        self->LOG_DIRECTORY = new File(directory);
+    }
+
+    /**
      * Gets the Mindroid root directory.
      */
     static sp<File> getRootDirectory() {
@@ -69,17 +124,17 @@ public:
     }
 
     /**
+     * Gets the Mindroid cache directory.
+     */
+    static sp<File> getCacheDirectory() {
+        return getInstance()->CACHE_DIRECTORY;
+    }
+
+    /**
      * Gets the Mindroid log directory.
      */
     static sp<File> getLogDirectory() {
         return getInstance()->LOG_DIRECTORY;
-    }
-
-    /**
-     * Sets the Mindroid log directory.
-     */
-    static void setLogDirectory(const sp<String>& directory) {
-        getInstance()->LOG_DIRECTORY = new File(directory);
     }
 
     /**
@@ -132,6 +187,7 @@ private:
     sp<File> APPS_DIRECTORY;
     sp<File> DATA_DIRECTORY;
     sp<File> PREFERENCES_DIRECTORY;
+    sp<File> CACHE_DIRECTORY;
     sp<File> LOG_DIRECTORY;
     sp<ReentrantLock> mLock = new ReentrantLock();
     sp<HashMap<sp<String>, sp<SharedPreferences>>> mSharedPrefs = new HashMap<sp<String>, sp<SharedPreferences>>();

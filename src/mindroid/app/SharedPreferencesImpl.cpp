@@ -213,8 +213,13 @@ void SharedPreferencesImpl::loadSharedPrefs() {
     }
 
     if (mBackupFile->exists()) {
-        mFile->remove();
-        mBackupFile->renameTo(mFile);
+        Log::d(TAG, "Backup file %s found, restoring to %s", mBackupFile->getPath()->c_str(), mFile->getPath()->c_str());
+        if (!mFile->remove()) {
+            Log::e(TAG, "Cannot delete file %s to restore backup file %s", mFile->getPath()->c_str(), mBackupFile->getPath()->c_str());
+        }
+        if (!mBackupFile->renameTo(mFile)) {
+            Log::e(TAG, "Cannot restore backup file %s to %s", mBackupFile->getPath()->c_str(), mFile->getPath()->c_str());
+        }
     }
 
     sp<HashMap<sp<String>, sp<Variant>>> map = nullptr;
@@ -233,19 +238,26 @@ bool SharedPreferencesImpl::storeSharedPrefs() {
     if (mFile->exists()) {
         if (!mBackupFile->exists()) {
             if (!mFile->renameTo(mBackupFile)) {
-                Log::e(TAG, "Cannot rename file %s to backup file %s",  mFile->getPath()->c_str(), mBackupFile->getPath()->c_str());
+                Log::e(TAG, "Cannot rename file %s to backup file %s", mFile->getPath()->c_str(), mBackupFile->getPath()->c_str());
                 return false;
             }
         } else {
-            mFile->remove();
+            if (!mFile->remove()) {
+                Log::e(TAG, "Cannot clean up file: %s", mFile->getPath()->c_str());
+            }
         }
     }
 
     if (writeMap(mFile, mMap)) {
-        mBackupFile->remove();
+        if (mBackupFile->exists()) {
+            if (!mBackupFile->remove()) {
+                Log::e(TAG, "Cannot clean up backup file %s", mBackupFile->getPath()->c_str());
+            }
+        }
         return true;
     } else {
         Log::e(TAG, "Cannot write shared preferences: %s", mFile->getPath()->c_str());
+        // Clean up an unsuccessfully written file.
         if (mFile->exists()) {
             if (!mFile->remove()) {
                 Log::e(TAG, "Cannot clean up partially-written file %s", mFile->getPath()->c_str());
@@ -383,7 +395,7 @@ bool SharedPreferencesImpl::writeMap(const sp<File>& file, const sp<HashMap<sp<S
 }
 
 XMLElement* SharedPreferencesImpl::writeValue(XMLDocument& doc, const sp<String>& name, const sp<Variant>& value) {
-    if (value != nullptr) {
+    if (name != nullptr && value != nullptr) {
         XMLElement* element = nullptr;
         switch (value->getType()) {
         case Variant::Bool: {

@@ -55,16 +55,17 @@ int main() {
     serviceManager->start();
     sp<IServiceManager> sm = ServiceManager::getServiceManager();
 
-    sp<Intent> logger = new Intent();
-    sp<ArrayList<sp<String>>> logBuffers = new ArrayList<sp<String>>();
-    logBuffers->add(String::valueOf("main"));
+    sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
+    logFlags->add(String::valueOf("timestamp"));
+    sp<Intent> logger = new Intent(Logger::ACTION_LOG);
     logger->setComponent(new ComponentName("mindroid", "Logger"))
-            ->putExtra("name", "Logger")
+            ->putExtra("name", Context::LOGGER_SERVICE)
             ->putExtra("process", "main")
-            ->putStringArrayListExtra("logBuffers", logBuffers)
-            ->putExtra("timestamps", true)
-            ->putExtra("priority", Log::DEBUG);
-    sm->startSystemService(logger);
+            ->putExtra("logBuffer", Log::LOG_ID_MAIN)
+            ->putExtra("logPriority", Log::DEBUG)
+            ->putStringArrayListExtra("logFlags", logFlags)
+            ->putExtra("consoleLogging", true);
+    serviceManager->startSystemService(logger);
 
     sp<TestAsyncTask> asyncTask1;
     sp<TestAsyncTask> asyncTask2;

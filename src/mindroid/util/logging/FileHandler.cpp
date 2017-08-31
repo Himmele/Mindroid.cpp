@@ -15,24 +15,46 @@
  */
 
 #include "mindroid/util/logging/FileHandler.h"
+#include "mindroid/os/Environment.h"
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <string>
+#include <fstream>
 
 namespace mindroid {
 
 const sp<String> FileHandler::DEFAULT_PATTERN = String::valueOf("%h/Mindroid-%g.log");
+const sp<String> FileHandler::CRLF = String::valueOf("\r\n");
+const sp<String> FileHandler::DATA_VOLUME = String::valueOf("dataVolume");
 
 FileHandler::FileHandler() {
-    init(nullptr, false, 0, 0);
+    init(nullptr, false, 0, 0, 0, 0);
 }
 
-void FileHandler::init(const sp<String>& pattern, bool append, int32_t limit, int32_t count) {
-    initProperties(pattern, append, limit, count);
+void FileHandler::init(const sp<String>& pattern, bool append, int32_t limit, int32_t count, int32_t bufferSize, int32_t dataVolumeLimit) {
+    initProperties(pattern, append, limit, count, bufferSize, dataVolumeLimit);
     initOutputFiles();
+    initPreferences();
+}
+
+void FileHandler::initProperties(const sp<String>& p, bool a, int32_t l, int32_t c, int32_t bufferSize, int32_t dataVolumeLimit) {
+    mPattern = (p == nullptr) ? DEFAULT_PATTERN : p;
+    if (mPattern == nullptr || (mPattern->length() == 0)) {
+        Assert::fail("Pattern cannot be null or empty");
+    }
+    mAppend = a;
+    mCount = c;
+    mLimit = l;
+    mBufferSize = bufferSize;
+    mDataVolumeLimit = dataVolumeLimit;
+    mCount = mCount < 1 ? DEFAULT_COUNT : mCount;
+    mLimit = mLimit < 0 ? DEFAULT_LIMIT : mLimit;
+    mBufferSize = mBufferSize < 0 ? 0 : mBufferSize;
+    mDataVolumeLimit = mDataVolumeLimit < 0 ? 0 : mDataVolumeLimit;
 }
 
 void FileHandler::initOutputFiles() {
@@ -51,16 +73,12 @@ void FileHandler::initOutputFiles() {
     mWriter = new Writer(mFiles->get(0), mAppend);
 }
 
-void FileHandler::initProperties(const sp<String>& p, bool a, int32_t l, int32_t c) {
-    mPattern = (p == nullptr) ? DEFAULT_PATTERN : p;
-    if (mPattern == nullptr || (mPattern->length() == 0)) {
-        Assert::fail("Pattern cannot be null or empty");
+void FileHandler::initPreferences() {
+    if (mDataVolumeLimit > 0) {
+        sp<String> fileName = String::format("%x%s", (int32_t) mFiles->get(0)->getAbsolutePath()->hashCode(), ".xml");
+        mPreferences = Environment::getSharedPreferences(mFiles->get(0)->getParentFile(), fileName, 0);
+        mDataVolume = mPreferences->getInt(DATA_VOLUME, 0);
     }
-    mAppend = a;
-    mCount = c;
-    mLimit = l;
-    mCount = mCount < 1 ? DEFAULT_COUNT : mCount;
-    mLimit = mLimit < 0 ? DEFAULT_LIMIT : mLimit;
 }
 
 void FileHandler::findNextGeneration() {
@@ -125,61 +143,151 @@ sp<String> FileHandler::parseFileName(uint32_t gen) {
     return s;
 }
 
-FileHandler::FileHandler(const sp<String>& pattern) {
+FileHandler::FileHandler(const sp<String>& pattern) :
+        mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
         Assert::fail("Pattern cannot be null or empty");
     }
-    init(pattern, false, DEFAULT_LIMIT, DEFAULT_COUNT);
+    init(pattern, false, DEFAULT_LIMIT, DEFAULT_COUNT, 0, 0);
 }
 
-FileHandler::FileHandler(const sp<String>& pattern, bool append) {
+FileHandler::FileHandler(const sp<String>& pattern, bool append) :
+        mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
         Assert::fail("Pattern cannot be null or empty");
     }
-    init(pattern, append, DEFAULT_LIMIT, DEFAULT_COUNT);
+    init(pattern, append, DEFAULT_LIMIT, DEFAULT_COUNT, 0, 0);
 }
 
-FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count) {
+FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count) :
+        mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
         Assert::fail("Pattern cannot be null or empty");
     }
     if (limit < 0 || count < 1) {
         Assert::fail("limit < 0 || count < 1");
     }
-    init(pattern, false, limit, count);
+    init(pattern, false, limit, count, 0, 0);
 }
 
-FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append) {
+FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append) :
+        mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
         Assert::fail("Pattern cannot be null or empty");
     }
     if (limit < 0 || count < 1) {
         Assert::fail("limit < 0 || count < 1");
     }
-    init(pattern, append, limit, count);
+    init(pattern, append, limit, count, 0, 0);
+}
+
+FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append, int32_t bufferSize, int32_t dataVolumeLimit) :
+        mLock(new ReentrantLock()) {
+    if (pattern == nullptr || pattern->length() == 0) {
+        Assert::fail("Pattern cannot be null or empty");
+    }
+    if (limit < 0 || count < 1) {
+        Assert::fail("limit < 0 || count < 1");
+    }
+    if (bufferSize < 0 || dataVolumeLimit < 0) {
+        Assert::fail("bufferSize < 0 || dataVolumeLimit < 0");
+    }
+    init(pattern, append, limit, count, bufferSize, dataVolumeLimit);
 }
 
 void FileHandler::close() {
+    flush();
+
     if (mWriter != nullptr) {
         mWriter->close();
         mWriter = nullptr;
     }
 }
 
-void FileHandler::publish(const sp<LogBuffer::LogRecord>& record) {
-    mWriter->write(record->toString());
-    mWriter->newLine();
-    mWriter->flush();
+void FileHandler::flush() {
+    if (mWriter != nullptr) {
+        if (mDataVolumeLimit > 0) {
+            mPreferences->edit()->putInt(DATA_VOLUME, mDataVolume)->commit();
+        }
 
-    if (mLimit > 0 && mWriter->getSize() >= mLimit) {
+        mWriter->flush();
+    }
+}
+
+void FileHandler::clear() {
+    close();
+
+    for (int i = 0; i < mCount; i++) {
+        if (mFiles->get(0)->exists()) {
+            mFiles->get(0)->remove();
+        }
+    }
+    mWriter = new Writer(mFiles->get(0), mAppend);
+}
+
+void FileHandler::publish(const sp<LogBuffer::LogRecord>& record) {
+    AutoLock autoLock(mLock);
+
+    sp<String> logMessage = record->toString();
+    int32_t logMessageSize = logMessage->length() + CRLF->length();
+
+    if (mDataVolumeLimit > 0) {
+        if (mDataVolume + logMessageSize > mDataVolumeLimit) {
+            return;
+        }
+    }
+
+    if (mLimit > 0 && (mWriter->size() + logMessageSize) >= mLimit) {
         findNextGeneration();
     }
+
+    mWriter->write(logMessage);
+    mWriter->newLine();
+    mFlushSize += logMessageSize;
+    mDataVolume += logMessageSize;
+    if (mFlushSize >= mBufferSize) {
+        flush();
+        mFlushSize = 0;
+    }
+}
+
+bool FileHandler::dump(const sp<String>& fileName) {
+    AutoLock autoLock(mLock);
+
+    if (fileName == nullptr) {
+        return false;
+    }
+
+    sp<File> tempFile = new File(mFiles->get(0)->getParentFile(), String::format("%x%s", (int32_t) mFiles->get(0)->getAbsolutePath()->hashCode(), ".tmp"));
+    if (!tempFile->createNewFile()) {
+        return false;
+    }
+
+    flush();
+
+    std::ofstream writer(tempFile->getPath()->c_str(), std::ofstream::out);
+    for (int i = mCount - 1; i >= 0; i--) {
+        if (!mFiles->get(i)->exists()) {
+            continue;
+        }
+
+        sp<File> inputFile = mFiles->get(i);
+        std::ifstream reader(inputFile->getPath()->c_str());
+        std::string logMessage;
+        while (std::getline(reader, logMessage)) {
+            writer << logMessage;
+        }
+        reader.close();
+    }
+    writer.close();
+
+    return tempFile->renameTo(new File(Environment::getLogDirectory(), fileName));
 }
 
 FileHandler::Writer::Writer(const sp<File>& file, bool append) {
     if (!file->exists()) {
         if (file->getParentFile() != nullptr && !file->getParentFile()->exists()) {
-            file->getParentFile()->mkdir();
+            file->getParentFile()->mkdirs();
         }
         file->createNewFile();
     }
@@ -190,10 +298,6 @@ FileHandler::Writer::Writer(const sp<File>& file, bool append) {
     }
     mFd = ::open(file->getPath()->c_str(), flags, 0600);
     mSize = file->length();
-
-    if (append && file->length() > 0) {
-        newLine();
-    }
 }
 
 FileHandler::Writer::~Writer() {
@@ -222,12 +326,12 @@ void FileHandler::Writer::close() {
     }
 }
 
-int32_t FileHandler::Writer::getSize() {
+int32_t FileHandler::Writer::size() {
     return mSize;
 }
 
 void FileHandler::Writer::newLine() {
-    write(String::valueOf("\r\n"));
+    write(CRLF);
 }
 
 } /* namespace mindroid */

@@ -285,6 +285,12 @@ public:
     inline sp<String> getString(const char* key, const char* defValue) {
         return getString(String::valueOf(key), String::valueOf(defValue));
     }
+    inline sp<String> getString(const sp<String>& key, const char* defValue) {
+        return getString(key, String::valueOf(defValue));
+    }
+    inline sp<String> getString(const char* key, const sp<String>& defValue) {
+        return getString(String::valueOf(key), defValue);
+    }
     virtual sp<String> getString(const sp<String>& key, const sp<String>& defValue) = 0;
 
     /**

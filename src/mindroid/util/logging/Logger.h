@@ -27,26 +27,27 @@ namespace mindroid {
 
 class Logger : public Service {
 public:
-    class LoggerThread : public Thread {
+    static const char* const ACTION_LOG;
+    static const char* const ACTION_DUMP_LOG;
+    static const char* const ACTION_FLUSH_LOG;
+    static const char* const ACTION_CLEAR_LOG;
+
+    class LogWorker : public Thread {
     public:
-        LoggerThread(const sp<String>& name, int32_t logBufferId, bool consoleLogging, bool fileLogging, bool timestamps, int32_t priority,
-                const sp<String>& logDirectory, const sp<String>& logFileName, uint32_t logFileSizeLimit, uint32_t logFileCount);
+        LogWorker(const sp<Bundle>& arguments);
 
         void run() override;
         void open();
         void close();
         void quit();
+        bool dumpLog(const sp<String>& fileName);
+        void flush();
+        void clear();
 
     private:
         sp<LogBuffer> mLogBuffer;
-        bool mConsoleLogging;
-        bool mFileLogging;
-        bool mTimestamps;
-        int32_t mPriority = Log::VERBOSE;
-        sp<String> mLogDirectory;
-        sp<String> mLogFileName;
-        uint32_t mLogFileSizeLimit;
-        uint32_t mLogFileCount;
+        int32_t mLogPriority = Log::VERBOSE;
+        sp<ArrayList<sp<String>>> mFlags;
         sp<ConsoleHandler> mConsoleHandler;
         sp<FileHandler> mFileHandler;
     };
@@ -57,9 +58,15 @@ public:
     sp<IBinder> onBind(const sp<Intent>& intent) override;
 
 private:
+    void startLogging(const sp<Bundle>& arguments);
+    void stopLogging(const sp<Bundle>& arguments);
+    void dumpLog(const sp<Bundle>& arguments);
+    void flushLog(const sp<Bundle>& arguments);
+    void clearLog(const sp<Bundle>& arguments);
+
     static const char* const TAG;
-    sp<LoggerThread> mMainLoggerThread;
-    sp<LoggerThread> mDebugLoggerThread;
+
+    sp<HashMap<int32_t, sp<LogWorker>>> mLogWorkers = new HashMap<int32_t, sp<LogWorker>>();
 };
 
 } /* namespace mindroid */

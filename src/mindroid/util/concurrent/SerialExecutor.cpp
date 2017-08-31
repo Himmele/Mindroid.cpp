@@ -20,9 +20,9 @@
 
 namespace mindroid {
 
-SerialExecutor::SerialExecutor() :
+SerialExecutor::SerialExecutor(const sp<String>& name) :
         mHandler(nullptr) {
-    mHandlerThread = new HandlerThread("SerialExecutor");
+    mHandlerThread = new HandlerThread(String::format("%s%s", (name != nullptr ? name->c_str() : "SerialExecutor"), "[Worker]"));
     mHandlerThread->start();
     mHandler = new Handler(mHandlerThread->getLooper());
 }

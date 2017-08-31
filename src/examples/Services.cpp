@@ -123,13 +123,16 @@ CLASS(test, Service2);
 sp<ArrayList<sp<String>>> getLogBuffers(const sp<String>& lb);
 
 void startSystemSerices(sp<IServiceManager> serviceManager) {
-    sp<Intent> logger = new Intent();
+    sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
+    logFlags->add(String::valueOf("timestamp"));
+    sp<Intent> logger = new Intent(Logger::ACTION_LOG);
     logger->setComponent(new ComponentName("mindroid", "Logger"))
-            ->putExtra("name", "Logger")
+            ->putExtra("name", Context::LOGGER_SERVICE)
             ->putExtra("process", "main")
-            ->putStringArrayListExtra("logBuffers", getLogBuffers(String::valueOf("main, events, debug")))
-            ->putExtra("timestamps", true)
-            ->putExtra("priority", Log::DEBUG);
+            ->putExtra("logBuffer", Log::LOG_ID_MAIN)
+            ->putExtra("logPriority", Log::DEBUG)
+            ->putStringArrayListExtra("logFlags", logFlags)
+            ->putExtra("consoleLogging", true);
     serviceManager->startSystemService(logger);
 
     sp<Intent> packageManager = new Intent();
@@ -195,17 +198,6 @@ void shutdownServices(sp<IServiceManager> serviceManager) {
             }
         }
     }
-}
-
-sp<ArrayList<sp<String>>> getLogBuffers(const sp<String>& lb) {
-    sp<ArrayList<sp<String>>> logBuffers = new ArrayList<sp<String>>();
-    sp<ArrayList<sp<String>>> strings = lb->split(",");
-    auto itr = strings->iterator();
-    while (itr.hasNext()) {
-        sp<String> logBuffer = itr.next()->trim();
-        logBuffers->add(logBuffer);
-    }
-    return logBuffers;
 }
 
 static sp<ServiceManager> sServiceManager;

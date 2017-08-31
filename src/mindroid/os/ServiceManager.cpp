@@ -397,16 +397,15 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
         serviceInfo = resolveInfo->serviceInfo;
     }
 
-    sp<IProcess> process = prepareProcess(serviceInfo->processName);
-    if (process == nullptr) {
-        return false;
-    }
-
+    sp<IProcess> process;
+    sp<ProcessRecord> processRecord;
     sp<ServiceRecord> serviceRecord;
-    sp<ProcessRecord> processRecord = mProcesses->get(serviceInfo->processName);
-    if (mServices->containsKey(service->getComponent())) {
-        serviceRecord = mServices->get(service->getComponent());
-    } else {
+    if (!mServices->containsKey(service->getComponent())) {
+        process = prepareProcess(serviceInfo->processName);
+        if (process == nullptr) {
+            return false;
+        }
+        processRecord = mProcesses->get(serviceInfo->processName);
         bool systemService = service->getBooleanExtra(SYSTEM_SERVICE, false);
         sp<String> name;
         if (systemService) {
@@ -416,9 +415,13 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
         }
         serviceRecord = new ServiceRecord(name, processRecord, systemService);
         mServices->put(service->getComponent(), serviceRecord);
-    }
-    if (!processRecord->containsService(service->getComponent())) {
-        processRecord->addService(service->getComponent(), serviceRecord);
+        if (!processRecord->containsService(service->getComponent())) {
+            processRecord->addService(service->getComponent(), serviceRecord);
+        }
+    } else {
+        serviceRecord = mServices->get(service->getComponent());
+        processRecord = serviceRecord->processRecord;
+        process = processRecord->process;
     }
 
     if (!serviceRecord->alive) {

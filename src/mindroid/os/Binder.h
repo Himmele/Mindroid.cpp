@@ -64,7 +64,7 @@ private:
                 }
 
                 void handleMessage(const sp<Message>& message) override {
-                    mBinder->onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
+                    mBinder->onTransact(message);
                 }
 
             private:
@@ -92,14 +92,14 @@ private:
         ThreadPoolMessenger(const sp<Binder>& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
         }
 
-        void send(const sp<Message>& message) override {
-            mExecutor->execute(new Runnable([=] {
-                mBinder->onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
-            }));
-        }
-
         bool runsOnSameThread() override {
             return false;
+        }
+
+        void send(const sp<Message>& message) override {
+            mExecutor->execute(new Runnable([=] {
+                mBinder->onTransact(message);
+            }));
         }
 
     private:
@@ -133,7 +133,7 @@ public:
     /**
      * Default implementation returns an empty interface name.
      */
-    virtual sp<String> getInterfaceDescriptor() {
+    sp<String> getInterfaceDescriptor() override {
         return mDescriptor;
     }
 
@@ -141,10 +141,10 @@ public:
      * Use information supplied to attachInterface() to return the associated IInterface if it
      * matches the requested descriptor.
      */
-    virtual sp<IInterface> queryLocalInterface(const char* descriptor) {
+    sp<IInterface> queryLocalInterface(const char* descriptor) override {
         return queryLocalInterface(String::valueOf(descriptor));
     }
-    virtual sp<IInterface> queryLocalInterface(const sp<String>& descriptor) {
+    sp<IInterface> queryLocalInterface(const sp<String>& descriptor) override {
         if (mDescriptor->equals(descriptor)) {
             return mOwner.lock();
         }
@@ -155,14 +155,14 @@ public:
      * Default implementations rewinds the parcels and calls onTransact. On the remote side,
      * transact calls into the binder to do the IPC.
      */
-    virtual void transact(int32_t what, const sp<Awaitable>& result, int32_t flags);
-    virtual void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags);
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags);
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags);
-    virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags);
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags);
+    void transact(int32_t what, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) final;
 
-    virtual bool runsOnSameThread() {
+    bool runsOnSameThread() override {
         return mTarget->runsOnSameThread();
     }
 
@@ -171,7 +171,7 @@ public:
      *
      * Messenger holds a reference to Binder which holds a reference to Messenger.
      */
-    virtual void dispose() {
+    void dispose() override {
         mTarget.clear();
     }
 
@@ -186,6 +186,12 @@ protected:
     }
 
 private:
+    void transact(const sp<Message>& message, const sp<Awaitable>& result, int32_t flags);
+
+    void onTransact(const sp<Message>& message) {
+        onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
+    }
+
     static const char* const TAG;
 
     sp<IMessenger> mTarget;

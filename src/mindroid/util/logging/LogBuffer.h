@@ -81,6 +81,10 @@ public:
     bool isFull();
     void reset();
 
+    int32_t getId() {
+        return mId;
+    }
+
 private:
     size_t remainingCapacity();
     void free(const size_t size);
@@ -92,7 +96,7 @@ private:
     static const int32_t THREAD_ID_SIZE = 4;
     static const int32_t TAG_SIZE = 4;
     static const int32_t MESSAGE_SIZE = 4;
-    static char sProrities[];
+    static char sLogLevels[];
 
     const int32_t mId;
     const size_t mSize;

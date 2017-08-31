@@ -28,6 +28,7 @@ Environment::Environment() :
         APPS_DIRECTORY(new File(ROOT_DIRECTORY, "apps")),
         DATA_DIRECTORY(new File(ROOT_DIRECTORY, "data")),
         PREFERENCES_DIRECTORY(new File(ROOT_DIRECTORY, "prefs")),
+        CACHE_DIRECTORY(new File(ROOT_DIRECTORY, "cache")),
         LOG_DIRECTORY(new File(ROOT_DIRECTORY, "logs")) {
 }
 
@@ -37,6 +38,7 @@ void Environment::setRootDirectory(const sp<String>& rootDirectory) {
     self->APPS_DIRECTORY = new File(self->ROOT_DIRECTORY, "apps");
     self->DATA_DIRECTORY = new File(self->ROOT_DIRECTORY, "data");
     self->PREFERENCES_DIRECTORY = new File(self->ROOT_DIRECTORY, "prefs");
+    self->CACHE_DIRECTORY = new File(self->ROOT_DIRECTORY, "cache");
     self->LOG_DIRECTORY = new File(self->ROOT_DIRECTORY, "logs");
 }
 

@@ -634,9 +634,15 @@ public:
      * @return a String value, or null
      */
     sp<String> getString(const char* key, const char* defaultValue) const {
+        return getString(String::valueOf(key), String::valueOf(defaultValue));
+    }
+    sp<String> getString(const sp<String>& key, const char* defaultValue) const {
+        return getString(key, String::valueOf(defaultValue));
+    }
+    sp<String> getString(const char* key, const sp<String>& defaultValue) const {
         return getString(String::valueOf(key), defaultValue);
     }
-    sp<String> getString(const sp<String>& key, const char* defaultValue) const;
+    sp<String> getString(const sp<String>& key, const sp<String>& defaultValue) const;
 
     /**
      * Returns the value associated with the given key, or null if no mapping of the desired type

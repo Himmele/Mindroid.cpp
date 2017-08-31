@@ -23,7 +23,7 @@
 
 namespace mindroid {
 
-char LogBuffer::sProrities[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
+char LogBuffer::sLogLevels[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
 
 LogBuffer::LogRecord::LogRecord(const int32_t logId, const uint64_t timestamp, const int32_t threadId, const int32_t priority, const sp<String>& tag, const sp<String>& message) :
         mLogId(logId),
@@ -35,7 +35,7 @@ LogBuffer::LogRecord::LogRecord(const int32_t logId, const uint64_t timestamp, c
 }
 
 sp<String> LogBuffer::LogRecord::toShortString() {
-    return String::format("%c/%s(%08x): %s", sProrities[mPriority], mTag->c_str(), mThreadId, mMessage->c_str());
+    return String::format("%c/%s(%08x): %s", sLogLevels[mPriority], mTag->c_str(), mThreadId, mMessage->c_str());
 }
 
 sp<String> LogBuffer::LogRecord::toString() {
@@ -57,7 +57,7 @@ sp<String> LogBuffer::LogRecord::toString() {
         time[0] = '\0';
     }
 
-    return String::format("%s  %08x  %c %s: %s", time, mThreadId, sProrities[mPriority], mTag->c_str(), mMessage->c_str());
+    return String::format("%s  %08x  %c %s: %s", time, mThreadId, sLogLevels[mPriority], mTag->c_str(), mMessage->c_str());
 }
 
 LogBuffer::LogBuffer(const int32_t id, const size_t size) :

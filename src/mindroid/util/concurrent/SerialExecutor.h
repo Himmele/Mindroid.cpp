@@ -27,7 +27,13 @@ class Handler;
 class SerialExecutor :
         public Executor {
 public:
-    SerialExecutor();
+    SerialExecutor() :
+            SerialExecutor("SerialExecutor") {
+    }
+    SerialExecutor(const char* name) :
+            SerialExecutor(String::valueOf(name)) {
+    }
+    SerialExecutor(const sp<String>& name);
     virtual ~SerialExecutor();
     SerialExecutor(const SerialExecutor&) = delete;
     SerialExecutor& operator=(const SerialExecutor&) = delete;

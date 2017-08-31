@@ -44,6 +44,7 @@ class Context :
 public:
     static const sp<String> SERVICE_MANAGER;
     static const sp<String> PACKAGE_MANAGER;
+    static const sp<String> LOGGER_SERVICE;
     static const sp<String> ALARM_MANAGER;
     static const sp<String> POWER_MANAGER;
     static const sp<String> LOCATION_SERVICE;

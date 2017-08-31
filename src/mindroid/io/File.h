@@ -244,6 +244,22 @@ public:
     bool mkdir();
 
     /**
+     * Creates the directory named by this file, creating missing parent
+     * directories if necessary.
+     * Use {@link #mkdir} if you don't want to create missing parents.
+     *
+     * <p>Note that this method does <i>not</i> throw {@code IOException} on failure.
+     * Callers must check the return value. Note also that this method returns
+     * false if the directory already existed. If you want to know whether the
+     * directory exists on return, either use {@code (f.mkdirs() || f.isDirectory())}
+     * or simply ignore the return value from this method and simply call {@link #isDirectory}.
+     *
+     * @return {@code true} if the directory was created,
+     *         {@code false} on failure or if the directory already existed.
+     */
+    bool mkdirs();
+
+    /**
      * Creates a new, empty file on the file system according to the path
      * information stored in this file. This method returns true if it creates
      * a file, false if the file already existed. Note that it returns false

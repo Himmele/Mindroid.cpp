@@ -17,14 +17,14 @@
 #ifndef MINDROID_CONSOLEHANDLER_H_
 #define MINDROID_CONSOLEHANDLER_H_
 
-#include "mindroid/util/logging/LogBuffer.h"
+#include "mindroid/util/logging/LogHandler.h"
 
 namespace mindroid {
 
 /**
  * A handler that writes log messages to the standard output stream {@code System.out}.
  */
-class ConsoleHandler : public Object {
+class ConsoleHandler : public LogHandler {
 public:
     /**
      * Constructs a {@code ConsoleHandler} object.
@@ -35,7 +35,10 @@ public:
     /**
      * Flushes and closes all opened files.
      */
-    void close() {
+    void close() override {
+    }
+
+    void flush() override {
     }
 
     /**
@@ -43,7 +46,7 @@ public:
      *
      * @param record The log record.
      */
-    void publish(const sp<LogBuffer::LogRecord>& record);
+    void publish(const sp<LogBuffer::LogRecord>& record) override;
 
     void setFlag(uint32_t flag);
     void removeFlag(uint32_t flag);

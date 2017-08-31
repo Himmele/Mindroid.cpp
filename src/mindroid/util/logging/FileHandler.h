@@ -19,10 +19,13 @@
 
 #include "mindroid/lang/String.h"
 #include "mindroid/io/File.h"
-#include "mindroid/util/logging/LogBuffer.h"
+#include "mindroid/util/logging/LogHandler.h"
 #include "mindroid/util/ArrayList.h"
 
 namespace mindroid {
+
+class ReentrantLock;
+class SharedPreferences;
 
 /**
  * A {@code FileHandler} writes logging records into a specified file or a rotating set of files.
@@ -51,13 +54,14 @@ namespace mindroid {
  * specified in the pattern, then the generation number after a dot will be added to the end of the
  * file name.
  */
-class FileHandler : public Object {
+class FileHandler : public LogHandler {
 public:
     FileHandler();
 
-    void init(const sp<String>& pattern, bool append, int32_t limit, int32_t count);
+    void init(const sp<String>& pattern, bool append, int32_t limit, int32_t count, int32_t bufferSize, int32_t dataVolumeLimit);
+    void initProperties(const sp<String>& p, bool a, int32_t l, int32_t c, int32_t bufferSize, int32_t dataVolumeLimit);
     void initOutputFiles();
-    void initProperties(const sp<String>& p, bool a, int32_t l, int32_t c);
+    void initPreferences();
     void findNextGeneration();
 
     /**
@@ -129,17 +133,25 @@ public:
      */
     FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append);
 
+    FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append, int32_t bufferSize, int32_t dataVolumeLimit);
+
+    void clear();
+
     /**
      * Flushes and closes all opened files.
      */
-    void close();
+    void close() override;
+
+    void flush() override;
 
     /**
      * Publish a {@code LogRecord}.
      *
      * @param record The log record.
      */
-    void publish(const sp<LogBuffer::LogRecord>& record);
+    void publish(const sp<LogBuffer::LogRecord>& record) override;
+
+    bool dump(const sp<String>& fileName);
 
     class Writer : public Object {
     public:
@@ -151,7 +163,7 @@ public:
         void flush();
         void close();
 
-        int32_t getSize();
+        int32_t size();
         void newLine();
 
     private:
@@ -164,6 +176,8 @@ private:
     static const int32_t DEFAULT_LIMIT = 0;
     static const bool DEFAULT_APPEND = false;
     static const sp<String> DEFAULT_PATTERN;
+    static const sp<String> CRLF;
+    static const sp<String> DATA_VOLUME;
 
     sp<String> mPattern;
     bool mAppend = DEFAULT_APPEND;
@@ -172,6 +186,12 @@ private:
     sp<Writer> mWriter;
     sp<ArrayList<sp<File>>> mFiles = new ArrayList<sp<File>>();
     sp<String> mFileName;
+    int32_t mBufferSize = 0;
+    int32_t mFlushSize = 0;
+    int32_t mDataVolume = 0;
+    int32_t mDataVolumeLimit = 0;
+    sp<ReentrantLock> mLock;
+    sp<SharedPreferences> mPreferences;
 };
 
 } /* namespace mindroid */
