@@ -17,19 +17,39 @@
 #include "mindroid/util/concurrent/SerialExecutor.h"
 #include "mindroid/os/Handler.h"
 #include "mindroid/os/Message.h"
+#include "mindroid/util/Log.h"
 
 namespace mindroid {
 
-SerialExecutor::SerialExecutor(const sp<String>& name) :
-        mHandler(nullptr) {
-    mHandlerThread = new HandlerThread(String::format("%s%s", (name != nullptr ? name->c_str() : "SerialExecutor"), "[Worker]"));
+const char* const SerialExecutor::TAG = "SerialExecutor";
+
+SerialExecutor::SerialExecutor(const sp<String>& name, bool shutdownAllowed) :
+        mName(name),
+        mShutdownAllowed(shutdownAllowed) {
+    start();
+}
+
+SerialExecutor::~SerialExecutor() {
+    shutdown(true);
+}
+
+void SerialExecutor::start() {
+    mHandlerThread = new HandlerThread(String::format("%s%s", (mName != nullptr ? mName->c_str() : "SerialExecutor"), "[Worker]"));
     mHandlerThread->start();
     mHandler = new Handler(mHandlerThread->getLooper());
 }
 
-SerialExecutor::~SerialExecutor() {
-    mHandlerThread->getLooper()->quit();
-    mHandlerThread->join();
+bool SerialExecutor::shutdown(bool shutdownAllowed) {
+    if (!shutdownAllowed) {
+        Log::w(TAG, "Worker thread is not allowed to shut down");
+        return false;
+    }
+    if (mHandlerThread != nullptr) {
+        mHandlerThread->getLooper()->quit();
+        mHandlerThread->join();
+        mHandlerThread = nullptr;
+    }
+    return true;
 }
 
 void SerialExecutor::execute(const sp<Runnable>& runnable) {

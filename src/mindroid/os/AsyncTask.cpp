@@ -19,7 +19,7 @@
 
 namespace mindroid {
 
-sp<Executor> AsyncTaskBase::SERIAL_EXECUTOR = new SerialExecutor();
-sp<Executor> AsyncTaskBase::THREAD_POOL_EXECUTOR = new ThreadPoolExecutor("AsyncTask", 4);
+sp<Executor> AsyncTaskBase::SERIAL_EXECUTOR = new SerialExecutor("AsyncTask", false);
+sp<Executor> AsyncTaskBase::THREAD_POOL_EXECUTOR = new ThreadPoolExecutor("AsyncTask", 4, false);
 
 } /* namespace mindroid */

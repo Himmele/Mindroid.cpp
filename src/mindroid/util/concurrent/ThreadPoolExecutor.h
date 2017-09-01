@@ -27,15 +27,25 @@ class ThreadPoolExecutor :
         public Executor {
 public:
     ThreadPoolExecutor(const char* name, uint32_t size) :
-            ThreadPoolExecutor(String::valueOf(name), size) {
+            ThreadPoolExecutor(String::valueOf(name), size, true) {
     }
-    ThreadPoolExecutor(const sp<String>& name, uint32_t size);
+    ThreadPoolExecutor(const char* name, uint32_t size, bool shutdownAllowed) :
+            ThreadPoolExecutor(String::valueOf(name), size, shutdownAllowed) {
+    }
+    ThreadPoolExecutor(const sp<String>& name, uint32_t size) :
+            ThreadPoolExecutor(name, size, true) {
+    }
+    ThreadPoolExecutor(const sp<String>& name, uint32_t size, bool shutdownAllowed);
     virtual ~ThreadPoolExecutor();
     ThreadPoolExecutor(const ThreadPoolExecutor&) = delete;
     ThreadPoolExecutor& operator=(const ThreadPoolExecutor&) = delete;
 
     virtual void execute(const sp<Runnable>& runnable);
     virtual bool cancel(const sp<Runnable>& runnable);
+
+    bool shutdown() {
+        return shutdown(mShutdownAllowed);
+    }
 
 private:
     class WorkerThread : public Thread {
@@ -56,12 +66,15 @@ private:
     };
 
     void start();
-    void shutdown();
+    bool shutdown(bool shutdownAllowed);
+
+    static const char* const TAG;
 
     sp<String> mName;
     const uint32_t mSize;
-    sp<WorkerThread>* mWorkerThreads;
+    const bool mShutdownAllowed;
     sp<LinkedBlockingQueue<sp<Runnable>>> mQueue;
+    sp<WorkerThread>* mWorkerThreads;
 };
 
 } /* namespace mindroid */

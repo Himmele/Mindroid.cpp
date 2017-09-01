@@ -27,13 +27,16 @@ class Handler;
 class SerialExecutor :
         public Executor {
 public:
-    SerialExecutor() :
-            SerialExecutor("SerialExecutor") {
-    }
     SerialExecutor(const char* name) :
-            SerialExecutor(String::valueOf(name)) {
+            SerialExecutor(String::valueOf(name), true) {
     }
-    SerialExecutor(const sp<String>& name);
+    SerialExecutor(const char* name, bool shutdownAllowed) :
+            SerialExecutor(String::valueOf(name), shutdownAllowed) {
+    }
+    SerialExecutor(const sp<String>& name) :
+            SerialExecutor(name, true) {
+    }
+    SerialExecutor(const sp<String>& name, bool shutdownAllowed);
     virtual ~SerialExecutor();
     SerialExecutor(const SerialExecutor&) = delete;
     SerialExecutor& operator=(const SerialExecutor&) = delete;
@@ -41,7 +44,18 @@ public:
     virtual void execute(const sp<Runnable>& runnable);
     virtual bool cancel(const sp<Runnable>& runnable);
 
+    bool shutdown() {
+        return shutdown(mShutdownAllowed);
+    }
+
 private:
+    void start();
+    bool shutdown(bool shutdownAllowed);
+
+    static const char* const TAG;
+
+    sp<String> mName;
+    const bool mShutdownAllowed;
     sp<HandlerThread> mHandlerThread;
     sp<Handler> mHandler;
 };

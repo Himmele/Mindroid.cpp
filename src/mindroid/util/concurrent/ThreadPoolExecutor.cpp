@@ -15,34 +15,40 @@
  */
 
 #include "mindroid/util/concurrent/ThreadPoolExecutor.h"
+#include "mindroid/util/Log.h"
 
 namespace mindroid {
 
-ThreadPoolExecutor::ThreadPoolExecutor(const sp<String>& name, uint32_t size) :
+const char* const ThreadPoolExecutor::TAG = "ThreadPoolExecutor";
+
+ThreadPoolExecutor::ThreadPoolExecutor(const sp<String>& name, uint32_t size, bool shutdownAllowed) :
         mName(name),
         mSize(size),
-        mWorkerThreads(nullptr),
-        mQueue(new LinkedBlockingQueue<sp<Runnable>>()) {
+        mShutdownAllowed(shutdownAllowed),
+        mQueue(new LinkedBlockingQueue<sp<Runnable>>()),
+        mWorkerThreads(nullptr) {
     start();
 }
 
 ThreadPoolExecutor::~ThreadPoolExecutor() {
-    shutdown();
+    shutdown(true);
 }
 
 void ThreadPoolExecutor::start() {
-    if (mWorkerThreads == nullptr) {
-        mWorkerThreads = new sp<WorkerThread>[mSize];
-        for (uint32_t i = 0; i < mSize; i++) {
-            sp<String> name = String::format("%s%c%s%d%c", (mName != nullptr ? mName->c_str() : "ThreadPoolExecutor"), '[', "Worker", i, ']');
-            mWorkerThreads[i] = new WorkerThread(name);
-            mWorkerThreads[i]->setQueue(mQueue);
-            mWorkerThreads[i]->start();
-        }
+    mWorkerThreads = new sp<WorkerThread>[mSize];
+    for (uint32_t i = 0; i < mSize; i++) {
+        sp<String> name = String::format("%s%c%s%d%c", (mName != nullptr ? mName->c_str() : "ThreadPoolExecutor"), '[', "Worker", i, ']');
+        mWorkerThreads[i] = new WorkerThread(name);
+        mWorkerThreads[i]->setQueue(mQueue);
+        mWorkerThreads[i]->start();
     }
 }
 
-void ThreadPoolExecutor::shutdown() {
+bool ThreadPoolExecutor::shutdown(bool shutdownAllowed) {
+    if (!shutdownAllowed) {
+        Log::w(TAG, "Worker threads are not allowed to shut down");
+        return false;
+    }
     if (mWorkerThreads != nullptr) {
         for (uint32_t i = 0; i < mSize; i++) {
             mWorkerThreads[i]->interrupt();
@@ -55,6 +61,7 @@ void ThreadPoolExecutor::shutdown() {
         delete[] mWorkerThreads;
         mWorkerThreads = nullptr;
     }
+    return true;
 }
 
 void ThreadPoolExecutor::WorkerThread::run() {
