@@ -213,7 +213,11 @@ Object::~Object() {
         if (mReference->mWeakReferenceCounter == 0) {
             delete mReference;
         }
+    } else if (mReference->mStrongReferenceCounter == INITIAL_STRONG_REFERENCE_VALUE) {
+        delete mReference;
     }
+    // For debugging purposes, clear mReference.
+    const_cast<WeakReferenceImpl*&>(mReference) = nullptr;
 }
 
 bool Object::equals(const sp<Object>& other) const {
@@ -325,8 +329,9 @@ void Object::WeakReference::decWeakReference(const void* id) {
                     reference->mDestroyer->destroy(reference->mObject);
                 }
             }
+        } else {
+            delete reference;
         }
-        delete reference;
     } else {
         if (reference->mDestroyer == nullptr) {
             delete reference->mObject;
