@@ -174,6 +174,7 @@ private:
                 if (item->id == id) {
                     *items = item->nextItem;
                     delete item;
+                    pthread_mutex_unlock(&mLock);
                     return;
                 }
 
