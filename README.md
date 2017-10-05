@@ -34,7 +34,7 @@ Source: Google Android Developer Reference
 ### Ideas from Erlang ###
 
 Process (component) isolation is central to understanding “Concurrency Oriented Programming” (COP),
-and to the construction of fault-tolerant sodware.
+and to the construction of fault-tolerant software.
 
 1. Processes (components) have “share nothing” semantics.
 This is obvious since they are imagined to run on physically separated machines.
