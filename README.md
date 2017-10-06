@@ -3,7 +3,10 @@
 Mindroid is an application framework (with focus on messaging and concurrency) that lets you create applications using a set of reusable components - just like Android.
 The name Mindroid has two different meanings. On one hand Mindroid is a minimal set of core Android classes and on the other hand these classes also form Android's mind (at least in my opinion).
 
-Blog articles:
+## Why and How? ##
+
+### Blog articles ###
+
 - [On Building Reliable Automotive Software Systems](https://himmele.blogspot.de/2017/04/on-building-reliable-automotive.html)
 - [Mindroid - Android everywhere](https://himmele.blogspot.de/2013/10/mindroid-android-everywhere.html)
 - [Android messaging and concurrency for native C++ code development](https://himmele.blogspot.com/2011/08/android-messaging-and-concurrency-for.html)
@@ -62,5 +65,9 @@ Source: [Alan Kay on Object-Oriented Programming](http://himmele.blogspot.com/20
 
 ### Ideas from the [Reactive Manifesto](https://www.reactivemanifesto.org/) ###
 
-Reactive Systems are responsive, resilient, elastic and message-driven.
+Reactive Systems are:
 
+* Responsive: The system responds in a timely manner if at all possible. Responsiveness is the cornerstone of usability and utility, but more than that, responsiveness means that problems may be detected quickly and dealt with effectively. Responsive systems focus on providing rapid and consistent response times, establishing reliable upper bounds so they deliver a consistent quality of service.
+* Resilient: The system stays responsive in the face of failure. This applies not only to highly-available, mission critical systems — any system that is not resilient will be unresponsive after a failure. Resilience is achieved by containment, isolation, delegation and replication. Failures are contained within each component, isolating components from each other and thereby ensuring that parts of the system can fail and recover without compromising the system as a whole. 
+* Elastic: The system stays responsive under varying workload. Reactive Systems can react to changes in the input rate by increasing or decreasing the resources allocated to service these inputs.
+* Message Driven: Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose coupling, isolation and location transparency. This boundary also provides the means to delegate failures as messages. Non-blocking communication allows recipients to only consume resources while active, leading to less system overhead.
