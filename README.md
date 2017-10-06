@@ -63,7 +63,7 @@ Source: [Joe Armstrong's PhD Thesis](http://erlang.org/download/armstrong_thesis
 
 Source: [Alan Kay on Object-Oriented Programming](http://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
 
-### Ideas from the [Reactive Manifesto](https://www.reactivemanifesto.org/) ###
+### Ideas from the Reactive Manifesto ###
 
 Reactive Systems are:
 
@@ -71,3 +71,5 @@ Reactive Systems are:
 * Resilient: The system stays responsive in the face of failure. This applies not only to highly-available, mission critical systems — any system that is not resilient will be unresponsive after a failure. Resilience is achieved by containment, isolation, delegation and replication. Failures are contained within each component, isolating components from each other and thereby ensuring that parts of the system can fail and recover without compromising the system as a whole. 
 * Elastic: The system stays responsive under varying workload. Reactive Systems can react to changes in the input rate by increasing or decreasing the resources allocated to service these inputs.
 * Message Driven: Reactive Systems rely on asynchronous message-passing to establish a boundary between components that ensures loose coupling, isolation and location transparency. This boundary also provides the means to delegate failures as messages. Non-blocking communication allows recipients to only consume resources while active, leading to less system overhead.
+
+Source: [The Reactive Manifesto](https://www.reactivemanifesto.org/)
