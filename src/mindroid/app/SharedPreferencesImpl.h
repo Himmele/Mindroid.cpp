@@ -145,12 +145,23 @@ private:
     class OnSharedPreferenceChangeListenerWrapper :
             public binder::OnSharedPreferenceChangeListener::Stub {
     public:
-        OnSharedPreferenceChangeListenerWrapper(const sp<OnSharedPreferenceChangeListener>& listener) {
-            mListener = listener;
+        OnSharedPreferenceChangeListenerWrapper(const sp<SharedPreferences>& sharedPreferences, const sp<OnSharedPreferenceChangeListener>& listener) :
+                mSharedPreferences(sharedPreferences),
+                mListener(listener) {
         }
 
-        void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) {
-            mListener->onSharedPreferenceChanged(sharedPreferences, key);
+        virtual void onSharedPreferenceChanged(const sp<String>& key) override {
+            sp<SharedPreferences> sharedPreferences = mSharedPreferences.lock();
+            if (sharedPreferences != nullptr) {
+                mListener->onSharedPreferenceChanged(sharedPreferences, key);
+            }
+        }
+
+        virtual void onSharedPreferenceChanged() override {
+            sp<SharedPreferences> sharedPreferences = mSharedPreferences.lock();
+            if (sharedPreferences != nullptr) {
+                mListener->onSharedPreferenceChanged(sharedPreferences);
+            }
         }
 
         void dispose() {
@@ -158,6 +169,7 @@ private:
         }
 
     private:
+        wp<SharedPreferences> mSharedPreferences;
         sp<OnSharedPreferenceChangeListener> mListener;
     };
 

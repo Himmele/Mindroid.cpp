@@ -16,7 +16,6 @@
  */
 
 #include "mindroid/app/IOnSharedPreferenceChangeListener.h"
-#include "mindroid/content/SharedPreferences.h"
 
 namespace mindroid {
 namespace binder {
@@ -25,10 +24,13 @@ const char* const OnSharedPreferenceChangeListener::Stub::DESCRIPTOR = "mindroid
 
 void OnSharedPreferenceChangeListener::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) {
     switch (what) {
+    case MSG_ON_SHARED_PREFERENCE_CHANGED_WITH_KEY: {
+        sp<String> key = object_cast<String>(obj);
+        onSharedPreferenceChanged(key);
+        break;
+    }
     case MSG_ON_SHARED_PREFERENCE_CHANGED: {
-        sp<SharedPreferences> sharedPreferences = object_cast<SharedPreferences>(data->getObject("sharedPreferences"));
-        sp<String> key = data->getString("key");
-        onSharedPreferenceChanged(sharedPreferences, key);
+        onSharedPreferenceChanged();
         break;
     }
     default:
@@ -36,11 +38,12 @@ void OnSharedPreferenceChangeListener::Stub::onTransact(int32_t what, int32_t ar
     }
 }
 
-void OnSharedPreferenceChangeListener::Stub::Proxy::onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) {
-    sp<Bundle> data = new Bundle();
-    data->putObject("sharedPreferences", sharedPreferences);
-    data->putString("key", key);
-    mRemote->transact(MSG_ON_SHARED_PREFERENCE_CHANGED, data, nullptr, FLAG_ONEWAY);
+void OnSharedPreferenceChangeListener::Stub::Proxy::onSharedPreferenceChanged(const sp<String>& key) {
+    mRemote->transact(MSG_ON_SHARED_PREFERENCE_CHANGED_WITH_KEY, object_cast<Object>(key), nullptr, FLAG_ONEWAY);
+}
+
+void OnSharedPreferenceChangeListener::Stub::Proxy::onSharedPreferenceChanged() {
+    mRemote->transact(MSG_ON_SHARED_PREFERENCE_CHANGED, nullptr, FLAG_ONEWAY);
 }
 
 OnSharedPreferenceChangeListener::Stub::SmartProxy::SmartProxy(const sp<IBinder>& remote) {
@@ -49,11 +52,19 @@ OnSharedPreferenceChangeListener::Stub::SmartProxy::SmartProxy(const sp<IBinder>
     mProxy = new OnSharedPreferenceChangeListener::Stub::Proxy(remote);
 }
 
-void OnSharedPreferenceChangeListener::Stub::SmartProxy::onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) {
+void OnSharedPreferenceChangeListener::Stub::SmartProxy::onSharedPreferenceChanged(const sp<String>& key) {
     if (mRemote->runsOnSameThread()) {
-        return mStub->onSharedPreferenceChanged(sharedPreferences, key);
+        return mStub->onSharedPreferenceChanged(key);
     } else {
-        return mProxy->onSharedPreferenceChanged(sharedPreferences, key);
+        return mProxy->onSharedPreferenceChanged(key);
+    }
+}
+
+void OnSharedPreferenceChangeListener::Stub::SmartProxy::onSharedPreferenceChanged() {
+    if (mRemote->runsOnSameThread()) {
+        return mStub->onSharedPreferenceChanged();
+    } else {
+        return mProxy->onSharedPreferenceChanged();
     }
 }
 

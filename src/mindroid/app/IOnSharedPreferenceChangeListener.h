@@ -24,12 +24,11 @@
 
 namespace mindroid {
 
-class SharedPreferences;
-
 class IOnSharedPreferenceChangeListener :
         public IInterface {
 public:
-    virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) = 0;
+    virtual void onSharedPreferenceChanged(const sp<String>& key) = 0;
+    virtual void onSharedPreferenceChanged() = 0;
 };
 
 namespace binder {
@@ -80,7 +79,8 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) override;
+            virtual void onSharedPreferenceChanged(const sp<String>& key) override;
+            virtual void onSharedPreferenceChanged() override;
 
         private:
             sp<IBinder> mRemote;
@@ -109,7 +109,8 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) override;
+            virtual void onSharedPreferenceChanged(const sp<String>& key) override;
+            virtual void onSharedPreferenceChanged() override;
 
         private:
             sp<IBinder> mRemote;
@@ -119,7 +120,8 @@ public:
 
     private:
         static const char* const DESCRIPTOR;
-        static const int32_t MSG_ON_SHARED_PREFERENCE_CHANGED = 1;
+        static const int32_t MSG_ON_SHARED_PREFERENCE_CHANGED_WITH_KEY = 1;
+        static const int32_t MSG_ON_SHARED_PREFERENCE_CHANGED = 2;
     };
 };
 

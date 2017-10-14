@@ -191,7 +191,7 @@ void SharedPreferencesImpl::registerOnSharedPreferenceChangeListener(const sp<Sh
     if (listener != nullptr) {
         AutoLock autoLock(mLock);
         if (!mListeners->containsKey(listener)) {
-            sp<OnSharedPreferenceChangeListenerWrapper> wrapper = new OnSharedPreferenceChangeListenerWrapper(listener);
+            sp<OnSharedPreferenceChangeListenerWrapper> wrapper = new OnSharedPreferenceChangeListenerWrapper(this, listener);
             mListeners->put(listener, binder::OnSharedPreferenceChangeListener::Stub::asInterface(wrapper->asBinder()));
         }
     }
@@ -276,10 +276,21 @@ void SharedPreferencesImpl::notifySharedPreferenceChangeListeners(const sp<Array
             auto entry = listenerItr.next();
             sp<IOnSharedPreferenceChangeListener> listener = entry.getValue();
             try {
-                listener->onSharedPreferenceChanged(this, key);
+                listener->onSharedPreferenceChanged(key);
             } catch (const RemoteException& e) {
                 listenerItr.remove();
             }
+        }
+    }
+
+    auto listenerItr = mListeners->iterator();
+    while (listenerItr.hasNext()) {
+        auto entry = listenerItr.next();
+        sp<IOnSharedPreferenceChangeListener> listener = entry.getValue();
+        try {
+            listener->onSharedPreferenceChanged();
+        } catch (const RemoteException& e) {
+            listenerItr.remove();
         }
     }
 }

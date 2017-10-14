@@ -75,6 +75,18 @@ public:
             onSharedPreferenceChanged(sharedPreferences, String::valueOf(key));
         }
         virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences, const sp<String>& key) = 0;
+
+        /**
+         * Called when a shared preference is changed, added, or removed. This may be called even if
+         * a preference is set to its existing value.
+         *
+         * <p>
+         * This callback will be run on the specified looper thread.
+         *
+         * @param sharedPreferences The {@link SharedPreferences} that received the change.
+         */
+        virtual void onSharedPreferenceChanged(const sp<SharedPreferences>& sharedPreferences) {
+        }
     };
 
     /**
