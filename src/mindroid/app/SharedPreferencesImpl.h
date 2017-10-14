@@ -164,7 +164,7 @@ private:
             }
         }
 
-        void dispose() {
+        virtual void dispose() override {
             Binder::dispose();
         }
 
