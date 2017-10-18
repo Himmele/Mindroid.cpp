@@ -21,7 +21,7 @@
 #include "mindroid/os/Handler.h"
 #include "mindroid/util/concurrent/SerialExecutor.h"
 #include "mindroid/util/concurrent/ThreadPoolExecutor.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include "mindroid/util/concurrent/atomic/AtomicBoolean.h"
 
 namespace mindroid {
 
@@ -186,11 +186,8 @@ class AsyncTask :
         public AsyncTaskBase {
 public:
     AsyncTask() :
-            mExecutor(nullptr),
-            mCancelled(false) {
-        mHandler = new InternalHandler();
-        mWorkerRunnable = new WorkerRunnable(this);
-        mLock = new ReentrantLock();
+            mHandler(new InternalHandler()),
+            mRunnable(new WorkerRunnable(this)) {
     }
 
     virtual ~AsyncTask() = default;
@@ -199,27 +196,30 @@ public:
     AsyncTask& operator=(const AsyncTask&) = delete;
 
     sp<AsyncTask<Params, Progress, Result>> execute(Params params) {
-        if (mExecutor == nullptr) {
-            mExecutor = SERIAL_EXECUTOR;
-            onPreExecute();
-            mWorkerRunnable->mParams = params;
-            mExecutor->execute(mWorkerRunnable);
-            return this;
-        } else {
-            return nullptr;
-        }
+        return executeOnExecutor(SERIAL_EXECUTOR, params);
     }
 
     sp<AsyncTask<Params, Progress, Result>> executeOnExecutor(const sp<Executor>& executor, Params params) {
-        if (mExecutor == nullptr) {
-            mExecutor = executor;
-            onPreExecute();
-            mWorkerRunnable->mParams = params;
-            mExecutor->execute(mWorkerRunnable);
-            return this;
-        } else {
-            return nullptr;
+        if (mStatus != PENDING) {
+            switch (mStatus) {
+            case RUNNING:
+                Assert::assertFalse("Cannot execute task: the task is already running", mStatus != PENDING);
+                return nullptr;
+            case FINISHED:
+                Assert::assertFalse("Cannot execute task: the task has already been executed (a task can be executed only once)", mStatus != PENDING);
+                return nullptr;
+            }
         }
+
+        mStatus = RUNNING;
+        mExecutor = executor;
+
+        onPreExecute();
+
+        mRunnable->mParams = params;
+        mExecutor->execute(mRunnable);
+
+        return this;
     }
 
     /**
@@ -250,17 +250,15 @@ public:
      * @see #onCancelled(Object)
      */
     bool cancel() {
-        bool isAlreadyCancelled = isCancelled();
-        AutoLock autoLock(mLock);
-        if (mExecutor != nullptr && !isAlreadyCancelled) {
-            bool result = mExecutor->cancel(mWorkerRunnable);
-            if (result) {
-                mCancelled = true;
-                sp<Message> message = mHandler->obtainMessage(ON_TASK_CANCELLED_MESSAGE);
-                message->obj = mWorkerRunnable;
-                message->sendToTarget();
+        if (!isCancelled() && mStatus == RUNNING) {
+            mCancelled->set(true);
+            bool cancelled = mExecutor->cancel(mRunnable);
+            if (cancelled) {
+                sp<AsyncTaskResult> result = new AsyncTaskResult(this);
+                result->setResult(nullptr);
+                mHandler->obtainMessage(MESSAGE_POST_RESULT, result)->sendToTarget();
             }
-            return result;
+            return true;
         } else {
             return false;
         }
@@ -277,8 +275,7 @@ public:
      * @see #cancel(boolean)
      */
     bool isCancelled() {
-        AutoLock autoLock(mLock);
-        return mCancelled;
+        return mCancelled->get();
     }
 
 protected:
@@ -340,6 +337,26 @@ protected:
 
     /**
      * <p>
+     * Runs on the UI thread after {@link #cancel(boolean)} is invoked and
+     * {@link #doInBackground(Object[])} has finished.
+     * </p>
+     *
+     * <p>
+     * The default implementation simply invokes {@link #onCancelled()} and ignores the result. If
+     * you write your own implementation, do not call <code>super.onCancelled(result)</code>.
+     * </p>
+     *
+     * @param result The result, if any, computed in {@link #doInBackground(Object[])}, can be null
+     *
+     * @see #cancel(boolean)
+     * @see #isCancelled()
+     */
+    virtual void onCancelled(Result result) {
+        onCancelled();
+    }
+
+    /**
+     * <p>
      * Applications should preferably override {@link #onCancelled(Object)}. This method is invoked
      * by the default implementation of {@link #onCancelled(Object)}.
      * </p>
@@ -370,39 +387,42 @@ protected:
      */
     void publishProgress(Progress values) {
         if (!isCancelled()) {
-            sp<Message> message = mHandler->obtainMessage(ON_PROGRESS_UPDATE_MESSAGE);
-            message->obj = object_cast<AsyncTaskResult>(new AsyncTaskResult(this, values));
-            message->sendToTarget();
+            sp<AsyncTaskResult> result = new AsyncTaskResult(this);
+            result->setProgress(values);
+            mHandler->obtainMessage(MESSAGE_POST_PROGRESS, result)->sendToTarget();
         }
     }
 
     Params params() {
-        return mWorkerRunnable->mParams;
+        return mRunnable->mParams;
     }
 
     Result result() {
-        return mWorkerRunnable->mResult;
+        return mRunnable->mResult;
     }
 
 private:
+    void finish(Result result) {
+        if (isCancelled()) {
+            onCancelled(result);
+        } else {
+            onPostExecute(result);
+        }
+        mStatus = FINISHED;
+    }
+
     class InternalHandler :
             public Handler {
     public:
         virtual void handleMessage(const sp<Message>& message) {
+            sp<AsyncTaskResult> result = object_cast<AsyncTaskResult>(message->obj);
             switch (message->what) {
-            case ON_POST_EXECUTE_MESSAGE: {
-                sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
-                runnable->mTask->onPostExecute(runnable->mResult);
+            case MESSAGE_POST_RESULT: {
+                result->mTask->finish(result->mResult);
                 break;
             }
-            case ON_PROGRESS_UPDATE_MESSAGE: {
-                sp<AsyncTaskResult> result = object_cast<AsyncTaskResult>(message->obj);
-                result->mTask->onProgressUpdate(result->mValue);
-                break;
-            }
-            case ON_TASK_CANCELLED_MESSAGE: {
-                sp<WorkerRunnable> runnable = object_cast<WorkerRunnable>(message->obj);
-                runnable->mTask->onCancelled();
+            case MESSAGE_POST_PROGRESS: {
+                result->mTask->onProgressUpdate(result->mProgress);
                 break;
             }
             }
@@ -417,16 +437,12 @@ private:
         }
 
         virtual void run() {
-            mResult = mTask->doInBackground(mParams);
-            if (!mTask->isCancelled()) {
-                sp<Message> message = mTask->mHandler->obtainMessage(ON_POST_EXECUTE_MESSAGE);
-                message->obj = object_cast<WorkerRunnable>(this);
-                message->sendToTarget();
-            }
+            sp<AsyncTaskResult> result = new AsyncTaskResult(mTask);
+            result->setResult(mTask->doInBackground(mParams));
+            mTask->mHandler->obtainMessage(MESSAGE_POST_RESULT, result)->sendToTarget();
         }
 
         Params mParams;
-        Result mResult;
 
     private:
         sp<AsyncTask<Params, Progress, Result>> mTask;
@@ -437,26 +453,52 @@ private:
     class AsyncTaskResult :
             public Object {
     public:
-        AsyncTaskResult(const sp<AsyncTask<Params, Progress, Result>>& task, Progress& value) :
-                mTask(task), mValue(value) {
+        AsyncTaskResult(const sp<AsyncTask<Params, Progress, Result>>& task) :
+                mTask(task) {
+        }
+
+        void setResult(const Result& result) {
+            mResult = result;
+        }
+
+        void setProgress(const Progress& progress) {
+            mProgress = progress;
         }
 
     private:
         sp<AsyncTask<Params, Progress, Result>> mTask;
-        Progress mValue;
+        Result mResult;
+        Progress mProgress;
 
         friend class InternalHandler;
     };
 
     sp<Executor> mExecutor;
     sp<InternalHandler> mHandler;
-    sp<WorkerRunnable> mWorkerRunnable;
-    sp<ReentrantLock> mLock;
-    bool mCancelled;
+    sp<WorkerRunnable> mRunnable;
+    sp<AtomicBoolean> mCancelled = new AtomicBoolean();
 
-    static const int32_t ON_POST_EXECUTE_MESSAGE = 1;
-    static const int32_t ON_PROGRESS_UPDATE_MESSAGE = 2;
-    static const int32_t ON_TASK_CANCELLED_MESSAGE = 3;
+    /**
+     * Indicates that the task has not been executed yet.
+     */
+    static const int32_t PENDING = 0;
+    /**
+     * Indicates that the task is running.
+     */
+    static const int32_t RUNNING = 1;
+    /**
+     * Indicates that {@link AsyncTask#onPostExecute} has finished.
+     */
+    static const int32_t FINISHED = 2;
+
+    /**
+     * Indicates the current status of the task. Each status will be set only once
+     * during the lifetime of a task.
+     */
+    int32_t mStatus = PENDING;
+
+    static const int32_t MESSAGE_POST_RESULT = 1;
+    static const int32_t MESSAGE_POST_PROGRESS = 2;
 };
 
 } /* namespace mindroid */

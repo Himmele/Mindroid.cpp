@@ -65,6 +65,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Variant.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
+	src/mindroid/util/concurrent/atomic/AtomicBoolean.cpp \
 	src/mindroid/util/concurrent/atomic/AtomicInteger.cpp \
 	src/mindroid/util/concurrent/locks/ReentrantLock.cpp \
 	src/mindroid/util/concurrent/locks/ConditionImpl.cpp \

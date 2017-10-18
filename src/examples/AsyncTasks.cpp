@@ -65,7 +65,7 @@ int main() {
             ->putExtra("logPriority", Log::DEBUG)
             ->putStringArrayListExtra("logFlags", logFlags)
             ->putExtra("consoleLogging", true);
-    serviceManager->startSystemService(logger);
+    sm->startSystemService(logger);
 
     sp<TestAsyncTask> asyncTask1;
     sp<TestAsyncTask> asyncTask2;
