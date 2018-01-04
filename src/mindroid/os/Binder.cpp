@@ -16,74 +16,66 @@
  */
 
 #include "mindroid/os/Binder.h"
-#include "mindroid/util/Log.h"
-#include "mindroid/util/concurrent/Awaitable.h"
 
 namespace mindroid {
 
 const char* const Binder::TAG = "Binder";
 const sp<String> Binder::EXCEPTION_MESSAGE = String::valueOf("Binder transaction failure");
 
-void Binder::transact(int32_t what, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
     message->obj = obj;
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
     message->arg1 = arg1;
     message->arg2 = arg2;
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
     message->arg1 = arg1;
     message->arg2 = arg2;
     message->obj = obj;
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
     message->setData(data);
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) {
+void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = what;
     message->arg1 = arg1;
     message->arg2 = arg2;
     message->setData(data);
-    transact(message, result, flags);
+    message->result = result;
+    transact(message, flags);
 }
 
-void Binder::transact(const sp<Message>& message, const sp<Awaitable>& result, int32_t flags) {
-    if (flags == FLAG_ONEWAY) {
-        mTarget->send(message);
-    } else {
-        message->result = result;
-        mTarget->send(message);
-        try {
-            result->await();
-        } catch (const CancellationException& e) {
-            throw RemoteException(EXCEPTION_MESSAGE);
-        } catch (const ExecutionException& e) {
-            throw RemoteException(EXCEPTION_MESSAGE);
-        }
-    }
+void Binder::transact(const sp<Message>& message, int32_t flags) {
+    mTarget->send(message);
 }
 
 } /* namespace mindroid */

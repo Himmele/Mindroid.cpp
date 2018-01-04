@@ -276,7 +276,7 @@ private:
      *
      * @hide
      */
-    sp<Cancellable> result;
+    sp<Promise<sp<Object>>> result;
 
     friend class MessageQueue;
     friend class Looper;

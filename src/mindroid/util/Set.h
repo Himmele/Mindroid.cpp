@@ -46,8 +46,8 @@ public:
     }
 
     bool add(const T& value) {
-        auto pair = mSet.insert(value);
-        return pair.second;
+        auto entry = mSet.insert(value);
+        return entry.second;
     }
 
     void clear() {
@@ -154,8 +154,8 @@ public:
     }
 
     bool add(const sp<T>& value) {
-        auto pair = mSet.insert(value);
-        return pair.second;
+        auto entry = mSet.insert(value);
+        return entry.second;
     }
 
     void clear() {

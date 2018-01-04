@@ -65,14 +65,15 @@ private:
 
     sp<binder::PackageManager::Stub> mBinder = new PackageManagerImpl(this);
 
-    void parseManifest(const sp<File>& file);
-    sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);
-    sp<ServiceInfo> parseService(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* serviceNode);
+    static sp<PackageInfo> parseManifest(const sp<File>& file);
+    static sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);
+    static sp<ServiceInfo> parseService(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* serviceNode);
 
     static const char* const TAG;
     static const char* MANIFEST_TAG;
     static const char* APPLICATION_TAG;
     static const char* SERVICE_TAG;
+
     sp<HashMap<sp<String>, sp<PackageInfo>>> mPackages;
     sp<HashMap<sp<ComponentName>, sp<ComponentInfo>>> mComponents;
 };

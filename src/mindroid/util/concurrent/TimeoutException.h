@@ -33,6 +33,15 @@ public:
 
     TimeoutException(const sp<String>& message) : Exception(message) {
     }
+
+    TimeoutException(const char* message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    TimeoutException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    TimeoutException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
+    }
 };
 
 } /* namespace mindroid */

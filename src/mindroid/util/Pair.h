@@ -21,15 +21,32 @@
 
 namespace mindroid {
 
+/**
+ * Container to ease passing around a tuple of two objects. This object provides a sensible
+ * implementation of equals(), returning true if equals() is true on each of the contained objects.
+ */
 template<typename F, typename S>
 class Pair :
         public Object {
 public:
+    /**
+     * Constructor for a Pair.
+     *
+     * @param first the first object in the Pair
+     * @param second the second object in the pair
+     */
     Pair(F first, S second) :
         first(first),
         second(second) {
     }
 
+    /**
+     * Convenience method for creating an appropriately typed pair.
+     *
+     * @param first the first object in the Pair
+     * @param second the second object in the pair
+     * @return a Pair that is templatized with the types of first and second
+     */
     static sp<Pair> create(F first, S second) {
         return new Pair(first, second);
     }

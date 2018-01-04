@@ -19,7 +19,7 @@
 #define MINDROID_IBINDER_H_
 
 #include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/Awaitable.h"
+#include "mindroid/util/concurrent/Promise.h"
 
 namespace mindroid {
 
@@ -68,14 +68,13 @@ public:
      * @param data data to send to the target. Must not be null.
      * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
      * for a one-way RPC.
-     * @return data to be received from the target. May either contain the result or an exception.
      */
-    virtual void transact(int32_t what, const sp<Awaitable>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
 
     virtual bool runsOnSameThread() = 0;
 

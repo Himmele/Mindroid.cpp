@@ -34,6 +34,15 @@ public:
 
     CancellationException(const sp<String>& message) : Exception(message) {
     }
+
+    CancellationException(const char* message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    CancellationException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    CancellationException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
+    }
 };
 
 } /* namespace mindroid */

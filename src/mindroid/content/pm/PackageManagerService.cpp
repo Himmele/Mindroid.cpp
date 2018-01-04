@@ -49,7 +49,14 @@ int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t 
         auto itr = apps->iterator();
         while (itr.hasNext()) {
             sp<File> manifest = itr.next();
-            parseManifest(manifest);
+            sp<PackageInfo> packageInfo = parseManifest(manifest);
+
+            mPackages->put(packageInfo->packageName, packageInfo);
+            auto itr = packageInfo->services->iterator();
+            while (itr.hasNext()) {
+                sp<ServiceInfo> si = itr.next();
+                mComponents->put(new ComponentName(si->packageName, si->name), si);
+            }
         }
     }
 
@@ -77,20 +84,24 @@ sp<ArrayList<sp<PackageInfo>>> PackageManagerService::PackageManagerImpl::getIns
 
 sp<ResolveInfo> PackageManagerService::PackageManagerImpl::resolveService(const sp<Intent>& intent, int32_t flags) {
     sp<ResolveInfo> resolveInfo = nullptr;
-    sp<ComponentInfo> componentInfo = mPackageManagerService->mComponents->get(intent->getComponent());
-    if (componentInfo != nullptr) {
-        resolveInfo = new ResolveInfo();
-        resolveInfo->serviceInfo = object_cast<ServiceInfo>(componentInfo);
+    if (mPackageManagerService->mComponents->containsKey(intent->getComponent())) {
+        sp<ComponentInfo> componentInfo = mPackageManagerService->mComponents->get(intent->getComponent());
+        if (Class<ServiceInfo>::isInstance(componentInfo)) {
+            resolveInfo = new ResolveInfo();
+            resolveInfo->serviceInfo = object_cast<ServiceInfo>(componentInfo);
+        }
     }
     return resolveInfo;
 }
 
-void PackageManagerService::parseManifest(const sp<File>& file) {
+sp<PackageInfo> PackageManagerService::parseManifest(const sp<File>& file) {
     XMLDocument doc;
     if (doc.LoadFile(file->getPath()->c_str()) == XML_SUCCESS) {
         const XMLElement* rootNode = doc.FirstChildElement(MANIFEST_TAG);
         if (rootNode != nullptr) {
+            sp<PackageInfo> pi = new PackageInfo();
             sp<ApplicationInfo> ai = new ApplicationInfo();
+            pi->applicationInfo = ai;
 
             sp<String> packageName;
             const XMLAttribute* attribute = rootNode->FindAttribute("package");
@@ -100,31 +111,24 @@ void PackageManagerService::parseManifest(const sp<File>& file) {
             if (packageName == nullptr || packageName->length() == 0) {
                 Assert::fail("Manifest is missing a package name");
             }
-            ai->packageName = packageName;
+            pi->packageName = packageName;
+            ai->packageName = pi->packageName;
 
             const XMLElement* element;
             for (element = rootNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
                 if (XMLUtil::StringEqual(APPLICATION_TAG, element->Name())) {
                     sp<ArrayList<sp<ServiceInfo>>> services = parseApplication(ai, element);
-
-                    if (services != nullptr && !services->isEmpty()) {
-                        sp<PackageInfo> packageInfo = new PackageInfo();
-                        packageInfo->packageName = packageName;
-                        packageInfo->applicationInfo = ai;
-                        packageInfo->services = services;
-                        mPackages->put(packageName, packageInfo);
-
-                        auto itr = services->iterator();
-                        while (itr.hasNext()) {
-                            sp<ServiceInfo> si = itr.next();
-                            mComponents->put(new ComponentName(si->packageName, si->name), si);
-                        }
-                    }
+                    pi->services = services;
                 }
             }
+
+            return pi;
+        } else {
+            return nullptr;
         }
     } else {
         Log::w(TAG, "Cannot read %s", file->getPath()->c_str());
+        return nullptr;
     }
 }
 

@@ -34,6 +34,15 @@ public:
 
     RemoteException(const sp<String>& message) : Exception(message) {
     }
+
+    RemoteException(const char* message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    RemoteException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    RemoteException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
+    }
 };
 
 } /* namespace mindroid */

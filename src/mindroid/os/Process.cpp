@@ -25,6 +25,7 @@
 #include "mindroid/lang/Class.h"
 #include "mindroid/util/concurrent/Promise.h"
 #include "mindroid/util/Log.h"
+#include <cstdio>
 
 namespace mindroid {
 
@@ -56,6 +57,8 @@ sp<IProcess> Process::start() {
 void Process::stop(uint64_t timeout) {
     Log::d(TAG, "Stopping process %s", mName->c_str());
 
+    uint64_t start = SystemClock::uptimeMillis();
+
     {
         AutoLock autoLock(mLock);
         if (!mServices->isEmpty()) {
@@ -75,7 +78,6 @@ void Process::stop(uint64_t timeout) {
                 }
             }
 
-            uint64_t start = SystemClock::uptimeMillis();
             uint64_t duration = timeout;
             while (!mServices->isEmpty() && (duration > 0)) {
                 mCondition->await(duration);
@@ -88,6 +90,9 @@ void Process::stop(uint64_t timeout) {
     mMainThread->join();
 
     Log::d(TAG, "Process %s has been stopped", mName->c_str());
+    if (SystemClock::uptimeMillis() - start >= 1000) {
+        printf("W/Process: Stopping process %s took %ldms", mName->c_str(), SystemClock::uptimeMillis() - start);
+    }
 }
 
 bool Process::isAlive() const {

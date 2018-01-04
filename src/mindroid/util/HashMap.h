@@ -88,8 +88,8 @@ public:
         sp<Set<K>> keys = new Set<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
-            auto pair = itr.next();
-            keys->add(pair.getKey());
+            auto entry = itr.next();
+            keys->add(entry.getKey());
         }
         return keys;
     }
@@ -281,8 +281,8 @@ public:
         sp<Set<K>> keys = new Set<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
-            auto pair = itr.next();
-            keys->add(pair.getKey());
+            auto entry = itr.next();
+            keys->add(entry.getKey());
         }
         return keys;
     }
@@ -475,8 +475,8 @@ public:
         sp<Set<sp<K>>> keys = new Set<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
-            auto pair = itr.next();
-            keys->add(pair.getKey());
+            auto entry = itr.next();
+            keys->add(entry.getKey());
         }
         return keys;
     }
@@ -671,8 +671,8 @@ public:
         sp<Set<sp<K>>> keys = new Set<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
-            auto pair = itr.next();
-            keys->add(pair.getKey());
+            auto entry = itr.next();
+            keys->add(entry.getKey());
         }
         return keys;
     }

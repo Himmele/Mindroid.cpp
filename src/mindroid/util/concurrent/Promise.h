@@ -84,6 +84,9 @@ public:
             }
             mCondition->await();
         }
+        if (mThrowable != nullptr) {
+            throw ExecutionException(mThrowable);
+        }
         return mResult;
     }
 
@@ -101,6 +104,9 @@ public:
         if (!mIsDone && !mIsCancelled) {
             throw TimeoutException("Future timed out");
         }
+        if (mThrowable != nullptr) {
+            throw ExecutionException(mThrowable);
+        }
         return mResult;
     }
 
@@ -114,10 +120,22 @@ public:
         return mIsDone;
     }
 
-    bool set(const T& object) {
+    bool set(const T& result) {
         AutoLock autoLock(mLock);
         if (!mIsCancelled) {
-            mResult = object;
+            mResult = result;
+            mIsDone = true;
+            mCondition->signal();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    bool setException(const Exception& throwable) {
+        AutoLock autoLock(mLock);
+        if (!mIsCancelled) {
+            mThrowable = throwable.clone();
             mIsDone = true;
             mCondition->signal();
             return true;
@@ -130,6 +148,7 @@ private:
     mutable sp<Lock> mLock;
     mutable sp<Condition> mCondition;
     T mResult;
+    sp<Exception> mThrowable;
     bool mIsDone;
     bool mIsCancelled;
 };

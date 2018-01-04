@@ -23,10 +23,12 @@
 namespace mindroid {
 
 class Exception :
+        public Object,
         public std::exception {
 public:
     Exception() = default;
-    ~Exception() noexcept {}
+    ~Exception() noexcept {
+    }
 
     Exception(const char* message) : mMessage(String::valueOf(message)) {
     }
@@ -34,12 +36,39 @@ public:
     Exception(const sp<String>& message) : mMessage(message) {
     }
 
-    sp<String> getMessage() {
+    Exception(const char* message, const Exception& cause) : mMessage(String::valueOf(message)), mCause(new Exception(cause)) {
+    }
+
+    Exception(const sp<String>& message, const Exception& cause) : mMessage(message), mCause(new Exception(cause)) {
+    }
+
+    Exception(const char* message, const sp<Exception>& cause) : mMessage(String::valueOf(message)), mCause(cause) {
+    }
+
+    Exception(const sp<String>& message, const sp<Exception>& cause) : mMessage(message), mCause(cause) {
+    }
+
+    Exception(const sp<Exception>& cause) : mMessage(cause->getMessage()), mCause(cause) {
+    }
+
+    Exception(const Exception& exception) : mMessage(exception.getMessage()) {
+    }
+
+    sp<String> getMessage() const {
         return mMessage;
+    }
+
+    sp<Exception> getCause() const {
+        return mCause;
+    }
+
+    virtual sp<Exception> clone() const {
+        return new Exception(mMessage);
     }
 
 private:
     sp<String> mMessage;
+    sp<Exception> mCause;
 };
 
 } /* namespace mindroid */

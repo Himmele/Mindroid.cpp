@@ -27,12 +27,41 @@ namespace mindroid {
  */
 class ExecutionException : public Exception {
 public:
+    /**
+     * Constructs an {@code ExecutionException} with no detail message.
+     * The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
+     */
     ExecutionException() = default;
 
+    /**
+     * Constructs an {@code ExecutionException} with the specified detail
+     * message. The cause is not initialized, and may subsequently be
+     * initialized by a call to {@link #initCause(Throwable) initCause}.
+     *
+     * @param message the detail message
+     */
     ExecutionException(const char* message) : Exception(message) {
     }
 
     ExecutionException(const sp<String>& message) : Exception(message) {
+    }
+
+    /**
+     * Constructs an {@code ExecutionException} with the specified detail
+     * message and cause.
+     *
+     * @param  message the detail message
+     * @param  cause the cause (which is saved for later retrieval by the
+     *         {@link #getCause()} method)
+     */
+    ExecutionException(const char* message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    ExecutionException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    ExecutionException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
     }
 };
 

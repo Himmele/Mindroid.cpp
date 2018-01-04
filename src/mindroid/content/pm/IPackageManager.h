@@ -52,11 +52,11 @@ public:
             return new PackageManager::Stub::SmartProxy(binder);
         }
 
-        virtual sp<IBinder> asBinder() {
+        virtual sp<IBinder> asBinder() override {
             return this;
         }
 
-        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result);
+        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) override;
 
         class Proxy : public IPackageManager {
         public:

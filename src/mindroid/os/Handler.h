@@ -23,11 +23,11 @@
 #include "mindroid/os/Message.h"
 #include "mindroid/os/SystemClock.h"
 #include "mindroid/os/Looper.h"
+#include "mindroid/util/concurrent/Executor.h"
 #include <functional>
 
 namespace mindroid {
 
-class Looper;
 class MessageQueue;
 
 /**
@@ -435,6 +435,11 @@ public:
         return mLooper;
     }
 
+    /**
+     * Enables a handler to act as executor target.
+     */
+    sp<Executor> asExecutor();
+
 private:
     sp<Message> getPostMessage(const sp<Runnable>& runnable);
     sp<Message> getPostMessage(const sp<Runnable>& runnable, const sp<Object>& token);
@@ -446,6 +451,7 @@ private:
     sp<MessageQueue> mMessageQueue;
     sp<Looper> mLooper;
     sp<Callback> mCallback;
+    sp<Executor> mExecutor;
 };
 
 } /* namespace mindroid */

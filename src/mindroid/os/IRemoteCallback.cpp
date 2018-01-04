@@ -21,7 +21,7 @@ namespace binder {
 
 const char* const RemoteCallback::Stub::DESCRIPTOR = "mindroid.os.IRemoteCallback";
 
-void RemoteCallback::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) {
+void RemoteCallback::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     switch (what) {
     case MSG_SEND_RESULT: {
         sendResult(data);

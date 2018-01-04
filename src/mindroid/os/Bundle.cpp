@@ -39,8 +39,8 @@ sp<Set<sp<String>>> Bundle::keySet() const {
     sp<Set<sp<String>>> keys = new Set<sp<String>>();
     auto itr = mMap->iterator();
     while (itr.hasNext()) {
-        auto pair = itr.next();
-        keys->add(pair.getKey());
+        auto entry = itr.next();
+        keys->add(entry.getKey());
     }
     return keys;
 }
@@ -362,8 +362,8 @@ void Bundle::retainBasicTypes() {
     if (mMap != nullptr) {
         auto itr = mMap->iterator();
         while (itr.hasNext()) {
-            auto pair = itr.next();
-            sp<Variant> value = pair.getValue();
+            auto entry = itr.next();
+            sp<Variant> value = entry.getValue();
 
             if (value->isBasicType()) {
                 continue;

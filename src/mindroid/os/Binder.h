@@ -25,11 +25,10 @@
 #include "mindroid/os/Handler.h"
 #include "mindroid/os/Looper.h"
 #include "mindroid/os/RemoteException.h"
-#include "mindroid/util/concurrent/ThreadPoolExecutor.h"
+#include "mindroid/util/concurrent/Executor.h"
+#include "mindroid/util/Log.h"
 
 namespace mindroid {
-
-class Awaitable;
 
 /**
  * Base class for a remotable object, the core part of a lightweight remote procedure call mechanism
@@ -87,9 +86,9 @@ private:
         sp<Handler> mHandler;
     };
 
-    class ThreadPoolMessenger : public IMessenger {
+    class ExecutorMessenger : public IMessenger {
     public:
-        ThreadPoolMessenger(const sp<Binder>& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
+        ExecutorMessenger(const sp<Binder>& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
         }
 
         bool runsOnSameThread() override {
@@ -117,7 +116,7 @@ public:
     }
 
     Binder(const sp<Executor>& executor) {
-        mTarget = new ThreadPoolMessenger(this, executor);
+        mTarget = new ExecutorMessenger(this, executor);
     }
 
     /**
@@ -155,14 +154,14 @@ public:
      * Default implementations rewinds the parcels and calls onTransact. On the remote side,
      * transact calls into the binder to do the IPC.
      */
-    void transact(int32_t what, const sp<Awaitable>& result, int32_t flags) final;
-    void transact(int32_t what, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Awaitable>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Awaitable>& result, int32_t flags) final;
-    void transact(int32_t what, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Awaitable>& result, int32_t flags) final;
+    void transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
+    void transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
+    void transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
+    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
 
-    bool runsOnSameThread() override {
+    bool runsOnSameThread() final {
         return mTarget->runsOnSameThread();
     }
 
@@ -175,6 +174,36 @@ public:
         mTarget.clear();
     }
 
+    template<typename T>
+    static T get(const sp<Promise<T>>& result) {
+        try {
+            return result->get();
+        } catch (const CancellationException& e) {
+            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+        } catch (const ExecutionException& e) {
+            if (e.getCause() != nullptr) {
+                throw RemoteException(e.getCause()->getMessage());
+            }
+            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+        }
+    }
+
+    template<typename T>
+    static T get(const sp<Promise<T>>& result, uint64_t timeout) {
+        try {
+            return result->get(timeout);
+        } catch (const TimeoutException& e) {
+            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+        } catch (const CancellationException& e) {
+            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+        } catch (const ExecutionException& e) {
+            if (e.getCause() != nullptr) {
+                throw RemoteException(e.getCause()->getMessage());
+            }
+            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+        }
+    }
+
 protected:
     /**
      * Default implementation is a stub that does nothing.  You will want
@@ -182,14 +211,22 @@ protected:
      *
      * <p>If you want to call this, call transact().
      */
-    virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) {
+    virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     }
 
 private:
-    void transact(const sp<Message>& message, const sp<Awaitable>& result, int32_t flags);
+    void transact(const sp<Message>& message, int32_t flags);
 
     void onTransact(const sp<Message>& message) {
-        onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
+        try {
+            onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
+        } catch (const RemoteException& e) {
+            if (message->result != nullptr) {
+                message->result->setException(e);
+            } else {
+                Log::w(TAG, EXCEPTION_MESSAGE->c_str());
+            }
+        }
     }
 
     static const char* const TAG;

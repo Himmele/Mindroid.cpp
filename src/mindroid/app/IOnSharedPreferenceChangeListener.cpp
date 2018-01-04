@@ -22,7 +22,7 @@ namespace binder {
 
 const char* const OnSharedPreferenceChangeListener::Stub::DESCRIPTOR = "mindroid.app.IOnSharedPreferenceChangeListener";
 
-void OnSharedPreferenceChangeListener::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) {
+void OnSharedPreferenceChangeListener::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     switch (what) {
     case MSG_ON_SHARED_PREFERENCE_CHANGED_WITH_KEY: {
         sp<String> key = object_cast<String>(obj);

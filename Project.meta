@@ -35,7 +35,7 @@ Project {
 		ArtifactName "test"
 		Dependency "Mindroid.cpp", config: default		
 
-		Files "src/examples/AsyncTasks.cpp"
+		Files "src/examples/Services.cpp"
 		IncludeDir "."
 		IncludeDir "src"		
 	}

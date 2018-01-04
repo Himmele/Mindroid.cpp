@@ -149,9 +149,9 @@ bool SharedPreferencesImpl::EditorImpl::commit() {
 
     auto itr = mModifications->iterator();
     while (itr.hasNext()) {
-        auto pair = itr.next();
-        sp<String> k = pair.getKey();
-        sp<Variant> v = pair.getValue();
+        auto entry = itr.next();
+        sp<String> k = entry.getKey();
+        sp<Variant> v = entry.getValue();
         // "null" is the magic value for entry removal.
         if (v == nullptr || v->isNull()) {
             if (!mSharedPreferences->mMap->containsKey(k)) {

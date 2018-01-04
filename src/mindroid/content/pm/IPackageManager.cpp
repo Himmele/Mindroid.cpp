@@ -24,19 +24,17 @@ namespace binder {
 
 const char* const PackageManager::Stub::DESCRIPTOR = "mindroid.content.pm.IPackageManager";
 
-void PackageManager::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Object>& result) {
+void PackageManager::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     switch (what) {
     case MSG_GET_INSTALLED_PACKAGES: {
-        sp<Promise<sp<ArrayList<sp<PackageInfo>>>>> promise = object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>>(result);
         sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(arg1);
-        promise->set(packages);
+        object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>>(result)->set(packages);
         break;
     }
     case MSG_RESOLVE_SERVICE: {
-        sp<Promise<sp<ResolveInfo>>> promise = object_cast<Promise<sp<ResolveInfo>>>(result);
         sp<Intent> intent = object_cast<Intent>(obj);
         sp<ResolveInfo> serviceInfo = resolveService(intent, arg1);
-        promise->set(serviceInfo);
+        object_cast<Promise<sp<ResolveInfo>>>(result)->set(serviceInfo);
         break;
     }
     default:
@@ -46,14 +44,14 @@ void PackageManager::Stub::onTransact(int32_t what, int32_t arg1, int32_t arg2, 
 
 sp<ArrayList<sp<PackageInfo>>> PackageManager::Stub::Proxy::getInstalledPackages(int32_t flags) {
     sp<Promise<sp<ArrayList<sp<PackageInfo>>>>> promise = new Promise<sp<ArrayList<sp<PackageInfo>>>>();
-    mRemote->transact(MSG_GET_INSTALLED_PACKAGES, flags, 0, promise, 0);
-    return promise->get();
+    mRemote->transact(MSG_GET_INSTALLED_PACKAGES, flags, 0, object_cast<Promise<sp<Object>>>(promise), 0);
+    return Binder::get(promise);
 }
 
 sp<ResolveInfo> PackageManager::Stub::Proxy::resolveService(const sp<Intent>& intent, int32_t flags) {
     sp<Promise<sp<ResolveInfo>>> promise = new Promise<sp<ResolveInfo>>();
-    mRemote->transact(MSG_RESOLVE_SERVICE, flags, 0, object_cast<Object>(intent), promise, 0);
-    return promise->get();
+    mRemote->transact(MSG_RESOLVE_SERVICE, flags, 0, object_cast<Object>(intent), object_cast<Promise<sp<Object>>>(promise), 0);
+    return Binder::get(promise);
 }
 
 PackageManager::Stub::SmartProxy::SmartProxy(const sp<IBinder>& remote) {
