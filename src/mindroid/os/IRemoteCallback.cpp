@@ -37,7 +37,6 @@ void RemoteCallback::Stub::Proxy::sendResult(const sp<Bundle>& data) {
     mRemote->transact(MSG_SEND_RESULT, data, nullptr, FLAG_ONEWAY);
 }
 
-
 RemoteCallback::Stub::SmartProxy::SmartProxy(const sp<IBinder>& remote) {
     mRemote = remote;
     mStub = interface_cast<Stub>(remote->queryLocalInterface(DESCRIPTOR));

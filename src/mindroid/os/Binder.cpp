@@ -74,8 +74,4 @@ void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>
     transact(message, flags);
 }
 
-void Binder::transact(const sp<Message>& message, int32_t flags) {
-    mTarget->send(message);
-}
-
 } /* namespace mindroid */

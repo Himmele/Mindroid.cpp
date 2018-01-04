@@ -215,7 +215,9 @@ protected:
     }
 
 private:
-    void transact(const sp<Message>& message, int32_t flags);
+    void transact(const sp<Message>& message, int32_t flags) {
+        mTarget->send(message);
+    }
 
     void onTransact(const sp<Message>& message) {
         try {
