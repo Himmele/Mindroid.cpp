@@ -61,18 +61,7 @@ public:
             duration = start + timeout - SystemClock::uptimeMillis();
         }
         if (!mIsDone && !mIsCancelled) {
-            throw TimeoutException("Future timed out");
-        }
-    }
-
-    virtual bool cancel() {
-        AutoLock autoLock(mLock);
-        if (!mIsDone && !mIsCancelled) {
-            mIsCancelled = true;
-            mCondition->signal();
-            return true;
-        } else {
-            return false;
+            throw TimeoutException("Promise timed out");
         }
     }
 
@@ -102,7 +91,7 @@ public:
             duration = start + timeout - SystemClock::uptimeMillis();
         }
         if (!mIsDone && !mIsCancelled) {
-            throw TimeoutException("Future timed out");
+            throw TimeoutException("Promise timed out");
         }
         if (mThrowable != nullptr) {
             throw ExecutionException(mThrowable);
@@ -110,17 +99,12 @@ public:
         return mResult;
     }
 
-    virtual bool isCancelled() const {
-        AutoLock autoLock(mLock);
-        return mIsCancelled;
-    }
-
     virtual bool isDone() const {
         AutoLock autoLock(mLock);
         return mIsDone;
     }
 
-    bool set(const T& result) {
+    bool complete(const T& result) {
         AutoLock autoLock(mLock);
         if (!mIsCancelled) {
             mResult = result;
@@ -132,7 +116,7 @@ public:
         }
     }
 
-    bool setException(const Exception& throwable) {
+    bool completeWith(const Exception& throwable) {
         AutoLock autoLock(mLock);
         if (!mIsCancelled) {
             mThrowable = throwable.clone();
@@ -142,6 +126,22 @@ public:
         } else {
             return false;
         }
+    }
+
+    virtual bool cancel() {
+        AutoLock autoLock(mLock);
+        if (!mIsDone && !mIsCancelled) {
+            mIsCancelled = true;
+            mCondition->signal();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    virtual bool isCancelled() const {
+        AutoLock autoLock(mLock);
+        return mIsCancelled;
     }
 
 private:

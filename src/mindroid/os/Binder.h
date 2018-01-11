@@ -224,7 +224,7 @@ private:
             onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
         } catch (const RemoteException& e) {
             if (message->result != nullptr) {
-                message->result->setException(e);
+                message->result->completeWith(e);
             } else {
                 Log::w(TAG, EXCEPTION_MESSAGE->c_str());
             }

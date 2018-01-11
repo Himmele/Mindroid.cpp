@@ -44,7 +44,7 @@ sp<IProcess> Process::start() {
     mMainThread->start();
     mMainHandler = new Handler(mMainThread->getLooper());
     sp<Promise<sp<binder::Process::Stub>>> promise = new Promise<sp<binder::Process::Stub>>();
-    mMainHandler->post([=] { promise->set(new ProcessImpl(this)); });
+    mMainHandler->post([=] { promise->complete(new ProcessImpl(this)); });
     promise->done([&] {
         mStub = promise->get();
     })->fail([] {

@@ -88,11 +88,11 @@ sp<Future<bool>> ServiceManager::ProcessManager::stopProcess(const sp<String>& n
         sp<Process> process = pair->first;
         mHandler->post([=] {
             process->stop(timeout);
-            promise->set(true);
+            promise->complete(true);
         });
         return promise;
     } else {
-        promise->set(false);
+        promise->complete(false);
         return promise;
     }
 }
@@ -164,7 +164,7 @@ void ServiceManager::start() {
     mMainHandler = new Handler(mMainThread->getLooper());
     sp<Promise<sp<binder::ServiceManager::Stub>>> promise = new Promise<sp<binder::ServiceManager::Stub>>();
     mMainHandler->post([=] {
-        promise->set(new ServiceManagerImpl(this));
+        promise->complete(new ServiceManagerImpl(this));
     });
     promise->done([&] {
         sStub = promise->get();

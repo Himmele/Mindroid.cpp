@@ -51,7 +51,7 @@ public:
     Exception(const sp<Exception>& cause) : mMessage(cause->getMessage()), mCause(cause) {
     }
 
-    Exception(const Exception& exception) : mMessage(exception.getMessage()) {
+    Exception(const Exception& exception) : Object(), mMessage(exception.getMessage()) {
     }
 
     sp<String> getMessage() const {
