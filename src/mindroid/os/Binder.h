@@ -43,6 +43,7 @@ namespace mindroid {
 class Binder :
         public IBinder {
 private:
+    static const char* const TAG;
     static const sp<String> EXCEPTION_MESSAGE;
 
     class IMessenger : public Object {
@@ -179,12 +180,12 @@ public:
         try {
             return result->get();
         } catch (const CancellationException& e) {
-            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+            throw RemoteException(EXCEPTION_MESSAGE);
         } catch (const ExecutionException& e) {
             if (e.getCause() != nullptr) {
                 throw RemoteException(e.getCause()->getMessage());
             }
-            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+            throw RemoteException(EXCEPTION_MESSAGE);
         }
     }
 
@@ -193,14 +194,14 @@ public:
         try {
             return result->get(timeout);
         } catch (const TimeoutException& e) {
-            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+            throw RemoteException(EXCEPTION_MESSAGE);
         } catch (const CancellationException& e) {
-            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+            throw RemoteException(EXCEPTION_MESSAGE);
         } catch (const ExecutionException& e) {
             if (e.getCause() != nullptr) {
                 throw RemoteException(e.getCause()->getMessage());
             }
-            throw RemoteException(Binder::EXCEPTION_MESSAGE);
+            throw RemoteException(EXCEPTION_MESSAGE);
         }
     }
 
@@ -230,8 +231,6 @@ private:
             }
         }
     }
-
-    static const char* const TAG;
 
     sp<IMessenger> mTarget;
     wp<IInterface> mOwner;
