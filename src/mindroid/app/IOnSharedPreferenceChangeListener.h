@@ -38,7 +38,7 @@ public:
     class Stub : public Binder, public IOnSharedPreferenceChangeListener {
     public:
         Stub() {
-            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+            attachInterface(this, String::valueOf(DESCRIPTOR));
         }
 
         static sp<IOnSharedPreferenceChangeListener> asInterface(const sp<IBinder>& binder) {

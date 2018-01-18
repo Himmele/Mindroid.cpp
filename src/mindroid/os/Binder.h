@@ -49,7 +49,7 @@ private:
     class IMessenger : public Object {
     public:
         virtual bool runsOnSameThread() = 0;
-        virtual void send(const sp<Message>& message) = 0;
+        virtual bool send(const sp<Message>& message) = 0;
     };
 
     class Messenger : public IMessenger {
@@ -78,9 +78,8 @@ private:
             return mHandler->getLooper()->isCurrentThread();
         }
 
-        void send(const sp<Message>& message) override {
-            message->setTarget(mHandler);
-            message->sendToTarget();
+        bool send(const sp<Message>& message) override {
+            return mHandler->sendMessage(message);
         }
 
     private:
@@ -96,10 +95,11 @@ private:
             return false;
         }
 
-        void send(const sp<Message>& message) override {
+        bool send(const sp<Message>& message) override {
             mExecutor->execute(new Runnable([=] {
                 mBinder->onTransact(message);
             }));
+            return true;
         }
 
     private:
@@ -217,7 +217,9 @@ protected:
 
 private:
     void transact(const sp<Message>& message, int32_t flags) {
-        mTarget->send(message);
+        if (!mTarget->send(message)) {
+            throw RemoteException(EXCEPTION_MESSAGE);
+        }
     }
 
     void onTransact(const sp<Message>& message) {

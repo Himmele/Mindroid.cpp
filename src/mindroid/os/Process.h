@@ -51,7 +51,7 @@ public:
 private:
     class ProcessImpl : public binder::Process::Stub {
     public:
-        ProcessImpl(sp<Process> process) : mProcess(process) {
+        ProcessImpl(const sp<Looper>& looper, sp<Process> process) : Stub(looper), mProcess(process) {
         }
 
         void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
@@ -69,7 +69,6 @@ private:
     static const char* const TAG;
     sp<String> mName;
     sp<HandlerThread> mMainThread;
-    sp<Handler> mMainHandler;
     sp<binder::Process::Stub> mStub;
     sp<IPackageManager> mPackageManager;
     sp<HashMap<sp<ComponentName>, sp<Service>>> mServices;

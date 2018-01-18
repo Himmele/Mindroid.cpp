@@ -26,6 +26,7 @@
 #include "mindroid/util/concurrent/Promise.h"
 #include "mindroid/util/concurrent/locks/ReentrantLock.h"
 #include "mindroid/util/Log.h"
+#include <cstdio>
 
 namespace mindroid {
 
@@ -49,8 +50,11 @@ void ServiceManager::ProcessManager::start() {
 }
 
 void ServiceManager::ProcessManager::shutdown() {
-    mThread->quit();
-    mThread->join();
+    if (mThread->quit()) {
+        printf("D/%s: Shutting down ProcessManager\n", TAG);
+        mThread->join();
+        printf("D/%s: ProcessManager has been shut down\n", TAG);
+    }
 }
 
 sp<IProcess> ServiceManager::ProcessManager::startProcess(const sp<String>& name) {
@@ -161,16 +165,7 @@ void ServiceManager::start() {
     mProcessManager->start();
 
     mMainThread->start();
-    mMainHandler = new Handler(mMainThread->getLooper());
-    sp<Promise<sp<binder::ServiceManager::Stub>>> promise = new Promise<sp<binder::ServiceManager::Stub>>();
-    mMainHandler->post([=] {
-        promise->complete(new ServiceManagerImpl(this));
-    });
-    promise->done([&] {
-        sStub = promise->get();
-    })->fail([] {
-        Assert::fail("System failure");
-    });
+    sStub = new ServiceManagerImpl(mMainThread->getLooper(), this);
 
     addService(Context::SERVICE_MANAGER, sStub);
 }
@@ -189,8 +184,11 @@ void ServiceManager::shutdown() {
 
     removeService(Context::SERVICE_MANAGER);
 
-    mMainThread->quit();
-    mMainThread->join();
+    if (mMainThread->quit()) {
+        printf("D/%s: Shutting down ServiceManager\n", TAG);
+        mMainThread->join();
+        printf("D/%s: ServiceManager has been shut down\n", TAG);
+    }
 
     mProcessManager->shutdown();
 
@@ -258,15 +256,11 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
         processRecord->removeService(service->getComponent());
 
         if (processRecord->numServices() == 0) {
-            mServiceManager->mMainHandler->post([=] {
-                if (processRecord->numServices() == 0) {
-                    mServiceManager->mProcessManager->stopProcess(processRecord->name);
-                    {
-                        AutoLock autoLock(mServiceManager->mLock);
-                        mServiceManager->mProcesses->remove(processRecord->name);
-                    }
-                }
-            });
+            mServiceManager->mProcessManager->stopProcess(processRecord->name);
+            {
+                AutoLock autoLock(mServiceManager->mLock);
+                mServiceManager->mProcesses->remove(processRecord->name);
+            }
         }
 
         return true;
@@ -535,15 +529,11 @@ bool ServiceManager::cleanupService(const sp<Intent>& service) {
         processRecord->removeService(service->getComponent());
 
         if (processRecord->numServices() == 0) {
-            mMainHandler->post([=] {
-                if (processRecord->numServices() == 0) {
-                    mProcessManager->stopProcess(processRecord->name);
-                    {
-                        AutoLock autoLock(mLock);
-                        mProcesses->remove(processRecord->name);
-                    }
-                }
-            });
+            mProcessManager->stopProcess(processRecord->name);
+            {
+                AutoLock autoLock(mLock);
+                mProcesses->remove(processRecord->name);
+            }
         }
 
         return true;

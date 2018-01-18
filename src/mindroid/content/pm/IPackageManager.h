@@ -42,7 +42,7 @@ public:
     class Stub : public Binder, public IPackageManager {
     public:
         Stub() {
-            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+            attachInterface(this, String::valueOf(DESCRIPTOR));
         }
 
         static sp<IPackageManager> asInterface(const sp<IBinder>& binder) {

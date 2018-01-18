@@ -23,7 +23,6 @@
 #include "mindroid/os/RemoteCallback.h"
 #include "mindroid/os/ServiceManager.h"
 #include "mindroid/lang/Class.h"
-#include "mindroid/util/concurrent/Promise.h"
 #include "mindroid/util/Log.h"
 #include <cstdio>
 
@@ -42,14 +41,7 @@ Process::Process(const sp<String>& name) :
 sp<IProcess> Process::start() {
     Log::d(TAG, "Starting process %s", mName->c_str());
     mMainThread->start();
-    mMainHandler = new Handler(mMainThread->getLooper());
-    sp<Promise<sp<binder::Process::Stub>>> promise = new Promise<sp<binder::Process::Stub>>();
-    mMainHandler->post([=] { promise->complete(new ProcessImpl(this)); });
-    promise->done([&] {
-        mStub = promise->get();
-    })->fail([] {
-        Assert::fail("System failure");
-    });
+    mStub = new ProcessImpl(mMainThread->getLooper(), this);
 
     return binder::Process::Stub::asInterface(mStub);
 }
@@ -86,12 +78,13 @@ void Process::stop(uint64_t timeout) {
         }
     }
 
-    mMainThread->quit();
-    mMainThread->join();
+    if (mMainThread->quit()) {
+        mMainThread->join();
+    }
 
     Log::d(TAG, "Process %s has been stopped", mName->c_str());
     if (SystemClock::uptimeMillis() - start >= 1000) {
-        printf("W/Process: Stopping process %s took %ldms", mName->c_str(), SystemClock::uptimeMillis() - start);
+        printf("W/Process: Stopping process %s took %ldms\n", mName->c_str(), SystemClock::uptimeMillis() - start);
     }
 }
 

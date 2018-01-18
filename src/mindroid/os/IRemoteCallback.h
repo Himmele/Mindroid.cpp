@@ -35,7 +35,7 @@ public:
     class Stub : public Binder, public IRemoteCallback {
     public:
         Stub() {
-            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+            attachInterface(this, String::valueOf(DESCRIPTOR));
         }
 
         static sp<IRemoteCallback> asInterface(const sp<IBinder>& binder) {

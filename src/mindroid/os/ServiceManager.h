@@ -89,8 +89,8 @@ private:
     class ServiceManagerImpl :
             public binder::ServiceManager::Stub {
     public:
-        ServiceManagerImpl(const sp<ServiceManager>& serviceManager) :
-                mServiceManager(serviceManager) {
+        ServiceManagerImpl(const sp<Looper>& looper, const sp<ServiceManager>& serviceManager) :
+                Stub(looper), mServiceManager(serviceManager) {
         }
 
         sp<ComponentName> startService(const sp<Intent>& intent);
@@ -159,7 +159,6 @@ private:
     sp<ReentrantLock> mLock;
     sp<ProcessManager> mProcessManager;
     sp<HandlerThread> mMainThread;
-    sp<Handler> mMainHandler;
     sp<HashMap<sp<String>, sp<ProcessRecord>>> mProcesses;
     sp<HashMap<sp<ComponentName>, sp<ServiceRecord>>> mServices;
     sp<ArrayList<sp<RemoteCallback>>> mServiceCallbacks;

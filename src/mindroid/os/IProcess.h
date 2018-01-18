@@ -45,7 +45,11 @@ public:
     class Stub : public Binder, public IProcess {
     public:
         Stub() {
-            this->attachInterface(this, String::valueOf(DESCRIPTOR));
+            attachInterface(this, String::valueOf(DESCRIPTOR));
+        }
+
+        Stub(const sp<Looper>& looper) : Binder(looper) {
+            attachInterface(this, String::valueOf(DESCRIPTOR));
         }
 
         static sp<IProcess> asInterface(const sp<IBinder>& binder) {
