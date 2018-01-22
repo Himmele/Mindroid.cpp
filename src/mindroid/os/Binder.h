@@ -232,6 +232,7 @@ private:
                 Log::w(TAG, EXCEPTION_MESSAGE->c_str());
             }
         }
+        message->result = nullptr;
     }
 
     sp<IMessenger> mTarget;
