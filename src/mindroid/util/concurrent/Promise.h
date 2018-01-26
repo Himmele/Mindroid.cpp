@@ -1166,7 +1166,7 @@ private:
         virtual void run() override final {
             if ((mSupplier1->getException() == nullptr) &&
                     (mSupplier1->getException() == nullptr)) {
-                mConsumer->setResult(nullptr);
+                mConsumer->setResult(T());
             } else {
                 mConsumer->setException(toCompletionException(mSupplier1->getException()));
             }
@@ -1227,7 +1227,7 @@ private:
                 if (mSupplier->getException() == nullptr) {
                     u = mFunction(mSupplier->getResult(), nullptr);
                 } else {
-                    u = mFunction(nullptr, mSupplier->getException());
+                    u = mFunction(T(), mSupplier->getException());
                 }
                 mConsumer->setResult(u);
             } catch (const Exception& e) {
@@ -1326,7 +1326,7 @@ private:
                     mFunction(mSupplier->getResult(), nullptr);
                     mConsumer->setResult(mSupplier->getResult());
                 } else {
-                    mFunction(nullptr, mSupplier->getException());
+                    mFunction(T(), mSupplier->getException());
                     mConsumer->setException(mSupplier->getException());
                 }
             } catch (const Exception& e) {
@@ -1500,7 +1500,7 @@ private:
 
         class Completion : public Runnable {
         public:
-            Completion(const sp<Promise<T>>& consumer, const T& value) : mConsumer(consumer), mValue(value) {
+            Completion(const sp<Promise<T>>& consumer, T value) : mConsumer(consumer), mValue(value) {
             }
 
             virtual void run() override final {

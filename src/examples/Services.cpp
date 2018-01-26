@@ -180,7 +180,13 @@ public:
             ->thenCompose<int>([=] (int value) { return action2(value); })
             ->thenCompose<int>(object_cast<Executor>(mExecutor), [=] (int value) { return action3(value); })
             ->thenCompose<int>([=] (int value) { return action4(value); })
-            ->then([=] (int value) { Log::i(TAG, "Result: %d", value); });
+            ->then([=] (const int& value, const sp<Exception>& exception) {
+                if (exception != nullptr) {
+                    Log::i(TAG, "Exception: %s", exception->getMessage()->c_str());
+                } else {
+                    Log::i(TAG, "Result: %d", value);
+                }
+            });
 
 
         object_cast<Promise<int>>(new Promise<int>(42))
