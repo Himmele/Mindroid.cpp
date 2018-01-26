@@ -19,7 +19,6 @@
 #define MINDROID_IBINDER_H_
 
 #include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/Promise.h"
 
 namespace mindroid {
 
@@ -29,6 +28,7 @@ class Looper;
 class Message;
 class String;
 class Variant;
+template<typename T> class Promise;
 
 /**
  * Base interface for a remotable object, the core part of a lightweight remote procedure call

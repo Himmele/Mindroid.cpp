@@ -26,16 +26,16 @@ namespace mindroid {
 class ThreadPoolExecutor :
         public Executor {
 public:
-    ThreadPoolExecutor(const char* name, uint32_t size) :
+    explicit ThreadPoolExecutor(const char* name, uint32_t size) :
             ThreadPoolExecutor(String::valueOf(name), size, true) {
     }
-    ThreadPoolExecutor(const char* name, uint32_t size, bool shutdownAllowed) :
+    explicit ThreadPoolExecutor(const char* name, uint32_t size, bool shutdownAllowed) :
             ThreadPoolExecutor(String::valueOf(name), size, shutdownAllowed) {
     }
-    ThreadPoolExecutor(const sp<String>& name, uint32_t size) :
+    explicit ThreadPoolExecutor(const sp<String>& name, uint32_t size) :
             ThreadPoolExecutor(name, size, true) {
     }
-    ThreadPoolExecutor(const sp<String>& name, uint32_t size, bool shutdownAllowed);
+    explicit ThreadPoolExecutor(const sp<String>& name, uint32_t size, bool shutdownAllowed);
     virtual ~ThreadPoolExecutor();
     ThreadPoolExecutor(const ThreadPoolExecutor&) = delete;
     ThreadPoolExecutor& operator=(const ThreadPoolExecutor&) = delete;

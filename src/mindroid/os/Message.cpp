@@ -18,7 +18,7 @@
 #include "mindroid/os/Message.h"
 #include "mindroid/os/Handler.h"
 #include "mindroid/util/Assert.h"
-#include "mindroid/util/concurrent/Cancellable.h"
+#include "mindroid/util/concurrent/Promise.h"
 
 namespace mindroid {
 

@@ -10,6 +10,12 @@
             mindroid:autostart="true" />
         <service
             mindroid:name=".Service2"
-            mindroid:autostart="false" />        
+            mindroid:autostart="false" />
+        <service
+            mindroid:name=".Service3"
+            mindroid:autostart="true" />
+        <service
+            mindroid:name=".Service4"
+            mindroid:autostart="true" />
     </application>
 </manifest>

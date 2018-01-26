@@ -195,6 +195,7 @@ public:
             }
         }
 
+        mSelf = this;
         mStatus = RUNNING;
         mExecutor = executor;
 
@@ -393,6 +394,8 @@ private:
             onPostExecute(result);
         }
         mStatus = FINISHED;
+        mRunnable.clear();
+        mSelf.clear();
     }
 
     class InternalHandler :
@@ -461,6 +464,7 @@ private:
     sp<InternalHandler> mHandler;
     sp<WorkerRunnable> mRunnable;
     sp<AtomicBoolean> mCancelled = new AtomicBoolean();
+    sp<AsyncTask<Params, Progress, Result>> mSelf;
 
     /**
      * Indicates the current status of the task. Each status will be set only once

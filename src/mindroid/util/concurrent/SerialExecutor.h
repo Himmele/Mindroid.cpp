@@ -27,16 +27,16 @@ class Handler;
 class SerialExecutor :
         public Executor {
 public:
-    SerialExecutor(const char* name) :
+    explicit SerialExecutor(const char* name) :
             SerialExecutor(String::valueOf(name), true) {
     }
-    SerialExecutor(const char* name, bool shutdownAllowed) :
+    explicit SerialExecutor(const char* name, bool shutdownAllowed) :
             SerialExecutor(String::valueOf(name), shutdownAllowed) {
     }
-    SerialExecutor(const sp<String>& name) :
+    explicit SerialExecutor(const sp<String>& name) :
             SerialExecutor(name, true) {
     }
-    SerialExecutor(const sp<String>& name, bool shutdownAllowed);
+    explicit SerialExecutor(const sp<String>& name, bool shutdownAllowed);
     virtual ~SerialExecutor();
     SerialExecutor(const SerialExecutor&) = delete;
     SerialExecutor& operator=(const SerialExecutor&) = delete;

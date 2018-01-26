@@ -178,7 +178,7 @@ void ServiceManager::shutdown() {
             auto entry = itr.next();
             sp<ProcessRecord> processRecord = entry.getValue();
             sp<Future<bool>> future = mProcessManager->stopProcess(processRecord->name, SHUTDOWN_TIMEOUT);
-            future->await();
+            future->get();
         }
     }
 

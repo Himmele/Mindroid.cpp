@@ -27,6 +27,7 @@
 #include "mindroid/os/RemoteException.h"
 #include "mindroid/util/concurrent/Executor.h"
 #include "mindroid/util/Log.h"
+#include "mindroid/util/concurrent/Promise.h"
 
 namespace mindroid {
 

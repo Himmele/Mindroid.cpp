@@ -34,4 +34,8 @@ void AtomicBoolean::set(bool newValue) {
     mValue.store(newValue);
 }
 
+bool AtomicBoolean::compareAndSet(bool expect, bool update) {
+    return mValue.compare_exchange_strong(expect, update);
+}
+
 } /* namespace mindroid */

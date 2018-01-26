@@ -20,7 +20,6 @@
 
 #include "mindroid/lang/Object.h"
 #include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/concurrent/Cancellable.h"
 #include "mindroid/os/Bundle.h"
 
 namespace mindroid {
@@ -28,6 +27,7 @@ namespace mindroid {
 class Runnable;
 class Handler;
 class Message;
+template<typename T> class Promise;
 
 struct MessagePool {
     MessagePool();
@@ -83,8 +83,7 @@ public:
      */
     Message();
 
-    virtual ~Message() {
-    }
+    virtual ~Message() = default;
 
     /**
      * Return a new Message instance from the global pool. Allows us to avoid allocating new objects

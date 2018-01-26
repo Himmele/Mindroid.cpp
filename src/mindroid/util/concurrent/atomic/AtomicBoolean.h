@@ -32,6 +32,7 @@ public:
 
     bool get();
     void set(bool newValue);
+    bool compareAndSet(bool expect, bool update);
 
 private:
     std::atomic<bool> mValue;

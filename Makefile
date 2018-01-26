@@ -81,6 +81,7 @@ SRCS = \
 	src/mindroid/util/concurrent/locks/ConditionImpl.cpp \
 	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \
 	src/mindroid/util/concurrent/Semaphore.cpp \
+	src/mindroid/util/concurrent/Thenable.cpp \
 	src/mindroid/util/Log.cpp \
 	src/mindroid/util/logging/ConsoleHandler.cpp \
 	src/mindroid/util/logging/FileHandler.cpp \

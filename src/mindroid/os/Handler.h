@@ -84,27 +84,26 @@ public:
      *
      * If there isn't one, this handler won't be able to receive messages.
      */
-    Handler();
+    explicit Handler();
 
     /**
      * Constructor associates this handler with the queue for the current thread and takes a
      * callback interface in which you can handle messages.
      */
-    Handler(const sp<Callback>& callback);
+    explicit Handler(const sp<Callback>& callback);
 
     /**
      * Use the provided queue instead of the default one.
      */
-    Handler(const sp<Looper>& looper);
+    explicit Handler(const sp<Looper>& looper);
 
     /**
      * Use the provided queue instead of the default one and take a callback interface in which to
      * handle messages.
      */
-    Handler(const sp<Looper>& looper, const sp<Callback>& callback);
+    explicit Handler(const sp<Looper>& looper, const sp<Callback>& callback);
 
-    virtual ~Handler() {
-    }
+    virtual ~Handler() = default;
 
     Handler(const Handler&) = delete;
     Handler& operator=(const Handler&) = delete;
@@ -451,7 +450,7 @@ private:
     sp<MessageQueue> mMessageQueue;
     sp<Looper> mLooper;
     sp<Callback> mCallback;
-    sp<Executor> mExecutor;
+    wp<Executor> mExecutor;
 };
 
 } /* namespace mindroid */

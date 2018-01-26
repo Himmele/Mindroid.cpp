@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 E.S.R.Labs
+ * Copyright (C) 2018 Daniel Himmelein
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_AWAITABLE_H_
-#define MINDROID_AWAITABLE_H_
+#ifndef MINDROID_VOID_H_
+#define MINDROID_VOID_H_
 
-#include "mindroid/util/concurrent/Cancellable.h"
-#include "mindroid/util/concurrent/CancellationException.h"
-#include "mindroid/util/concurrent/ExecutionException.h"
-#include "mindroid/util/concurrent/TimeoutException.h"
+#include "mindroid/lang/Object.h"
 
 namespace mindroid {
 
-class Awaitable :
-        public Cancellable {
+class Void :
+        public Object {
 public:
-    virtual ~Awaitable() = default;
-
-    virtual void await() const = 0;
-
-    virtual void await(uint64_t timeout) const = 0;
+    explicit Void(){
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_AWAITABLE_H_ */
+#endif /* MINDROID_VOID_H_ */

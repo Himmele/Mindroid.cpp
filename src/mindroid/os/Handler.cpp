@@ -173,8 +173,9 @@ sp<Message> Handler::getPostMessage(const sp<Runnable>& runnable, const sp<Objec
 }
 
 sp<Executor> Handler::asExecutor() {
-    if (mExecutor != nullptr) {
-        return mExecutor;
+    sp<Executor> executor;
+    if (mExecutor != nullptr && (executor = mExecutor.lock()) != nullptr) {
+        return executor;
     }
 
     class HandlerExecutor : public Executor {
@@ -183,10 +184,7 @@ sp<Executor> Handler::asExecutor() {
         }
 
         void execute(const sp<Runnable>& command) override {
-            sp<Handler> handler = mHandler.lock();
-            if (handler != nullptr) {
-                handler->post(command);
-            }
+            mHandler->post(command);
         }
 
         virtual bool cancel(const sp<Runnable>& runnable) override {
@@ -194,11 +192,12 @@ sp<Executor> Handler::asExecutor() {
         }
 
     private:
-        wp<Handler> mHandler;
+        sp<Handler> mHandler;
     };
 
-    mExecutor = new HandlerExecutor(this);
-    return mExecutor;
+    executor = new HandlerExecutor(this);
+    mExecutor = executor;
+    return executor;
 }
 
 } /* namespace mindroid */

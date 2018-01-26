@@ -51,6 +51,9 @@ public:
     Exception(const sp<Exception>& cause) : mMessage(cause->getMessage()), mCause(cause) {
     }
 
+    Exception(const std::exception& cause) : mMessage(String::valueOf(cause.what())) {
+    }
+
     Exception(const Exception& exception) : Object(), mMessage(exception.getMessage()) {
     }
 
