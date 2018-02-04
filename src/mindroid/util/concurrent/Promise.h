@@ -1400,7 +1400,7 @@ private:
 
             mConsumer->onComplete();
 
-            // FIXME: Calling mSupplier->removeAction here may lead to concurrent modification problems
+            // TODO: Calling mSupplier->removeAction here may lead to concurrent modification problems.
             // while mConsumer->onComplete iterates over Thenable::mActions.
             //auto itr = mActions->iterator();
             //while (itr.hasNext()) {

@@ -115,6 +115,7 @@ protected:
     sp<Executor> mExecutor;
 
 private:
+    // TODO: Lock-free ConcurrentLinkedQueue.
     sp<LinkedList<sp<Action>>> mActions;
 
     template <typename> friend class Promise;
