@@ -1164,11 +1164,12 @@ private:
         }
 
         virtual void run() override final {
-            if ((mSupplier1->getException() == nullptr) &&
-                    (mSupplier1->getException() == nullptr)) {
-                mConsumer->setResult(T());
-            } else {
+            if (mSupplier1->getException() != nullptr) {
                 mConsumer->setException(toCompletionException(mSupplier1->getException()));
+            } else if (mSupplier2->getException() != nullptr) {
+                mConsumer->setException(toCompletionException(mSupplier2->getException()));
+            } else {
+                mConsumer->setResult(T());
             }
 
             mConsumer->onComplete();
