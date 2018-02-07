@@ -177,7 +177,7 @@ public:
 
 
         action1(42)
-            ->thenCompose<int>([=] (int value) { return action2(value); })
+            ->thenCompose<int>([=] (int value, const sp<Exception>& exception) { return action2(value, exception); })
             ->thenCompose<int>(object_cast<Executor>(mExecutor), [=] (int value) { return action3(value); })
             ->thenCompose<int>([=] (int value) { return action4(value); })
             ->then([=] (const int& value, const sp<Exception>& exception) {
@@ -247,7 +247,7 @@ private:
         return promise;
     }
 
-    sp<Promise<int>> action2(int value) {
+    sp<Promise<int>> action2(int value, const sp<Exception>& exception) {
         Log::i(TAG, "Action 2: %d", value);
         sp<Promise<int>> promise = new Promise<int>();
         mHandler->postDelayed([=] { promise->complete(value + 2); }, 1000);

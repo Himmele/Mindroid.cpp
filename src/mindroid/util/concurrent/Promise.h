@@ -752,6 +752,98 @@ public:
     }
 
     /**
+     * Returns a new Future that is completed with the same
+     * value as the Future returned by the given function,
+     * executed using this Future's default asynchronous execution
+     * facility.
+     *
+     * <p>When this Future is complete, the given function is invoked
+     * with the result (or {@code null} if none) and the exception (or
+     * {@code null} if none) of this Future as arguments, returning
+     * another Future.  When that Future completes normally,
+     * the Future returned by this method is completed with
+     * the same value.
+     *
+     * <p>To ensure progress, the supplied function must arrange
+     * eventual completion of its result.
+     *
+     * <p>See the {@link Future} documentation for rules
+     * covering exceptional completion.
+     *
+     * @param function the Function to use to compute another Future
+     * @param <U> the type of the returned Future's result
+     * @return the new Future
+     */
+    template<typename U>
+    sp<Promise<U>> thenCompose(const std::function<sp<Promise<U>> (T, const sp<Exception>&)>& function) {
+        return thenCompose(mExecutor, function);
+    }
+
+    /**
+     * Returns a new Future that is completed with the same
+     * value as the Future returned by the given function,
+     * executed using the supplied Handler.
+     *
+     * <p>When this Future is complete, the given function is invoked
+     * with the result (or {@code null} if none) and the exception (or
+     * {@code null} if none) of this Future as arguments, returning
+     * another Future.  When that Future completes normally,
+     * the Future returned by this method is completed with
+     * the same value.
+     *
+     * <p>To ensure progress, the supplied function must arrange
+     * eventual completion of its result.
+     *
+     * <p>See the {@link Future} documentation for rules
+     * covering exceptional completion.
+     *
+     * @param handler the Handler to use for asynchronous execution
+     * @param function the Function to use to compute another Future
+     * @param <U> the type of the returned Future's result
+     * @return the new Future
+     */
+    template<typename U>
+    sp<Promise<U>> thenCompose(const sp<Handler>& handler, const std::function<sp<Promise<U>> (T, const sp<Exception>&)>& function) {
+        return thenCompose(handler->asExecutor(), function);
+    }
+
+    /**
+     * Returns a new Future that is completed with the same
+     * value as the Future returned by the given function,
+     * executed using the supplied Executor.
+     *
+     * <p>When this Future is complete, the given function is invoked
+     * with the result (or {@code null} if none) and the exception (or
+     * {@code null} if none) of this Future as arguments, returning
+     * another Future.  When that Future completes normally,
+     * the Future returned by this method is completed with
+     * the same value.
+     *
+     * <p>To ensure progress, the supplied function must arrange
+     * eventual completion of its result.
+     *
+     * <p>See the {@link Future} documentation for rules
+     * covering exceptional completion.
+     *
+     * @param executor the Executor to use for asynchronous execution
+     * @param function the Function to use to compute another Future
+     * @param <U> the type of the returned Future's result
+     * @return the new Future
+     */
+    template<typename U>
+    sp<Promise<U>> thenCompose(const sp<Executor>& executor, const std::function<sp<Promise<U>> (T, const sp<Exception>&)>& function) {
+        Assert::assertNotNull("Executor must not be null", executor);
+        sp<Promise<U>> p = new Promise<U>(mExecutor);
+        sp<Thenable::Action> a = new BiCompositionFunctionAction<U>(executor, this, p, function);
+        if (isDone()) {
+            a->tryRun();
+        } else {
+            addAction(a);
+        }
+        return p;
+    }
+
+    /**
      * Returns a new Future that, when this Future completes
      * normally, is executed using this Future's default asynchronous
      * execution facility, with this Future's result as the argument to
@@ -1223,8 +1315,8 @@ private:
         }
 
         virtual void run() override final {
-            U u;
             try {
+                U u;
                 if (mSupplier->getException() == nullptr) {
                     u = mFunction(mSupplier->getResult(), nullptr);
                 } else {
@@ -1280,6 +1372,41 @@ private:
         sp<Promise<T>> mSupplier;
         sp<Promise<U>> mConsumer;
         std::function<sp<Promise<U>> (T)> mFunction;
+    };
+
+    template<typename U>
+    class BiCompositionFunctionAction : public Thenable::Action {
+    public:
+        BiCompositionFunctionAction(const sp<Executor>& executor, const sp<Promise<T>>& supplier, const sp<Promise<U>>& consumer,
+                const std::function<sp<Promise<U>> (T, const sp<Exception>&)>& function) : Action(executor),
+                mSupplier(supplier), mConsumer(consumer), mFunction(function) {
+        }
+
+        virtual void run() override final {
+            try {
+                sp<Promise<T>> u;
+                if (mSupplier->getException() == nullptr) {
+                    u = mFunction(mSupplier->getResult(), nullptr);
+                } else {
+                    u = mFunction(T(), mSupplier->getException());
+                }
+                mConsumer->completeWith(u);
+                return;
+            } catch (const Exception& e) {
+                mConsumer->setException(toCompletionException(e));
+            } catch (const std::exception& e) {
+                mConsumer->setException(new CompletionException(e));
+            } catch (...) {
+                mConsumer->setException(new CompletionException("Unknown exception"));
+            }
+
+            mConsumer->onComplete();
+        }
+
+    private:
+        sp<Promise<T>> mSupplier;
+        sp<Promise<U>> mConsumer;
+        std::function<sp<Promise<U>> (T, const sp<Exception>&)> mFunction;
     };
 
     class ConsumerAction : public Thenable::Action {
