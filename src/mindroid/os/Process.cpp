@@ -70,7 +70,7 @@ void Process::stop(uint64_t timeout) {
                 }
             }
 
-            uint64_t duration = timeout;
+            int64_t duration = timeout;
             while (!mServices->isEmpty() && (duration > 0)) {
                 mCondition->await(duration);
                 duration = start + timeout - SystemClock::uptimeMillis();

@@ -575,9 +575,9 @@ void ServiceManager::removeService(const sp<String>& name) {
 
 void ServiceManager::waitForSystemService(const sp<String>& name) {
     AutoLock autoLock(sLock);
-    const uint64_t TIMEOUT = 10000;
+    const int64_t TIMEOUT = 10000;
     uint64_t start = SystemClock::uptimeMillis();
-    uint64_t duration = TIMEOUT;
+    int64_t duration = TIMEOUT;
     while (!sSystemServices->containsKey(name)) {
         sCondition->await(duration);
         if (!sSystemServices->containsKey(name)) {
@@ -593,9 +593,9 @@ void ServiceManager::waitForSystemService(const sp<String>& name) {
 
 void ServiceManager::waitForSystemServiceShutdown(const sp<String>& name) {
     AutoLock autoLock(sLock);
-    const uint64_t TIMEOUT = 10000;
+    const int64_t TIMEOUT = 10000;
     uint64_t start = SystemClock::uptimeMillis();
-    uint64_t duration = TIMEOUT;
+    int64_t duration = TIMEOUT;
     while (sSystemServices->containsKey(name)) {
         sCondition->await(duration);
         if (sSystemServices->containsKey(name)) {
