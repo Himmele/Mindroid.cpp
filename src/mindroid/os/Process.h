@@ -17,11 +17,11 @@
 #ifndef MINDROID_PROCESS_H_
 #define MINDROID_PROCESS_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/os/HandlerThread.h"
-#include "mindroid/os/IProcess.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/HandlerThread.h>
+#include <mindroid/os/IProcess.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
 

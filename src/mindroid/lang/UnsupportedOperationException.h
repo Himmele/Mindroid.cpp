@@ -18,7 +18,7 @@
 #ifndef MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
 #define MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
 
-#include "mindroid/lang/RuntimeException.h"
+#include <mindroid/lang/RuntimeException.h>
 
 namespace mindroid {
 

@@ -17,9 +17,9 @@
 #ifndef MINDROID_CLASS_H_
 #define MINDROID_CLASS_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/HashMap.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/util/HashMap.h>
 #include <pthread.h>
 
 namespace mindroid {

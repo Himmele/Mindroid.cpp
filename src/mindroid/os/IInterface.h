@@ -18,8 +18,8 @@
 #ifndef MINDROID_IINTERFACE_H_
 #define MINDROID_IINTERFACE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/os/IBinder.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/os/IBinder.h>
 
 namespace mindroid {
 

@@ -17,8 +17,8 @@
 #ifndef MINDROID_EVENT_H_
 #define MINDROID_EVENT_H_
 
-#include "mindroid/util/LinkedList.h"
-#include "mindroid/util/Delegate.h"
+#include <mindroid/util/LinkedList.h>
+#include <mindroid/util/Delegate.h>
 
 namespace mindroid {
 

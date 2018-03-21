@@ -18,9 +18,9 @@
 #ifndef MINDROID_BUNDLE_H_
 #define MINDROID_BUNDLE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/HashMap.h"
-#include "mindroid/util/Variant.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/HashMap.h>
+#include <mindroid/util/Variant.h>
 
 namespace mindroid {
 
@@ -70,7 +70,7 @@ public:
      * Returns a Set containing the Strings used as keys in this Bundle.
      * @return an Set<String> value, or null
      */
-    sp<Set<sp<String>>> keySet() const;
+    sp<HashSet<sp<String>>> keySet() const;
 
     /**
      * Returns true if the given key is contained in the mapping

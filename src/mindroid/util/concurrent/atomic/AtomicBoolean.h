@@ -17,7 +17,7 @@
 #ifndef MINDROID_ATOMICBOOLEAN_H_
 #define MINDROID_ATOMICBOOLEAN_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 #include <atomic>
 
 namespace mindroid {

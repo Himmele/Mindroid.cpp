@@ -18,7 +18,7 @@
 #ifndef MINDROID_RUNTIMEEXCEPTION_H_
 #define MINDROID_RUNTIMEEXCEPTION_H_
 
-#include "mindroid/lang/Exception.h"
+#include <mindroid/lang/Exception.h>
 
 namespace mindroid {
 

@@ -18,12 +18,12 @@
 #ifndef MINDROID_HANDLER_H_
 #define MINDROID_HANDLER_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/Closure.h"
-#include "mindroid/os/Message.h"
-#include "mindroid/os/SystemClock.h"
-#include "mindroid/os/Looper.h"
-#include "mindroid/util/concurrent/Executor.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/Closure.h>
+#include <mindroid/os/Message.h>
+#include <mindroid/os/SystemClock.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/util/concurrent/Executor.h>
 #include <functional>
 
 namespace mindroid {

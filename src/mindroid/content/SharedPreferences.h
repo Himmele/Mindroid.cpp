@@ -19,10 +19,10 @@
 #ifndef MINDROID_SHAREDPREFERENCES_H_
 #define MINDROID_SHAREDPREFERENCES_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/os/Handler.h"
-#include "mindroid/util/HashMap.h"
-#include "mindroid/util/Set.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/os/Handler.h>
+#include <mindroid/util/HashMap.h>
+#include <mindroid/util/HashSet.h>
 
 namespace mindroid {
 
@@ -121,10 +121,10 @@ public:
          * @return Returns a reference to the same Editor object, so you can chain put calls
          * together.
          */
-        inline sp<Editor> putStringSet(const char* key, const sp<Set<sp<String>>>& values) {
+        inline sp<Editor> putStringSet(const char* key, const sp<HashSet<sp<String>>>& values) {
             return putStringSet(String::valueOf(key), values);
         }
-        virtual sp<Editor> putStringSet(const sp<String>& key, const sp<Set<sp<String>>>& values) = 0;
+        virtual sp<Editor> putStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& values) = 0;
 
         /**
          * Set an int value in the preferences editor, to be written back once {@link #commit} or
@@ -321,10 +321,10 @@ public:
      *
      * @throws ClassCastException
      */
-    inline sp<Set<sp<String>>> getStringSet(const char* key, const sp<Set<sp<String>>>& defValues) {
+    inline sp<HashSet<sp<String>>> getStringSet(const char* key, const sp<HashSet<sp<String>>>& defValues) {
         return getStringSet(String::valueOf(key), defValues);
     }
-    virtual sp<Set<sp<String>>> getStringSet(const sp<String>& key, const sp<Set<sp<String>>>& defValues) = 0;
+    virtual sp<HashSet<sp<String>>> getStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& defValues) = 0;
 
     /**
      * Retrieve an int value from the preferences.

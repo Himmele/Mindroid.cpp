@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/SystemClock.h"
-#include "mindroid/lang/Thread.h"
+#include <mindroid/os/SystemClock.h>
+#include <mindroid/lang/Thread.h>
 
 namespace mindroid {
 

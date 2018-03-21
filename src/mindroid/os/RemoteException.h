@@ -18,7 +18,7 @@
 #ifndef MINDROID_REMOTEEXCEPTION_H_
 #define MINDROID_REMOTEEXCEPTION_H_
 
-#include "mindroid/lang/Exception.h"
+#include <mindroid/lang/Exception.h>
 
 namespace mindroid {
 

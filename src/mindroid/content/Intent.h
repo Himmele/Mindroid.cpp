@@ -19,9 +19,9 @@
 #ifndef MINDROID_INTENT_H_
 #define MINDROID_INTENT_H_
 
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/lang/Object.h"
-#include "mindroid/os/Bundle.h"
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/lang/Object.h>
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 

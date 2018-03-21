@@ -54,12 +54,10 @@ TEST(Mindroid, Strings) {
     ASSERT_EQ(s11->endsWith("st"), true);
 
     sp<String> s12 = new String("abc\n\n\ndef\r\nxyz");
-    sp<ArrayList<sp<String>>> strings = s12->split("\n");
+    sp<StringArray> strings = s12->split("\n");
     ASSERT_EQ(strings->size(), 5);
-    int32_t i = 0;
-    auto itr = strings->iterator();
-    while (itr.hasNext()) {
-        sp<String> string = itr.next();
+    for (size_t i = 0; i < strings->size(); i++) {
+        sp<String> string = strings->get(i);
         switch (i) {
         case 0:
             ASSERT_STREQ(string->c_str(), "abc");
@@ -80,17 +78,12 @@ TEST(Mindroid, Strings) {
             ASSERT_TRUE(false);
             break;
         }
-        i++;
-        itr.remove();
     }
-    ASSERT_EQ(strings->size(), 0);
 
     strings = s12->split("\r\n");
     ASSERT_EQ(strings->size(), 2);
-    i = 0;
-    itr = strings->iterator();
-    while (itr.hasNext()) {
-        sp<String> string = itr.next();
+    for (size_t i = 0; i < strings->size(); i++) {
+        sp<String> string = strings->get(i);
         switch (i) {
         case 0:
             ASSERT_STREQ(string->c_str(), "abc\n\n\ndef");
@@ -102,10 +95,7 @@ TEST(Mindroid, Strings) {
             ASSERT_TRUE(false);
             break;
         }
-        i++;
-        itr.remove();
     }
-    ASSERT_EQ(strings->size(), 0);
 
     sp<String> s13 = new String("Hello");
     sp<String> s14 = new String("Hello");

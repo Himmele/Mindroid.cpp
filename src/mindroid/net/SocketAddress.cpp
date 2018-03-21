@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/net/SocketAddress.h"
-#include "mindroid/net/Socket4Address.h"
-#include "mindroid/net/Socket6Address.h"
-
+#include <mindroid/net/SocketAddress.h>
+#include <mindroid/net/Socket4Address.h>
+#include <mindroid/net/Socket6Address.h>
 #include <netdb.h>
 #include <arpa/inet.h>
 

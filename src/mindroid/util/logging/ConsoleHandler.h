@@ -17,7 +17,7 @@
 #ifndef MINDROID_CONSOLEHANDLER_H_
 #define MINDROID_CONSOLEHANDLER_H_
 
-#include "mindroid/util/logging/LogHandler.h"
+#include <mindroid/util/logging/LogHandler.h>
 
 namespace mindroid {
 

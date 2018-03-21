@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/pm/PackageManagerService.h"
-#include "mindroid/os/Environment.h"
-#include "mindroid/os/ServiceManager.h"
-#include "mindroid/io/File.h"
-#include "mindroid/io/FilenameFilter.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/util/Log.h"
-#include "tinyxml2/tinyxml2.h"
+#include <mindroid/content/pm/PackageManagerService.h>
+#include <mindroid/os/Environment.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/io/File.h>
+#include <mindroid/io/FilenameFilter.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/util/Log.h>
+#include <tinyxml2/tinyxml2.h>
 
 using namespace tinyxml2;
 

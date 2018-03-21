@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Character.h"
+#include <mindroid/lang/Character.h>
 
 namespace mindroid {
 

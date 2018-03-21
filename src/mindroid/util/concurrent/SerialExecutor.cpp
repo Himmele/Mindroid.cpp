@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/SerialExecutor.h"
-#include "mindroid/os/Handler.h"
-#include "mindroid/os/Message.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/util/concurrent/SerialExecutor.h>
+#include <mindroid/os/Handler.h>
+#include <mindroid/os/Message.h>
+#include <mindroid/util/Log.h>
 
 namespace mindroid {
 

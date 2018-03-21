@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/EventLog.h"
+#include <mindroid/util/EventLog.h>
 #include <cstdio>
 #include <cstdarg>
 

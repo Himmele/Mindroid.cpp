@@ -17,11 +17,11 @@
 #ifndef MINDROID_LOGGER_H_
 #define MINDROID_LOGGER_H_
 
-#include "mindroid/app/Service.h"
-#include "mindroid/lang/Thread.h"
-#include "mindroid/util/Log.h"
-#include "mindroid/util/logging/ConsoleHandler.h"
-#include "mindroid/util/logging/FileHandler.h"
+#include <mindroid/app/Service.h>
+#include <mindroid/lang/Thread.h>
+#include <mindroid/util/Log.h>
+#include <mindroid/util/logging/ConsoleHandler.h>
+#include <mindroid/util/logging/FileHandler.h>
 
 namespace mindroid {
 

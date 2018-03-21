@@ -18,9 +18,9 @@
 #ifndef MINDROID_IONSHAREDPREFERENCECHANGELISTENER_H_
 #define MINDROID_IONSHAREDPREFERENCECHANGELISTENER_H_
 
-#include "mindroid/os/Binder.h"
-#include "mindroid/os/IInterface.h"
-#include "mindroid/lang/Class.h"
+#include <mindroid/os/Binder.h>
+#include <mindroid/os/IInterface.h>
+#include <mindroid/lang/Class.h>
 
 namespace mindroid {
 

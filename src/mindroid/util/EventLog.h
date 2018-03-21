@@ -18,7 +18,7 @@
 #ifndef MINDROID_EVENTLOG_H_
 #define MINDROID_EVENTLOG_H_
 
-#include "mindroid/util/Log.h"
+#include <mindroid/util/Log.h>
 
 namespace mindroid {
 
@@ -115,7 +115,7 @@ public:
     static int wtf(const char* tag, const char* format, ...);
 
 private:
-    static const int LOG_MESSAGE_SIZE = 256;
+    static const size_t LOG_MESSAGE_SIZE = 256;
 };
 
 } /* namespace mindroid */

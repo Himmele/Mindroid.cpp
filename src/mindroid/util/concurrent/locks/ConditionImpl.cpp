@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/locks/ConditionImpl.h"
-#include "mindroid/util/concurrent/locks/Lock.h"
-#include "mindroid/util/Assert.h"
-#include "mindroid/os/SystemClock.h"
+#include <mindroid/util/concurrent/locks/ConditionImpl.h>
+#include <mindroid/util/concurrent/locks/Lock.h>
+#include <mindroid/util/Assert.h>
+#include <mindroid/lang/IllegalMonitorStateException.h>
+#include <mindroid/os/SystemClock.h>
 #include <cstdlib>
 #include <ctime>
 #include <errno.h>
@@ -42,8 +43,8 @@ ConditionImpl::~ConditionImpl() {
 
 void ConditionImpl::await() {
     int32_t errorCode = pthread_cond_wait(&mCondition, mMutex);
-    Assert::assertFalse("IllegalMonitorStateException: EPERM", errorCode == EPERM);
-    Assert::assertTrue("IllegalMonitorStateException: EINVAL", errorCode == 0);
+    Assert::assertFalse<IllegalMonitorStateException>("EPERM", errorCode == EPERM);
+    Assert::assertTrue<IllegalMonitorStateException>("EINVAL", errorCode == 0);
 }
 
 bool ConditionImpl::await(uint64_t timeoutMillis) {
@@ -64,8 +65,8 @@ bool ConditionImpl::await(uint64_t timeoutMillis) {
     if (errorCode == ETIMEDOUT) {
         return false;
     } else {
-        Assert::assertFalse("IllegalMonitorStateException: EPERM", errorCode == EPERM);
-        Assert::assertTrue("IllegalMonitorStateException: EINVAL", errorCode == 0);
+        Assert::assertFalse<IllegalMonitorStateException>("EPERM", errorCode == EPERM);
+        Assert::assertTrue<IllegalMonitorStateException>("EINVAL", errorCode == 0);
         return true;
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/app/IOnSharedPreferenceChangeListener.h"
+#include <mindroid/app/IOnSharedPreferenceChangeListener.h>
 
 namespace mindroid {
 namespace binder {

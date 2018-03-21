@@ -28,7 +28,7 @@
 #ifndef MINDROID_FUTURE_H_
 #define MINDROID_FUTURE_H_
 
-#include "mindroid/util/concurrent/Thenable.h"
+#include <mindroid/util/concurrent/Thenable.h>
 
 namespace mindroid {
 

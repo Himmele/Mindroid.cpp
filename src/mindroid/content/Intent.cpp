@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/Intent.h"
+#include <mindroid/content/Intent.h>
 
 namespace mindroid {
 

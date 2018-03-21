@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-#include "mindroid/app/Service.h"
-#include "mindroid/app/ContextImpl.h"
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/pm/IPackageManager.h"
-#include "mindroid/os/Process.h"
-#include "mindroid/os/RemoteCallback.h"
-#include "mindroid/os/ServiceManager.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/app/Service.h>
+#include <mindroid/app/ContextImpl.h>
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/pm/IPackageManager.h>
+#include <mindroid/os/Process.h>
+#include <mindroid/os/RemoteCallback.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/util/Log.h>
 #include <cstdio>
+#include <cinttypes>
 
 namespace mindroid {
 
@@ -84,7 +85,7 @@ void Process::stop(uint64_t timeout) {
 
     Log::d(TAG, "Process %s has been stopped", mName->c_str());
     if (SystemClock::uptimeMillis() - start >= 1000) {
-        printf("W/Process: Stopping process %s took %ldms\n", mName->c_str(), SystemClock::uptimeMillis() - start);
+        printf("W/Process: Stopping process %s took %" PRIu64 " ms", mName->c_str(), SystemClock::uptimeMillis() - start);
     }
 }
 

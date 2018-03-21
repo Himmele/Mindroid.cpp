@@ -17,11 +17,11 @@
 #ifndef MINDROID_SERVICEMANAGER_H_
 #define MINDROID_SERVICEMANAGER_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/os/IServiceManager.h"
-#include "mindroid/os/RemoteCallback.h"
-#include "mindroid/util/Pair.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/IServiceManager.h>
+#include <mindroid/os/RemoteCallback.h>
+#include <mindroid/util/Pair.h>
 
 namespace mindroid {
 

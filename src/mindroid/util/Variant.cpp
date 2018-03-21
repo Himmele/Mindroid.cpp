@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/Variant.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/os/Bundle.h"
+#include <mindroid/util/Variant.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 

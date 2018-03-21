@@ -16,7 +16,7 @@ TEST(Mindroid, SharedPreferences) {
     ASSERT_STREQ(sharedPreferences->getString("String", "abc")->c_str(), "abc");
     ASSERT_EQ(sharedPreferences->getStringSet("Set", nullptr), nullptr);
 
-    sp<Set<sp<String>>> set = new Set<sp<String>>();
+    sp<HashSet<sp<String>>> set = new HashSet<sp<String>>();
     set->add(String::valueOf("1"));
     set->add(String::valueOf("2"));
     set->add(String::valueOf("3"));
@@ -29,7 +29,7 @@ TEST(Mindroid, SharedPreferences) {
 
     ASSERT_EQ(sharedPreferences->getBoolean("Bool", false), true);
     ASSERT_STREQ(sharedPreferences->getString("String", "abc")->c_str(), "xyz");
-    sp<Set<sp<String>>> s = sharedPreferences->getStringSet("Set", nullptr);
+    sp<HashSet<sp<String>>> s = sharedPreferences->getStringSet("Set", nullptr);
     ASSERT_EQ(set->contains(String::valueOf("1")), true);
     ASSERT_EQ(set->contains(String::valueOf("2")), true);
     ASSERT_EQ(set->contains(String::valueOf("3")), true);

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/System.h"
+#include <mindroid/lang/System.h>
 #include <unistd.h>
 #include <limits.h>
 #include <sys/utsname.h>

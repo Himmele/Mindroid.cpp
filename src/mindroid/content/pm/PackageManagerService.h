@@ -18,12 +18,12 @@
 #ifndef MINDROID_PACKAGEMANAGERSERVICE_H_
 #define MINDROID_PACKAGEMANAGERSERVICE_H_
 
-#include "mindroid/app/Service.h"
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/pm/ServiceInfo.h"
-#include "mindroid/content/pm/ResolveInfo.h"
-#include "mindroid/content/pm/PackageInfo.h"
+#include <mindroid/app/Service.h>
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/pm/ServiceInfo.h>
+#include <mindroid/content/pm/ResolveInfo.h>
+#include <mindroid/content/pm/PackageInfo.h>
 
 namespace tinyxml2 {
 class XMLElement;

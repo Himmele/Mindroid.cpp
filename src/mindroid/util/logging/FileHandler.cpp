@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/logging/FileHandler.h"
-#include "mindroid/os/Environment.h"
+#include <mindroid/util/logging/FileHandler.h>
+#include <mindroid/os/Environment.h>
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>

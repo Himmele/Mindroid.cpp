@@ -18,8 +18,8 @@
 #ifndef MINDROID_REENTRANTLOCK_H_
 #define MINDROID_REENTRANTLOCK_H_
 
-#include "mindroid/util/concurrent/locks/Lock.h"
-#include "mindroid/util/concurrent/locks/Condition.h"
+#include <mindroid/util/concurrent/locks/Lock.h>
+#include <mindroid/util/concurrent/locks/Condition.h>
 #include <pthread.h>
 
 namespace mindroid {

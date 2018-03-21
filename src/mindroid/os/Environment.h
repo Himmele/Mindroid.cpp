@@ -18,9 +18,9 @@
 #ifndef MINDROID_ENVIRONMENT_H_
 #define MINDROID_ENVIRONMENT_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/content/SharedPreferences.h"
-#include "mindroid/io/File.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/content/SharedPreferences.h>
+#include <mindroid/io/File.h>
 #include <pthread.h>
 
 namespace mindroid {

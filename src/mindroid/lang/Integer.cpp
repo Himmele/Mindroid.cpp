@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Integer.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/Integer.h>
+#include <mindroid/lang/String.h>
 #include <cstdlib>
 
 namespace mindroid {

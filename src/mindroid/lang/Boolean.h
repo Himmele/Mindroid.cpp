@@ -17,7 +17,7 @@
 #ifndef MINDROID_BOOLEAN_H_
 #define MINDROID_BOOLEAN_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 
 namespace mindroid {
 

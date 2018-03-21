@@ -19,7 +19,7 @@
 #ifndef MINDROID_SERVICEINFO_H_
 #define MINDROID_SERVICEINFO_H_
 
-#include "mindroid/content/pm/ComponentInfo.h"
+#include <mindroid/content/pm/ComponentInfo.h>
 
 namespace mindroid {
 

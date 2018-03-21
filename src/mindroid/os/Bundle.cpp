@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/Bundle.h"
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 
@@ -31,12 +31,12 @@ Bundle::Bundle(const sp<Bundle>& other) : Bundle() {
     putAll(other);
 }
 
-sp<Set<sp<String>>> Bundle::keySet() const {
+sp<HashSet<sp<String>>> Bundle::keySet() const {
     if (mMap->isEmpty()) {
         return nullptr;
     }
 
-    sp<Set<sp<String>>> keys = new Set<sp<String>>();
+    sp<HashSet<sp<String>>> keys = new HashSet<sp<String>>();
     auto itr = mMap->iterator();
     while (itr.hasNext()) {
         auto entry = itr.next();

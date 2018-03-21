@@ -19,7 +19,7 @@
 #ifndef MINDROID_APPLICATIONINFO_H_
 #define MINDROID_APPLICATIONINFO_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 
 namespace mindroid {
 

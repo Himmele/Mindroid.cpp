@@ -19,11 +19,11 @@
 #ifndef MINDROID_SHAREDPREFERENCESIMPL_H_
 #define MINDROID_SHAREDPREFERENCESIMPL_H_
 
-#include "mindroid/app/IOnSharedPreferenceChangeListener.h"
-#include "mindroid/content/SharedPreferences.h"
-#include "mindroid/util/ArrayList.h"
-#include "mindroid/util/HashMap.h"
-#include "mindroid/util/Variant.h"
+#include <mindroid/app/IOnSharedPreferenceChangeListener.h>
+#include <mindroid/content/SharedPreferences.h>
+#include <mindroid/util/ArrayList.h>
+#include <mindroid/util/HashMap.h>
+#include <mindroid/util/Variant.h>
 
 namespace tinyxml2 {
 class XMLDocument;
@@ -41,7 +41,7 @@ public:
 
     virtual sp<HashMap<sp<String>, sp<Variant>>> getAll();
     virtual sp<String> getString(const sp<String>& key, const sp<String>& defValue);
-    virtual sp<Set<sp<String>>> getStringSet(const sp<String>& key, const sp<Set<sp<String>>>& defValues);
+    virtual sp<HashSet<sp<String>>> getStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& defValues);
     virtual int32_t getInt(const sp<String>& key, int32_t defValue);
     virtual int64_t getLong(const sp<String>& key, int64_t defValue);
     virtual float getFloat(const sp<String>& key, float defValue);
@@ -71,9 +71,9 @@ public:
             return this;
         }
 
-        virtual sp<Editor> putStringSet(const sp<String>& key, const sp<Set<sp<String>>>& values) {
+        virtual sp<Editor> putStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& values) {
             AutoLock autoLock(mSharedPreferences->mLock);
-            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(object_cast<Set<sp<String>>>(new Set<sp<String>>(values))));
+            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(object_cast<HashSet<sp<String>>>(new HashSet<sp<String>>(values))));
             return this;
         }
 

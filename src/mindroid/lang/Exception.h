@@ -17,7 +17,7 @@
 #ifndef MINDROID_EXCEPTION_H_
 #define MINDROID_EXCEPTION_H_
 
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/String.h>
 #include <exception>
 
 namespace mindroid {

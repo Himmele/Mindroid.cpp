@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/atomic/AtomicInteger.h"
+#include <mindroid/util/concurrent/atomic/AtomicInteger.h>
 #include <atomic>
 
 namespace mindroid {

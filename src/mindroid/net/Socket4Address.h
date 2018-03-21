@@ -17,9 +17,9 @@
 #ifndef MINDROID_SOCKET4ADDRESS_H_
 #define MINDROID_SOCKET4ADDRESS_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/net/SocketAddress.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/net/SocketAddress.h>
 
 namespace mindroid {
 

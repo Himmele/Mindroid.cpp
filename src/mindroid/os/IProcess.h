@@ -17,8 +17,8 @@
 #ifndef MINDROID_IPROCESS_H_
 #define MINDROID_IPROCESS_H_
 
-#include "mindroid/os/Binder.h"
-#include "mindroid/lang/Class.h"
+#include <mindroid/os/Binder.h>
+#include <mindroid/lang/Class.h>
 
 namespace mindroid {
 

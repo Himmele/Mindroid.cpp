@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>

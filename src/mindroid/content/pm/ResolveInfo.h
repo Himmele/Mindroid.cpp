@@ -19,8 +19,8 @@
 #ifndef MINDROID_RESOLVEINFO_H_
 #define MINDROID_RESOLVEINFO_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/content/pm/ServiceInfo.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/content/pm/ServiceInfo.h>
 
 namespace mindroid {
 

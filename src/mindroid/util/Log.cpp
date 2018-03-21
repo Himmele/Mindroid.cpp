@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/Log.h"
+#include <mindroid/util/Log.h>
 #include <cstdio>
 #include <cstdarg>
 

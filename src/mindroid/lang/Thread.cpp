@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Thread.h"
+#include <mindroid/lang/Thread.h>
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>

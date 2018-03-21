@@ -19,13 +19,13 @@
 #ifndef MINDROID_CONTEXTIMPL_H_
 #define MINDROID_CONTEXTIMPL_H_
 
-#include "mindroid/content/Context.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/ServiceConnection.h"
-#include "mindroid/content/SharedPreferences.h"
-#include "mindroid/io/File.h"
-#include "mindroid/os/HandlerThread.h"
-#include "mindroid/os/RemoteCallback.h"
+#include <mindroid/content/Context.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/ServiceConnection.h>
+#include <mindroid/content/SharedPreferences.h>
+#include <mindroid/io/File.h>
+#include <mindroid/os/HandlerThread.h>
+#include <mindroid/os/RemoteCallback.h>
 
 namespace mindroid {
 

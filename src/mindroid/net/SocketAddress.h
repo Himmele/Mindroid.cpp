@@ -17,10 +17,9 @@
 #ifndef MINDROID_SOCKETADDRESS_H_
 #define MINDROID_SOCKETADDRESS_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/net/InetAddress.h"
-
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/net/InetAddress.h>
 #include <netinet/in.h>
 
 namespace mindroid {

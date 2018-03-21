@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 
-#include "mindroid/app/SharedPreferencesImpl.h"
-#include "mindroid/io/File.h"
-#include "mindroid/util/Log.h"
-#include "tinyxml2/tinyxml2.h"
+#include <mindroid/app/SharedPreferencesImpl.h>
+#include <mindroid/io/File.h>
+#include <mindroid/util/Log.h>
+#include <tinyxml2/tinyxml2.h>
 
 using namespace tinyxml2;
 
@@ -64,12 +64,12 @@ sp<String> SharedPreferencesImpl::getString(const sp<String>& key, const sp<Stri
     return defValue;
 }
 
-sp<Set<sp<String>>> SharedPreferencesImpl::getStringSet(const sp<String>& key, const sp<Set<sp<String>>>& defValues) {
+sp<HashSet<sp<String>>> SharedPreferencesImpl::getStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& defValues) {
     AutoLock autoLock(mLock);
     sp<Variant> value = mMap->get(key);
     if (value != nullptr) {
         if (value->isStringSet()) {
-            return new Set<sp<String>>(value->getStringSet());
+            return new HashSet<sp<String>>(value->getStringSet());
         } else {
             return defValues;
         }
@@ -373,7 +373,7 @@ void SharedPreferencesImpl::parseString(sp<HashMap<sp<String>, sp<Variant>>>& ma
 void SharedPreferencesImpl::parseStringSet(sp<HashMap<sp<String>, sp<Variant>>>& map, const XMLElement* element) {
     const XMLAttribute* name = element->FindAttribute(NAME_ATTR);
     if (name != nullptr) {
-        sp<Set<sp<String>>> values = new Set<sp<String>>();
+        sp<HashSet<sp<String>>> values = new HashSet<sp<String>>();
         const XMLElement* childElement;
         for(childElement = element->FirstChildElement(); childElement != nullptr; childElement = childElement->NextSiblingElement()) {
             if (XMLUtil::StringEqual(STRING_TAG, childElement->Name())) {
@@ -444,7 +444,7 @@ XMLElement* SharedPreferencesImpl::writeValue(XMLDocument& doc, const sp<String>
             element = doc.NewElement(STRING_SET_TAG);
             element->SetAttribute(NAME_ATTR, name->c_str());
 
-            sp<Set<sp<String>>> values = value->getStringSet();
+            sp<HashSet<sp<String>>> values = value->getStringSet();
             auto itr = values->iterator();
             while (itr.hasNext()) {
                 sp<String> s = itr.next();

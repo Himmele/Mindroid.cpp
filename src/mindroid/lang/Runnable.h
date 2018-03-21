@@ -17,7 +17,7 @@
 #ifndef MINDROID_RUNNABLE_H_
 #define MINDROID_RUNNABLE_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 #include <functional>
 
 namespace mindroid {

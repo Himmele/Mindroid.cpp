@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/io/File.h"
-#include "mindroid/io/FilenameFilter.h"
-#include "mindroid/lang/System.h"
+#include <mindroid/io/File.h>
+#include <mindroid/io/FilenameFilter.h>
+#include <mindroid/lang/System.h>
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -87,7 +87,7 @@ bool File::canWrite() const {
 }
 
 bool File::remove() {
-    return (unlink(mPath->c_str()) == 0);
+    return isFile() ? (::unlink(mPath->c_str()) == 0) : (::rmdir(mPath->c_str()) == 0);
 }
 
 bool File::exists() const {
@@ -103,7 +103,7 @@ sp<String> File::getAbsolutePath() {
     return mPath->isEmpty() ? userDir : join(userDir, mPath);
 }
 
-sp<String> File::getName() {
+sp<String> File::getName() const {
     if (mName == nullptr) {
         ssize_t i = mPath->lastIndexOf(separatorChar);
         if (i >= 0) {
@@ -115,7 +115,7 @@ sp<String> File::getName() {
     return mName;
 }
 
-sp<String> File::getParent() {
+sp<String> File::getParent() const {
     if (mParent == nullptr) {
         if (!mPath->equals(separator)) {
             ssize_t i = mPath->lastIndexOf(separatorChar);
@@ -131,7 +131,7 @@ sp<String> File::getParent() {
     return mParent;
 }
 
-sp<File> File::getParentFile() {
+sp<File> File::getParentFile() const {
     sp<String> parent = getParent();
     if (parent != nullptr) {
         return new File(parent);
@@ -140,7 +140,7 @@ sp<File> File::getParentFile() {
     }
 }
 
-sp<String> File::getPath() {
+sp<String> File::getPath() const {
     return mPath;
 }
 

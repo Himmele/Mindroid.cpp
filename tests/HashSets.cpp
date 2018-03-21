@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "mindroid/util/Set.h"
+#include "mindroid/util/HashSet.h"
 #include "mindroid/lang/String.h"
 
 using namespace mindroid;
 
 TEST(Mindroid, SetOfInteger) {
-    sp<Set<int>> set = new Set<int>();
+    sp<HashSet<int>> set = new HashSet<int>();
     set->add(1);
     ASSERT_EQ(set->contains(1), true);
     ASSERT_EQ(set->contains(2), false);
@@ -29,7 +29,7 @@ TEST(Mindroid, SetOfInteger) {
 }
 
 TEST(Mindroid, SetOfString) {
-    sp<Set<sp<String>>> set = new Set<sp<String>>();
+    sp<HashSet<sp<String>>> set = new HashSet<sp<String>>();
     set->add(String::valueOf("1"));
     ASSERT_EQ(set->contains(String::valueOf("1")), true);
     ASSERT_EQ(set->contains(String::valueOf("2")), false);

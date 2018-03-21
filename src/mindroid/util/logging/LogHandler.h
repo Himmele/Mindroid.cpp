@@ -17,8 +17,8 @@
 #ifndef MINDROID_LOGHANDLER_H_
 #define MINDROID_LOGHANDLER_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/logging/LogBuffer.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/logging/LogBuffer.h>
 
 namespace mindroid {
 

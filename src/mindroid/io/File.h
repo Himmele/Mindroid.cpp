@@ -17,8 +17,9 @@
 #ifndef MINDROID_FILE_H_
 #define MINDROID_FILE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
 
@@ -147,7 +148,7 @@ public:
      * @return this file's name or an empty string if there is no name part in
      *         the file's path.
      */
-    sp<String> getName();
+    sp<String> getName() const;
 
     /**
      * Returns the name of the file or directory represented by this file.
@@ -155,7 +156,7 @@ public:
      * @return this file's name or an empty string if there is no name part in
      *         the file's path.
      */
-    sp<String> getParent();
+    sp<String> getParent() const;
 
     /**
      * Returns a new file made from the pathname of the parent of this file.
@@ -164,12 +165,12 @@ public:
      *
      * @return a new file representing this file's parent or {@code null}.
      */
-    sp<File> getParentFile();
+    sp<File> getParentFile() const;
 
     /**
      * Returns the path of this file.
      */
-    sp<String> getPath();
+    sp<String> getPath() const;
 
     /**
      * Indicates if this file's pathname is absolute. Whether a pathname is
@@ -309,8 +310,8 @@ private:
     static sp<String> join(sp<String>& prefix, sp<String>& suffix);
 
     sp<String> mPath;
-    sp<String> mParent;
-    sp<String> mName;
+    mutable sp<String> mParent;
+    mutable sp<String> mName;
 };
 
 } /* namespace mindroid */

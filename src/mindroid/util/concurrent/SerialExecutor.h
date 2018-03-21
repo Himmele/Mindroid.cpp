@@ -17,8 +17,8 @@
 #ifndef MINDROID_SERIALEXECUTOR_H_
 #define MINDROID_SERIALEXECUTOR_H_
 
-#include "mindroid/util/concurrent/Executor.h"
-#include "mindroid/os/HandlerThread.h"
+#include <mindroid/util/concurrent/Executor.h>
+#include <mindroid/os/HandlerThread.h>
 
 namespace mindroid {
 

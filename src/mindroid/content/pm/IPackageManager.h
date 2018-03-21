@@ -18,11 +18,11 @@
 #ifndef MINDROID_IPACKAGEMANAGER_H_
 #define MINDROID_IPACKAGEMANAGER_H_
 
-#include "mindroid/content/pm/PackageInfo.h"
-#include "mindroid/content/pm/ResolveInfo.h"
-#include "mindroid/os/Binder.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/content/pm/PackageInfo.h>
+#include <mindroid/content/pm/ResolveInfo.h>
+#include <mindroid/os/Binder.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
 

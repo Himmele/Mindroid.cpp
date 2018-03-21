@@ -19,12 +19,12 @@
 #ifndef MINDROID_PACKAGEMANAGER_H_
 #define MINDROID_PACKAGEMANAGER_H_
 
-#include "mindroid/content/Context.h"
-#include "mindroid/content/pm/ResolveInfo.h"
-#include "mindroid/content/pm/IPackageManager.h"
-#include "mindroid/lang/Object.h"
-#include "mindroid/os/ServiceManager.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/content/Context.h>
+#include <mindroid/content/pm/ResolveInfo.h>
+#include <mindroid/content/pm/IPackageManager.h>
+#include <mindroid/lang/Object.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
 

@@ -19,11 +19,11 @@
 #ifndef MINDROID_PACKAGEINFO_H_
 #define MINDROID_PACKAGEINFO_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/content/pm/ApplicationInfo.h"
-#include "mindroid/content/pm/ServiceInfo.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/content/pm/ApplicationInfo.h>
+#include <mindroid/content/pm/ServiceInfo.h>
+#include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
 

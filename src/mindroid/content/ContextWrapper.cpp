@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/ContextWrapper.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/content/ContextWrapper.h>
+#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
 void ContextWrapper::attachBaseContext(const sp<Context> baseContext) {
-    Assert::assertTrue("Base context already set", mBaseContext == nullptr);
+    Assert::assertTrue<IllegalStateException>("Base context already set", mBaseContext == nullptr);
     mBaseContext = baseContext;
 }
 

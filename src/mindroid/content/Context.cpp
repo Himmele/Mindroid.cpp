@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/Context.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/content/Context.h>
+#include <mindroid/lang/String.h>
 
 namespace mindroid {
 

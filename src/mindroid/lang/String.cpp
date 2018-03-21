@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/String.h"
-#include "mindroid/lang/Class.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/util/Assert.h>
+#include <mindroid/util/ArrayList.h>
 #include <cstdio>
 
 namespace mindroid {
@@ -114,6 +116,16 @@ bool String::equalsIgnoreCase(const char* string) const {
 
 bool String::equalsIgnoreCase(const sp<String>& string) const {
     return toLowerCase()->equals(string->toLowerCase());
+}
+
+char String::operator[](const size_t index) const {
+    Assert::assertTrue<IndexOutOfBoundsException>(index < length());
+    return mStringBuffer->mData[index];
+}
+
+char String::charAt(size_t index) const {
+    Assert::assertTrue<IndexOutOfBoundsException>(index < length());
+    return mStringBuffer->mData[index];
 }
 
 bool String::contains(const char* subString) const {
@@ -289,7 +301,7 @@ sp<String> String::trim() const {
     }
 }
 
-sp<ArrayList<sp<String>>> String::split(const char* separator) const {
+sp<StringArray> String::split(const char* separator) const {
     sp<ArrayList<sp<String>>> strings = new ArrayList<sp<String>>();
     ssize_t curIndex = 0;
     ssize_t prevCurIndex;
@@ -303,10 +315,10 @@ sp<ArrayList<sp<String>>> String::split(const char* separator) const {
             strings->add(substring(prevCurIndex, length()));
         }
     }
-    return strings;
+    return StringArray::valueOf(strings);
 }
 
-sp<ArrayList<sp<String>>> String::split(const sp<String>& separator) const {
+sp<StringArray> String::split(const sp<String>& separator) const {
     return split(separator->c_str());
 }
 
@@ -394,6 +406,11 @@ sp<String> String::append(const char* string, size_t offset, size_t size) const 
         return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string + offset, size));
     }
     return const_cast<String*>(this);
+}
+
+sp<String> String::append(const sp<String>& string, size_t offset, size_t size) const {
+    Assert::assertTrue<IndexOutOfBoundsException>(offset + size <= string->length());
+    return append(string->c_str(), offset, size);
 }
 
 sp<String> String::appendFormatted(const char* format, ...) const {

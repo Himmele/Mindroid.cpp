@@ -17,9 +17,8 @@
 #ifndef MINDROID_HASHMAP_H_
 #define MINDROID_HASHMAP_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/Set.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/HashSet.h>
 #include <unordered_map>
 
 namespace mindroid {
@@ -80,12 +79,12 @@ public:
         return mMap.empty();
     }
 
-    sp<Set<K>> keySet() {
+    sp<HashSet<K>> keySet() {
         if (isEmpty()) {
             return nullptr;
         }
 
-        sp<Set<K>> keys = new Set<K>();
+        sp<HashSet<K>> keys = new HashSet<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();
@@ -273,12 +272,12 @@ public:
         return mMap.empty();
     }
 
-    sp<Set<K>> keySet() {
+    sp<HashSet<K>> keySet() {
         if (isEmpty()) {
             return nullptr;
         }
 
-        sp<Set<K>> keys = new Set<K>();
+        sp<HashSet<K>> keys = new HashSet<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();
@@ -467,12 +466,12 @@ public:
         return mMap.empty();
     }
 
-    sp<Set<sp<K>>> keySet() {
+    sp<HashSet<sp<K>>> keySet() {
         if (isEmpty()) {
             return nullptr;
         }
 
-        sp<Set<sp<K>>> keys = new Set<sp<K>>();
+        sp<HashSet<sp<K>>> keys = new HashSet<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();
@@ -663,12 +662,12 @@ public:
         return mMap.empty();
     }
 
-    sp<Set<sp<K>>> keySet() {
+    sp<HashSet<sp<K>>> keySet() {
         if (isEmpty()) {
             return nullptr;
         }
 
-        sp<Set<sp<K>>> keys = new Set<sp<K>>();
+        sp<HashSet<sp<K>>> keys = new HashSet<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();

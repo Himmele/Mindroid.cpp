@@ -17,9 +17,9 @@
 #ifndef MINDROID_SYSTEM_H_
 #define MINDROID_SYSTEM_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/util/HashMap.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/util/HashMap.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <cstdint>
 #include <ctime>
 #include <stdlib.h>
@@ -149,7 +149,7 @@ public:
     /**
      * Causes the process to stop running and the program to exit with the given exit status.
      */
-    static void exit(int32_t status) {
+    static void exit(int32_t status) __attribute__((noreturn)) {
         ::exit(status);
     }
 

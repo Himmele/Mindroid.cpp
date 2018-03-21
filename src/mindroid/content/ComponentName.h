@@ -19,9 +19,9 @@
 #ifndef MINDROID_COMPONENTNAME_H_
 #define MINDROID_COMPONENTNAME_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/lang/Class.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/lang/Class.h>
 
 namespace mindroid {
 

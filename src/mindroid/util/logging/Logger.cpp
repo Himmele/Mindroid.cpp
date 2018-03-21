@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/logging/Logger.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/os/Environment.h"
-#include "mindroid/os/IRemoteCallback.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/util/logging/Logger.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/os/Environment.h>
+#include <mindroid/os/IRemoteCallback.h>
+#include <mindroid/util/Assert.h>
 #include <cstdio>
 
 namespace mindroid {

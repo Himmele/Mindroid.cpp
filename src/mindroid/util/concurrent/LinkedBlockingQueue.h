@@ -17,8 +17,8 @@
 #ifndef MINDROID_LINKEDBLOCKINGQUEUE_H_
 #define MINDROID_LINKEDBLOCKINGQUEUE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
 

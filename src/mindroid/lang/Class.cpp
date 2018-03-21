@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Class.h"
+#include <mindroid/lang/Class.h>
 
 namespace mindroid {
 

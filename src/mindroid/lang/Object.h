@@ -23,7 +23,7 @@
 #include <cstddef>
 #include <cassert>
 #include <sys/types.h>
-#include "mindroid/util/concurrent/atomic/AtomicInteger.h"
+#include <mindroid/util/concurrent/atomic/AtomicInteger.h>
 
 #define ASSERT(cond, ...) if (!(cond)) { printf(__VA_ARGS__); printf("\n"); assert(cond); }
 #define DEBUG_INFO(...) printf(__VA_ARGS__)

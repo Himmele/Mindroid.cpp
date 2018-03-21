@@ -18,8 +18,8 @@
 #ifndef MINDROID_MESSAGEQUEUE_H_
 #define MINDROID_MESSAGEQUEUE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
 

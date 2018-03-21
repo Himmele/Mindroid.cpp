@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/IProcess.h"
-#include "mindroid/os/IRemoteCallback.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/ServiceConnection.h"
+#include <mindroid/os/IProcess.h>
+#include <mindroid/os/IRemoteCallback.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/ServiceConnection.h>
 
 namespace mindroid {
 namespace binder {

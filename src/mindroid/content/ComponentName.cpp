@@ -16,34 +16,34 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/content/Context.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/content/Context.h>
+#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
 ComponentName::ComponentName(const char* pkg, const char* cls) {
-    Assert::assertTrue("package name is null", pkg != nullptr);
-    Assert::assertTrue("class name is null", cls != nullptr);
+    Assert::assertNotNull("package name is null", pkg);
+    Assert::assertNotNull("class name is null", cls);
     mPackage = String::valueOf(pkg);
     mClass = String::valueOf(cls);
 }
 
 ComponentName::ComponentName(const sp<String>& pkg, const sp<String>& cls) {
-    Assert::assertTrue("package name is null", pkg != nullptr);
-    Assert::assertTrue("class name is null", cls != nullptr);
+    Assert::assertNotNull("package name is null", pkg);
+    Assert::assertNotNull("class name is null", cls);
     mPackage = pkg;
     mClass = cls;
 }
 
 ComponentName::ComponentName(const sp<Context>& pkg, const char* cls) {
-    Assert::assertTrue("class name is null", cls != nullptr);
+    Assert::assertNotNull("class name is null", cls);
     mPackage = pkg->getPackageName();
     mClass = String::valueOf(cls);
 }
 
 ComponentName::ComponentName(const sp<Context>& pkg, const sp<String>& cls) {
-    Assert::assertTrue("class name is null", cls != nullptr);
+    Assert::assertNotNull("class name is null", cls);
     mPackage = pkg->getPackageName();
     mClass = cls;
 }

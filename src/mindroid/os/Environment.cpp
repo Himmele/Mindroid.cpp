@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/Environment.h"
-#include "mindroid/app/SharedPreferencesImpl.h"
+#include <mindroid/os/Environment.h>
+#include <mindroid/app/SharedPreferencesImpl.h>
 
 namespace mindroid {
 

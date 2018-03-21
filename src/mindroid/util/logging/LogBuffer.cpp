@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/logging/LogBuffer.h"
-#include "mindroid/lang/System.h"
-#include "mindroid/lang/Thread.h"
+#include <mindroid/util/logging/LogBuffer.h>
+#include <mindroid/lang/System.h>
+#include <mindroid/lang/Thread.h>
 #include <cstdio>
 #include <cstring>
 #include <pthread.h>

@@ -19,7 +19,7 @@
 #ifndef MINDROID_CONTEXT_H_
 #define MINDROID_CONTEXT_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 
 namespace mindroid {
 

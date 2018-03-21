@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/Context.h"
-#include "mindroid/content/pm/ServiceInfo.h"
-#include "mindroid/content/pm/ApplicationInfo.h"
-#include "mindroid/content/pm/ResolveInfo.h"
-#include "mindroid/content/pm/IPackageManager.h"
-#include "mindroid/os/HandlerThread.h"
-#include "mindroid/os/Process.h"
-#include "mindroid/os/IProcess.h"
-#include "mindroid/os/ServiceManager.h"
-#include "mindroid/util/concurrent/Promise.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/content/Context.h>
+#include <mindroid/content/pm/ServiceInfo.h>
+#include <mindroid/content/pm/ApplicationInfo.h>
+#include <mindroid/content/pm/ResolveInfo.h>
+#include <mindroid/content/pm/IPackageManager.h>
+#include <mindroid/os/HandlerThread.h>
+#include <mindroid/os/Process.h>
+#include <mindroid/os/IProcess.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/util/concurrent/Promise.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/util/Log.h>
 #include <cstdio>
 
 namespace mindroid {

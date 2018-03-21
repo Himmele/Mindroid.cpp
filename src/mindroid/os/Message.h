@@ -18,9 +18,9 @@
 #ifndef MINDROID_MESSAGE_H_
 #define MINDROID_MESSAGE_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/os/Bundle.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 

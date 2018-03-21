@@ -17,10 +17,10 @@
 #ifndef MINDROID_FILEHANDLER_H_
 #define MINDROID_FILEHANDLER_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/io/File.h"
-#include "mindroid/util/logging/LogHandler.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/io/File.h>
+#include <mindroid/util/logging/LogHandler.h>
+#include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
 

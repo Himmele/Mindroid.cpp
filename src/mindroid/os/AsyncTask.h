@@ -18,10 +18,10 @@
 #ifndef MINDROID_ASYNCTASK_H_
 #define MINDROID_ASYNCTASK_H_
 
-#include "mindroid/os/Handler.h"
-#include "mindroid/util/concurrent/SerialExecutor.h"
-#include "mindroid/util/concurrent/ThreadPoolExecutor.h"
-#include "mindroid/util/concurrent/atomic/AtomicBoolean.h"
+#include <mindroid/os/Handler.h>
+#include <mindroid/util/concurrent/SerialExecutor.h>
+#include <mindroid/util/concurrent/ThreadPoolExecutor.h>
+#include <mindroid/util/concurrent/atomic/AtomicBoolean.h>
 
 namespace mindroid {
 
@@ -187,10 +187,10 @@ public:
             case Status::PENDING:
                 return nullptr;
             case Status::RUNNING:
-                Assert::assertFalse("Cannot execute task: the task is already running", mStatus != Status::PENDING);
+                Assert::assertFalse<IllegalStateException>("Cannot execute task: the task is already running", mStatus != Status::PENDING);
                 return nullptr;
             case Status::FINISHED:
-                Assert::assertFalse("Cannot execute task: the task has already been executed (a task can be executed only once)", mStatus != Status::PENDING);
+                Assert::assertFalse<IllegalStateException>("Cannot execute task: the task has already been executed (a task can be executed only once)", mStatus != Status::PENDING);
                 return nullptr;
             }
         }

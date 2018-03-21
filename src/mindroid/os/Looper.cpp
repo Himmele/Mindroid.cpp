@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/Looper.h"
-#include "mindroid/os/Handler.h"
+#include <mindroid/os/Looper.h>
+#include <mindroid/os/Handler.h>
+#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
@@ -54,7 +55,7 @@ bool Looper::prepare(bool quitAllowed) {
             return false;
         }
     } else {
-        Assert::assertNull("Only one Looper may be created per thread", l);
+        Assert::assertTrue<RuntimeException>("Only one Looper may be created per thread", l == nullptr);
         return false;
     }
 }

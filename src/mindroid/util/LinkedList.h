@@ -17,9 +17,9 @@
 #ifndef MINDROID_LINKEDLIST_H_
 #define MINDROID_LINKEDLIST_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/Set.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/util/Assert.h>
+#include <mindroid/util/HashSet.h>
 #include <list>
 
 namespace mindroid {
@@ -42,7 +42,7 @@ public:
         }
     }
 
-    LinkedList(const sp<Set<T>>& collection) {
+    LinkedList(const sp<HashSet<T>>& collection) {
         if (collection != nullptr) {
             auto itr = collection->iterator();
             while (itr.hasNext()) {
@@ -61,7 +61,7 @@ public:
     }
 
     void add(size_t index, const T& value) {
-        Assert::assertTrue(index <= size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
         if (index < size()) {
             typename std::list<T>::iterator itr = mList.begin();
             size_t i = 0;
@@ -94,7 +94,7 @@ public:
     }
 
     T get(size_t index) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -125,7 +125,7 @@ public:
     }
 
     T remove(size_t index) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -153,7 +153,7 @@ public:
     }
 
     T set(size_t index, const T& value) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -250,7 +250,7 @@ public:
         }
     }
 
-    LinkedList(const sp<Set<sp<T>>>& collection) {
+    LinkedList(const sp<HashSet<sp<T>>>& collection) {
         if (collection != nullptr) {
             auto itr = collection->iterator();
             while (itr.hasNext()) {
@@ -269,7 +269,7 @@ public:
     }
 
     void add(size_t index, const sp<T>& value) {
-        Assert::assertTrue(index <= size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
         if (index < size()) {
             typename std::list<sp<T>>::iterator itr = mList.begin();
             size_t i = 0;
@@ -305,7 +305,7 @@ public:
     }
 
     sp<T> get(size_t index) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -337,7 +337,7 @@ public:
     }
 
     sp<T> remove(size_t index) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -368,7 +368,7 @@ public:
     }
 
     sp<T> set(size_t index, const sp<T>& value) {
-        Assert::assertTrue(index < size());
+        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {

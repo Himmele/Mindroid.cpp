@@ -17,7 +17,7 @@
 #ifndef MINDROID_SEMAPHORE_H_
 #define MINDROID_SEMAPHORE_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 #include <semaphore.h>
 
 namespace mindroid {

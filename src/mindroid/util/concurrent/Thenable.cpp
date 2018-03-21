@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/Thenable.h"
-#include "mindroid/util/Assert.h"
-#include "mindroid/os/Handler.h"
+#include <mindroid/util/concurrent/Thenable.h>
+#include <mindroid/util/Assert.h>
+#include <mindroid/os/Handler.h>
 
 namespace mindroid {
 

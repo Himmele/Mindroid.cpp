@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/SystemClock.h"
-#include "mindroid/util/Assert.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/concurrent/locks/ConditionImpl.h"
+#include <mindroid/os/SystemClock.h>
+#include <mindroid/util/Assert.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/util/concurrent/locks/ConditionImpl.h>
 #include <cstdlib>
 
 namespace mindroid {
@@ -55,7 +55,7 @@ bool ReentrantLock::tryLock(uint64_t timeoutMillis) {
     return (pthread_mutex_timedlock(&mMutex, &time) == 0);
 #else
     // Old Bionic versions lack pthread_mutex_timedlock.
-    Assert::assertTrue(timeoutMillis <= UINT_MAX);
+    //Assert::assertTrue(timeoutMillis <= UINT_MAX);
     return pthread_mutex_lock_timeout_np(&mMutex, (unsigned) timeoutMillis);
 #endif
 }

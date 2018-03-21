@@ -17,9 +17,9 @@
 #ifndef MINDROID_LOGBUFFER_H_
 #define MINDROID_LOGBUFFER_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/concurrent/locks/Condition.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/util/concurrent/locks/Condition.h>
 
 namespace mindroid {
 

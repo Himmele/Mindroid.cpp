@@ -17,8 +17,8 @@
 #ifndef MINDROID_SERVERSOCKET_H_
 #define MINDROID_SERVERSOCKET_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
 
 namespace mindroid {
 

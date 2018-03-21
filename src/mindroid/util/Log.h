@@ -17,7 +17,7 @@
 #ifndef MINDROID_LOG_H_
 #define MINDROID_LOG_H_
 
-#include "mindroid/util/logging/LogBuffer.h"
+#include <mindroid/util/logging/LogBuffer.h>
 #if defined(ANDROID)
 #include <android/log.h>
 #endif
@@ -229,7 +229,7 @@ public:
     static const int32_t LOG_ID_DEBUG = 2;
 
 private:
-    static const int LOG_MESSAGE_SIZE = 256;
+    static const size_t LOG_MESSAGE_SIZE = 256;
 
     static sp<LogBuffer> sMainLogBuffer;
     static sp<LogBuffer> sEventLogBuffer;

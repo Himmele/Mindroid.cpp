@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/ThreadPoolExecutor.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/util/concurrent/ThreadPoolExecutor.h>
+#include <mindroid/util/Log.h>
 
 namespace mindroid {
 

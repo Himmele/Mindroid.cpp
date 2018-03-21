@@ -17,7 +17,7 @@
 #ifndef MINDROID_TIMEOUTEXCEPTION_H_
 #define MINDROID_TIMEOUTEXCEPTION_H_
 
-#include "mindroid/lang/Exception.h"
+#include <mindroid/lang/Exception.h>
 
 namespace mindroid {
 

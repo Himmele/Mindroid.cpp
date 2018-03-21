@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/logging/ConsoleHandler.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/util/logging/ConsoleHandler.h>
+#include <mindroid/util/Log.h>
 #include <cstdio>
 
 namespace mindroid {

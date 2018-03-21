@@ -17,7 +17,7 @@
 #ifndef MINDROID_CHARACTER_H_
 #define MINDROID_CHARACTER_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 #include <climits>
 
 namespace mindroid {

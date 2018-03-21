@@ -17,7 +17,7 @@
 #ifndef MINDROID_BYTE_H_
 #define MINDROID_BYTE_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 
 namespace mindroid {
 

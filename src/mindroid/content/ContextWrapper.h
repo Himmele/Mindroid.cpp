@@ -19,13 +19,13 @@
 #ifndef MINDROID_CONTEXTWRAPPER_H_
 #define MINDROID_CONTEXTWRAPPER_H_
 
-#include "mindroid/content/Context.h"
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/content/SharedPreferences.h"
-#include "mindroid/content/pm/PackageManager.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/os/Looper.h"
-#include "mindroid/io/File.h"
+#include <mindroid/content/Context.h>
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/content/SharedPreferences.h>
+#include <mindroid/content/pm/PackageManager.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/io/File.h>
 
 namespace mindroid {
 

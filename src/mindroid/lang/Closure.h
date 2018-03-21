@@ -39,7 +39,7 @@
 #ifndef MINDROID_CLOSURE_H_
 #define MINDROID_CLOSURE_H_
 
-#include "mindroid/lang/Runnable.h"
+#include <mindroid/lang/Runnable.h>
 #include <functional>
 
 namespace mindroid {

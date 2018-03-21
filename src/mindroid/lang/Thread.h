@@ -17,8 +17,8 @@
 #ifndef MINDROID_THREAD_H_
 #define MINDROID_THREAD_H_
 
-#include "mindroid/lang/String.h"
-#include "mindroid/lang/Runnable.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/lang/Runnable.h>
 #include <pthread.h>
 
 namespace mindroid {

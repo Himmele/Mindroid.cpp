@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/SystemClock.h"
-#include "mindroid/util/concurrent/Semaphore.h"
+#include <mindroid/os/SystemClock.h>
+#include <mindroid/util/concurrent/Semaphore.h>
 
 namespace mindroid {
 

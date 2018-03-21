@@ -17,8 +17,14 @@
 #ifndef MINDROID_ASSERT_H_
 #define MINDROID_ASSERT_H_
 
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
+#include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/lang/IllegalStateException.h>
 #include <cassert>
+
+// #define EXCEPTIONS
 
 namespace mindroid {
 
@@ -29,93 +35,101 @@ public:
     Assert(const Assert&) = delete;
     Assert& operator=(const Assert&) = delete;
 
+    template<class EXCEPTION>
     static void assertTrue(bool condition) {
+        assertTrue<EXCEPTION>(nullptr, condition);
+    }
+
+    template<class EXCEPTION>
+    static void assertTrue(const char* message, bool condition) {
+        if (!condition) {
+            println(TAG, "%s (%u)", message, condition);
+            #ifdef EXCEPTIONS
+            throw EXCEPTION(message);
+            #endif
+        }
+        #ifndef EXCEPTIONS
         assert(condition);
+        #endif
     }
-    static void assertTrue(const char* message, bool condition);
 
+    template<class EXCEPTION>
     static void assertFalse(bool condition) {
+        assertFalse<EXCEPTION>(nullptr, condition);
+    }
+
+    template<class EXCEPTION>
+    static void assertFalse(const char* message, bool condition) {
+        if (condition) {
+            println(TAG, "%s (%u)", message, condition);
+            #ifdef EXCEPTIONS
+            throw EXCEPTION(message);
+            #endif
+        }
+        #ifndef EXCEPTIONS
         assert(!condition);
+        #endif
     }
-    static void assertFalse(const char* message, bool condition);
-
-    static void assertNull(void* ptr) {
-        assert(ptr == nullptr);
-    }
-    static void assertNull(const char* message, void* ptr);
-
-    static void assertNull(const sp<Object>& object) {
-        assert(object == nullptr);
-    }
-    static void assertNull(const char* message, const sp<Object>& object);
 
     static void assertNotNull(void* ptr) {
-        assert(ptr != nullptr);
+        assertNotNull(nullptr, ptr);
     }
-    static void assertNotNull(const char* message, void* ptr);
+
+    static void assertNotNull(const char* message, const void* ptr) {
+        if (ptr == nullptr) {
+            println(TAG, "%s (0x%x)", message, ptr);
+            #ifdef EXCEPTIONS
+            throw NullPointerException(message);
+            #endif
+        }
+        #ifndef EXCEPTIONS
+        assert(ptr != nullptr);
+        #endif
+    }
 
     static void assertNotNull(const sp<Object>& object) {
-        assert(object != nullptr);
+        assertNotNull(nullptr, object);
     }
-    static void assertNotNull(const char* message, const sp<Object>& object);
 
-    static void assertEquals(bool expected, bool actual) {
+    static void assertNotNull(const char* message, const sp<Object>& object) {
+        if (object == nullptr) {
+            println(TAG, "%s (0x%x)", message, object.getPointer());
+            #ifdef EXCEPTIONS
+            throw NullPointerException(message);
+            #endif
+        }
+        #ifndef EXCEPTIONS
+        assert(object.getPointer() != nullptr);
+        #endif
+    }
+
+    template<typename T, class EXCEPTION>
+    static void assertEquals(T expected, T actual) {
+        assertEquals(nullptr, expected, actual);
+    }
+    template<typename T, class EXCEPTION>
+    static void assertEquals(const char* message, T expected, T actual) {
+        if (expected != actual) {
+            println(TAG, "%s (%d, %d)", message, expected, actual);
+            #ifdef EXCEPTIONS
+            throw EXCEPTION(message);
+            #endif
+        }
+        #ifndef EXCEPTIONS
         assert(expected == actual);
+        #endif
     }
-    static void assertEquals(const char* message, bool expected, bool actual);
 
-    static void assertEquals(int8_t expected, int8_t actual) {
-        assert(expected == actual);
+    static void fail() __attribute__ ((noreturn)) {
+        fail(nullptr);
     }
-    static void assertEquals(const char* message, int8_t expected, int8_t actual);
+    static void fail(const char* message) __attribute__ ((noreturn));
 
-    static void assertEquals(uint8_t expected, uint8_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, uint8_t expected, uint8_t actual);
-
-    static void assertEquals(int16_t expected, int16_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, int16_t expected, int16_t actual);
-
-    static void assertEquals(uint16_t expected, uint16_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, uint16_t expected, uint16_t actual);
-
-    static void assertEquals(int32_t expected, int32_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, int32_t expected, int32_t actual);
-
-    static void assertEquals(uint32_t expected, uint32_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, uint32_t expected, uint32_t actual);
-
-    static void assertEquals(int64_t expected, int64_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, int64_t expected, int64_t actual);
-
-    static void assertEquals(uint64_t expected, uint64_t actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, uint64_t expected, uint64_t actual);
-
-    static void assertEquals(void* expected, void* actual) {
-        assert(expected == actual);
-    }
-    static void assertEquals(const char* message, void* expected, void* actual);
-
-    static void fail() {
-        assert(false);
-    }
-    static void fail(const char* message);
+    static void println(const char* tag, const char* format, ...);
 
 private:
     static const char* const TAG;
+    static const size_t LOG_MESSAGE_SIZE = 256;
 };
 
 } /* namespace mindroid */

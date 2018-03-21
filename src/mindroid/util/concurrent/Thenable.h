@@ -17,12 +17,12 @@
 #ifndef MINDROID_THENABLE_H_
 #define MINDROID_THENABLE_H_
 
-#include "mindroid/lang/Runnable.h"
-#include "mindroid/lang/Exception.h"
-#include "mindroid/util/concurrent/Executor.h"
-#include "mindroid/util/concurrent/atomic/AtomicBoolean.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
-#include "mindroid/util/LinkedList.h"
+#include <mindroid/lang/Runnable.h>
+#include <mindroid/lang/Exception.h>
+#include <mindroid/util/concurrent/Executor.h>
+#include <mindroid/util/concurrent/atomic/AtomicBoolean.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
+#include <mindroid/util/LinkedList.h>
 
 namespace mindroid {
 

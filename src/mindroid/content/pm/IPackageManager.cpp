@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/pm/IPackageManager.h"
-#include "mindroid/util/concurrent/Promise.h"
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/pm/IPackageManager.h>
+#include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
 namespace binder {

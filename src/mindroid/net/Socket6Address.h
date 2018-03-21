@@ -17,10 +17,10 @@
 #ifndef MINDROID_SOCKET6ADDRESS_H_
 #define MINDROID_SOCKET6ADDRESS_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/net/SocketAddress.h"
-#include "mindroid/net/InetAddress.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/net/SocketAddress.h>
+#include <mindroid/net/InetAddress.h>
 
 namespace mindroid {
 

@@ -17,8 +17,8 @@
 #ifndef MINDROID_INETADDRESS_H_
 #define MINDROID_INETADDRESS_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
 
 #include <netinet/in.h>
 

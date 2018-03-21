@@ -17,8 +17,8 @@
 #ifndef MINDROID_LOCK_H_
 #define MINDROID_LOCK_H_
 
-#include "mindroid/lang/Object.h"
-#include "pthread.h"
+#include <mindroid/lang/Object.h>
+#include <pthread.h>
 
 namespace mindroid {
 

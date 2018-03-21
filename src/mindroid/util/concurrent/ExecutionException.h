@@ -17,7 +17,7 @@
 #ifndef MINDROID_EXECUTIONEXCEPTION_H_
 #define MINDROID_EXECUTIONEXCEPTION_H_
 
-#include "mindroid/lang/Exception.h"
+#include <mindroid/lang/Exception.h>
 
 namespace mindroid {
 

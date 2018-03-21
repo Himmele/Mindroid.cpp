@@ -18,10 +18,10 @@
 #ifndef MINDROID_REMOTECALLBACK_H_
 #define MINDROID_REMOTECALLBACK_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/RuntimeException.h"
-#include "mindroid/os/IRemoteCallback.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/RuntimeException.h>
+#include <mindroid/os/IRemoteCallback.h>
+#include <mindroid/util/Log.h>
 
 namespace mindroid {
 

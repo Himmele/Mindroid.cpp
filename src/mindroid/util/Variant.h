@@ -17,11 +17,11 @@
 #ifndef MINDROID_VARIANT_H_
 #define MINDROID_VARIANT_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/os/IBinder.h"
-#include "mindroid/util/Set.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/IBinder.h>
+#include <mindroid/util/ArrayList.h>
+#include <mindroid/util/HashSet.h>
 
 namespace mindroid {
 
@@ -126,7 +126,7 @@ public:
         mValue.object = string.getPointer();
     }
 
-    inline Variant(const sp<mindroid::Set<sp<mindroid::String>>>& set) :
+    inline Variant(const sp<mindroid::HashSet<sp<mindroid::String>>>& set) :
             mType(StringSet) {
         if (set != nullptr) {
             set->incStrongReference(this);
@@ -276,8 +276,8 @@ public:
         return mType == StringSet;
     }
 
-    inline sp<mindroid::Set<sp<mindroid::String>>> getStringSet() const {
-        return static_cast<mindroid::Set<sp<mindroid::String>>*>(mValue.object);
+    inline sp<mindroid::HashSet<sp<mindroid::String>>> getStringSet() const {
+        return static_cast<mindroid::HashSet<sp<mindroid::String>>*>(mValue.object);
     }
 
     inline bool isStringArrayList() const {

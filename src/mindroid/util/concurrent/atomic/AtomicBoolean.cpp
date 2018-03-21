@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "mindroid/util/concurrent/atomic/AtomicBoolean.h"
+#include <mindroid/util/concurrent/atomic/AtomicBoolean.h>
 
 namespace mindroid {
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/HandlerThread.h"
-#include "mindroid/os/Looper.h"
-#include "mindroid/util/concurrent/locks/ReentrantLock.h"
+#include <mindroid/os/HandlerThread.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
 

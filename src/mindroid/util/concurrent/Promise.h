@@ -28,18 +28,18 @@
 #ifndef MINDROID_PROMISE_H_
 #define MINDROID_PROMISE_H_
 
-#include "mindroid/util/concurrent/Future.h"
-#include "mindroid/util/concurrent/CancellationException.h"
-#include "mindroid/util/concurrent/CompletionException.h"
-#include "mindroid/util/concurrent/ExecutionException.h"
-#include "mindroid/util/concurrent/TimeoutException.h"
-#include "mindroid/util/ArrayList.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/lang/Void.h"
-#include "mindroid/os/Looper.h"
-#include "mindroid/os/Handler.h"
-#include "mindroid/os/HandlerThread.h"
-#include "mindroid/os/SystemClock.h"
+#include <mindroid/util/concurrent/Future.h>
+#include <mindroid/util/concurrent/CancellationException.h>
+#include <mindroid/util/concurrent/CompletionException.h>
+#include <mindroid/util/concurrent/ExecutionException.h>
+#include <mindroid/util/concurrent/TimeoutException.h>
+#include <mindroid/util/ArrayList.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/lang/Void.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/os/Handler.h>
+#include <mindroid/os/HandlerThread.h>
+#include <mindroid/os/SystemClock.h>
 #include <functional>
 #include <vector>
 

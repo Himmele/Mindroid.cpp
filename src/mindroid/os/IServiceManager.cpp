@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/IServiceManager.h"
-#include "mindroid/os/IRemoteCallback.h"
-#include "mindroid/lang/Boolean.h"
+#include <mindroid/os/IServiceManager.h>
+#include <mindroid/os/IRemoteCallback.h>
+#include <mindroid/lang/Boolean.h>
 
 namespace mindroid {
 namespace binder {

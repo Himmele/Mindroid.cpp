@@ -17,9 +17,9 @@
 #ifndef MINDROID_STRING_H_
 #define MINDROID_STRING_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/Assert.h"
-#include "mindroid/util/ArrayList.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/ByteArray.h>
+#include <mindroid/lang/StringArray.h>
 #include <cstdlib>
 #include <cstring>
 #include <cstdarg>
@@ -63,15 +63,8 @@ public:
         return c_str();
     }
 
-    inline char operator[](const size_t index) const {
-        Assert::assertTrue(index < length());
-        return mStringBuffer->mData[index];
-    }
-
-    inline char charAt(size_t index) const {
-        Assert::assertTrue(index < length());
-        return mStringBuffer->mData[index];
-    }
+    char operator[](const size_t index) const;
+    char charAt(size_t index) const;
 
     bool contains(const char* subString) const;
     bool contains(const sp<String>& subString) const;
@@ -104,8 +97,8 @@ public:
 
     sp<String> trim() const;
 
-    sp<ArrayList<sp<String>>> split(const char* separator) const;
-    sp<ArrayList<sp<String>>> split(const sp<String>& separator) const;
+    sp<StringArray> split(const char* separator) const;
+    sp<StringArray> split(const sp<String>& separator) const;
 
     inline static sp<String> valueOf(const char* string) {
         return (string != nullptr) ? new String(string) : nullptr;
@@ -149,15 +142,13 @@ public:
     }
 
     sp<String> append(const char* string, size_t size) const;
-
     sp<String> append(const char* string, size_t offset, size_t size) const;
-
-    sp<String> append(const sp<String>& string, size_t offset, size_t size) const {
-        Assert::assertTrue("IndexOutOfBoundsException", offset + size <= string->length());
-        return append(string->c_str(), offset, size);
-    }
-
+    sp<String> append(const sp<String>& string, size_t offset, size_t size) const;
     sp<String> appendFormatted(const char* format, ...) const __attribute__((format (printf, 2, 3)));
+
+    sp<ByteArray> getBytes() const {
+        return new ByteArray(reinterpret_cast<uint8_t*>(mStringBuffer->mData), mStringBuffer->mSize);
+    }
 
 private:
     class StringBuffer : public LightweightObject<StringBuffer> {

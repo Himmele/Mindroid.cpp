@@ -17,13 +17,13 @@
 #ifndef MINDROID_ISERVICEMANAGER_H_
 #define MINDROID_ISERVICEMANAGER_H_
 
-#include "mindroid/util/concurrent/Promise.h"
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/Class.h"
-#include "mindroid/os/Binder.h"
-#include "mindroid/content/ComponentName.h"
-#include "mindroid/content/Intent.h"
-#include "mindroid/content/ServiceConnection.h"
+#include <mindroid/util/concurrent/Promise.h>
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/os/Binder.h>
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/content/Intent.h>
+#include <mindroid/content/ServiceConnection.h>
 
 namespace mindroid {
 

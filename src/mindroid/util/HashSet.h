@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SET_H_
-#define MINDROID_SET_H_
+#ifndef MINDROID_HASHSET_H_
+#define MINDROID_HASHSET_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/util/Assert.h"
-#include <set>
+#include <mindroid/lang/Object.h>
+#include <unordered_set>
 
 namespace mindroid {
 
 /*
- * Set template for standard types.
+ * HashSet template for standard types.
  */
 template<typename T>
-class Set :
+class HashSet :
         public Object {
 public:
-    Set() { }
+    HashSet() { }
 
-    Set(const sp<Set<T>>& collection) {
+    HashSet(const sp<HashSet<T>>& collection) {
         if (collection != nullptr) {
             auto itr = collection->iterator();
             while (itr.hasNext()) {
@@ -41,7 +40,7 @@ public:
         }
     }
 
-    virtual ~Set() {
+    virtual ~HashSet() {
         clear();
     }
 
@@ -55,7 +54,7 @@ public:
     }
 
     bool contains(const T& value) const {
-        typename std::set<T>::const_iterator itr = mSet.find(value);
+        typename std::unordered_set<T>::const_iterator itr = mSet.find(value);
         return itr != mSet.end();
     }
 
@@ -73,7 +72,7 @@ public:
 
     class Iterator {
     public:
-        Iterator(std::set<T>& set) :
+        Iterator(std::unordered_set<T>& set) :
                 mForwardIterator(false),
                 mSet(&set),
                 mIterator(mSet->begin()) {
@@ -92,7 +91,7 @@ public:
             if (!mForwardIterator) {
                 return mIterator != mSet->end();
             } else {
-                typename std::set<T>::iterator itr = mIterator;
+                typename std::unordered_set<T>::iterator itr = mIterator;
                 return ++itr != mSet->end();
             }
         }
@@ -117,8 +116,8 @@ public:
 
     private:
         bool mForwardIterator;
-        std::set<T>* mSet;
-        typename std::set<T>::iterator mIterator;
+        std::unordered_set<T>* mSet;
+        typename std::unordered_set<T>::iterator mIterator;
     };
 
     inline Iterator iterator() {
@@ -126,21 +125,21 @@ public:
     }
 
 private:
-    std::set<T> mSet;
+    std::unordered_set<T> mSet;
 };
 
 
 /*
- * Set template specialization for mindroid::Object types.
+ * HashSet template specialization for mindroid::Object types.
  * Object comparison uses mindroid::Object::equals method.
  */
 template<typename T>
-class Set<sp<T>> :
+class HashSet<sp<T>> :
         public Object {
 public:
-    Set() { }
+    HashSet() { }
 
-    Set(const sp<Set<sp<T>>>& collection) {
+    HashSet(const sp<HashSet<sp<T>>>& collection) {
         if (collection != nullptr) {
             auto itr = collection->iterator();
             while (itr.hasNext()) {
@@ -149,7 +148,7 @@ public:
         }
     }
 
-    virtual ~Set() {
+    virtual ~HashSet() {
         clear();
     }
 
@@ -163,7 +162,7 @@ public:
     }
 
     bool contains(const sp<T>& value) const {
-        typename std::set<sp<T>, LessThanComparator<sp<T>>>::const_iterator itr = mSet.find(value);
+        typename std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>::const_iterator itr = mSet.find(value);
         return itr != mSet.end();
     }
 
@@ -181,7 +180,7 @@ public:
 
     class Iterator {
     public:
-        Iterator(std::set<sp<T>, LessThanComparator<sp<T>>>& set) :
+        Iterator(std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>& set) :
                 mForwardIterator(false),
                 mSet(&set),
                 mIterator(mSet->begin()) {
@@ -200,7 +199,7 @@ public:
             if (!mForwardIterator) {
                 return mIterator != mSet->end();
             } else {
-                typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator itr = mIterator;
+                typename std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>::iterator itr = mIterator;
                 return ++itr != mSet->end();
             }
         }
@@ -225,8 +224,8 @@ public:
 
     private:
         bool mForwardIterator;
-        std::set<sp<T>, LessThanComparator<sp<T>>>* mSet;
-        typename std::set<sp<T>, LessThanComparator<sp<T>>>::iterator mIterator;
+        std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>* mSet;
+        typename std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>::iterator mIterator;
     };
 
     inline Iterator iterator() {
@@ -234,9 +233,9 @@ public:
     }
 
 private:
-    std::set<sp<T>, LessThanComparator<sp<T>>> mSet;
+    std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>> mSet;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SET_H_ */
+#endif /* MINDROID_HASHSET_H_ */

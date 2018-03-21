@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#include "mindroid/os/Handler.h"
-#include "mindroid/os/Message.h"
-#include "mindroid/os/MessageQueue.h"
-#include "mindroid/os/Looper.h"
-#include "mindroid/util/Assert.h"
+#include <mindroid/os/Handler.h>
+#include <mindroid/os/Message.h>
+#include <mindroid/os/MessageQueue.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 

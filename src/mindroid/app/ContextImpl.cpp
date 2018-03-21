@@ -16,12 +16,13 @@
  * limitations under the License.
  */
 
-#include "mindroid/app/ContextImpl.h"
-#include "mindroid/app/SharedPreferencesImpl.h"
-#include "mindroid/content/pm/PackageManager.h"
-#include "mindroid/os/ServiceManager.h"
-#include "mindroid/os/Environment.h"
-#include "mindroid/util/Log.h"
+#include <mindroid/app/ContextImpl.h>
+#include <mindroid/app/SharedPreferencesImpl.h>
+#include <mindroid/content/pm/PackageManager.h>
+#include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/os/Environment.h>
+#include <mindroid/util/Log.h>
 
 namespace mindroid {
 
@@ -163,7 +164,7 @@ sp<File> ContextImpl::makeFilename(const sp<File>& baseDir, const sp<String>& na
     if (name->indexOf(File::separatorChar) < 0) {
         return new File(baseDir, name);
     }
-    Assert::assertTrue(String::format("File %s contains a path separator", name->c_str())->c_str(), false);
+    Assert::assertTrue<IllegalArgumentException>(String::format("File %s contains a path separator", name->c_str())->c_str(), false);
     return nullptr;
 }
 

@@ -18,7 +18,7 @@
 #ifndef MINDROID_HANDLERTHREAD_H_
 #define MINDROID_HANDLERTHREAD_H_
 
-#include "mindroid/lang/Thread.h"
+#include <mindroid/lang/Thread.h>
 
 namespace mindroid {
 

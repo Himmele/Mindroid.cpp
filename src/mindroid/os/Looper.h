@@ -18,9 +18,9 @@
 #ifndef MINDROID_LOOPER_H_
 #define MINDROID_LOOPER_H_
 
-#include "mindroid/lang/Object.h"
-#include "mindroid/lang/Thread.h"
-#include "mindroid/os/MessageQueue.h"
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/Thread.h>
+#include <mindroid/os/MessageQueue.h>
 
 namespace mindroid {
 

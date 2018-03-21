@@ -19,8 +19,8 @@
 #ifndef MINDROID_SERVICE_H_
 #define MINDROID_SERVICE_H_
 
-#include "mindroid/content/ContextWrapper.h"
-#include "mindroid/os/IProcess.h"
+#include <mindroid/content/ContextWrapper.h>
+#include <mindroid/os/IProcess.h>
 
 namespace mindroid {
 

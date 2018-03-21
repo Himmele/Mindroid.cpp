@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/lang/Float.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/lang/Float.h>
+#include <mindroid/lang/String.h>
 #include <cstdlib>
 #include <limits>
 

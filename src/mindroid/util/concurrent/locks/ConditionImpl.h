@@ -18,7 +18,7 @@
 #ifndef MINDROID_CONDITIONIMPL_H_
 #define MINDROID_CONDITIONIMPL_H_
 
-#include "mindroid/util/concurrent/locks/Condition.h"
+#include <mindroid/util/concurrent/locks/Condition.h>
 #include <pthread.h>
 
 namespace mindroid {

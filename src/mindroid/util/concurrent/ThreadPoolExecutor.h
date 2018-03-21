@@ -17,9 +17,9 @@
 #ifndef MINDROID_THREADPOOLEXECUTOR_H_
 #define MINDROID_THREADPOOLEXECUTOR_H_
 
-#include "mindroid/lang/Thread.h"
-#include "mindroid/util/concurrent/Executor.h"
-#include "mindroid/util/concurrent/LinkedBlockingQueue.h"
+#include <mindroid/lang/Thread.h>
+#include <mindroid/util/concurrent/Executor.h>
+#include <mindroid/util/concurrent/LinkedBlockingQueue.h>
 
 namespace mindroid {
 

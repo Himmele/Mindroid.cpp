@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "mindroid/net/DatagramSocket.h"
-#include "mindroid/net/SocketAddress.h"
+#include <mindroid/net/DatagramSocket.h>
+#include <mindroid/net/SocketAddress.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
