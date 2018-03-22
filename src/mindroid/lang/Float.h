@@ -56,6 +56,51 @@ public:
         return floatValue();
     }
 
+    /**
+     * Indicates whether this object is a <em>Not-a-Number (NaN)</em> value.
+     *
+     * @return {@code true} if this float is <em>Not-a-Number</em>;
+     *         {@code false} if it is a (potentially infinite) float number.
+     */
+    bool isNaN() const {
+        return isNaN(mValue);
+    }
+
+    /**
+     * Indicates whether the specified float is a <em>Not-a-Number (NaN)</em>
+     * value.
+     *
+     * @param f
+     *            the float value to check.
+     * @return {@code true} if {@code f} is <em>Not-a-Number</em>;
+     *         {@code false} if it is a (potentially infinite) float number.
+     */
+    static bool isNaN(float f) {
+        return f != f;
+    }
+
+    /**
+     * Returns an integer corresponding to the bits of the given
+     * <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE 754</a> single precision
+     * float {@code value}. All <em>Not-a-Number (NaN)</em> values are converted to a single NaN
+     * representation ({@code 0x7fc00000}) (compare to {@link #floatToRawIntBits}).
+     */
+    static uint32_t floatToIntBits(float value) {
+        if (value != value) {
+            return 0x7fc00000; // NaN.
+        } else {
+            return *reinterpret_cast<uint32_t*>(&value);
+        }
+    }
+
+    /**
+     * Returns the <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE 754</a>
+     * single precision float corresponding to the given {@code bits}.
+     */
+    static float intBitsToFloat(int32_t bits) {
+        return *reinterpret_cast<float*>(&bits);
+    }
+
 private:
     float mValue;
 };

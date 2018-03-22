@@ -36,6 +36,8 @@
 
 namespace mindroid {
 
+class ByteArray;
+
 class System final {
 public:
     ~System() noexcept = delete;
@@ -84,19 +86,10 @@ public:
      *            the number of elements to be copied.
      */
     static bool arraycopy(const void* src, const size_t srcPos, const size_t srcLength,
-            const void* dest, const size_t destPos, const size_t destLength, const size_t length) {
-        if (srcPos + length > srcLength) {
-            return false;
-        }
-        if (destPos + length > destLength) {
-            return false;
-        }
-        if (src == nullptr || dest == nullptr) {
-            return false;
-        }
-        memcpy(((uint8_t*) dest) + destPos, ((uint8_t*) src) + srcPos, length);
-        return true;
-    }
+            const void* dest, const size_t destPos, const size_t destLength, const size_t length);
+
+    static void arraycopy(const sp<ByteArray>& src, const size_t srcPos,
+            const sp<ByteArray>& dest, const size_t destPos, const size_t length);
 
     /**
      * Returns the value of a particular system property or {@code null} if no

@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAYBUFFER_H_
-#define MINDROID_BYTEARRAYBUFFER_H_
-
-#include <mindroid/nio/ByteBuffer.h>
+#include <mindroid/io/OutputStream.h>
+#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
-class ByteArrayBuffer : public ByteBuffer {
-public:
-    ByteArrayBuffer(size_t capacity);
-    ByteArrayBuffer(const sp<ByteArray>& byteArray);
+void OutputStream::write(const sp<ByteArray>& buffer, size_t offset, size_t count) {
+    Assert::assertNotNull(buffer);
+    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
 
-    sp<ByteArray> array() const override;
-    sp<ByteBuffer> compact() override;
-    sp<ByteBuffer> duplicate() override;
-    sp<ByteBuffer> slice() override;
-
-private:
-    ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, size_t size);
-
-    sp<ByteArray> mByteArray;
-
-    friend class ByteBuffer;
-};
+    if (count == 0) {
+        return;
+    }
+    for (size_t i = offset; i < offset + count; i++) {
+        write(buffer->get(i));
+    }
+}
 
 } /* namespace mindroid */
-
-#endif /* MINDROID_BYTEARRAYBUFFER_H_ */

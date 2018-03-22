@@ -58,6 +58,51 @@ public:
         return doubleValue();
     }
 
+    /**
+     * Indicates whether this object is a <em>Not-a-Number (NaN)</em> value.
+     *
+     * @return {@code true} if this double is <em>Not-a-Number</em>;
+     *         {@code false} if it is a (potentially infinite) double number.
+     */
+    bool isNaN() const {
+        return isNaN(mValue);
+    }
+
+    /**
+     * Indicates whether the specified double is a <em>Not-a-Number (NaN)</em>
+     * value.
+     *
+     * @param d
+     *            the double value to check.
+     * @return {@code true} if {@code d} is <em>Not-a-Number</em>;
+     *         {@code false} if it is a (potentially infinite) double number.
+     */
+    static bool isNaN(double d) {
+        return d != d;
+    }
+
+    /**
+     * Returns an integer corresponding to the bits of the given
+     * <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE 754</a> double precision
+     * {@code value}. All <em>Not-a-Number (NaN)</em> values are converted to a single NaN
+     * representation ({@code 0x7ff8000000000000L}) (compare to {@link #doubleToRawLongBits}).
+     */
+    static uint64_t doubleToLongBits(double value) {
+        if (value != value) {
+            return 0x7ff8000000000000L; // NaN.
+        } else {
+            return *reinterpret_cast<uint64_t*>(&value);
+        }
+    }
+
+    /**
+     * Returns the <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE 754</a>
+     * double precision float corresponding to the given {@code bits}.
+     */
+    static double longBitsToDouble(uint64_t bits) {
+        return *reinterpret_cast<double*>(&bits);
+    }
+
 private:
     double mValue;
 };

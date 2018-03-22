@@ -15,6 +15,8 @@
  */
 
 #include <mindroid/lang/System.h>
+#include <mindroid/lang/ByteArray.h>
+#include <mindroid/util/Assert.h>
 #include <unistd.h>
 #include <limits.h>
 #include <sys/utsname.h>
@@ -44,6 +46,30 @@ System* System::getInstance() {
     }
     pthread_mutex_unlock(&sMutex);
     return sInstance;
+}
+
+bool System::arraycopy(const void* src, const size_t srcPos, const size_t srcLength,
+        const void* dest, const size_t destPos, const size_t destLength, const size_t length) {
+    if (srcPos + length > srcLength) {
+        return false;
+    }
+    if (destPos + length > destLength) {
+        return false;
+    }
+    if (src == nullptr || dest == nullptr) {
+        return false;
+    }
+    memcpy(((uint8_t*) dest) + destPos, ((uint8_t*) src) + srcPos, length);
+    return true;
+}
+
+void System::arraycopy(const sp<ByteArray>& src, const size_t srcPos,
+        const sp<ByteArray>& dest, const size_t destPos, const size_t length) {
+    Assert::assertNotNull(src);
+    Assert::assertNotNull(dest);
+    Assert::assertFalse<IndexOutOfBoundsException>(srcPos + length > src->size());
+    Assert::assertFalse<IndexOutOfBoundsException>(destPos + length > dest->size());
+    std::memcpy(dest->c_arr() + destPos, src->c_arr() + srcPos, length);
 }
 
 sp<String> System::getProperty(const sp<String>& name, const sp<String>& defaultValue) {

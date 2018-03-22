@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 E.S.R.Labs
+ * Copyright (C) 2017 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAYBUFFER_H_
-#define MINDROID_BYTEARRAYBUFFER_H_
+#ifndef MINDROID_FILENOTFOUNDEXCEPTION_H_
+#define MINDROID_FILENOTFOUNDEXCEPTION_H_
 
-#include <mindroid/nio/ByteBuffer.h>
+#include <mindroid/io/IOException.h>
 
 namespace mindroid {
 
-class ByteArrayBuffer : public ByteBuffer {
+class FileNotFoundException : public IOException {
 public:
-    ByteArrayBuffer(size_t capacity);
-    ByteArrayBuffer(const sp<ByteArray>& byteArray);
+    FileNotFoundException() = default;
 
-    sp<ByteArray> array() const override;
-    sp<ByteBuffer> compact() override;
-    sp<ByteBuffer> duplicate() override;
-    sp<ByteBuffer> slice() override;
+    FileNotFoundException(const char* message) : Exception(message) {
+    }
 
-private:
-    ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, size_t size);
-
-    sp<ByteArray> mByteArray;
-
-    friend class ByteBuffer;
+    FileNotFoundException(const sp<String>& message) : Exception(message) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BYTEARRAYBUFFER_H_ */
+#endif /* MINDROID_FILENOTFOUNDEXCEPTION_H_ */
