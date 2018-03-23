@@ -25,10 +25,10 @@ class FileNotFoundException : public IOException {
 public:
     FileNotFoundException() = default;
 
-    FileNotFoundException(const char* message) : Exception(message) {
+    FileNotFoundException(const char* message) : IOException(message) {
     }
 
-    FileNotFoundException(const sp<String>& message) : Exception(message) {
+    FileNotFoundException(const sp<String>& message) : IOException(message) {
     }
 };
 
