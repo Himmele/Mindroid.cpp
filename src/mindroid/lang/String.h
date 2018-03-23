@@ -105,7 +105,11 @@ public:
     }
 
     inline static sp<String> valueOf(const char* string, size_t size) {
-        return (string != nullptr) ? new String(string, size) : nullptr;
+        if (string != nullptr) {
+            return (size > 0) ? new String(string, size) : EMPTY_STRING;
+        } else {
+            return nullptr;
+        }
     }
 
     inline static sp<String> valueOf(bool b) {
@@ -130,6 +134,9 @@ public:
     static size_t length(const char* string) {
         return strlen(string);
     }
+
+    bool regionMatches(size_t toffset, const sp<String>& other, size_t ooffset, size_t len);
+    bool regionMatches(size_t toffset, const char* other, size_t ooffset, size_t len);
 
     sp<String> replace(char oldChar, char newChar);
 

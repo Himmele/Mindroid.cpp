@@ -16,8 +16,8 @@
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Class.h>
-#include <mindroid/util/Assert.h>
 #include <mindroid/util/ArrayList.h>
+#include <mindroid/util/Assert.h>
 #include <cstdio>
 
 namespace mindroid {
@@ -167,19 +167,13 @@ bool String::endsWith(const sp<String>& suffix) const {
 }
 
 sp<String> String::substring(size_t beginIndex) const {
-    if (beginIndex < length()) {
-        return String::valueOf(c_str() + beginIndex, length() - beginIndex);
-    } else {
-        return EMPTY_STRING;
-    }
+    Assert::assertTrue<IndexOutOfBoundsException>(beginIndex <= length());
+    return String::valueOf(c_str() + beginIndex, length() - beginIndex);
 }
 
 sp<String> String::substring(size_t beginIndex, size_t endIndex) const {
-    if (beginIndex < length()) {
-        return String::valueOf(c_str() + beginIndex, endIndex - beginIndex);
-    } else {
-        return EMPTY_STRING;
-    }
+    Assert::assertTrue<IndexOutOfBoundsException>(beginIndex <= endIndex && beginIndex <= length() && endIndex <= length());
+    return String::valueOf(c_str() + beginIndex, endIndex - beginIndex);
 }
 
 sp<String> String::toLowerCase() const {
@@ -384,6 +378,18 @@ sp<String> String::format(const char* format, ...) {
     sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
     va_end(args);
     return formattedString;
+}
+
+bool String::regionMatches(size_t toffset, const sp<String>& other, size_t ooffset,    size_t len) {
+    return regionMatches(toffset, other->c_str(), ooffset, len);
+}
+
+bool String::regionMatches(size_t toffset, const char* other, size_t ooffset, size_t len) {
+    if (mStringBuffer->mData && other != nullptr) {
+        return strncmp(mStringBuffer->mData + toffset, other + ooffset, len) == 0;
+    } else {
+        return false;
+    }
 }
 
 sp<String> String::replace(char oldChar, char newChar) {
