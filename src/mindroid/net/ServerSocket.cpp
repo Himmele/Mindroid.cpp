@@ -16,12 +16,19 @@
 
 #include <mindroid/net/ServerSocket.h>
 #include <mindroid/net/Socket.h>
-#include <mindroid/net/Socket4Address.h>
-#include <mindroid/net/Socket6Address.h>
-#include <sys/socket.h>
+#include <mindroid/net/Inet4Address.h>
+#include <mindroid/net/Inet6Address.h>
+#include <mindroid/net/InetSocketAddress.h>
+#include <mindroid/net/SocketException.h>
+#include <mindroid/io/IOException.h>
+#include <mindroid/lang/Class.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <unistd.h>
-#include <arpa/inet.h>
 #include <fcntl.h>
+#include <cstring>
+#include <cerrno>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 namespace mindroid {
 
@@ -29,75 +36,107 @@ ServerSocket::ServerSocket() {
 }
 
 ServerSocket::ServerSocket(uint16_t port) {
-    bind(port);
+    bind(port, DEFAULT_BACKLOG, nullptr);
 }
 
-ServerSocket::ServerSocket(uint16_t port, int backlog) {
-    bind(port, backlog);
+ServerSocket::ServerSocket(uint16_t port, int32_t backlog) {
+    bind(port, backlog, nullptr);
 }
 
-ServerSocket::ServerSocket(const sp<String>& host, uint16_t port, int backlog) {
-    bind(host, port, backlog);
+ServerSocket::ServerSocket(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress) {
+    bind(port, backlog, localAddress);
 }
 
 ServerSocket::~ServerSocket() {
     close();
 }
 
-bool ServerSocket::bind(uint16_t port, int backlog) {
-    return bind(nullptr, port, backlog);
-}
-
-bool ServerSocket::bind(const sp<String>& host, uint16_t port, int backlog) {
-    if (mIsBound) {
-        return false;
-    }
-
-    sp<SocketAddress> socketAddress = SocketAddress::getSocketAddress(host, port);
-    if (socketAddress->getInetAddress() != nullptr) {
-        if (socketAddress->getInetAddress()->isInet6Address()) {
-            mSocketId = ::socket(AF_INET6, SOCK_STREAM, 0);
-            int optval = 0;
-            ::setsockopt(mSocketId, SOL_SOCKET, IPV6_V6ONLY, &optval, sizeof(optval));
-        } else {
-            mSocketId = ::socket(AF_INET, SOCK_STREAM, 0);
-        }
-
-        int value = mReuseAddress;
-        if (::setsockopt(mSocketId, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value)) == 0) {
-            if (::bind(mSocketId, socketAddress->getInetAddress()->getPointer(), socketAddress->getInetAddress()->getSize()) == 0) {
-                if (::listen(mSocketId, backlog) == 0) {
-                    mIsBound = true;
-                    return true;
-                }
-            }
-        }
-
-        ::close(mSocketId);
-        mSocketId = -1;
-    }
-    return false;
-}
-
-sp<Socket> ServerSocket::accept() {
-    sp<Socket> socket = new Socket();
-    socket->mSocketId = ::accept(mSocketId, 0, 0);
-    if (socket->mSocketId < 0) {
-        return nullptr;
-    } else {
-        socket->mIsConnected = true;
-        return socket;
-    }
-}
-
 void ServerSocket::close() {
     mIsClosed = true;
     mIsBound = false;
-    if (mSocketId != -1) {
+    if (mFd != -1) {
         // Unblock calls like accept, etc. -> http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
-        ::shutdown(mSocketId, SHUT_RDWR);
-        ::close(mSocketId);
-        mSocketId = -1;
+        ::shutdown(mFd, SHUT_RDWR);
+        ::close(mFd);
+        mFd = -1;
+    }
+}
+
+void ServerSocket::bind(const sp<InetSocketAddress>& localAddress, int32_t backlog) {
+    if (localAddress == nullptr) {
+        throw NullPointerException();
+    }
+    if (localAddress->getAddress() == nullptr) {
+        throw SocketException(String::format("Host is unresolved: %s", localAddress->getHostName()->c_str()));
+    }
+    bind((uint16_t) localAddress->getPort(), backlog, localAddress->getAddress());
+}
+
+void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress) {
+    if (mIsBound) {
+        throw SocketException("Socket is already bound");
+    }
+    if (mIsClosed) {
+        throw SocketException("Socket is already closed");
+    }
+
+    sp<InetAddress> address;
+    if (localAddress == nullptr) {
+        address = Inet6Address::ANY;
+    } else {
+        address = localAddress;
+    }
+
+    sockaddr_storage ss;
+    socklen_t saSize = 0;
+    std::memset(&ss, 0, sizeof(ss));
+    if (Class<Inet6Address>::isInstance(address)) {
+        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        int32_t value = 0;
+        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+        value = mReuseAddress;
+        ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+
+        sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
+        sin6.sin6_family = AF_INET6;
+        std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
+        sin6.sin6_port = htons(port);
+        saSize = sizeof(sockaddr_in6);
+    } else {
+        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+        int32_t value = mReuseAddress;
+        ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+
+        sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
+        sin.sin_family = AF_INET;
+        std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
+        sin.sin_port = htons(port);
+        saSize = sizeof(sockaddr_in);
+    }
+    if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
+        close();
+    }
+    if (mFd != -1 && ::listen(mFd, backlog) == 0) {
+        mIsBound = true;
+    } else {
+        close();
+        throw SocketException(String::format("Failed to bind to port %u (errno=%d)", port, errno));
+    }
+}
+
+sp<Socket> ServerSocket::accept() {
+    if (!isBound()) {
+        throw SocketException("Socket is not bound");
+    }
+
+    sp<Socket> socket = new Socket();
+    int32_t rc = ::accept(mFd, 0, 0);
+    if (rc < 0) {
+        throw IOException();
+    } else {
+        socket->mFd = rc;
+        socket->mIsConnected = true;
+        return socket;
     }
 }
 

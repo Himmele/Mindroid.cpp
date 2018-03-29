@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONDITIONIMPL_H_
-#define MINDROID_CONDITIONIMPL_H_
+#ifndef MINDROID_UTIL_CONCURRENT_LOCKS_CONDITIONIMPL_H_
+#define MINDROID_UTIL_CONCURRENT_LOCKS_CONDITIONIMPL_H_
 
 #include <mindroid/util/concurrent/locks/Condition.h>
-#include <pthread.h>
+#include <condition_variable>
+#include <mutex>
 
 namespace mindroid {
-
-class Lock;
 
 class ConditionImpl :
         public Condition {
 public:
-    virtual ~ConditionImpl();
+    virtual ~ConditionImpl() = default;
     ConditionImpl(const ConditionImpl&) = delete;
     ConditionImpl& operator=(const ConditionImpl&) = delete;
     virtual void await();
@@ -37,16 +36,14 @@ public:
     virtual void signalAll();
 
 private:
-    ConditionImpl(const sp<Lock>& lock);
+    ConditionImpl(std::recursive_timed_mutex& lock);
 
-    pthread_cond_t mCondition;
-    pthread_condattr_t mAttributes;
-    sp<Lock> mLock;
-    pthread_mutex_t* mMutex;
+    std::recursive_timed_mutex& mLock;
+    std::condition_variable_any mCondition;
 
     friend class ReentrantLock;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONDITIONIMPL_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_LOCKS_CONDITIONIMPL_H_ */

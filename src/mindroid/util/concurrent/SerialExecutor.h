@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SERIALEXECUTOR_H_
-#define MINDROID_SERIALEXECUTOR_H_
+#ifndef MINDROID_UTIL_CONCURRENT_SERIALEXECUTOR_H_
+#define MINDROID_UTIL_CONCURRENT_SERIALEXECUTOR_H_
 
 #include <mindroid/util/concurrent/Executor.h>
 #include <mindroid/os/HandlerThread.h>
@@ -62,4 +62,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SERIALEXECUTOR_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_SERIALEXECUTOR_H_ */

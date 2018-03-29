@@ -15,16 +15,15 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_HANDLER_H_
-#define MINDROID_HANDLER_H_
+#ifndef MINDROID_OS_HANDLER_H_
+#define MINDROID_OS_HANDLER_H_
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/lang/Closure.h>
 #include <mindroid/os/Message.h>
 #include <mindroid/os/SystemClock.h>
 #include <mindroid/os/Looper.h>
 #include <mindroid/util/concurrent/Executor.h>
-#include <functional>
+#include <mindroid/util/function/Function.h>
 
 namespace mindroid {
 
@@ -187,7 +186,7 @@ public:
     }
 
     sp<Message> obtainMessage(const std::function<void (void)>& func) {
-        return Message::obtain(sp<Handler>(this), new Closure(sp<Handler>(this), func));
+        return Message::obtain(sp<Handler>(this), new Function<void, void>(func));
     }
 
     /**
@@ -263,11 +262,17 @@ public:
      *
      * @param runnable The std::function that will be executed.
      *
-     * @return Returns a Closure if the std::function was successfully placed in to the message queue. Returns
-     * nullptr on failure, usually because the looper processing the message queue is exiting.
+     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
+     * false on failure, usually because the looper processing the message queue is exiting. Note
+     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * before the delivery time of the message occurs then the message will be dropped.
      */
-    sp<Closure> post(const std::function<void (void)>& func);
-    sp<Closure> post(std::function<void (void)>&& func);
+    bool post(const std::function<void (void)>& func) {
+        return post(new Function<void, void>(func));
+    }
+    bool post(std::function<void (void)>&& func) {
+        return post(new Function<void, void>(func));
+    }
 
     /**
      * Causes the std::function func to be added to the message queue, to be run at a specific time given by
@@ -278,13 +283,17 @@ public:
      * @param uptimeMillis The absolute time at which the callback should run, using the
      * {@link mindroid.os.SystemClock#uptimeMillis} time-base.
      *
-     * @return Returns a Closure if the std::function was successfully placed in to the message queue. Returns
-     * nullptr on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the std::function will be processed -- if the looper is quit
+     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
+     * false on failure, usually because the looper processing the message queue is exiting. Note
+     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    sp<Closure> postAtTime(const std::function<void (void)>& func, uint64_t uptimeMillis);
-    sp<Closure> postAtTime(std::function<void (void)>&& func, uint64_t uptimeMillis);
+    bool postAtTime(const std::function<void (void)>& func, uint64_t uptimeMillis) {
+        return postAtTime(new Function<void, void>(func), uptimeMillis);
+    }
+    bool postAtTime(std::function<void (void)>&& func, uint64_t uptimeMillis) {
+        return postAtTime(new Function<void, void>(func), uptimeMillis);
+    }
 
     /**
      * Causes the std::function func to be added to the message queue, to be run after the specified amount
@@ -293,13 +302,17 @@ public:
      * @param func The std::function that will be executed.
      * @param delayMillis The delay (in milliseconds) until the std::function will be executed.
      *
-     * @return Returns a Closure if the std::function was successfully placed in to the message queue. Returns
-     * nullptr on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the std::function will be processed -- if the looper is quit
+     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
+     * false on failure, usually because the looper processing the message queue is exiting. Note
+     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    sp<Closure> postDelayed(const std::function<void (void)>& func, uint32_t delayMillis);
-    sp<Closure> postDelayed(std::function<void (void)>&& func, uint32_t delayMillis);
+    bool postDelayed(const std::function<void (void)>& func, uint32_t delayMillis) {
+        return postDelayed(new Function<void, void>(func), delayMillis);
+    }
+    bool postDelayed(std::function<void (void)>&& func, uint32_t delayMillis) {
+        return postDelayed(new Function<void, void>(func), delayMillis);
+    }
 
     /**
      * Remove any pending posts of Runnable r that are in the message queue.
@@ -455,4 +468,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_HANDLER_H_ */
+#endif /* MINDROID_OS_HANDLER_H_ */

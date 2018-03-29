@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILENAMEFILTER_H_
-#define MINDROID_FILENAMEFILTER_H_
+#ifndef MINDROID_IO_FILENAMEFILTER_H_
+#define MINDROID_IO_FILENAMEFILTER_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -47,4 +47,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILENAMEFILTER_H_ */
+#endif /* MINDROID_IO_FILENAMEFILTER_H_ */

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "mindroid/util/ArrayList.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/util/ArrayList.h>
+#include <mindroid/lang/String.h>
 
 using namespace mindroid;
 
 TEST(Mindroid, ArrayListOfInteger) {
-    sp<ArrayList<int>> list = new ArrayList<int>();
+    sp<ArrayList<int32_t>> list = new ArrayList<int32_t>();
     list->add(1);
     list->add(2);
     list->add(17);

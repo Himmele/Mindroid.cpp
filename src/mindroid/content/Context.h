@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONTEXT_H_
-#define MINDROID_CONTEXT_H_
+#ifndef MINDROID_CONTENT_CONTEXT_H_
+#define MINDROID_CONTENT_CONTEXT_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -207,4 +207,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONTEXT_H_ */
+#endif /* MINDROID_CONTENT_CONTEXT_H_ */

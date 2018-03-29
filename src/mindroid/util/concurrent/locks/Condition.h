@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONDITION_H_
-#define MINDROID_CONDITION_H_
+#ifndef MINDROID_UTIL_CONCURRENT_LOCKS_CONDITION_H_
+#define MINDROID_UTIL_CONCURRENT_LOCKS_CONDITION_H_
 
 #include <mindroid/lang/Object.h>
 
 namespace mindroid {
-
-class Lock;
 
 class Condition :
         public Object {
@@ -39,4 +37,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONDITION_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_LOCKS_CONDITION_H_ */

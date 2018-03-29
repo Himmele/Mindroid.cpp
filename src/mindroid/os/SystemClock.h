@@ -15,19 +15,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SYSTEMCLOCK_H_
-#define MINDROID_SYSTEMCLOCK_H_
+#ifndef MINDROID_OS_SYSTEMCLOCK_H_
+#define MINDROID_OS_SYSTEMCLOCK_H_
 
 #include <cstdint>
 #include <ctime>
-
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME  0
-#endif
-
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
 
 namespace mindroid {
 
@@ -144,4 +136,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SYSTEMCLOCK_H_ */
+#endif /* MINDROID_OS_SYSTEMCLOCK_H_ */

@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ASSERT_H_
-#define MINDROID_ASSERT_H_
+#ifndef MINDROID_UTIL_ASSERT_H_
+#define MINDROID_UTIL_ASSERT_H_
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/lang/NullPointerException.h>
-#include <mindroid/lang/IndexOutOfBoundsException.h>
-#include <mindroid/lang/IllegalArgumentException.h>
-#include <mindroid/lang/IllegalStateException.h>
 #include <cassert>
-
-// #define EXCEPTIONS
 
 namespace mindroid {
 
@@ -35,40 +29,26 @@ public:
     Assert(const Assert&) = delete;
     Assert& operator=(const Assert&) = delete;
 
-    template<class EXCEPTION>
     static void assertTrue(bool condition) {
-        assertTrue<EXCEPTION>(nullptr, condition);
+        assertTrue(nullptr, condition);
     }
 
-    template<class EXCEPTION>
     static void assertTrue(const char* message, bool condition) {
         if (!condition) {
             println(TAG, "%s (%u)", message, condition);
-            #ifdef EXCEPTIONS
-            throw EXCEPTION(message);
-            #endif
         }
-        #ifndef EXCEPTIONS
         assert(condition);
-        #endif
     }
 
-    template<class EXCEPTION>
     static void assertFalse(bool condition) {
-        assertFalse<EXCEPTION>(nullptr, condition);
+        assertFalse(nullptr, condition);
     }
 
-    template<class EXCEPTION>
     static void assertFalse(const char* message, bool condition) {
         if (condition) {
             println(TAG, "%s (%u)", message, condition);
-            #ifdef EXCEPTIONS
-            throw EXCEPTION(message);
-            #endif
         }
-        #ifndef EXCEPTIONS
         assert(!condition);
-        #endif
     }
 
     static void assertNotNull(void* ptr) {
@@ -78,13 +58,8 @@ public:
     static void assertNotNull(const char* message, const void* ptr) {
         if (ptr == nullptr) {
             println(TAG, "%s (0x%x)", message, ptr);
-            #ifdef EXCEPTIONS
-            throw NullPointerException(message);
-            #endif
         }
-        #ifndef EXCEPTIONS
         assert(ptr != nullptr);
-        #endif
     }
 
     static void assertNotNull(const sp<Object>& object) {
@@ -94,30 +69,21 @@ public:
     static void assertNotNull(const char* message, const sp<Object>& object) {
         if (object == nullptr) {
             println(TAG, "%s (0x%x)", message, object.getPointer());
-            #ifdef EXCEPTIONS
-            throw NullPointerException(message);
-            #endif
         }
-        #ifndef EXCEPTIONS
         assert(object.getPointer() != nullptr);
-        #endif
     }
 
-    template<typename T, class EXCEPTION>
+    template<typename T>
     static void assertEquals(T expected, T actual) {
         assertEquals(nullptr, expected, actual);
     }
-    template<typename T, class EXCEPTION>
+
+    template<typename T>
     static void assertEquals(const char* message, T expected, T actual) {
         if (expected != actual) {
             println(TAG, "%s (%d, %d)", message, expected, actual);
-            #ifdef EXCEPTIONS
-            throw EXCEPTION(message);
-            #endif
         }
-        #ifndef EXCEPTIONS
         assert(expected == actual);
-        #endif
     }
 
     static void fail() __attribute__ ((noreturn)) {
@@ -134,4 +100,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ASSERT_H_ */
+#endif /* MINDROID_UTIL_ASSERT_H_ */

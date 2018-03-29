@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_COMPONENTNAME_H_
-#define MINDROID_COMPONENTNAME_H_
+#ifndef MINDROID_CONTENT_COMPONENTNAME_H_
+#define MINDROID_CONTENT_COMPONENTNAME_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -113,4 +113,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_COMPONENTNAME_H_ */
+#endif /* MINDROID_CONTENT_COMPONENTNAME_H_ */

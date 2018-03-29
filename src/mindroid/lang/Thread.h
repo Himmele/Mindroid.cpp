@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_THREAD_H_
-#define MINDROID_THREAD_H_
+#ifndef MINDROID_LANG_THREAD_H_
+#define MINDROID_LANG_THREAD_H_
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Runnable.h>
+#include <mindroid/util/function/Function.h>
 #include <pthread.h>
 
 namespace mindroid {
@@ -27,21 +28,31 @@ class Thread :
         public Runnable {
 public:
     Thread() :
-            Thread(nullptr, nullptr) {
+            Thread((sp<Runnable>) nullptr, nullptr) {
     }
     Thread(const char* name) :
-            Thread(nullptr, String::valueOf(name)) {
+            Thread((sp<Runnable>) nullptr, String::valueOf(name)) {
     }
     Thread(const sp<String>& name) :
-            Thread(nullptr, name) {
+            Thread((sp<Runnable>) nullptr, name) {
+    }
+    Thread(const std::function<void (void)>& func) :
+            Thread(new Function<void, void>(func), nullptr) {
     }
     Thread(const sp<Runnable>& runnable) :
             Thread(runnable, nullptr) {
     }
+    Thread(const std::function<void (void)>& func, const char* name) :
+            Thread(new Function<void, void>(func), String::valueOf(name)) {
+    }
     Thread(const sp<Runnable>& runnable, const char* name) :
             Thread(runnable, String::valueOf(name)) {
     }
+    Thread(const std::function<void (void)>& func, const sp<String>& name) :
+            Thread(new Function<void, void>(func), name) {
+    }
     Thread(const sp<Runnable>& runnable, const sp<String>& name);
+
     virtual ~Thread() = default;
     Thread(const Thread&) = delete;
     Thread& operator=(const Thread&) = delete;
@@ -89,11 +100,11 @@ public:
      * @throws IllegalThreadStateException - if this thread has already started.
      * @see Thread#run
      */
-    bool start();
+    void start();
 
     /**
      * Starts the new Thread of execution. The <code>run()</code> method of
-     * the receiver will be called by the receiver Thread itself (and not the
+     * the receiver will be called by the receivemThread;r Thread itself (and not the
      * Thread calling <code>start()</code>).
      *
      * @throws IllegalThreadStateException - if this thread has already started.
@@ -151,11 +162,6 @@ public:
     void join() const;
 
     /**
-     * Returns the Thread of the caller, that is, the current Thread.
-     */
-    static sp<Thread> currentThread();
-
-    /**
      * Returns <code>true</code> if the receiver has already been started and
      * still runs code (hasn't died yet). Returns <code>false</code> either if
      * the receiver hasn't been started yet or if it has already started and run
@@ -174,9 +180,14 @@ public:
      *
      * @return the thread's ID.
      */
-    pthread_t getId() const;
+    int32_t getId() const;
 
-    void setSchedulingParams(int32_t policy, int32_t priority);
+    /**
+     * Returns the Thread of the caller, that is, the current Thread.
+     */
+    static sp<Thread> currentThread();
+
+    void setPriority(int32_t priority);
 
 private:
     Thread(pthread_t thread);
@@ -185,13 +196,13 @@ private:
     sp<Thread> mSelf;
     sp<String> mName;
     sp<Runnable> mRunnable;
-    pthread_t mThread;
-    bool mStarted;
-    bool mInterrupted;
+    pthread_t mThread = -1;
+    bool mStarted = false;
+    bool mInterrupted = false;
 
     friend class Looper;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_THREAD_H_ */
+#endif /* MINDROID_LANG_THREAD_H_ */

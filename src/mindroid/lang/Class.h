@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CLASS_H_
-#define MINDROID_CLASS_H_
+#ifndef MINDROID_LANG_CLASS_H_
+#define MINDROID_LANG_CLASS_H_
 
 #include <mindroid/lang/String.h>
-#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <mindroid/util/HashMap.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace mindroid {
 
@@ -36,7 +35,7 @@ public:
 private:
     Classes() : mClasses(new HashMap<sp<String>, Factory*>()) { }
 
-    static pthread_mutex_t sMutex;
+    static std::mutex sLock;
     static Classes* sInstance;
 
     sp<HashMap<sp<String>, Factory*>> mClasses;
@@ -117,4 +116,4 @@ static volatile Clazz##Factory s##Clazz##Factory;
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CLASS_H_ */
+#endif /* MINDROID_LANG_CLASS_H_ */

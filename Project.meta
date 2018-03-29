@@ -11,32 +11,36 @@
 #  from E.S.R.Labs.
 
 Project {
-	LibraryConfig default {
-		Files "src/mindroid/**/*.cpp"
-		IncludeDir "src", inherit: true
+    LibraryConfig default {
+        Files "src/mindroid/**/*.cpp"
+        IncludeDir "src", inherit: true
 
-		Dependency "src/tinyxml2", config: default
-	}
-	
-	ExecutableConfig test {
-	    DefaultToolchain GCC {
-			Compiler CPP {
-				Flags "-O0 -g -Werror -Wall -Wno-unused-parameter -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
-				Define "__STDC_FORMAT_MACROS"
-			}
-			Compiler C {
-				Flags "-O0 -g -Werror -Wall -Wextra -Wno-unused-parameter -pthread"
-			}
-			Linker {
-				Flags add: "-pthread"
-			}
-		}
-		
-		ArtifactName "test"
-		Dependency "Mindroid.cpp", config: default		
+        Dependency "src/tinyxml2", config: default
+    }
+    
+    ExecutableConfig Main {
+        DefaultToolchain GCC {
+            Compiler CPP {
+                Flags "-O0 -g -Wall -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
+                Define "__STDC_FORMAT_MACROS"
+            }
+            Compiler C {
+                Flags "-O0 -g -Wall -Wextra -pthread"
+            }
+            Linker {
+                Flags add: "-pthread"
+            }
+        }
+        
+        ArtifactName "Main"
+        Dependency "Mindroid.cpp", config: default        
 
-		Files "src/examples/Services.cpp"
-		IncludeDir "."
-		IncludeDir "src"		
-	}
+        Files "src/main/Main.cpp"
+        Files "examples/Services/src/ServiceExample1.cpp"
+        Files "examples/Concurrency/src/HandlerExample.cpp"
+        Files "examples/Concurrency/src/PromiseExample.cpp"
+        Files "examples/Concurrency/src/AsyncTaskExample.cpp"
+        IncludeDir "."
+        IncludeDir "src"        
+    }
 }

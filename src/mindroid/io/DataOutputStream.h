@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_DATAOUTPUTSTREAM_H_
-#define MINDROID_DATAOUTPUTSTREAM_H_
+#ifndef MINDROID_IO_DATAOUTPUTSTREAM_H_
+#define MINDROID_IO_DATAOUTPUTSTREAM_H_
 
 #include <mindroid/io/OutputStream.h>
-#include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/ByteArray.h>
 
 namespace mindroid {
 
@@ -141,4 +141,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_DATAOUTPUTSTREAM_H_ */
+#endif /* MINDROID_IO_DATAOUTPUTSTREAM_H_ */

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SHAREDPREFERENCES_H_
-#define MINDROID_SHAREDPREFERENCES_H_
+#ifndef MINDROID_CONTENT_SHAREDPREFERENCES_H_
+#define MINDROID_CONTENT_SHAREDPREFERENCES_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/os/Handler.h>
@@ -434,4 +434,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SHAREDPREFERENCES_H_ */
+#endif /* MINDROID_CONTENT_SHAREDPREFERENCES_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_PROCESS_H_
-#define MINDROID_PROCESS_H_
+#ifndef MINDROID_OS_PROCESS_H_
+#define MINDROID_OS_PROCESS_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -78,4 +78,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PROCESS_H_ */
+#endif /* MINDROID_OS_PROCESS_H_ */

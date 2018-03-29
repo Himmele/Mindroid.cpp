@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_EXECUTIONEXCEPTION_H_
-#define MINDROID_EXECUTIONEXCEPTION_H_
+#ifndef MINDROID_UTIL_CONCURRENT_EXECUTIONEXCEPTION_H_
+#define MINDROID_UTIL_CONCURRENT_EXECUTIONEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -67,4 +67,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_EXECUTIONEXCEPTION_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_EXECUTIONEXCEPTION_H_ */

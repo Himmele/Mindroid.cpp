@@ -14,38 +14,30 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ATOMICINTEGER_H_
-#define MINDROID_ATOMICINTEGER_H_
+#ifndef MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H_
+#define MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H_
 
-#include <cstdint>
+#include <mindroid/lang/Object.h>
+#include <atomic>
 
 namespace mindroid {
 
-/*
- * AtomicInteger reference:
- * - http://en.cppreference.com/w/cpp/atomic/memory_order
- * - http://en.cppreference.com/w/cpp/atomic/atomic_fetch_add
- */
-class AtomicInteger {
+class AtomicInteger :
+        public Object {
 public:
-    AtomicInteger() noexcept = delete;
-    ~AtomicInteger() noexcept = delete;
+    AtomicInteger();
+    AtomicInteger(int32_t initialValue);
     AtomicInteger(const AtomicInteger&) = delete;
     AtomicInteger& operator=(const AtomicInteger&) = delete;
 
-    static int32_t getAndIncrement(volatile int32_t* address);
+    int32_t get();
+    void set(int32_t newValue);
+    bool compareAndSet(int32_t expect, int32_t update);
 
-    static int32_t getAndDecrement(volatile int32_t* address);
-
-    static int32_t getAndAdd(int32_t value, volatile int32_t* address);
-
-    static int32_t getAndAnd(int32_t value, volatile int32_t* address);
-
-    static int32_t getAndOr(int32_t value, volatile int32_t* address);
-
-    static int32_t compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address);
+private:
+    std::atomic<int32_t> mValue;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ATOMICINTEGER_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICINTEGER_H_ */

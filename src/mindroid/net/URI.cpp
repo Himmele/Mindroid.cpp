@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ESR Labs
+ * Copyright (C) 2018 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,30 +17,46 @@
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
 #include <mindroid/lang/StringBuilder.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
 URI::URI(const sp<String>& spec) {
-    Assert::assertNotNull(spec);
+    if (spec == nullptr) {
+        throw NullPointerException();
+    }
     parseURI(spec);
 }
 
 URI::URI(const char* spec) {
-    Assert::assertNotNull((void*) spec);
+    if (spec == nullptr) {
+        throw NullPointerException();
+    }
     parseURI(String::valueOf(spec));
 }
 
 sp<URI> URI::create(const sp<String>& uri) {
-    return new URI(uri);
+    try {
+        return new URI(uri);
+    } catch (const URISyntaxException& e) {
+        throw IllegalArgumentException(e);
+    }
 }
 
 sp<URI> URI::create(const char* uri) {
-    return new URI(uri);
+    try {
+        return new URI(uri);
+    } catch (const URISyntaxException& e) {
+        throw IllegalArgumentException(e);
+    }
 }
 
 URI::URI(const sp<String>& scheme, const sp<String>& authority, const sp<String>& path, const sp<String>& query, const sp<String>& fragment) {
-    Assert::assertFalse<URISyntaxException>("Relative path", (scheme != nullptr && path != nullptr && !path->isEmpty() && path->charAt(0) != '/'));
+    if (scheme != nullptr && path != nullptr && !path->isEmpty() && path->charAt(0) != '/') {
+        throw URISyntaxException("Relative path");
+    }
 
     sp<StringBuilder> uri = new StringBuilder();
     if (scheme != nullptr) {
@@ -88,7 +104,9 @@ void URI::parseURI(const sp<String>& uri) {
         mScheme = uri->substring(0, colon);
         hierPartStart = colon + 1;
 
-        Assert::assertFalse<URISyntaxException>("Scheme-specific part expected", hierPartStart == fragmentStart);
+        if (hierPartStart == fragmentStart) {
+            throw URISyntaxException("Scheme-specific part expected");
+        }
     } else {
         hierPartStart = 0;
     }
@@ -97,7 +115,9 @@ void URI::parseURI(const sp<String>& uri) {
     size_t pathStart;
     if (uri->regionMatches(hierPartStart, "//", 0, 2)) {
         size_t authorityStart = hierPartStart + 2;
-        Assert::assertFalse<URISyntaxException>("Authority expected", authorityStart == uri->length());
+        if (authorityStart == uri->length()) {
+            throw URISyntaxException("Authority expected");
+        }
         pathStart = indexOf(uri, "/?", authorityStart, fragmentStart);
         if (authorityStart < pathStart) {
             mAuthority = uri->substring(authorityStart, pathStart);
@@ -126,7 +146,9 @@ size_t URI::indexOf(const sp<String>& string, const char c, size_t start, size_t
 }
 
 size_t URI::indexOf(const sp<String>& string, const char* chars, size_t start, size_t end) {
-    Assert::assertTrue<IndexOutOfBoundsException>(start <= end && start < string->length() && end <= string->length());
+    if (start >= string->length() || start > end || end > string->length()) {
+        throw IndexOutOfBoundsException();
+    }
     for (size_t i = start; i < end; i++) {
         char c = string->charAt(i);
         const char* substr = strchr(chars, c);

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_PACKAGEINFO_H_
-#define MINDROID_PACKAGEINFO_H_
+#ifndef MINDROID_CONTENT_PM_PACKAGEINFO_H_
+#define MINDROID_CONTENT_PM_PACKAGEINFO_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -68,4 +68,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PACKAGEINFO_H_ */
+#endif /* MINDROID_CONTENT_PM_PACKAGEINFO_H_ */

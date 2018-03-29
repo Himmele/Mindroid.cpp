@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BUFFEROVERFLOWEXCEPTION_H_
-#define MINDROID_BUFFEROVERFLOWEXCEPTION_H_
+#ifndef MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_
+#define MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -37,4 +37,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BUFFEROVERFLOWEXCEPTION_H_ */
+#endif /* MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_ */

@@ -16,7 +16,6 @@
 
 #include <mindroid/nio/Buffer.h>
 #include <mindroid/nio/BufferOverflowException.h>
-#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
@@ -55,7 +54,9 @@ size_t Buffer::limit() const {
 }
 
 sp<Buffer> Buffer::limit(size_t newLimit) {
-    Assert::assertFalse<BufferOverflowException>("Given limit exceeds capacity", newLimit > mCapacity);
+    if (newLimit > mCapacity) {
+        throw BufferOverflowException("Given limit exceeds capacity");
+    }
     mLimit = newLimit;
     return this;
 }
@@ -65,7 +66,9 @@ size_t Buffer::position() const {
 }
 
 sp<Buffer> Buffer::position(size_t newPos) {
-    Assert::assertFalse<BufferOverflowException>("Cannot position outside of the buffer", newPos > mCapacity);
+    if (newPos > mCapacity) {
+        throw BufferOverflowException("Cannot position outside of the buffer");
+    }
     mPosition = newPos;
     return this;
 }

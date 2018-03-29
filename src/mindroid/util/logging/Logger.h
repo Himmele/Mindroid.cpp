@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LOGGER_H_
-#define MINDROID_LOGGER_H_
+#ifndef MINDROID_UTIL_LOGGING_LOGGER_H_
+#define MINDROID_UTIL_LOGGING_LOGGER_H_
 
 #include <mindroid/app/Service.h>
 #include <mindroid/lang/Thread.h>
@@ -71,4 +71,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LOGGER_H_ */
+#endif /* MINDROID_UTIL_LOGGING_LOGGER_H_ */

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SERVICE_H_
-#define MINDROID_SERVICE_H_
+#ifndef MINDROID_APP_SERVICE_H_
+#define MINDROID_APP_SERVICE_H_
 
 #include <mindroid/content/ContextWrapper.h>
 #include <mindroid/os/IProcess.h>
@@ -224,4 +224,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SERVICE_H_ */
+#endif /* MINDROID_APP_SERVICE_H_ */

@@ -19,7 +19,6 @@
 #include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/lang/String.h>
 #include <mindroid/util/ArrayList.h>
-#include <mindroid/util/Assert.h>
 #include <mindroid/lang/StringBuilder.h>
 
 namespace mindroid {
@@ -49,28 +48,38 @@ sp<StringArray> StringArray::valueOf(const sp<ArrayList<sp<String>>>& list) {
 }
 
 const sp<String>& StringArray::get(size_t position) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mSize);
+    if (position >= mSize) {
+        throw IndexOutOfBoundsException();
+    }
     return mArray[position];
 }
 
 
 const sp<String>& StringArray::operator[](size_t position) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mSize);
+    if (position >= mSize) {
+        throw IndexOutOfBoundsException();
+    }
     return mArray[position];
 }
 
 sp<String>& StringArray::get(size_t position) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mSize);
+    if (position >= mSize) {
+        throw IndexOutOfBoundsException();
+    }
     return mArray[position];
 }
 
 void StringArray::set(size_t position, const sp<String>& string) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mSize);
+    if (position >= mSize) {
+        throw IndexOutOfBoundsException();
+    }
     mArray[position] = string;
 }
 
 sp<String>& StringArray::operator[](size_t position) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mSize);
+    if (position >= mSize) {
+        throw IndexOutOfBoundsException();
+    }
     return mArray[position];
 }
 

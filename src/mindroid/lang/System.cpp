@@ -16,35 +16,36 @@
 
 #include <mindroid/lang/System.h>
 #include <mindroid/lang/ByteArray.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
+#include <climits>
 #include <unistd.h>
-#include <limits.h>
 #include <sys/utsname.h>
 
 namespace mindroid {
 
-pthread_mutex_t System::sMutex = PTHREAD_MUTEX_INITIALIZER;
+std::mutex System::sLock;
 System* System::sInstance = nullptr;
 
 System::System() {
     struct utsname info;
-    if (uname(&info) == 0) {
+    if (::uname(&info) == 0) {
         mSystemProperties->put(String::valueOf("os.arch"), String::valueOf(info.machine));
         mSystemProperties->put(String::valueOf("os.name"), String::valueOf(info.sysname));
         mSystemProperties->put(String::valueOf("os.version"), String::valueOf(info.release));
     }
     char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
+    if (::getcwd(cwd, sizeof(cwd)) != nullptr) {
         mSystemProperties->put(String::valueOf("user.dir"), String::valueOf(cwd));
     }
 }
 
 System* System::getInstance() {
-    pthread_mutex_lock(&sMutex);
+    sLock.lock();
     if (sInstance == nullptr) {
         sInstance = new System();
     }
-    pthread_mutex_unlock(&sMutex);
+    sLock.unlock();
     return sInstance;
 }
 
@@ -59,16 +60,18 @@ bool System::arraycopy(const void* src, const size_t srcPos, const size_t srcLen
     if (src == nullptr || dest == nullptr) {
         return false;
     }
-    memcpy(((uint8_t*) dest) + destPos, ((uint8_t*) src) + srcPos, length);
+    std::memcpy(((uint8_t*) dest) + destPos, ((uint8_t*) src) + srcPos, length);
     return true;
 }
 
 void System::arraycopy(const sp<ByteArray>& src, const size_t srcPos,
         const sp<ByteArray>& dest, const size_t destPos, const size_t length) {
-    Assert::assertNotNull(src);
-    Assert::assertNotNull(dest);
-    Assert::assertFalse<IndexOutOfBoundsException>(srcPos + length > src->size());
-    Assert::assertFalse<IndexOutOfBoundsException>(destPos + length > dest->size());
+    if (src == nullptr || dest == nullptr) {
+        throw NullPointerException();
+    }
+    if (srcPos + length > src->size() || destPos + length > dest->size()) {
+        throw IndexOutOfBoundsException();
+    }
     std::memcpy(dest->c_arr() + destPos, src->c_arr() + srcPos, length);
 }
 

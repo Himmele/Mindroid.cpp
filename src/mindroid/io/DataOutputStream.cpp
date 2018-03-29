@@ -17,7 +17,7 @@
 #include <mindroid/io/DataOutputStream.h>
 #include <mindroid/lang/Float.h>
 #include <mindroid/lang/Double.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
 
 namespace mindroid {
 
@@ -40,7 +40,6 @@ void DataOutputStream::write(const sp<ByteArray>& buffer) {
 }
 
 void DataOutputStream::write(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull("buffer == null", buffer);
     mOutputStream->write(buffer, offset, count);
 }
 
@@ -57,7 +56,9 @@ void DataOutputStream::writeByte(uint8_t value) {
 }
 
 void DataOutputStream::writeBytes(const sp<String>& string) {
-    Assert::assertNotNull(string);
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
     if (string->length() == 0) {
         return;
     }
@@ -69,7 +70,9 @@ void DataOutputStream::writeChar(char value) {
 }
 
 void DataOutputStream::writeChars(const sp<String>& string) {
-    Assert::assertNotNull(string);
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
     if (string->length() == 0) {
         return;
     }
@@ -114,10 +117,13 @@ void DataOutputStream::writeLong(uint64_t value) {
 }
 
 void DataOutputStream::writeUTF(const sp<String>& string) {
-    Assert::assertNotNull(string);
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
     if (string->length() == 0) {
         return;
     }
+    writeShort(string->length());
     mOutputStream->write(string->getBytes());
 }
 

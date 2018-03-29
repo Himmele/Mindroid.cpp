@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_IONSHAREDPREFERENCECHANGELISTENER_H_
-#define MINDROID_IONSHAREDPREFERENCECHANGELISTENER_H_
+#ifndef MINDROID_APP_IONSHAREDPREFERENCECHANGELISTENER_H_
+#define MINDROID_APP_IONSHAREDPREFERENCECHANGELISTENER_H_
 
 #include <mindroid/os/Binder.h>
 #include <mindroid/os/IInterface.h>
@@ -128,4 +128,4 @@ public:
 } /* namespace binder */
 } /* namespace mindroid */
 
-#endif /* MINDROID_IONSHAREDPREFERENCECHANGELISTENER_H_ */
+#endif /* MINDROID_APP_IONSHAREDPREFERENCECHANGELISTENER_H_ */

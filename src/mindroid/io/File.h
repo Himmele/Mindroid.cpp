@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILE_H_
-#define MINDROID_FILE_H_
+#ifndef MINDROID_IO_FILE_H_
+#define MINDROID_IO_FILE_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -316,4 +316,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILE_H_ */
+#endif /* MINDROID_IO_FILE_H_ */

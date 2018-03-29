@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILEHANDLER_H_
-#define MINDROID_FILEHANDLER_H_
+#ifndef MINDROID_UTIL_LOGGING_FILEHANDLER_H_
+#define MINDROID_UTIL_LOGGING_FILEHANDLER_H_
 
 #include <mindroid/lang/String.h>
 #include <mindroid/io/File.h>
@@ -196,4 +196,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILEHANDLER_H_ */
+#endif /* MINDROID_UTIL_LOGGING_FILEHANDLER_H_ */

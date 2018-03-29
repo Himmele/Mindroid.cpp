@@ -16,13 +16,14 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_PACKAGEMANAGER_H_
-#define MINDROID_PACKAGEMANAGER_H_
+#ifndef MINDROID_CONTENT_PM_PACKAGEMANAGER_H_
+#define MINDROID_CONTENT_PM_PACKAGEMANAGER_H_
 
 #include <mindroid/content/Context.h>
 #include <mindroid/content/pm/ResolveInfo.h>
 #include <mindroid/content/pm/IPackageManager.h>
 #include <mindroid/lang/Object.h>
+#include <mindroid/lang/RuntimeException.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/util/ArrayList.h>
 
@@ -65,8 +66,7 @@ public:
         try {
             return mService->getInstalledPackages(flags);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
-            return nullptr;
+            throw RuntimeException("System failure", e);
         }
     }
 
@@ -84,8 +84,7 @@ public:
         try {
             return mService->resolveService(intent, flags);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
-            return nullptr;
+            throw RuntimeException("System failure", e);
         }
     }
 
@@ -95,4 +94,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PACKAGEMANAGER_H_ */
+#endif /* MINDROID_CONTENT_PM_PACKAGEMANAGER_H_ */

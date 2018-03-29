@@ -28,8 +28,8 @@ void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
         message = record->toShortString();
     }
 
-    printf("%s\n", message->c_str());
-    fflush(stdout);
+    ::printf("%s\n", message->c_str());
+    ::fflush(stdout);
 }
 
 void ConsoleHandler::setFlag(uint32_t flag) {

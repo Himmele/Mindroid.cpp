@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_INTEGER_H_
-#define MINDROID_INTEGER_H_
+#ifndef MINDROID_LANG_INTEGER_H_
+#define MINDROID_LANG_INTEGER_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -64,4 +64,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_INTEGER_H_ */
+#endif /* MINDROID_LANG_INTEGER_H_ */

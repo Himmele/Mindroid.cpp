@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_HANDLERTHREAD_H_
-#define MINDROID_HANDLERTHREAD_H_
+#ifndef MINDROID_OS_HANDLERTHREAD_H_
+#define MINDROID_OS_HANDLERTHREAD_H_
 
 #include <mindroid/lang/Thread.h>
 
@@ -75,4 +75,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_HANDLERTHREAD_H_ */
+#endif /* MINDROID_OS_HANDLERTHREAD_H_ */

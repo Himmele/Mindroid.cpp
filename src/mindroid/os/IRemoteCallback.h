@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_IREMOTECALLBACK_H_
-#define MINDROID_IREMOTECALLBACK_H_
+#ifndef MINDROID_OS_IREMOTECALLBACK_H_
+#define MINDROID_OS_IREMOTECALLBACK_H_
 
 #include <mindroid/os/Binder.h>
 #include <mindroid/lang/Class.h>
@@ -123,4 +123,4 @@ public:
 } /* namespace binder */
 } /* namespace mindroid */
 
-#endif /* MINDROID_IREMOTECALLBACK_H_ */
+#endif /* MINDROID_OS_IREMOTECALLBACK_H_ */

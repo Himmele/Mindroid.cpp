@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILEINPUTSTREAM_H_
-#define MINDROID_FILEINPUTSTREAM_H_
+#ifndef MINDROID_IO_FILEINPUTSTREAM_H_
+#define MINDROID_IO_FILEINPUTSTREAM_H_
 
 #include <mindroid/io/InputStream.h>
 #include <fstream>
@@ -47,4 +47,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILEINPUTSTREAM_H_ */
+#endif /* MINDROID_IO_FILEINPUTSTREAM_H_ */

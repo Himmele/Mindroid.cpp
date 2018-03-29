@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_THENABLE_H_
-#define MINDROID_THENABLE_H_
+#ifndef MINDROID_UTIL_CONCURRENT_THENABLE_H_
+#define MINDROID_UTIL_CONCURRENT_THENABLE_H_
 
 #include <mindroid/lang/Runnable.h>
 #include <mindroid/lang/Exception.h>
@@ -111,7 +111,7 @@ protected:
     mutable sp<Lock> mLock;
     mutable sp<Condition> mCondition;
     sp<Exception> mException;
-    bool mIsDone;
+    bool mIsDone = false;
     sp<Executor> mExecutor;
 
 private:
@@ -123,4 +123,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_THENABLE_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_THENABLE_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_PAIR_H_
-#define MINDROID_PAIR_H_
+#ifndef MINDROID_UTIL_PAIR_H_
+#define MINDROID_UTIL_PAIR_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -57,4 +57,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PAIR_H_ */
+#endif /* MINDROID_UTIL_PAIR_H_ */

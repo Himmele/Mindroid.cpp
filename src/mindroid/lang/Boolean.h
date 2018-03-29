@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BOOLEAN_H_
-#define MINDROID_BOOLEAN_H_
+#ifndef MINDROID_LANG_BOOLEAN_H_
+#define MINDROID_LANG_BOOLEAN_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -56,4 +56,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BOOLEAN_H_ */
+#endif /* MINDROID_LANG_BOOLEAN_H_ */

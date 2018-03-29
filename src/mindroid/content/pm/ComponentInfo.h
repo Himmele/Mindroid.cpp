@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_COMPONENTINFO_H_
-#define MINDROID_COMPONENTINFO_H_
+#ifndef MINDROID_CONTENT_PM_COMPONENTINFO_H_
+#define MINDROID_CONTENT_PM_COMPONENTINFO_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/content/pm/ApplicationInfo.h>
@@ -79,4 +79,4 @@ protected:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_COMPONENTINFO_H_ */
+#endif /* MINDROID_CONTENT_PM_COMPONENTINFO_H_ */

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "mindroid/lang/String.h"
-#include "mindroid/lang/Integer.h"
+#include <mindroid/lang/String.h>
+#include <mindroid/lang/Integer.h>
 
 using namespace mindroid;
 

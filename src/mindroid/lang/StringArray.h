@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_STRINGARRAY_H_
-#define MINDROID_STRINGARRAY_H_
+#ifndef MINDROID_LANG_STRINGARRAY_H_
+#define MINDROID_LANG_STRINGARRAY_H_
 
 #include <mindroid/lang/Object.h>
 #include <vector>
@@ -49,7 +49,7 @@ public:
     /**
      * Returns the const element in the given position.
      *
-     * Asserts IndexOutOfBoundsException if position is out of bounds.
+     * throws IndexOutOfBoundsException if position is out of bounds.
      */
     const sp<String>& get(size_t position) const;
     const sp<String>& operator[](size_t position) const;
@@ -57,7 +57,7 @@ public:
     /**
      * Returns the element in the given position.
      *
-     * Asserts IndexOutOfBoundsException if position is out of bounds.
+     * throws IndexOutOfBoundsException if position is out of bounds.
      */
     sp<String>& get(size_t position);
     void set(size_t position, const sp<String>& string);
@@ -70,4 +70,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_STRINGARRAY_H_ */
+#endif /* MINDROID_LANG_STRINGARRAY_H_ */

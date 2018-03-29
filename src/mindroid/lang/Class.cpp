@@ -18,28 +18,28 @@
 
 namespace mindroid {
 
-pthread_mutex_t Classes::sMutex = PTHREAD_MUTEX_INITIALIZER;
+std::mutex Classes::sLock;
 Classes* Classes::sInstance = nullptr;
 
 void Classes::put(const sp<String>& name, Factory* factory) {
-    pthread_mutex_lock(&sMutex);
+    sLock.lock();
     mClasses->put(name, factory);
-    pthread_mutex_unlock(&sMutex);
+    sLock.unlock();
 }
 
 Factory* Classes::get(const sp<String>& name) {
-    pthread_mutex_lock(&sMutex);
+    sLock.lock();
     Factory* factory = mClasses->get(name);
-    pthread_mutex_unlock(&sMutex);
+    sLock.unlock();
     return factory;
 }
 
 Classes* Classes::getInstance() {
-    pthread_mutex_lock(&sMutex);
+    sLock.lock();
     if (sInstance == nullptr) {
         sInstance = new Classes();
     }
-    pthread_mutex_unlock(&sMutex);
+    sLock.unlock();
     return sInstance;
 }
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_NULLPOINTEREXCEPTION_H_
-#define MINDROID_NULLPOINTEREXCEPTION_H_
+#ifndef MINDROID_LANG_NULLPOINTEREXCEPTION_H_
+#define MINDROID_LANG_NULLPOINTEREXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,8 +30,26 @@ public:
 
     NullPointerException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    NullPointerException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    NullPointerException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    NullPointerException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    NullPointerException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    NullPointerException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    NullPointerException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_NULLPOINTEREXCEPTION_H_ */
+#endif /* MINDROID_LANG_NULLPOINTEREXCEPTION_H_ */

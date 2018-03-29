@@ -19,7 +19,7 @@
 #include <mindroid/os/Message.h>
 #include <mindroid/os/MessageQueue.h>
 #include <mindroid/os/Looper.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
 
 namespace mindroid {
 
@@ -31,14 +31,18 @@ Handler::Handler(const sp<Callback>& callback) : Handler(Looper::myLooper(), cal
 
 Handler::Handler(const sp<Looper>& looper) {
     mLooper = looper;
-    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
+    if (mLooper == nullptr) {
+        throw NullPointerException("Can't create handler inside thread that has not called Looper.prepare()");
+    }
     mMessageQueue = looper->mMessageQueue;
     mCallback = nullptr;
 }
 
 Handler::Handler(const sp<Looper>& looper, const sp<Callback>& callback) {
     mLooper = looper;
-    Assert::assertNotNull("Can't create handler inside thread that has not called Looper.prepare()", mLooper);
+    if (mLooper == nullptr) {
+        throw NullPointerException("Can't create handler inside thread that has not called Looper.prepare()");
+    }
     mMessageQueue = looper->mMessageQueue;
     mCallback = callback;
 }
@@ -53,72 +57,6 @@ void Handler::dispatchMessage(const sp<Message>& msg) {
             }
         }
         handleMessage(msg);
-    }
-}
-
-sp<Closure> Handler::post(const std::function<void (void)>& func) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), func);
-        message->callback = closure;
-        return sendMessage(message) ? closure : nullptr;
-    } else {
-        return nullptr;
-    }
-}
-
-sp<Closure> Handler::post(std::function<void (void)>&& func) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), std::move(func));
-        message->callback = closure;
-        return sendMessage(message) ? closure : nullptr;
-    } else {
-        return nullptr;
-    }
-}
-
-sp<Closure> Handler::postAtTime(const std::function<void (void)>& func, uint64_t uptimeMillis) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), func);
-        message->callback = closure;
-        return sendMessageAtTime(message, uptimeMillis) ? closure : nullptr;
-    } else {
-        return nullptr;
-    }
-}
-
-sp<Closure> Handler::postAtTime(std::function<void (void)>&& func, uint64_t uptimeMillis) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), std::move(func));
-        message->callback = closure;
-        return sendMessageAtTime(message, uptimeMillis) ? closure : nullptr;
-    } else {
-        return nullptr;
-    }
-}
-
-sp<Closure> Handler::postDelayed(const std::function<void (void)>& func, uint32_t delayMillis) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), func);
-        message->callback = closure;
-        return sendMessageDelayed(message, delayMillis) ? closure : nullptr;
-    } else {
-        return nullptr;
-    }
-}
-
-sp<Closure> Handler::postDelayed(std::function<void (void)>&& func, uint32_t delayMillis) {
-    if (func) {
-        const sp<Message> message = Message::obtain();
-        sp<Closure> closure = new Closure(sp<Handler>(this), std::move(func));
-        message->callback = closure;
-        return sendMessageDelayed(message, delayMillis) ? closure : nullptr;
-    } else {
-        return nullptr;
     }
 }
 
@@ -174,7 +112,7 @@ sp<Message> Handler::getPostMessage(const sp<Runnable>& runnable, const sp<Objec
 
 sp<Executor> Handler::asExecutor() {
     sp<Executor> executor;
-    if (mExecutor != nullptr && (executor = mExecutor.lock()) != nullptr) {
+    if (mExecutor != nullptr && (executor = mExecutor.get()) != nullptr) {
         return executor;
     }
 

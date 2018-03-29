@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BINDER_H_
-#define MINDROID_BINDER_H_
+#ifndef MINDROID_OS_BINDER_H_
+#define MINDROID_OS_BINDER_H_
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Runnable.h>
@@ -147,7 +147,7 @@ public:
     }
     sp<IInterface> queryLocalInterface(const sp<String>& descriptor) override {
         if (mDescriptor->equals(descriptor)) {
-            return mOwner.lock();
+            return mOwner.get();
         }
         return nullptr;
     }
@@ -243,4 +243,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BINDER_H_ */
+#endif /* MINDROID_OS_BINDER_H_ */

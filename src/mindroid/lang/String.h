@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_STRING_H_
-#define MINDROID_STRING_H_
+#ifndef MINDROID_LANG_STRING_H_
+#define MINDROID_LANG_STRING_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/ByteArray.h>
@@ -37,6 +37,7 @@ public:
     explicit String(const char* string, size_t size);
     explicit String(const uint8_t* string, size_t size) : String(reinterpret_cast<const char*>(string), size) { }
     explicit String(const char c);
+    explicit String(const sp<ByteArray>& byteArray);
     virtual ~String() { }
 
     bool equals(const sp<Object>& other) const override;
@@ -197,4 +198,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_STRING_H_ */
+#endif /* MINDROID_LANG_STRING_H_ */

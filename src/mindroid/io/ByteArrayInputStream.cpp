@@ -16,7 +16,8 @@
 
 #include <mindroid/io/ByteArrayInputStream.h>
 #include <mindroid/lang/System.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
@@ -25,7 +26,9 @@ ByteArrayInputStream::ByteArrayInputStream(const sp<ByteArray>& buffer) :
         mPosition(0),
         mMark(0),
         mCount(0) {
-    Assert::assertNotNull(buffer);
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
     mCount = buffer->size();
 }
 
@@ -34,7 +37,9 @@ ByteArrayInputStream::ByteArrayInputStream(const sp<ByteArray>& buffer, size_t o
         mPosition(offset),
         mMark(offset),
         mCount(0) {
-    Assert::assertNotNull(buffer);
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
     mCount = offset + count > buffer->size() ? buffer->size() : offset + count;
 }
 
@@ -63,8 +68,12 @@ ssize_t ByteArrayInputStream::read(const sp<ByteArray>& buffer) {
 }
 
 ssize_t ByteArrayInputStream::read(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull(buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
     if (mPosition >= mCount) {
         return -1;

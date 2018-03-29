@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ISERVICEMANAGER_H_
-#define MINDROID_ISERVICEMANAGER_H_
+#ifndef MINDROID_OS_ISERVICEMANAGER_H_
+#define MINDROID_OS_ISERVICEMANAGER_H_
 
 #include <mindroid/util/concurrent/Promise.h>
 #include <mindroid/lang/Object.h>
@@ -156,4 +156,4 @@ public:
 } /* namespace binder */
 } /* namespace mindroid */
 
-#endif /* MINDROID_ISERVICEMANAGER_H_ */
+#endif /* MINDROID_OS_ISERVICEMANAGER_H_ */

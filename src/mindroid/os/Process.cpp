@@ -23,6 +23,7 @@
 #include <mindroid/os/RemoteCallback.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/RuntimeException.h>
 #include <mindroid/util/Log.h>
 #include <cstdio>
 #include <cinttypes>
@@ -67,7 +68,7 @@ void Process::stop(uint64_t timeout) {
                 try {
                     process->stopService(intent);
                 } catch (const RemoteException& e) {
-                    Assert::fail("System failure");
+                    throw RuntimeException("System failure", e);
                 }
             }
 
@@ -104,14 +105,13 @@ void Process::ProcessImpl::createService(const sp<Intent>& intent, const sp<IRem
     } else {
         if (mProcess->mPackageManager == nullptr) {
             mProcess->mPackageManager = binder::PackageManager::Stub::asInterface(ServiceManager::getSystemService(Context::PACKAGE_MANAGER));
-            Assert::assertNotNull("System failure", mProcess->mPackageManager);
         }
         sp<ResolveInfo> resolveInfo = nullptr;
         sp<ServiceInfo> serviceInfo = nullptr;
         try {
             resolveInfo = mProcess->mPackageManager->resolveService(intent, 0);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
+            throw RuntimeException("System failure", e);
         }
 
         if (resolveInfo != nullptr && resolveInfo->serviceInfo != nullptr) {

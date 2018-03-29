@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
-#define MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_
+#ifndef MINDROID_LANG_OPERATIONNOTSUPPORTEDEXCEPTION_H_
+#define MINDROID_LANG_OPERATIONNOTSUPPORTEDEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -34,8 +34,26 @@ public:
 
     UnsupportedOperationException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    UnsupportedOperationException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    UnsupportedOperationException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    UnsupportedOperationException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    UnsupportedOperationException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    UnsupportedOperationException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    UnsupportedOperationException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_OPERATIONNOTSUPPORTEDEXCEPTION_H_ */
+#endif /* MINDROID_LANG_OPERATIONNOTSUPPORTEDEXCEPTION_H_ */

@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_EVENTLOG_H_
-#define MINDROID_EVENTLOG_H_
+#ifndef MINDROID_UTIL_EVENTLOG_H_
+#define MINDROID_UTIL_EVENTLOG_H_
 
 #include <mindroid/util/Log.h>
 
@@ -120,4 +120,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_EVENTLOG_H_ */
+#endif /* MINDROID_UTIL_EVENTLOG_H_ */

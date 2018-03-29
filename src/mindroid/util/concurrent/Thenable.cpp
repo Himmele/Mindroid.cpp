@@ -15,15 +15,14 @@
  */
 
 #include <mindroid/util/concurrent/Thenable.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/os/Handler.h>
 
 namespace mindroid {
 
 Thenable::Thenable() :
         mLock(new ReentrantLock()),
-        mCondition(mLock->newCondition()),
-        mIsDone(false) {
+        mCondition(mLock->newCondition()) {
     if (Looper::myLooper() != nullptr) {
         sp<Handler> handler = new Handler();
         mExecutor = handler->asExecutor();
@@ -34,17 +33,19 @@ Thenable::Thenable() :
 
 Thenable::Thenable(const sp<Handler>& handler) :
         mLock(new ReentrantLock()),
-        mCondition(mLock->newCondition()),
-        mIsDone(false) {
-    Assert::assertNotNull("Handler must not be null", handler);
+        mCondition(mLock->newCondition()) {
+    if (handler == nullptr) {
+        throw NullPointerException("Handler must not be null");
+    }
     mExecutor = handler->asExecutor();
 }
 
 Thenable::Thenable(const sp<Executor>& executor) :
         mLock(new ReentrantLock()),
-        mCondition(mLock->newCondition()),
-        mIsDone(false) {
-    Assert::assertNotNull("Executor must not be null", executor);
+        mCondition(mLock->newCondition()) {
+    if (executor == nullptr) {
+        throw NullPointerException("Executor must not be null");
+    }
     mExecutor = executor;
 }
 

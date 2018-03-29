@@ -14,42 +14,173 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SOCKET_H_
-#define MINDROID_SOCKET_H_
+#ifndef MINDROID_NET_SOCKET_H_
+#define MINDROID_NET_SOCKET_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/io/InputStream.h>
+#include <mindroid/io/OutputStream.h>
 
 namespace mindroid {
 
 class ServerSocket;
+class InetSocketAddress;
 
 class Socket :
         public Object {
 public:
+    /**
+     * Creates a new unconnected socket. When a SocketImplFactory is defined it
+     * creates the internal socket implementation, otherwise the default socket
+     * implementation will be used for this socket.
+     *
+     * @see SocketImplFactory
+     * @see SocketImpl
+     */
     Socket() = default;
+
+    /**
+     * Creates a new streaming socket connected to the target host specified by
+     * the parameters {@code host} and {@code port}. The socket is bound
+     * to any available port on the local host.
+     *
+     * <p>This implementation tries each IP address for the given hostname (in
+     * <a href="http://www.ietf.org/rfc/rfc3484.txt">RFC 3484</a> order)
+     * until it either connects successfully or it exhausts the set.
+     *
+     * @param host
+     *            the target host name or IP address to connect to.
+     * @param port
+     *            the port on the target host to connect to.
+     * @throws UnknownHostException
+     *             if the host name could not be resolved into an IP address.
+     * @throws IOException
+     *             if an error occurs while creating the socket.
+     */
     Socket(const char* host, uint16_t port) :
             Socket(String::valueOf(host), port) {
     }
     Socket(const sp<String>& host, uint16_t port);
+
     virtual ~Socket();
     Socket(const Socket&) = delete;
     Socket& operator=(const Socket&) = delete;
 
-    int connect(const char* host, uint16_t port) {
-        return connect(String::valueOf(host), port);
-    }
-    int connect(const sp<String>& host, uint16_t port);
-    ssize_t read(uint8_t* data, size_t size);
-    ssize_t readFully(uint8_t* data, size_t size);
-    bool write(const void* data, size_t size);
+    /**
+     * Closes the socket. It is not possible to reconnect or rebind to this
+     * socket thereafter which means a new socket instance has to be created.
+     *
+     * @throws IOException
+     *             if an error occurs while closing the socket.
+     */
     void close();
+
+    /**
+     * Connects this socket to the given remote host address and port specified
+     * by the SocketAddress {@code socketAddress}.
+     *
+     * @param socketAddress
+     *            the address and port of the remote host to connect to.
+     * @throws IllegalArgumentException
+     *             if the given SocketAddress is invalid or not supported.
+     * @throws IOException
+     *             if the socket is already connected or an error occurs while
+     *             connecting.
+     */
+    void connect(const sp<InetSocketAddress>& socketAddress);
+
+    /**
+     * Returns an input stream to read data from this socket. If the socket has an associated
+     * {@link SocketChannel} and that channel is in non-blocking mode then reads from the
+     * stream will throw a {@link java.nio.channels.IllegalBlockingModeException}.
+     *
+     * @return the byte-oriented input stream.
+     * @throws IOException
+     *             if an error occurs while creating the input stream or the
+     *             socket is in an invalid state.
+     */
+    sp<InputStream> getInputStream();
+
+    /**
+     * Returns an output stream to write data into this socket. If the socket has an associated
+     * {@link SocketChannel} and that channel is in non-blocking mode then writes to the
+     * stream will throw a {@link java.nio.channels.IllegalBlockingModeException}.
+     *
+     * @return the byte-oriented output stream.
+     * @throws IOException
+     *             if an error occurs while creating the output stream or the
+     *             socket is in an invalid state.
+     */
+    sp<OutputStream> getOutputStream();
+
+    /**
+     * Returns whether this socket is connected to a remote host.
+     *
+     * @return {@code true} if the socket is connected, {@code false} otherwise.
+     */
     bool isConnected() const { return mIsConnected; }
+
+    /**
+     * Returns whether this socket is closed.
+     *
+     * @return {@code true} if the socket is closed, {@code false} otherwise.
+     */
     bool isClosed() const { return mIsClosed; }
-    int getId() const { return mSocketId; }
 
 private:
-    int mSocketId = -1;
+    class SocketInputStream : public InputStream {
+    public:
+        virtual ~SocketInputStream() {
+            close();
+        }
+
+        void close() override {
+            InputStream::close();
+            mSocket = nullptr;
+            mFd = -1;
+        }
+
+        size_t available() override;
+        int32_t read() override;
+        ssize_t read(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
+
+    private:
+        SocketInputStream(const sp<Socket>& socket) : mSocket(socket), mFd(socket->mFd) {
+        }
+
+        sp<Socket> mSocket;
+        int32_t mFd;
+
+        friend class Socket;
+    };
+
+    class SocketOutputStream : public OutputStream {
+    public:
+        virtual ~SocketOutputStream() {
+            close();
+        }
+
+        void close() override  {
+            OutputStream::close();
+            mSocket = nullptr;
+            mFd = -1;
+        }
+
+        void write(int32_t b) override;
+        void write(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
+
+    private:
+        SocketOutputStream(const sp<Socket>& socket) : mSocket(socket), mFd(socket->mFd) {
+        }
+
+        sp<Socket> mSocket;
+        int32_t mFd;
+
+        friend class Socket;
+    };
+
+    int32_t mFd = -1;
     bool mIsConnected = false;
     bool mIsClosed = false;
 
@@ -58,4 +189,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SOCKET_H_ */
+#endif /* MINDROID_NET_SOCKET_H_ */

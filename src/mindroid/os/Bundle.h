@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BUNDLE_H_
-#define MINDROID_BUNDLE_H_
+#ifndef MINDROID_OS_BUNDLE_H_
+#define MINDROID_OS_BUNDLE_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/util/HashMap.h>
@@ -669,4 +669,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BUNDLE_H_ */
+#endif /* MINDROID_OS_BUNDLE_H_ */

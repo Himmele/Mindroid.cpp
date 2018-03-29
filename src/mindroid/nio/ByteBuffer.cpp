@@ -18,7 +18,6 @@
 #include <mindroid/nio/ByteBuffer.h>
 #include <mindroid/nio/ByteArrayBuffer.h>
 #include <mindroid/nio/BufferOverflowException.h>
-#include <mindroid/util/Assert.h>
 
 namespace mindroid {
 
@@ -26,8 +25,8 @@ ByteBuffer::ByteBuffer(const sp<ByteArray>& buffer, bool readOnly) :
         Buffer(buffer->size(), readOnly), mBuffer(buffer) {
 }
 
-ByteBuffer::ByteBuffer(const sp<ByteArray>& buffer, size_t offset, size_t size, bool readOnly) :
-        Buffer(size, readOnly), mBuffer(new ByteArray(buffer->c_arr() + offset, size)) {
+ByteBuffer::ByteBuffer(const sp<ByteArray>& buffer, size_t offset, size_t count, bool readOnly) :
+        Buffer(count, readOnly), mBuffer(new ByteArray(buffer->c_arr() + offset, count)) {
 }
 
 sp<ByteBuffer> ByteBuffer::allocate(size_t capacity) {
@@ -38,12 +37,14 @@ size_t ByteBuffer::arrayOffset() {
     return mOffset;
 }
 
-int ByteBuffer::compareTo(const sp<ByteBuffer>& other) const {
-    Assert::assertNotNull(other);
+int32_t ByteBuffer::compareTo(const sp<ByteBuffer>& other) const {
+    if (other == nullptr) {
+        return false;
+    }
     return compareTo(*other);
 }
 
-int ByteBuffer::compareTo(const ByteBuffer& other) const {
+int32_t ByteBuffer::compareTo(const ByteBuffer& other) const {
     return std::memcmp(mBuffer->c_arr(), other.mBuffer->c_arr(), std::min(mCapacity, other.mCapacity));
 }
 
@@ -167,7 +168,7 @@ sp<ByteBuffer> ByteBuffer::putDouble(double value) {
     return this;
 }
 
-sp<ByteBuffer> ByteBuffer::putDouble(size_t index, double value){
+sp<ByteBuffer> ByteBuffer::putDouble(size_t index, double value) {
     checkBufferOverflow(index, sizeof(value));
     *reinterpret_cast<double*>(mBuffer->c_arr() + index) = value;
     return this;
@@ -229,12 +230,14 @@ sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array) {
     return new ByteArrayBuffer(array);
 }
 
-sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array, size_t offset, size_t size) {
-    return new ByteArrayBuffer(array, offset, size);
+sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array, size_t offset, size_t count) {
+    return new ByteArrayBuffer(array, offset, count);
 }
 
 void ByteBuffer::checkBufferOverflow(size_t index, size_t amount) {
-    Assert::assertFalse<BufferOverflowException>(index + amount > mCapacity);
+    if (index + amount > mCapacity) {
+        throw BufferOverflowException();
+    }
 }
 
 } /* namespace mindroid */

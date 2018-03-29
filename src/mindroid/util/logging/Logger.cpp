@@ -18,7 +18,7 @@
 #include <mindroid/content/Intent.h>
 #include <mindroid/os/Environment.h>
 #include <mindroid/os/IRemoteCallback.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/IllegalArgumentException.h>
 #include <cstdio>
 
 namespace mindroid {
@@ -33,7 +33,9 @@ Logger::LogWorker::LogWorker(const sp<Bundle>& arguments) :
         Thread(Logger::TAG) {
     int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     mLogBuffer = Log::getLogBuffer(logBuffer);
-    Assert::assertNotNull(String::format("Invalid log buffer: %d", logBuffer)->c_str(), mLogBuffer);
+    if (mLogBuffer == nullptr) {
+        throw IllegalArgumentException(String::format("Invalid log buffer: %d", logBuffer));
+    }
     mLogPriority = arguments->getInt("logPriority", Log::INFO);
     mFlags = arguments->getStringArrayList("logFlags");
     bool consoleLogging = arguments->getBoolean("consoleLogging", false);

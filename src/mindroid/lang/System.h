@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SYSTEM_H_
-#define MINDROID_SYSTEM_H_
+#ifndef MINDROID_LANG_SYSTEM_H_
+#define MINDROID_LANG_SYSTEM_H_
 
 #include <mindroid/lang/String.h>
 #include <mindroid/util/HashMap.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <cstdint>
 #include <ctime>
-#include <stdlib.h>
-#include <string.h>
-#include <pthread.h>
-
-#ifndef CLOCK_REALTIME
-#define CLOCK_REALTIME  0
-#endif
-
-#ifndef CLOCK_MONOTONIC
-#define CLOCK_MONOTONIC 1
-#endif
+#include <cstdlib>
+#include <cstring>
+#include <mutex>
 
 namespace mindroid {
 
@@ -56,7 +48,7 @@ public:
      */
     static uint64_t currentTimeMillis() {
         timespec now;
-        clock_gettime(CLOCK_REALTIME, &now);
+        ::clock_gettime(CLOCK_REALTIME, &now);
         return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
     }
 
@@ -88,6 +80,27 @@ public:
     static bool arraycopy(const void* src, const size_t srcPos, const size_t srcLength,
             const void* dest, const size_t destPos, const size_t destLength, const size_t length);
 
+    /**
+     * Copies {@code length} elements from the array {@code src},
+     * starting at offset {@code srcPos}, into the array {@code dst},
+     * starting at offset {@code dstPos}.
+     *
+     * <p>The source and destination arrays can be the same array,
+     * in which case copying is performed as if the source elements
+     * are first copied into a temporary array and then into the
+     * destination array.
+     *
+     * @param src
+     *            the source array to copy the content.
+     * @param srcPos
+     *            the starting index of the content in {@code src}.
+     * @param dst
+     *            the destination array to copy the data into.
+     * @param dstPos
+     *            the starting index for the copied content in {@code dst}.
+     * @param length
+     *            the number of elements to be copied.
+     */
     static void arraycopy(const sp<ByteArray>& src, const size_t srcPos,
             const sp<ByteArray>& dest, const size_t destPos, const size_t length);
 
@@ -148,16 +161,15 @@ public:
 
 private:
     System();
-
     static System* getInstance();
 
     sp<ReentrantLock> mLock = new ReentrantLock();
     sp<HashMap<sp<String>, sp<String>>> mSystemProperties = new HashMap<sp<String>, sp<String>>();
 
-    static pthread_mutex_t sMutex;
+    static std::mutex sLock;
     static System* sInstance;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SYSTEM_H_ */
+#endif /* MINDROID_LANG_SYSTEM_H_ */

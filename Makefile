@@ -16,7 +16,7 @@ BIN_DIR := bin
 
 .PHONY: clean
 
-all: tinyxml2 Mindroid.cpp googletest Tests Services
+all: tinyxml2 Mindroid.cpp googletest Tests Main
 
 clean:
 	$(RM) -rf $(LIB_DIR)
@@ -33,32 +33,41 @@ SRCS = \
 	src/mindroid/content/Context.cpp \
 	src/mindroid/content/ContextWrapper.cpp \
 	src/mindroid/content/Intent.cpp \
-	src/mindroid/content/pm/PackageManagerService.cpp \
 	src/mindroid/content/pm/IPackageManager.cpp \
+	src/mindroid/content/pm/PackageManagerService.cpp \
+	src/mindroid/io/ByteArrayInputStream.cpp \
+	src/mindroid/io/ByteArrayOutputStream.cpp \
+	src/mindroid/io/DataInputStream.cpp \
+	src/mindroid/io/DataOutputStream.cpp \
 	src/mindroid/io/File.cpp \
+	src/mindroid/io/FileInputStream.cpp \
+	src/mindroid/io/FileOutputStream.cpp \
+	src/mindroid/io/InputStream.cpp \
+	src/mindroid/io/OutputStream.cpp \
 	src/mindroid/lang/Boolean.cpp \
-	src/mindroid/lang/Byte.cpp \
 	src/mindroid/lang/ByteArray.cpp \
+	src/mindroid/lang/Byte.cpp \
 	src/mindroid/lang/Character.cpp \
 	src/mindroid/lang/Class.cpp \
-	src/mindroid/lang/Closure.cpp \
 	src/mindroid/lang/Double.cpp \
 	src/mindroid/lang/Float.cpp \
 	src/mindroid/lang/Integer.cpp \
 	src/mindroid/lang/Long.cpp \
 	src/mindroid/lang/Object.cpp \
 	src/mindroid/lang/Short.cpp \
-	src/mindroid/lang/String.cpp \
 	src/mindroid/lang/StringArray.cpp \
 	src/mindroid/lang/StringBuilder.cpp \
+	src/mindroid/lang/String.cpp \
 	src/mindroid/lang/System.cpp \
 	src/mindroid/lang/Thread.cpp \
 	src/mindroid/net/DatagramSocket.cpp \
-	src/mindroid/net/SocketAddress.cpp \
-	src/mindroid/net/Socket4Address.cpp \
-	src/mindroid/net/Socket6Address.cpp \
-	src/mindroid/net/Socket.cpp \
+	src/mindroid/net/Inet4Address.cpp \
+	src/mindroid/net/Inet6Address.cpp \
+	src/mindroid/net/InetAddress.cpp \
+	src/mindroid/net/InetSocketAddress.cpp \
 	src/mindroid/net/ServerSocket.cpp \
+	src/mindroid/net/Socket.cpp \
+	src/mindroid/net/URI.cpp \
 	src/mindroid/nio/Buffer.cpp \
 	src/mindroid/nio/ByteArrayBuffer.cpp \
 	src/mindroid/nio/ByteBuffer.cpp \
@@ -81,7 +90,6 @@ SRCS = \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \
 	src/mindroid/util/Variant.cpp \
-	src/mindroid/util/concurrent/Semaphore.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
 	src/mindroid/util/concurrent/Thenable.cpp \
 	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \
@@ -159,17 +167,21 @@ $(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
-#==== Services ====
+#==== Main ====
 
-SERVICES_SRCS := src/examples/Services.cpp
-SERVICES_OBJS = $(SERVICES_SRCS:.cpp=.o)
-SERVICES_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(SERVICES_OBJS))
+MAIN_SRCS := src/main/Main.cpp \
+	examples/Services/src/ServiceExample1.cpp \
+	examples/Concurrency/src/PromiseExample.cpp \
+	examples/Concurrency/src/AsyncTaskExample.cpp \
+	examples/Concurrency/src/HandlerExample.cpp
+MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
+MAIN_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(MAIN_OBJS))
 
-Services = $(BIN_DIR)/Services
+Main = $(BIN_DIR)/Main
 
-Services: $(Services) Mindroid.cpp tinyxml2
+Main: $(Main) Mindroid.cpp tinyxml2
 
-$(Services): $(SERVICES_BIN_OBJS)
+$(Main): $(MAIN_BIN_OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^ -Llib -lmindroid -ltinyxml2 -lpthread -lrt
 	
 $(BIN_DIR)/%.o: %.cpp

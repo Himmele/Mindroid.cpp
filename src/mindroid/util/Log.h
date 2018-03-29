@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LOG_H_
-#define MINDROID_LOG_H_
+#ifndef MINDROID_UTIL_LOG_H_
+#define MINDROID_UTIL_LOG_H_
 
 #include <mindroid/util/logging/LogBuffer.h>
 #if defined(ANDROID)
@@ -238,4 +238,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LOG_H_ */
+#endif /* MINDROID_UTIL_LOG_H_ */

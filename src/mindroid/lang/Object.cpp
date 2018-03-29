@@ -16,13 +16,12 @@
  */
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <typeinfo>
 #include <sys/types.h>
-#include <pthread.h>
+#include <mutex>
 
 // Log all reference counting operations
 #define PRINT_REFERENCES 0
@@ -37,14 +36,14 @@ namespace mindroid {
 
 class Object::WeakReferenceImpl : public Object::WeakReference {
 public:
-    volatile int32_t mStrongReferenceCounter;
-    volatile int32_t mWeakReferenceCounter;
+    std::atomic<int32_t> mStrongReferenceCounter;
+    std::atomic<int32_t> mWeakReferenceCounter;
     Object* const mObject;
-    volatile int32_t mFlags;
+    std::atomic<int32_t> mFlags;
     Destroyer* mDestroyer;
 
 #if !DEBUG_REFERENCES
-    WeakReferenceImpl(Object* object) :
+    explicit WeakReferenceImpl(Object* object) :
             mStrongReferenceCounter(INITIAL_STRONG_REFERENCE_VALUE),
             mWeakReferenceCounter(0),
             mObject(object),
@@ -66,7 +65,6 @@ public:
             mObject(object),
             mFlags(0),
             mDestroyer(nullptr),
-            mLock(PTHREAD_MUTEX_INITIALIZER),
             mStrongReferences(nullptr),
             mWeakReferences(nullptr),
             mTrackReferences(!!DEBUG_REFERENCES_TRACK_REFERENCES),
@@ -76,22 +74,26 @@ public:
     ~WeakReferenceImpl() {
         if (!mMemorizeRefOperationsDuringRefTracking && mStrongReferences != nullptr) {
             DEBUG_INFO("Remaining strong references: ");
+            mLock.lock();
             Item* item = mStrongReferences;
             while (item) {
                 char c = item->referenceCounter >= 0 ? '+' : '-';
                 DEBUG_INFO("\t%c ID %p (reference couter is %d):", c, item->id, item->referenceCounter);
                 item = item->nextItem;
             }
+            mLock.unlock();
         }
 
         if (!mMemorizeRefOperationsDuringRefTracking && mWeakReferences != nullptr) {
             DEBUG_INFO("Remaining weak references: ");
+            mLock.lock();
             Item* item = mWeakReferences;
             while (item) {
                 char c = item->referenceCounter >= 0 ? '+' : '-';
                 DEBUG_INFO("\t%c ID %p (reference counter is %d):", c, item->id, item->referenceCounter);
                 item = item->nextItem;
             }
+            mLock.unlock();
         }
     }
 
@@ -129,7 +131,7 @@ public:
         buffer[0] = '\0';
 
         {
-            pthread_mutex_lock(&mLock);
+            mLock.lock();
             char tmpBuffer[128];
             sprintf(tmpBuffer, "Strong references on Object %p (WeakReference %p):\n", mObject, this);
             buffer = (char*) realloc(buffer, strlen(buffer) + strlen(tmpBuffer) + 1);
@@ -139,7 +141,7 @@ public:
             buffer = (char*) realloc(buffer, strlen(buffer) + strlen(tmpBuffer) + 1);
             strcat(buffer, tmpBuffer);
             buffer = printItems(buffer, mWeakReferences);
-            pthread_mutex_unlock(&mLock);
+            mLock.unlock();
         }
 
         DEBUG_INFO("%s", buffer);
@@ -156,32 +158,32 @@ private:
 
     void addItem(Item** items, const void* id, int32_t refCounter) {
         if (mTrackReferences) {
-            pthread_mutex_lock(&mLock);
+            mLock.lock();
             Item* item = new Item;
             item->id = id;
             item->referenceCounter = refCounter;
             item->nextItem = *items;
             *items = item;
-            pthread_mutex_unlock(&mLock);
+            mLock.unlock();
         }
     }
 
     void removeItem(Item** items, const void* id) {
         if (mTrackReferences) {
-            pthread_mutex_lock(&mLock);
+            mLock.lock();
             Item* item = *items;
             while (item != nullptr) {
                 if (item->id == id) {
                     *items = item->nextItem;
                     delete item;
-                    pthread_mutex_unlock(&mLock);
+                    mLock.unlock();
                     return;
                 }
 
                 items = &item->nextItem;
                 item = *items;
             }
-            pthread_mutex_unlock(&mLock);
+            mLock.unlock();
 
             ERROR_INFO("Removing id %p on Object %p (WeakReference %p) that doesn't exist!\n", id, mObject, this);
         }
@@ -199,7 +201,7 @@ private:
         return buffer;
     }
 
-    mutable pthread_mutex_t mLock;
+    mutable std::mutex mLock;
     Item* mStrongReferences;
     Item* mWeakReferences;
     bool mTrackReferences;
@@ -210,11 +212,12 @@ private:
 Object::Object() : mReference(new WeakReferenceImpl(this)) { }
 
 Object::~Object() {
-    if ((mReference->mFlags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_WEAK_REFERENCE) {
-        if (mReference->mWeakReferenceCounter == 0) {
+    int32_t flags = mReference->mFlags.load(std::memory_order_relaxed);
+    if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_WEAK_REFERENCE) {
+        if (mReference->mWeakReferenceCounter.load(std::memory_order_relaxed) == 0) {
             delete mReference;
         }
-    } else if (mReference->mStrongReferenceCounter == INITIAL_STRONG_REFERENCE_VALUE) {
+    } else if (mReference->mStrongReferenceCounter.load(std::memory_order_relaxed) == INITIAL_STRONG_REFERENCE_VALUE) {
         delete mReference;
     }
     // For debugging purposes, clear mReference.
@@ -236,7 +239,7 @@ void Object::incStrongReference(const void* id) const {
     WeakReferenceImpl* const reference = mReference;
     reference->incWeakReference(id);
     reference->addStrongReference(id);
-    const int32_t oldStrongReferenceCount = AtomicInteger::getAndIncrement(&reference->mStrongReferenceCounter);
+    const int32_t oldStrongReferenceCount = reference->mStrongReferenceCounter.fetch_add(1, std::memory_order_relaxed);
     ASSERT(oldStrongReferenceCount > 0, "Object::incStrongReference() called on %p after underflow", reference);
 #if PRINT_REFERENCES
     if (oldStrongReferenceCount == INITIAL_STRONG_REFERENCE_VALUE) {
@@ -248,21 +251,23 @@ void Object::incStrongReference(const void* id) const {
     if (oldStrongReferenceCount != INITIAL_STRONG_REFERENCE_VALUE) {
         return;
     }
-    AtomicInteger::getAndAdd(-INITIAL_STRONG_REFERENCE_VALUE, &reference->mStrongReferenceCounter);
+    reference->mStrongReferenceCounter.fetch_sub(INITIAL_STRONG_REFERENCE_VALUE, std::memory_order_relaxed);
     const_cast<Object*>(this)->onFirstReference();
 }
 
 void Object::decStrongReference(const void* id) const {
     WeakReferenceImpl* const reference = mReference;
     reference->removeStrongReference(id);
-    const int32_t oldStrongReferenceCount = AtomicInteger::getAndDecrement(&reference->mStrongReferenceCounter);
+    const int32_t oldStrongReferenceCount = reference->mStrongReferenceCounter.fetch_sub(1, std::memory_order_release);
 #if PRINT_REFERENCES
     DEBUG_INFO("Object::decStrongReference() of %p from %p: reference count is %d\n", this, id, oldStrongReferenceCount - 1);
 #endif
     ASSERT(oldStrongReferenceCount >= 1, "Object::decStrongReference() called on %p too many times", reference);
     if (oldStrongReferenceCount == 1) {
+        std::atomic_thread_fence(std::memory_order_acquire);
         const_cast<Object*>(this)->onLastReference(id);
-        if ((reference->mFlags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
+        int32_t flags = reference->mFlags.load(std::memory_order_relaxed);
+        if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
             if (reference->mDestroyer == nullptr) {
                 delete this;
             } else {
@@ -274,16 +279,22 @@ void Object::decStrongReference(const void* id) const {
 }
 
 int32_t Object::getStrongReferenceCount() const {
-    return mReference->mStrongReferenceCounter;
+    return mReference->mStrongReferenceCounter.load(std::memory_order_relaxed);
+}
+
+void Object::moveStrongReference(const void* oldId, const void* newId) const {
+    WeakReferenceImpl* const reference = mReference;
+    reference->removeWeakReference(oldId);
+    reference->addWeakReference(newId);
+    reference->removeStrongReference(oldId);
+    reference->addStrongReference(newId);
 }
 
 void Object::setObjectLifetime(int32_t mode) const {
     switch (mode) {
-    case OBJECT_LIFETIME_STRONG_REFERENCE:
-        AtomicInteger::getAndAnd(mode, &mReference->mFlags);
-        break;
     case OBJECT_LIFETIME_WEAK_REFERENCE:
-        AtomicInteger::getAndOr(mode, &mReference->mFlags);
+    case OBJECT_LIFETIME_STRONG_REFERENCE:
+        mReference->mFlags.fetch_or(mode, std::memory_order_relaxed);
         break;
     }
 }
@@ -308,21 +319,23 @@ Object* Object::WeakReference::toObject() const {
 void Object::WeakReference::incWeakReference(const void* id) {
     WeakReferenceImpl* const reference = static_cast<WeakReferenceImpl*>(this);
     reference->addWeakReference(id);
-    const int32_t oldWeakReferenceCount = AtomicInteger::getAndIncrement(&reference->mWeakReferenceCounter);
+    const int32_t oldWeakReferenceCount = reference->mWeakReferenceCounter.fetch_add(1, std::memory_order_relaxed);
     ASSERT(oldWeakReferenceCount >= 0, "Object::WeakReference::incWeakReference() called on %p after underflow", this);
 }
 
 void Object::WeakReference::decWeakReference(const void* id) {
     WeakReferenceImpl* const reference = static_cast<WeakReferenceImpl*>(this);
     reference->removeWeakReference(id);
-    const int32_t oldWeakReferenceCount = AtomicInteger::getAndDecrement(&reference->mWeakReferenceCounter);
+    const int32_t oldWeakReferenceCount = reference->mWeakReferenceCounter.fetch_sub(1, std::memory_order_release);
     ASSERT(oldWeakReferenceCount >= 1, "Object::WeakReference::decWeakReference() called on %p too many times", this);
     if (oldWeakReferenceCount != 1) {
         return;
     }
 
-    if ((reference->mFlags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
-        if (reference->mStrongReferenceCounter == INITIAL_STRONG_REFERENCE_VALUE) {
+    std::atomic_thread_fence(std::memory_order_acquire);
+    int32_t flags = reference->mFlags.load(std::memory_order_relaxed);
+    if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
+        if (reference->mStrongReferenceCounter.load(std::memory_order_relaxed) == INITIAL_STRONG_REFERENCE_VALUE) {
             if (reference->mDestroyer == nullptr) {
                 delete reference->mObject;
             } else {
@@ -348,28 +361,27 @@ bool Object::WeakReference::tryIncStrongReference(const void* id) {
     incWeakReference(id);
 
     WeakReferenceImpl* const reference = static_cast<WeakReferenceImpl*>(this);
-    int32_t strongReferenceCount = reference->mStrongReferenceCounter;
+    int32_t strongReferenceCount = reference->mStrongReferenceCounter.load(std::memory_order_relaxed);
     ASSERT(strongReferenceCount >= 0, "Object::WeakReference::tryIncStrongReference() called on %p after underflow", this);
 
     while (strongReferenceCount > 0 && strongReferenceCount != INITIAL_STRONG_REFERENCE_VALUE) {
-        if (AtomicInteger::compareAndSwap(strongReferenceCount, strongReferenceCount + 1, &reference->mStrongReferenceCounter) == 0) {
+        if (reference->mStrongReferenceCounter.compare_exchange_weak(strongReferenceCount, strongReferenceCount + 1, std::memory_order_relaxed)) {
             break;
         }
-        strongReferenceCount = reference->mStrongReferenceCounter;
     }
 
     if (strongReferenceCount <= 0 || strongReferenceCount == INITIAL_STRONG_REFERENCE_VALUE) {
-        if ((reference->mFlags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
+        int32_t flags = reference->mFlags.load(std::memory_order_relaxed);
+        if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_STRONG_REFERENCE) {
             if (strongReferenceCount <= 0) {
                 decWeakReference(id);
                 return false;
             }
 
             while (strongReferenceCount > 0) {
-                if (AtomicInteger::compareAndSwap(strongReferenceCount, strongReferenceCount + 1, &reference->mStrongReferenceCounter) == 0) {
+                if (reference->mStrongReferenceCounter.compare_exchange_weak(strongReferenceCount, strongReferenceCount + 1, std::memory_order_relaxed)) {
                     break;
                 }
-                strongReferenceCount = reference->mStrongReferenceCounter;
             }
 
             if (strongReferenceCount <= 0) {
@@ -377,7 +389,7 @@ bool Object::WeakReference::tryIncStrongReference(const void* id) {
                 return false;
             }
         } else {
-            strongReferenceCount = AtomicInteger::getAndIncrement(&reference->mStrongReferenceCounter);
+            strongReferenceCount = reference->mStrongReferenceCounter.fetch_add(1, std::memory_order_relaxed);
         }
     }
 
@@ -387,20 +399,15 @@ bool Object::WeakReference::tryIncStrongReference(const void* id) {
     DEBUG_INFO("Object::WeakReference::tryIncStrongReference() of %p from %p: reference count is %d\n", this, id, strongReferenceCount + 1);
 #endif
 
-    strongReferenceCount = reference->mStrongReferenceCounter;
-    while (strongReferenceCount >= INITIAL_STRONG_REFERENCE_VALUE) {
-        ASSERT(strongReferenceCount > INITIAL_STRONG_REFERENCE_VALUE, "Object::WeakReference::tryIncStrongReference() of %p underflowed INITIAL_STRONG_REFERENCE_VALUE", this);
-        if (AtomicInteger::compareAndSwap(strongReferenceCount, strongReferenceCount - INITIAL_STRONG_REFERENCE_VALUE, &reference->mStrongReferenceCounter) == 0) {
-            break;
-        }
-        strongReferenceCount = reference->mStrongReferenceCounter;
+    if (strongReferenceCount == INITIAL_STRONG_REFERENCE_VALUE) {
+        reference->mStrongReferenceCounter.fetch_sub(INITIAL_STRONG_REFERENCE_VALUE, std::memory_order_relaxed);
     }
 
     return true;
 }
 
 int32_t Object::WeakReference::getWeakReferenceCount() const {
-    return static_cast<const WeakReferenceImpl*>(this)->mWeakReferenceCounter;
+    return static_cast<const WeakReferenceImpl*>(this)->mWeakReferenceCounter.load(std::memory_order_relaxed);
 }
 
 void Object::WeakReference::printReferences() const {
@@ -418,6 +425,10 @@ Object::WeakReference* Object::createWeakReference(const void* id) const {
 
 Object::WeakReference* Object::getWeakReference() const {
     return mReference;
+}
+
+void spDataRaceException() {
+    printf("Data race exception in sp<> assignment\n");
 }
 
 } /* namespace mindroid */

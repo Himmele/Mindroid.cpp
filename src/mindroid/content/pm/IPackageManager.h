@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_IPACKAGEMANAGER_H_
-#define MINDROID_IPACKAGEMANAGER_H_
+#ifndef MINDROID_CONTENT_PM_IPACKAGEMANAGER_H_
+#define MINDROID_CONTENT_PM_IPACKAGEMANAGER_H_
 
 #include <mindroid/content/pm/PackageInfo.h>
 #include <mindroid/content/pm/ResolveInfo.h>
@@ -132,4 +132,4 @@ public:
 } /* namespace binder */
 } /* namespace mindroid */
 
-#endif /* MINDROID_IPACKAGEMANAGER_H_ */
+#endif /* MINDROID_CONTENT_PM_IPACKAGEMANAGER_H_ */

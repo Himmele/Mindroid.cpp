@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_MATH_H_
-#define MINDROID_MATH_H_
+#ifndef MINDROID_LANG_MATH_H_
+#define MINDROID_LANG_MATH_H_
 
 #include <cstdint>
 
@@ -87,4 +87,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_MATH_H_ */
+#endif /* MINDROID_LANG_MATH_H_ */

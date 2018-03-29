@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNTIMEEXCEPTION_H_
-#define MINDROID_RUNTIMEEXCEPTION_H_
+#ifndef MINDROID_LANG_RUNTIMEEXCEPTION_H_
+#define MINDROID_LANG_RUNTIMEEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -34,8 +34,26 @@ public:
 
     RuntimeException(const sp<String>& message) : Exception(message) {
     }
+
+    RuntimeException(const char* message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    RuntimeException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
+    }
+
+    RuntimeException(const char* message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
+    RuntimeException(const sp<String>& message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
+    RuntimeException(const Exception& cause) : Exception(cause) {
+    }
+
+    RuntimeException(const sp<Exception>& cause) : Exception(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNTIMEEXCEPTION_H_ */
+#endif /* MINDROID_LANG_RUNTIMEEXCEPTION_H_ */

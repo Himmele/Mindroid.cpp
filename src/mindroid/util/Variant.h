@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_VARIANT_H_
-#define MINDROID_VARIANT_H_
+#ifndef MINDROID_UTIL_VARIANT_H_
+#define MINDROID_UTIL_VARIANT_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -371,4 +371,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_VARIANT_H_ */
+#endif /* MINDROID_UTIL_VARIANT_H_ */

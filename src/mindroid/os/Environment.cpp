@@ -20,7 +20,7 @@
 
 namespace mindroid {
 
-pthread_mutex_t Environment::sMutex = PTHREAD_MUTEX_INITIALIZER;
+std::mutex Environment::sLock;
 Environment* Environment::sInstance = nullptr;
 
 Environment::Environment() :
@@ -62,11 +62,11 @@ void Environment::clearSharedPreferences() {
 }
 
 Environment* Environment::getInstance() {
-    pthread_mutex_lock(&sMutex);
+    sLock.lock();
     if (sInstance == nullptr) {
         sInstance = new Environment();
     }
-    pthread_mutex_unlock(&sMutex);
+    sLock.unlock();
     return sInstance;
 }
 

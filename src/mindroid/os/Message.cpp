@@ -17,7 +17,6 @@
 
 #include <mindroid/os/Message.h>
 #include <mindroid/os/Handler.h>
-#include <mindroid/util/Assert.h>
 #include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
@@ -62,9 +61,7 @@ sp<Message> Message::obtain() {
             return message;
         }
     }
-    Message* message = new Message();
-    Assert::assertNotNull(message);
-    return message;
+    return new Message();
 }
 
 sp<Message> Message::obtain(const sp<Message>& origMessage) {

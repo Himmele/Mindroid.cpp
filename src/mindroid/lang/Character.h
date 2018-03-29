@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CHARACTER_H_
-#define MINDROID_CHARACTER_H_
+#ifndef MINDROID_LANG_CHARACTER_H_
+#define MINDROID_LANG_CHARACTER_H_
 
 #include <mindroid/lang/Object.h>
 #include <climits>
@@ -54,4 +54,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CHARACTER_H_ */
+#endif /* MINDROID_LANG_CHARACTER_H_ */

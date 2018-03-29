@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_IBINDER_H_
-#define MINDROID_IBINDER_H_
+#ifndef MINDROID_OS_IBINDER_H_
+#define MINDROID_OS_IBINDER_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -86,4 +86,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_IBINDER_H_ */
+#endif /* MINDROID_OS_IBINDER_H_ */

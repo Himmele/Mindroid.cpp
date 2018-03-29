@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LOCK_H_
-#define MINDROID_LOCK_H_
+#ifndef MINDROID_UTIL_CONCURRENT_LOCKS_LOCK_H_
+#define MINDROID_UTIL_CONCURRENT_LOCKS_LOCK_H_
 
 #include <mindroid/lang/Object.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace mindroid {
 
@@ -37,8 +37,6 @@ public:
     virtual void unlock() = 0;
 
 protected:
-    virtual pthread_mutex_t* getMutex() = 0;
-
     friend class ConditionImpl;
 };
 
@@ -67,4 +65,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LOCK_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_LOCKS_LOCK_H_ */

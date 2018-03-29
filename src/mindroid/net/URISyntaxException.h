@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ESR Labs
+ * Copyright (C) 2018 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_URISYNTAXEXCEPTION_H_
-#define MINDROID_URISYNTAXEXCEPTION_H_
+#ifndef MINDROID_NET_URISYNTAXEXCEPTION_H_
+#define MINDROID_NET_URISYNTAXEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -32,4 +32,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_URISYNTAXEXCEPTION_H_ */
+#endif /* MINDROID_NET_URISYNTAXEXCEPTION_H_ */

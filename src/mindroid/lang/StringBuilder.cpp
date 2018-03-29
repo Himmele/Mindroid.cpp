@@ -15,10 +15,9 @@
  */
 
 #include <mindroid/lang/StringBuilder.h>
+#include <mindroid/lang/RuntimeException.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
-#include <mindroid/util/Assert.h>
 #include <algorithm>
-#include <sstream>
 
 namespace mindroid {
 
@@ -61,52 +60,52 @@ const std::string toString(const bool& value) {
 }
 
 sp<StringBuilder> StringBuilder::append(double value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(float value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(int8_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint8_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(int16_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint16_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(int32_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint32_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(int64_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint64_t value) {
-    mString.append(toString(value));
+    mString.append(std::to_string(value));
     return this;
 }
 
@@ -116,7 +115,9 @@ sp<StringBuilder> StringBuilder::append(const sp<String>& string) {
 }
 
 sp<StringBuilder> StringBuilder::appendCodePoint(int32_t codePoint) {
-    Assert::assertTrue<RuntimeException>("Invalid non-ASCII code point", codePoint < 256);
+    if (codePoint >= 256) {
+        throw RuntimeException("Invalid non-ASCII code point");
+    }
     mString += static_cast<char>(codePoint);
     return this;
 }
@@ -126,7 +127,9 @@ size_t StringBuilder::capacity() const {
 }
 
 char StringBuilder::charAt(size_t index) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(index >= mString.length());
+    if (index >= mString.length()) {
+        throw IndexOutOfBoundsException();
+    }
     return mString[index];
 }
 
@@ -179,32 +182,32 @@ sp<StringBuilder> StringBuilder::insert(size_t index, const sp<ByteArray>& charS
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, double value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, float value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, int32_t value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, uint32_t value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, int64_t value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::insert(size_t offset, uint64_t value) {
-    mString.insert(offset, toString(value));
+    mString.insert(offset, std::to_string(value));
     return this;
 }
 
@@ -236,7 +239,9 @@ sp<StringBuilder> StringBuilder::reverse() {
 }
 
 void StringBuilder::setCharAt(size_t index, char c) {
-    Assert::assertFalse<IndexOutOfBoundsException>(index >= length());
+    if (index >= length()) {
+        throw IndexOutOfBoundsException();
+    }
     mString[index] = c;
 }
 
@@ -249,7 +254,9 @@ sp<String> StringBuilder::substring(size_t start) const {
 }
 
 sp<String> StringBuilder::substring(size_t start, size_t end) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(end < start);
+    if (end < start) {
+        throw IndexOutOfBoundsException();
+    }
     return new String(mString.substr(start, end - start).c_str());
 }
 
@@ -264,13 +271,6 @@ void StringBuilder::trimToSize() {
 sp<StringBuilder> StringBuilder::append(const char* string) {
     mString += string;
     return this;
-}
-
-template<typename T>
-const std::string StringBuilder::toString(const T& data) {
-   std::ostringstream outputStream;
-   outputStream << data;
-   return outputStream.str();
 }
 
 } /* namespace mindroid */

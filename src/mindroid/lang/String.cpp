@@ -16,8 +16,8 @@
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/util/ArrayList.h>
-#include <mindroid/util/Assert.h>
 #include <cstdio>
 
 namespace mindroid {
@@ -62,6 +62,14 @@ String::String(const char* string, size_t size) {
 
 String::String(const char c) {
     mStringBuffer = new StringBuffer(&c, 1);
+}
+
+String::String(const sp<ByteArray>& byteArray) {
+    if (byteArray != nullptr) {
+        mStringBuffer = new StringBuffer((const char*) byteArray->c_arr(), byteArray->size());
+    } else {
+        mStringBuffer = EMPTY_STRING_BUFFER;
+    }
 }
 
 bool String::equals(const sp<Object>& other) const {
@@ -119,12 +127,16 @@ bool String::equalsIgnoreCase(const sp<String>& string) const {
 }
 
 char String::operator[](const size_t index) const {
-    Assert::assertTrue<IndexOutOfBoundsException>(index < length());
+    if (index >= length()) {
+        throw IndexOutOfBoundsException();
+    }
     return mStringBuffer->mData[index];
 }
 
 char String::charAt(size_t index) const {
-    Assert::assertTrue<IndexOutOfBoundsException>(index < length());
+    if (index >= length()) {
+        throw IndexOutOfBoundsException();
+    }
     return mStringBuffer->mData[index];
 }
 
@@ -167,12 +179,16 @@ bool String::endsWith(const sp<String>& suffix) const {
 }
 
 sp<String> String::substring(size_t beginIndex) const {
-    Assert::assertTrue<IndexOutOfBoundsException>(beginIndex <= length());
+    if (beginIndex > length()) {
+        throw IndexOutOfBoundsException();
+    }
     return String::valueOf(c_str() + beginIndex, length() - beginIndex);
 }
 
 sp<String> String::substring(size_t beginIndex, size_t endIndex) const {
-    Assert::assertTrue<IndexOutOfBoundsException>(beginIndex <= endIndex && beginIndex <= length() && endIndex <= length());
+    if (beginIndex > length() || beginIndex > endIndex || endIndex > length()) {
+        throw IndexOutOfBoundsException();
+    }
     return String::valueOf(c_str() + beginIndex, endIndex - beginIndex);
 }
 
@@ -287,7 +303,7 @@ sp<String> String::trim() const {
         return const_cast<String*>(this);
     } else {
         if (beginIndex != length()) {
-            return new String(new StringBuffer(mStringBuffer->mData + beginIndex,
+            return new String((sp<StringBuffer>) new StringBuffer(mStringBuffer->mData + beginIndex,
                     endIndex - beginIndex + 1));
         } else {
             return EMPTY_STRING;
@@ -402,20 +418,22 @@ sp<String> String::replace(char oldChar, char newChar) {
 
 sp<String> String::append(const char* string, size_t size) const {
     if (string != nullptr && size > 0) {
-        return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string, size));
+        return new String((sp<StringBuffer>) new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string, size));
     }
     return const_cast<String*>(this);
 }
 
 sp<String> String::append(const char* string, size_t offset, size_t size) const {
     if (string != nullptr && size > 0) {
-        return new String(new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string + offset, size));
+        return new String((sp<StringBuffer>) new StringBuffer(mStringBuffer->mData, mStringBuffer->mSize, string + offset, size));
     }
     return const_cast<String*>(this);
 }
 
 sp<String> String::append(const sp<String>& string, size_t offset, size_t size) const {
-    Assert::assertTrue<IndexOutOfBoundsException>(offset + size <= string->length());
+    if (offset + size > string->length()) {
+        throw IndexOutOfBoundsException();
+    }
     return append(string->c_str(), offset, size);
 }
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_OUTPUTSTREAM_H_
-#define MINDROID_OUTPUTSTREAM_H_
+#ifndef MINDROID_IO_OUTPUTSTREAM_H_
+#define MINDROID_IO_OUTPUTSTREAM_H_
 
-#include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Object.h>
+#include <mindroid/lang/ByteArray.h>
 
 namespace mindroid {
 
@@ -118,4 +118,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_OUTPUTSTREAM_H_ */
+#endif /* MINDROID_IO_OUTPUTSTREAM_H_ */

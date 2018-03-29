@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "mindroid/util/HashMap.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/util/HashMap.h>
+#include <mindroid/lang/String.h>
 
 using namespace mindroid;
 
 TEST(Mindroid, HashMapOfIntegerInteger) {
-    sp<HashMap<int, int>> map = new HashMap<int, int>();
+    sp<HashMap<int32_t, int32_t>> map = new HashMap<int32_t, int32_t>();
     map->put(1, 1);
     map->put(2, 2);
     map->put(3, 3);
@@ -100,7 +100,7 @@ TEST(Mindroid, HashMapOfStringString) {
 }
 
 TEST(Mindroid, HashMapOfIntegerString) {
-    sp<HashMap<int, sp<String>>> map = new HashMap<int, sp<String>>();
+    sp<HashMap<int32_t, sp<String>>> map = new HashMap<int32_t, sp<String>>();
     map->put(1, new String("123"));
     map->put(2, new String("456"));
     map->put(17, new String("789"));
@@ -151,7 +151,7 @@ TEST(Mindroid, HashMapOfIntegerString) {
 }
 
 TEST(Mindroid, HashMapOfStringInteger) {
-    sp<HashMap<sp<String>, int>> map = new HashMap<sp<String>, int>();
+    sp<HashMap<sp<String>, int32_t>> map = new HashMap<sp<String>, int32_t>();
     map->put(new String("123"), 1);
     map->put(new String("456"), 2);
     map->put(new String("42"), 3);

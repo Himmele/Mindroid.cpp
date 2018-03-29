@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LOOPER_H_
-#define MINDROID_LOOPER_H_
+#ifndef MINDROID_OS_LOOPER_H_
+#define MINDROID_OS_LOOPER_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/Thread.h>
@@ -59,8 +59,7 @@ class Runnable;
 class Looper final :
         public Object {
 public:
-    virtual ~Looper() {
-    }
+    virtual ~Looper() = default;
 
     Looper(const Looper&) = delete;
     Looper& operator=(const Looper&) = delete;
@@ -70,11 +69,11 @@ public:
      * then reference this looper, before actually starting the loop. Be sure to call
      * {@link #loop()} after calling this method, and end it by calling {@link #quit()}.
      */
-    static bool prepare() {
+    static void prepare() {
         return prepare(true);
     }
 
-    static bool prepare(bool quitAllowed);
+    static void prepare(bool quitAllowed);
 
     /**
      * Run the message queue in this thread. Be sure to call {@link #quit()} to end the loop.
@@ -119,19 +118,13 @@ public:
 
 private:
     Looper(bool quitAllowed);
-    static void init();
-    static void finalize(void* looper);
 
-    sp<Looper> mSelf;
     sp<MessageQueue> mMessageQueue;
     sp<Thread> mThread;
-
-    static pthread_once_t sTlsOneTimeInitializer;
-    static pthread_key_t sTlsKey;
 
     friend class Handler;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LOOPER_H_ */
+#endif /* MINDROID_OS_LOOPER_H_ */

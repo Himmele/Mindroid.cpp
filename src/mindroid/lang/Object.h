@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_OBJECT_H_
-#define MINDROID_OBJECT_H_
+#ifndef MINDROID_LANG_OBJECT_H_
+#define MINDROID_LANG_OBJECT_H_
 
+#include <atomic>
 #include <cstdint>
-#include <inttypes.h>
+#include <cinttypes>
 #include <cstddef>
 #include <cassert>
 #include <sys/types.h>
-#include <mindroid/util/concurrent/atomic/AtomicInteger.h>
 
 #define ASSERT(cond, ...) if (!(cond)) { printf(__VA_ARGS__); printf("\n"); assert(cond); }
 #define DEBUG_INFO(...) printf(__VA_ARGS__)
@@ -47,7 +47,7 @@ public:
         void decWeakReference(const void* id);
         bool tryIncStrongReference(const void* id);
 
-        // Debugging APIs
+        // Debugging APIs.
         int32_t getWeakReferenceCount() const;
         void printReferences() const;
         void trackReference(bool doTracking, bool memorizeRefOperationsDuringRefTracking);
@@ -56,15 +56,16 @@ public:
     WeakReference* createWeakReference(const void* id) const;
     WeakReference* getWeakReference() const;
 
-    // Debugging APIs
+    // Debugging APIs.
     int32_t getStrongReferenceCount() const;
+    void moveStrongReference(const void* oldId, const void* newId) const;
     // Print all references for this object
     inline void printReferences() const { getWeakReference()->printReferences(); }
     inline void trackReference(bool trackReferences, bool memorizeRefOperationsDuringRefTracking) {
         getWeakReference()->trackReference(trackReferences, memorizeRefOperationsDuringRefTracking);
     }
 
-    // Object destroyer
+    // Object destroyer.
     class Destroyer {
     public:
         virtual ~Destroyer();
@@ -117,28 +118,34 @@ class LightweightObject {
 public:
     inline LightweightObject() : mReferenceCounter(0) { }
 
-    inline void incStrongReference(const void* id) const {
-        AtomicInteger::getAndIncrement(&mReferenceCounter);
+    inline void incStrongReference(__attribute__((unused)) const void* id) const {
+        mReferenceCounter.fetch_add(1, std::memory_order_relaxed);
     }
 
-    inline void decStrongReference(const void* id) const {
-        if (AtomicInteger::getAndDecrement(&mReferenceCounter) == 1) {
+    inline void decStrongReference(__attribute__((unused)) const void* id) const {
+        if (mReferenceCounter.fetch_sub(1, std::memory_order_release) == 1) {
+            std::atomic_thread_fence(std::memory_order_acquire);
             delete static_cast<const T*>(this);
         }
     }
 
     // Debugging APIs
     inline int32_t getStrongReferenceCount() const {
-        return mReferenceCounter;
+        return mReferenceCounter.load(std::memory_order_relaxed);
+    }
+
+    inline void moveStrongReference(__attribute__((unused)) const void* oldId,
+            __attribute__((unused)) const void* newId) const {
     }
 
 protected:
     inline ~LightweightObject() { }
 
 private:
-    mutable volatile int32_t mReferenceCounter;
+    mutable std::atomic<int32_t> mReferenceCounter;
 };
 
+void spDataRaceException();
 
 #define COMPARE_STRONG_REFERENCE(_operator_)                   \
 inline bool operator _operator_ (const sp<T>& o) const {       \
@@ -170,16 +177,20 @@ public:
 
     sp(T* other);
     sp(const sp<T>& other);
+    sp(sp<T>&& other);
     template<typename U> sp(U* other);
     template<typename U> sp(const sp<U>& other);
+    template<typename U> sp(sp<U>&& other);
 
     ~sp();
 
     // Assignment operators
     sp& operator=(T* other);
     sp& operator=(const sp<T>& other);
+    sp& operator = (sp<T>&& other);
 
     template<typename U> sp& operator=(const sp<U>& other);
+    template<typename U> sp& operator=(sp<U>&& other);
     template<typename U> sp& operator=(U* other);
 
     // Accessor methods
@@ -245,7 +256,7 @@ public:
 
     ~wp();
 
-    sp<T> lock() const;
+    sp<T> get() const;
 
     // Assignment operators
     wp& operator=(T* other);
@@ -348,11 +359,20 @@ sp<T>::sp(const sp<T>& other) :
     }
 }
 
+template<typename T>
+sp<T>::sp(sp<T>&& other) :
+        mPointer(other.mPointer) {
+    other.mPointer = nullptr;
+    if (mPointer) {
+        mPointer->moveStrongReference(&other, this);
+    }
+}
+
 template<typename T> template<typename U>
 sp<T>::sp(U* other) :
         mPointer(other) {
     if (other) {
-        ((T*) other)->incStrongReference(this);
+        (static_cast<T*>(other))->incStrongReference(this);
     }
 }
 
@@ -361,6 +381,15 @@ sp<T>::sp(const sp<U>& other) :
         mPointer(other.mPointer) {
     if (mPointer) {
         mPointer->incStrongReference(this);
+    }
+}
+
+template<typename T> template<typename U>
+sp<T>::sp(sp<U>&& other) :
+        mPointer(other.mPointer) {
+    other.mPointer = nullptr;
+    if (mPointer) {
+        mPointer->moveStrongReference(&other, this);
     }
 }
 
@@ -373,24 +402,49 @@ sp<T>::~sp() {
 
 template<typename T>
 sp<T>& sp<T>::operator=(const sp<T>& other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
     T* otherPointer(other.mPointer);
     if (otherPointer) {
         otherPointer->incStrongReference(this);
     }
-    if (mPointer) {
-        mPointer->decStrongReference(this);
+    if (pointer) {
+        pointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
     }
     mPointer = otherPointer;
     return *this;
 }
 
 template<typename T>
+sp<T>& sp<T>::operator =(sp<T>&& other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
+    if (pointer) {
+        pointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
+    }
+    mPointer = other.mPointer;
+    other.mPointer = nullptr;
+    if (mPointer) {
+        mPointer->moveStrongReference(&other, this);
+    }
+    return *this;
+}
+
+template<typename T>
 sp<T>& sp<T>::operator=(T* other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
     if (other) {
         other->incStrongReference(this);
     }
-    if (mPointer) {
-        mPointer->decStrongReference(this);
+    if (pointer) {
+        pointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
     }
     mPointer = other;
     return *this;
@@ -398,24 +452,49 @@ sp<T>& sp<T>::operator=(T* other) {
 
 template<typename T> template<typename U>
 sp<T>& sp<T>::operator=(const sp<U>& other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
     T* otherPointer(other.mPointer);
     if (otherPointer) {
         otherPointer->incStrongReference(this);
     }
-    if (mPointer) {
-        mPointer->decStrongReference(this);
+    if (pointer) {
+        pointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
     }
     mPointer = otherPointer;
     return *this;
 }
 
 template<typename T> template<typename U>
-sp<T>& sp<T>::operator=(U* other) {
-    if (other) {
-        ((T*) other)->incStrongReference(this);
-    }
+sp<T>& sp<T>::operator =(sp<U>&& other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
     if (mPointer) {
         mPointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
+    }
+    mPointer = other.mPointer;
+    other.mPointer = nullptr;
+    if (mPointer) {
+        mPointer->moveStrongReference(&other, this);
+    }
+    return *this;
+}
+
+template<typename T> template<typename U>
+sp<T>& sp<T>::operator=(U* other) {
+    T* pointer(*const_cast<T* volatile*>(&mPointer));
+    if (other) {
+        (static_cast<T*>(other))->incStrongReference(this);
+    }
+    if (pointer) {
+        pointer->decStrongReference(this);
+    }
+    if (pointer != *const_cast<T* volatile*>(&mPointer)) {
+        spDataRaceException();
     }
     mPointer = other;
     return *this;
@@ -434,11 +513,6 @@ void sp<T>::clear() {
 template<typename T>
 void sp<T>::setPointer(T* pointer) {
     mPointer = pointer;
-}
-
-template<typename T>
-inline sp<T> to_sp(T* object) {
-    return object;
 }
 
 
@@ -575,7 +649,7 @@ wp<T>& wp<T>::operator=(const sp<U>& other) {
 }
 
 template<typename T>
-sp<T> wp<T>::lock() const {
+sp<T> wp<T>::get() const {
     sp<T> newReference;
     if (mPointer && mReference->tryIncStrongReference(&newReference)) {
         newReference.setPointer(mPointer);
@@ -590,11 +664,6 @@ void wp<T>::clear() {
         mPointer = nullptr;
         mReference->decWeakReference(this);
     }
-}
-
-template<typename T>
-inline wp<T> to_wp(T* object) {
-    return object;
 }
 
 template<typename T>
@@ -615,7 +684,6 @@ template<typename OBJECT>
 inline sp<OBJECT> object_cast(const sp<Object>& object) {
     return (object != nullptr) ? static_cast<OBJECT*>(object.getPointer()) : nullptr;
 }
-
 
 template<typename K>
 struct Hasher {
@@ -657,4 +725,4 @@ struct LessThanComparator<mindroid::sp<K>> {
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_OBJECT_H_ */
+#endif /* MINDROID_LANG_OBJECT_H_ */

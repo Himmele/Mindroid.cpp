@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAYBUFFER_H_
-#define MINDROID_BYTEARRAYBUFFER_H_
+#ifndef MINDROID_NIO_BYTEARRAYBUFFER_H_
+#define MINDROID_NIO_BYTEARRAYBUFFER_H_
 
 #include <mindroid/nio/ByteBuffer.h>
 
@@ -41,4 +41,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BYTEARRAYBUFFER_H_ */
+#endif /* MINDROID_NIO_BYTEARRAYBUFFER_H_ */

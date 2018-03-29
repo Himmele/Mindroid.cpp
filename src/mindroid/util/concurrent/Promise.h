@@ -25,8 +25,8 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-#ifndef MINDROID_PROMISE_H_
-#define MINDROID_PROMISE_H_
+#ifndef MINDROID_UTIL_CONCURRENT_PROMISE_H_
+#define MINDROID_UTIL_CONCURRENT_PROMISE_H_
 
 #include <mindroid/util/concurrent/Future.h>
 #include <mindroid/util/concurrent/CancellationException.h>
@@ -36,12 +36,14 @@
 #include <mindroid/util/ArrayList.h>
 #include <mindroid/lang/Class.h>
 #include <mindroid/lang/Void.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/os/Looper.h>
 #include <mindroid/os/Handler.h>
 #include <mindroid/os/HandlerThread.h>
 #include <mindroid/os/SystemClock.h>
 #include <functional>
 #include <vector>
+#include <mutex>
 
 namespace mindroid {
 
@@ -322,7 +324,9 @@ public:
         } else {
             sp<Promise<T>> consumer = new Promise<T>(executor);
             for (auto const& p: promises) {
-                Assert::assertNotNull("Promise must not be null", p);
+                if (p == nullptr) {
+                    throw NullPointerException("Promise must not be null");
+                }
                 if (p->isDone()) {
                     if (p->getException() == nullptr) {
                         consumer->setResult(p->getResult());
@@ -356,13 +360,17 @@ public:
     }
 
     sp<Promise<T>> onHandler(const sp<Handler>& handler) {
-        Assert::assertNotNull("Handler must not be null", handler);
+        if (handler == nullptr) {
+            throw NullPointerException("Handler must not be null");
+        }
         mExecutor = handler->asExecutor();
         return this;
     }
 
     sp<Promise<T>> onExecutor(const sp<Executor>& executor) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         mExecutor = executor;
         return this;
     }
@@ -431,7 +439,9 @@ public:
     }
 
     bool completeWith(const sp<Exception>& exception) {
-        Assert::assertNotNull("Exception must not be null", exception);
+        if (exception == nullptr) {
+            throw NullPointerException("Exception must not be null");
+        }
         AutoLock autoLock(mLock);
         if (!mIsDone) {
             mException = exception;
@@ -448,7 +458,9 @@ public:
     }
 
     bool completeWith(const sp<Promise<T>>& supplier) {
-        Assert::assertNotNull("Supplier must not be null", supplier);
+        if (supplier == nullptr) {
+            throw NullPointerException("Supplier must not be null");
+        }
         sp<Thenable::Action> a = new RelayAction<T>(supplier, this);
         if (supplier->isDone()) {
             a->tryRun();
@@ -546,7 +558,9 @@ public:
      */
     template<typename U>
     sp<Promise<U>> thenApply(const sp<Executor>& executor, const std::function<U (T)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<U>> p = new Promise<U>(mExecutor);
         sp<Thenable::Action> a = new FunctionAction<U>(executor, this, p, function);
         if (isDone()) {
@@ -643,7 +657,9 @@ public:
      */
     template<typename U>
     sp<Promise<U>> thenApply(const sp<Executor>& executor, const std::function<U (T, const sp<Exception>&)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<U>> p = new Promise<U>(mExecutor);
         sp<Thenable::Action> a = new BiFunctionAction<U>(executor, this, p, function);
         if (isDone()) {
@@ -740,7 +756,9 @@ public:
      */
     template<typename U>
     sp<Promise<U>> thenCompose(const sp<Executor>& executor, const std::function<sp<Promise<U>> (T)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<U>> p = new Promise<U>(mExecutor);
         sp<Thenable::Action> a = new CompositionFunctionAction<U>(executor, this, p, function);
         if (isDone()) {
@@ -832,7 +850,9 @@ public:
      */
     template<typename U>
     sp<Promise<U>> thenCompose(const sp<Executor>& executor, const std::function<sp<Promise<U>> (T, const sp<Exception>&)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<U>> p = new Promise<U>(mExecutor);
         sp<Thenable::Action> a = new BiCompositionFunctionAction<U>(executor, this, p, function);
         if (isDone()) {
@@ -905,7 +925,9 @@ public:
      * @return the new Future
      */
     sp<Promise<T>> thenAccept(const sp<Executor>& executor, const std::function<void (T)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<T>> p = new Promise<T>(mExecutor);
         sp<Thenable::Action> a = new ConsumerAction(executor, this, p, function);
         if (isDone()) {
@@ -987,7 +1009,9 @@ public:
      * @return the new Future
      */
     sp<Promise<T>> thenAccept(const sp<Executor>& executor, const std::function<void (T, const sp<Exception>&)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<T>> p = new Promise<T>(mExecutor);
         sp<Thenable::Action> a = new BiConsumerAction(executor, this, p, function);
         if (isDone()) {
@@ -1089,8 +1113,12 @@ public:
      * @return the new Future
      */
     sp<Promise<T>> thenRun(const sp<Executor>& executor, const sp<Runnable>& action) {
-        Assert::assertNotNull("Executor must not be null", executor);
-        Assert::assertNotNull("Action must not be null", action);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
+        if (action == nullptr) {
+            throw NullPointerException("Action must not be null");
+        }
         sp<Promise<T>> p = new Promise<T>(mExecutor);
         sp<Thenable::Action> a = new RunAction(executor, this, p, action);
         if (isDone()) {
@@ -1167,7 +1195,9 @@ public:
      */
     template<typename U>
     sp<Promise<U>> catchException(const sp<Executor>& executor, const std::function<U (const sp<Exception>&)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<U>> p = new Promise<U>(mExecutor);
         sp<Thenable::Action> a = new ErrorFunctionAction<U>(executor, this, p, function);
         if (isDone()) {
@@ -1187,7 +1217,9 @@ public:
     }
 
     sp<Promise<T>> catchException(const sp<Executor>& executor, const std::function<void (const sp<Exception>&)>& function) {
-        Assert::assertNotNull("Executor must not be null", executor);
+        if (executor == nullptr) {
+            throw NullPointerException("Executor must not be null");
+        }
         sp<Promise<T>> p = new Promise<T>(mExecutor);
         sp<Thenable::Action> a = new ErrorConsumerAction(executor, this, p, function);
         if (isDone()) {
@@ -1613,13 +1645,13 @@ private:
     class Timeout {
     public:
         static std::function<void (T, const sp<mindroid::Exception>&)> add(const sp<Runnable>& command, uint64_t delay) {
-            pthread_mutex_lock(&sMutex);
+            sLock.lock();
             if (sThread == nullptr) {
                 sThread = new HandlerThread("TimeoutExecutorDaemon");
                 sThread->start();
                 sHandler = new Handler(sThread->getLooper());
             }
-            pthread_mutex_unlock(&sMutex);
+            sLock.unlock();
             sHandler->postDelayed(command, delay);
             return [=] (T ignore, const sp<mindroid::Exception>& exception) {
                 sHandler->removeCallbacks(command);
@@ -1658,9 +1690,9 @@ private:
         };
 
     private:
+        static std::mutex sLock;
         static sp<HandlerThread> sThread;
         static sp<Handler> sHandler;
-        static pthread_mutex_t sMutex;
     };
 
     void onComplete() {
@@ -1700,8 +1732,9 @@ private:
                 object_cast<Thenable>(andTree(executor, promises, start, mid)))) == nullptr ||
             (supplier2 = (start == end ? supplier1 : (end == mid + 1) ? promises[end] :
                     object_cast<Thenable>(andTree(executor, promises, mid + 1, end)))) == nullptr) {
-            Assert::assertNotNull("Supplier must not be null", supplier1);
-            Assert::assertNotNull("Supplier must not be null", supplier2);
+            if (supplier1 == nullptr || supplier2 == nullptr) {
+                throw NullPointerException("Supplier must not be null");
+            }
         }
         if (!supplier1->isDone() || !supplier2->isDone()) {
             sp<Promise<sp<Void>>> p = new Promise<sp<Void>>(executor);
@@ -1743,12 +1776,12 @@ private:
 };
 
 template <typename T>
+std::mutex Promise<T>::Timeout::sLock;
+template <typename T>
 sp<HandlerThread> Promise<T>::Timeout::sThread = nullptr;
 template <typename T>
 sp<Handler> Promise<T>::Timeout::sHandler = nullptr;
-template <typename T>
-pthread_mutex_t Promise<T>::Timeout::sMutex = PTHREAD_MUTEX_INITIALIZER;
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PROMISE_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_PROMISE_H_ */

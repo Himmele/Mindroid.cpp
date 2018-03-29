@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_EOFEXCEPTION_H_
-#define MINDROID_EOFEXCEPTION_H_
+#ifndef MINDROID_IO_EOFEXCEPTION_H_
+#define MINDROID_IO_EOFEXCEPTION_H_
 
 #include <mindroid/io/IOException.h>
 
@@ -34,4 +34,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_EOFEXCEPTION_H_ */
+#endif /* MINDROID_IO_EOFEXCEPTION_H_ */

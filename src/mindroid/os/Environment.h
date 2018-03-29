@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ENVIRONMENT_H_
-#define MINDROID_ENVIRONMENT_H_
+#ifndef MINDROID_OS_ENVIRONMENT_H_
+#define MINDROID_OS_ENVIRONMENT_H_
 
 #include <mindroid/lang/String.h>
 #include <mindroid/content/SharedPreferences.h>
 #include <mindroid/io/File.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace mindroid {
 
@@ -192,10 +192,10 @@ private:
     sp<ReentrantLock> mLock = new ReentrantLock();
     sp<HashMap<sp<String>, sp<SharedPreferences>>> mSharedPrefs = new HashMap<sp<String>, sp<SharedPreferences>>();
 
-    static pthread_mutex_t sMutex;
+    static std::mutex sLock;
     static Environment* sInstance;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ENVIRONMENT_H_ */
+#endif /* MINDROID_OS_ENVIRONMENT_H_ */

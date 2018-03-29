@@ -18,6 +18,7 @@
 #include <mindroid/io/File.h>
 #include <mindroid/io/FileNotFoundException.h>
 #include <mindroid/io/IOException.h>
+#include <mindroid/lang/NullPointerException.h>
 
 namespace mindroid {
 
@@ -34,10 +35,20 @@ void FileInputStream::close() {
 }
 
 int32_t FileInputStream::read() {
-    int32_t data;
+    uint8_t data;
+    if (mInputFileStream.eof()) {
+        return -1;
+    }
     mInputFileStream.read(reinterpret_cast<char*>(&data), sizeof(uint8_t));
-    Assert::assertTrue<IOException>(mInputFileStream.good());
-    return data;
+    if (mInputFileStream.good()) {
+        return data;
+    } else {
+        if (mInputFileStream.eof()) {
+            return data;
+        } else {
+            throw IOException();
+        }
+    }
 }
 
 ssize_t FileInputStream::read(const sp<ByteArray>& buffer) {
@@ -45,8 +56,12 @@ ssize_t FileInputStream::read(const sp<ByteArray>& buffer) {
 }
 
 ssize_t FileInputStream::read(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull(buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
     if (count == 0) {
         return 0;
@@ -55,8 +70,16 @@ ssize_t FileInputStream::read(const sp<ByteArray>& buffer, size_t offset, size_t
         return -1;
     }
 
-    return mInputFileStream.read(reinterpret_cast<char*>(buffer->c_arr() + offset), count).gcount();
-    Assert::assertTrue<IOException>(mInputFileStream.good());
+    mInputFileStream.read(reinterpret_cast<char*>(buffer->c_arr() + offset), count);
+    if (mInputFileStream.good()) {
+        return mInputFileStream.gcount();
+    } else {
+        if (mInputFileStream.eof()) {
+            return mInputFileStream.gcount();
+        } else {
+            throw IOException();
+        }
+    }
 }
 
 size_t FileInputStream::skip(size_t count) {

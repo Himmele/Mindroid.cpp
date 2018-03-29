@@ -1,13 +1,32 @@
 #include <gtest/gtest.h>
-#include "mindroid/app/SharedPreferencesImpl.h"
-#include "mindroid/io/File.h"
-#include "mindroid/lang/String.h"
-#include "mindroid/os/Environment.h"
+#include <mindroid/app/SharedPreferencesImpl.h>
+#include <mindroid/io/File.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/Environment.h>
+#include <mindroid/util/ArrayList.h>
 
 using namespace mindroid;
 
+void removeFile(const sp<File>& file) {
+    if (file->isDirectory()) {
+        sp<ArrayList<sp<File>>> files = file->listFiles();
+        if (files != nullptr) {
+            auto itr = files->iterator();
+            while (itr.hasNext()) {
+                sp<File> f = itr.next();
+                removeFile(f);
+            }
+        }
+    }
+    file->remove();
+}
+
 TEST(Mindroid, SharedPreferences) {
-    Environment::setRootDirectory(".");
+    sp<File> tmpDirectory = new File("tmp");
+    tmpDirectory->mkdirs();
+    Environment::setRootDirectory(tmpDirectory->getAbsolutePath());
+    Environment::getPreferencesDirectory()->mkdirs();
+
     sp<SharedPreferences> sharedPreferences = new SharedPreferencesImpl(new File(Environment::getPreferencesDirectory(), "Test.xml"), 0);
     sp<SharedPreferences::Editor> editor = sharedPreferences->edit();
     editor->clear()->commit();
@@ -41,4 +60,6 @@ TEST(Mindroid, SharedPreferences) {
 
     ASSERT_EQ(sharedPreferences->getString("String", nullptr), nullptr);
     ASSERT_EQ(sharedPreferences->getString("Set", nullptr), nullptr);
+
+    removeFile(tmpDirectory);
 }

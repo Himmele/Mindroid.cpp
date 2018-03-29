@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ARRAYLIST_H_
-#define MINDROID_ARRAYLIST_H_
+#ifndef MINDROID_UTIL_ARRAYLIST_H_
+#define MINDROID_UTIL_ARRAYLIST_H_
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/util/HashSet.h>
 #include <vector>
 
@@ -78,7 +78,9 @@ public:
     }
 
     void add(size_t index, const T& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
+        if (index > size()) {
+            throw IndexOutOfBoundsException();
+        }
         if (index < size()) {
             typename std::vector<T>::iterator itr = mList.begin();
             size_t i = 0;
@@ -111,7 +113,9 @@ public:
     }
 
     T get(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         return mList.at(index);
     }
 
@@ -133,7 +137,9 @@ public:
     }
 
     T remove(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::vector<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -161,7 +167,9 @@ public:
     }
 
     T set(size_t index, const T& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         T& curValue = mList.at(index);
         T oldValue = curValue;
         curValue = value;
@@ -282,7 +290,9 @@ public:
     }
 
     void add(size_t index, const sp<T>& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
+        if (index > size()) {
+            throw IndexOutOfBoundsException();
+        }
         if (index < size()) {
             typename std::vector<sp<T>>::iterator itr = mList.begin();
             size_t i = 0;
@@ -318,7 +328,9 @@ public:
     }
 
     sp<T> get(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         return mList.at(index);
     }
 
@@ -341,7 +353,9 @@ public:
     }
 
     sp<T> remove(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::vector<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -372,7 +386,9 @@ public:
     }
 
     sp<T> set(size_t index, const sp<T>& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         sp<T>& curValue = mList.at(index);
         sp<T> oldValue = curValue;
         curValue = value;
@@ -443,4 +459,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ARRAYLIST_H_ */
+#endif /* MINDROID_UTIL_ARRAYLIST_H_ */

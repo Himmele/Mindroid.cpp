@@ -18,6 +18,7 @@
 #include <mindroid/io/File.h>
 #include <mindroid/io/FileNotFoundException.h>
 #include <mindroid/io/IOException.h>
+#include <mindroid/lang/NullPointerException.h>
 
 namespace mindroid {
 
@@ -48,7 +49,9 @@ void FileOutputStream::flush() {
 void FileOutputStream::write(int32_t b) {
     uint8_t data = (uint8_t) b;
     mOutputFileStream.write(reinterpret_cast<char*>(&data), sizeof(data));
-    Assert::assertTrue<IOException>(mOutputFileStream.good());
+    if (!mOutputFileStream.good()) {
+        throw IOException();
+    }
 }
 
 void FileOutputStream::write(const sp<ByteArray>& buffer) {
@@ -56,15 +59,21 @@ void FileOutputStream::write(const sp<ByteArray>& buffer) {
 }
 
 void FileOutputStream::write(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull(buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
     if (count == 0) {
         return;
     }
 
     mOutputFileStream.write(reinterpret_cast<char*>(buffer->c_arr()) + offset, count);
-    Assert::assertTrue<IOException>(mOutputFileStream.good());
+    if (!mOutputFileStream.good()) {
+        throw IOException();
+    }
 }
 
 } /* namespace mindroid */

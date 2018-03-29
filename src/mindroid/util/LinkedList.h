@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LINKEDLIST_H_
-#define MINDROID_LINKEDLIST_H_
+#ifndef MINDROID_UTIL_LINKEDLIST_H_
+#define MINDROID_UTIL_LINKEDLIST_H_
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/util/HashSet.h>
 #include <list>
 
@@ -61,7 +61,9 @@ public:
     }
 
     void add(size_t index, const T& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
+        if (index > size()) {
+            throw IndexOutOfBoundsException();
+        }
         if (index < size()) {
             typename std::list<T>::iterator itr = mList.begin();
             size_t i = 0;
@@ -94,7 +96,9 @@ public:
     }
 
     T get(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -125,7 +129,9 @@ public:
     }
 
     T remove(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -153,7 +159,9 @@ public:
     }
 
     T set(size_t index, const T& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<T>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -269,7 +277,9 @@ public:
     }
 
     void add(size_t index, const sp<T>& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index <= size());
+        if (index > size()) {
+            throw IndexOutOfBoundsException();
+        }
         if (index < size()) {
             typename std::list<sp<T>>::iterator itr = mList.begin();
             size_t i = 0;
@@ -305,7 +315,9 @@ public:
     }
 
     sp<T> get(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -337,7 +349,9 @@ public:
     }
 
     sp<T> remove(size_t index) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -368,7 +382,9 @@ public:
     }
 
     sp<T> set(size_t index, const sp<T>& value) {
-        Assert::assertTrue<IndexOutOfBoundsException>(index < size());
+        if (index >= size()) {
+            throw IndexOutOfBoundsException();
+        }
         typename std::list<sp<T>>::iterator itr = mList.begin();
         size_t i = 0;
         while (itr != mList.end()) {
@@ -447,4 +463,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LINKEDLIST_H_ */
+#endif /* MINDROID_UTIL_LINKEDLIST_H_ */

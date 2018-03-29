@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_DATAINPUTSTREAM_H_
-#define MINDROID_DATAINPUTSTREAM_H_
+#ifndef MINDROID_IO_DATAINPUTSTREAM_H_
+#define MINDROID_IO_DATAINPUTSTREAM_H_
 
 #include <mindroid/io/InputStream.h>
 
@@ -137,9 +137,9 @@ public:
 
     float readFloat();
 
-    void readFully(const sp<ByteArray>& b);
+    void readFully(const sp<ByteArray>& buffer);
 
-    void readFully(const sp<ByteArray>& b, size_t off, size_t len);
+    void readFully(const sp<ByteArray>& buffer, size_t offset, size_t count);
 
     int16_t readShort();
 
@@ -167,4 +167,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_DATAINPUTSTREAM_H_ */
+#endif /* MINDROID_IO_DATAINPUTSTREAM_H_ */

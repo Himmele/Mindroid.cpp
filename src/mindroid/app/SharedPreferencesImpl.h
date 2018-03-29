@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SHAREDPREFERENCESIMPL_H_
-#define MINDROID_SHAREDPREFERENCESIMPL_H_
+#ifndef MINDROID_APP_SHAREDPREFERENCESIMPL_H_
+#define MINDROID_APP_SHAREDPREFERENCESIMPL_H_
 
 #include <mindroid/app/IOnSharedPreferenceChangeListener.h>
 #include <mindroid/content/SharedPreferences.h>
@@ -151,14 +151,14 @@ private:
         }
 
         virtual void onSharedPreferenceChanged(const sp<String>& key) override {
-            sp<SharedPreferences> sharedPreferences = mSharedPreferences.lock();
+            sp<SharedPreferences> sharedPreferences = mSharedPreferences.get();
             if (sharedPreferences != nullptr) {
                 mListener->onSharedPreferenceChanged(sharedPreferences, key);
             }
         }
 
         virtual void onSharedPreferenceChanged() override {
-            sp<SharedPreferences> sharedPreferences = mSharedPreferences.lock();
+            sp<SharedPreferences> sharedPreferences = mSharedPreferences.get();
             if (sharedPreferences != nullptr) {
                 mListener->onSharedPreferenceChanged(sharedPreferences);
             }
@@ -200,4 +200,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SHAREDPREFERENCESIMPL_H_ */
+#endif /* MINDROID_APP_SHAREDPREFERENCESIMPL_H_ */

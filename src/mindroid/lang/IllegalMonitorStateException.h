@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ILLEGALMONITORSTATEEXCEPTION_H_
-#define MINDROID_ILLEGALMONITORSTATEEXCEPTION_H_
+#ifndef MINDROID_LANG_ILLEGALMONITORSTATEEXCEPTION_H_
+#define MINDROID_LANG_ILLEGALMONITORSTATEEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,8 +30,26 @@ public:
 
     IllegalMonitorStateException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    IllegalMonitorStateException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalMonitorStateException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalMonitorStateException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalMonitorStateException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalMonitorStateException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    IllegalMonitorStateException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ILLEGALMONITORSTATEEXCEPTION_H_ */
+#endif /* MINDROID_LANG_ILLEGALMONITORSTATEEXCEPTION_H_ */

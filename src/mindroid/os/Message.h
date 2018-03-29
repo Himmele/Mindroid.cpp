@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_MESSAGE_H_
-#define MINDROID_MESSAGE_H_
+#ifndef MINDROID_OS_MESSAGE_H_
+#define MINDROID_OS_MESSAGE_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
@@ -286,4 +286,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_MESSAGE_H_ */
+#endif /* MINDROID_OS_MESSAGE_H_ */

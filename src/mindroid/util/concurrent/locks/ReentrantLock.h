@@ -15,37 +15,31 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_REENTRANTLOCK_H_
-#define MINDROID_REENTRANTLOCK_H_
+#ifndef MINDROID_UTIL_CONCURRENT_LOCKS_REENTRANTLOCK_H_
+#define MINDROID_UTIL_CONCURRENT_LOCKS_REENTRANTLOCK_H_
 
 #include <mindroid/util/concurrent/locks/Lock.h>
 #include <mindroid/util/concurrent/locks/Condition.h>
-#include <pthread.h>
+#include <mutex>
 
 namespace mindroid {
 
 class ReentrantLock :
         public Lock {
 public:
-    ReentrantLock();
-    virtual ~ReentrantLock();
+    ReentrantLock() = default;
+    virtual ~ReentrantLock() = default;
     ReentrantLock(const ReentrantLock&) = delete;
     ReentrantLock& operator=(const ReentrantLock&) = delete;
-    virtual void lock();
-    virtual sp<Condition> newCondition();
-    virtual bool tryLock(uint64_t timeoutMillis);
-    virtual void unlock();
-
-protected:
-    virtual pthread_mutex_t* getMutex() {
-        return &mMutex;
-    }
+    void lock() override;
+    sp<Condition> newCondition() override;
+    bool tryLock(uint64_t timeoutMillis) override;
+    void unlock() override;
 
 private:
-    pthread_mutex_t mMutex;
-    pthread_mutexattr_t mAttributes;
+    std::recursive_timed_mutex mLock;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_REENTRANTLOCK_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_LOCKS_REENTRANTLOCK_H_ */

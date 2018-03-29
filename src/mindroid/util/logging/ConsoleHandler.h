@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONSOLEHANDLER_H_
-#define MINDROID_CONSOLEHANDLER_H_
+#ifndef MINDROID_UTIL_LOGGING_CONSOLEHANDLER_H_
+#define MINDROID_UTIL_LOGGING_CONSOLEHANDLER_H_
 
 #include <mindroid/util/logging/LogHandler.h>
 
@@ -59,4 +59,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONSOLEHANDLER_H_ */
+#endif /* MINDROID_UTIL_LOGGING_CONSOLEHANDLER_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SERVERSOCKET_H_
-#define MINDROID_SERVERSOCKET_H_
+#ifndef MINDROID_NET_SERVERSOCKET_H_
+#define MINDROID_NET_SERVERSOCKET_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -23,38 +23,136 @@
 namespace mindroid {
 
 class Socket;
+class InetAddress;
+class InetSocketAddress;
 
 class ServerSocket :
         public Object {
 public:
     static const int DEFAULT_BACKLOG = 10;
 
+    /**
+     * Constructs a new unbound {@code ServerSocket}.
+     *
+     * @throws IOException if an error occurs while creating the socket.
+     */
     ServerSocket();
+
+    /**
+     * Constructs a new {@code ServerSocket} instance bound to the given {@code port} using a
+     * wildcard address. The backlog is set to 10. If {@code port == 0}, a port will be assigned by
+     * the OS.
+     *
+     * @throws IOException if an error occurs while creating the socket.
+     */
     ServerSocket(uint16_t port);
-    ServerSocket(uint16_t port, int backlog);
-    ServerSocket(const char* host, uint16_t port, int backlog) :
-            ServerSocket(String::valueOf(host), port, backlog) {
-    }
-    ServerSocket(const sp<String>& host, uint16_t port, int backlog);
+
+    /**
+     * Constructs a new {@code ServerSocket} instance bound to the given {@code port} using a
+     * wildcard address. The backlog is set to {@code backlog}.
+     * If {@code port == 0}, a port will be assigned by the OS.
+     *
+     * @throws IOException if an error occurs while creating the socket.
+     */
+    ServerSocket(uint16_t port, int32_t backlog);
+
+    /**
+     * Constructs a new {@code ServerSocket} instance bound to the given {@code localAddress}
+     * and {@code port}. The backlog is set to {@code backlog}.
+     * If {@code localAddress == null}, the ANY address is used.
+     * If {@code port == 0}, a port will be assigned by the OS.
+     *
+     * @throws IOException if an error occurs while creating the socket.
+     */
+    ServerSocket(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress);
+
     virtual ~ServerSocket();
     ServerSocket(const ServerSocket&) = delete;
     ServerSocket& operator=(const ServerSocket&) = delete;
 
-    bool bind(uint16_t port, int backlog = DEFAULT_BACKLOG);
-    bool bind(const char* host, uint16_t port, int backlog = DEFAULT_BACKLOG) {
-        return bind(String::valueOf(host), port, backlog);
-    }
-    bool bind(const sp<String>& host, uint16_t port, int backlog = DEFAULT_BACKLOG);
-
-    sp<Socket> accept();
+    /**
+     * Closes this server socket and its implementation. Any attempt to connect
+     * to this socket thereafter will fail.
+     *
+     * @throws IOException
+     *             if an error occurs while closing this socket.
+     */
     void close();
+
+    /**
+     * Binds this server socket to the given local socket address with a maximum
+     * backlog of 50 unaccepted connections. If the {@code localAddr} is set to
+     * {@code null} the socket will be bound to an available local address on
+     * any free port of the system.
+     *
+     * @param localAddress
+     *            the local address and port to bind on.
+     * @throws IllegalArgumentException
+     *             if the {@code SocketAddress} is not supported.
+     * @throws IOException
+     *             if the socket is already bound or a problem occurs during
+     *             binding.
+     */
+    void bind(const sp<InetSocketAddress>& localAddress) {
+        bind(localAddress, DEFAULT_BACKLOG);
+    }
+
+    /**
+     * Binds this server socket to the given local socket address with a maximum
+     * backlog of 50 unaccepted connections. If the {@code localAddr} is set to
+     * {@code null} the socket will be bound to an available local address on
+     * any free port of the system.
+     *
+     * @param localAddress
+     *            the local address and port to bind on.
+     * @throws IllegalArgumentException
+     *             if the {@code SocketAddress} is not supported.
+     * @throws IOException
+     *             if the socket is already bound or a problem occurs during
+     *             binding.
+     */
+    void bind(const sp<InetSocketAddress>& localAddress, int32_t backlog);
+
+    /**
+     * Waits for an incoming request and blocks until the connection is opened.
+     * This method returns a socket object representing the just opened
+     * connection.
+     *
+     * @return the connection representing socket.
+     * @throws IOException
+     *             if an error occurs while accepting a new connection.
+     */
+    sp<Socket> accept();
+
+    /**
+     * Returns whether this server socket is bound to a local address and port
+     * or not.
+     *
+     * @return {@code true} if this socket is bound, {@code false} otherwise.
+     */
     bool isBound() const { return mIsBound; }
+
+    /**
+     * Returns whether this server socket is closed or not.
+     *
+     * @return {@code true} if this socket is closed, {@code false} otherwise.
+     */
     bool isClosed() const { return mIsClosed; }
+
+    /**
+    * Sets the value for the socket option {@code SocketOptions.SO_REUSEADDR}.
+    *
+    * @param reuse
+    *            the socket option setting.
+    * @throws SocketException
+    *             if an error occurs while setting the option value.
+    */
     void setReuseAddress(bool reuse);
-    int getId() const { return mSocketId; }
 
 private:
-    int mSocketId = -1;
+    void bind(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress);
+
+    int32_t mFd = -1;
     bool mIsBound = false;
     bool mIsClosed = false;
     bool mReuseAddress = false;
@@ -62,4 +160,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SERVERSOCKET_H_ */
+#endif /* MINDROID_NET_SERVERSOCKET_H_ */

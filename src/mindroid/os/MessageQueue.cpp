@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-#include <mindroid/lang/Runnable.h>
-#include <mindroid/lang/Integer.h>
-#include <mindroid/lang/Math.h>
-#include <mindroid/os/SystemClock.h>
 #include <mindroid/os/MessageQueue.h>
 #include <mindroid/os/Message.h>
 #include <mindroid/os/Handler.h>
+#include <mindroid/os/SystemClock.h>
+#include <mindroid/lang/Runnable.h>
+#include <mindroid/lang/Integer.h>
+#include <mindroid/lang/Math.h>
+#include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/lang/IllegalStateException.h>
 #include <mindroid/util/Log.h>
 #include <climits>
 
@@ -64,14 +66,14 @@ bool MessageQueue::quit() {
 
 bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
     if (message->target == nullptr) {
-        Assert::assertNotNull("Message must have a target", message->target);
+        throw IllegalArgumentException("Message must have a target");
         return false;
     }
 
     AutoLock autoLock(mLock);
 
     if (message->isInUse()) {
-        Assert::assertFalse<IllegalStateException>("Message is already in use", message->isInUse());
+        throw IllegalStateException("Message is already in use");
         return false;
     }
 

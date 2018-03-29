@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_REMOTEEXCEPTION_H_
-#define MINDROID_REMOTEEXCEPTION_H_
+#ifndef MINDROID_OS_REMOTEEXCEPTION_H_
+#define MINDROID_OS_REMOTEEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -47,4 +47,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_REMOTEEXCEPTION_H_ */
+#endif /* MINDROID_OS_REMOTEEXCEPTION_H_ */

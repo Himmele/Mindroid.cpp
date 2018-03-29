@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_EXCEPTION_H_
-#define MINDROID_EXCEPTION_H_
+#ifndef MINDROID_LANG_EXCEPTION_H_
+#define MINDROID_LANG_EXCEPTION_H_
 
 #include <mindroid/lang/String.h>
 #include <exception>
@@ -76,4 +76,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_EXCEPTION_H_ */
+#endif /* MINDROID_LANG_EXCEPTION_H_ */

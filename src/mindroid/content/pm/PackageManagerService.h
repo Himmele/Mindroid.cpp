@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_PACKAGEMANAGERSERVICE_H_
-#define MINDROID_PACKAGEMANAGERSERVICE_H_
+#ifndef MINDROID_CONTENT_PM_PACKAGEMANAGERSERVICE_H_
+#define MINDROID_CONTENT_PM_PACKAGEMANAGERSERVICE_H_
 
 #include <mindroid/app/Service.h>
 #include <mindroid/content/ComponentName.h>
@@ -80,4 +80,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_PACKAGEMANAGERSERVICE_H_ */
+#endif /* MINDROID_CONTENT_PM_PACKAGEMANAGERSERVICE_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAYOUTPUTSTREAM_H_
-#define MINDROID_BYTEARRAYOUTPUTSTREAM_H_
+#ifndef MINDROID_IO_BYTEARRAYOUTPUTSTREAM_H_
+#define MINDROID_IO_BYTEARRAYOUTPUTSTREAM_H_
 
 #include <mindroid/io/OutputStream.h>
 #include <mindroid/lang/ByteArray.h>
@@ -96,8 +96,8 @@ public:
      * @throws NullPointerException
      *             if {@code buffer} is {@code null}.
      * @throws IndexOutOfBoundsException
-     *             if {@code offset < 0} or {@code len < 0}, or if
-     *             {@code offset + len} is greater than the length of
+     *             if {@code offset < 0} or {@code count < 0}, or if
+     *             {@code offset + count} is greater than the length of
      *             {@code buffer}.
      */
     void write(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
@@ -141,4 +141,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BYTEARRAYOUTPUTSTREAM_H_ */
+#endif /* MINDROID_IO_BYTEARRAYOUTPUTSTREAM_H_ */

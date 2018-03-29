@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_STRINGBUILDER_H_
-#define MINDROID_STRINGBUILDER_H_
+#ifndef MINDROID_LANG_STRINGBUILDER_H_
+#define MINDROID_LANG_STRINGBUILDER_H_
 
-#include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/ByteArray.h>
 #include <string>
 
 namespace mindroid {
@@ -274,13 +274,10 @@ public:
 private:
     StringBuilder(const std::string&& otherString);
 
-    template<typename T>
-    const std::string toString(const T& data);
-
     // Crafting the string uses the mutable std::string class.
     std::string mString;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_STRINGBUILDER_H_ */
+#endif /* MINDROID_LANG_STRINGBUILDER_H_ */

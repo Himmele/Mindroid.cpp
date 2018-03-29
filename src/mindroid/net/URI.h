@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 ESR Labs
+ * Copyright (C) 2018 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_URI_H_
-#define MINDROID_URI_H_
+#ifndef MINDROID_NET_URI_H_
+#define MINDROID_NET_URI_H_
 
 #include <mindroid/lang/String.h>
 
@@ -43,6 +43,13 @@ public:
         const char* query,
         const char* fragment);
 
+    /**
+     * Returns the URI formed by parsing {@code uri}. This method behaves
+     * identically to the string constructor but throws a different exception
+     * on failure. The constructor fails with a checked {@link
+     * URISyntaxException}; this method fails with an unchecked {@link
+     * IllegalArgumentException}.
+     */
     static sp<URI> create(const sp<String>& uri);
     static sp<URI> create(const char* uri);
 
@@ -96,4 +103,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_URI_H_ */
+#endif /* MINDROID_NET_URI_H_ */

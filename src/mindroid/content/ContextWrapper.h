@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONTEXTWRAPPER_H_
-#define MINDROID_CONTEXTWRAPPER_H_
+#ifndef MINDROID_CONTENT_CONTEXTWRAPPER_H_
+#define MINDROID_CONTENT_CONTEXTWRAPPER_H_
 
 #include <mindroid/content/Context.h>
 #include <mindroid/content/ComponentName.h>
@@ -110,4 +110,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONTEXTWRAPPER_H_ */
+#endif /* MINDROID_CONTENT_CONTEXTWRAPPER_H_ */

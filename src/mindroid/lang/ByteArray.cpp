@@ -16,10 +16,9 @@
 
 #include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Class.h>
-#include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/lang/String.h>
-#include <mindroid/util/Assert.h>
 #include <mindroid/lang/StringBuilder.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
@@ -36,7 +35,7 @@ ByteArray::ByteArray(const uint8_t* buffer, size_t size) : mBuffer(buffer, buffe
 }
 
 sp<ByteArray> ByteArray::valueOf(const std::initializer_list<uint8_t>& list) {
-    return new ByteArray{std::vector<uint8_t>{std::move(list)}};
+    return new ByteArray(std::vector<uint8_t>(std::move(list)));
 }
 
 size_t ByteArray::size() const {
@@ -53,7 +52,7 @@ uint8_t* ByteArray::c_arr() {
 
 sp<String> ByteArray::toString() const {
     sp<StringBuilder> sb = new StringBuilder{"{"};
-    auto arr = c_arr();
+    const uint8_t* arr = c_arr();
     for (size_t i = 0; i < size(); ++i) {
         if (i != 0) {
             sb->append(", ");
@@ -68,33 +67,42 @@ sp<ByteArray> ByteArray::clone() const {
 }
 
 const uint8_t& ByteArray::get(size_t position) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mBuffer.size());
+    if (position >= mBuffer.size()) {
+        throw IndexOutOfBoundsException();
+    }
     return mBuffer[position];
 }
 
 const uint8_t& ByteArray::operator[](size_t position) const {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mBuffer.size());
+    if (position >= mBuffer.size()) {
+        throw IndexOutOfBoundsException();
+    }
     return mBuffer[position];
 }
 
 uint8_t& ByteArray::get(size_t position) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mBuffer.size());
+    if (position >= mBuffer.size()) {
+        throw IndexOutOfBoundsException();
+    }
     return mBuffer[position];
 }
 
 void ByteArray::set(size_t position, uint8_t value) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mBuffer.size());
+    if (position >= mBuffer.size()) {
+        throw IndexOutOfBoundsException();
+    }
     mBuffer[position] = value;
 }
 
 uint8_t& ByteArray::operator[](size_t position) {
-    Assert::assertFalse<IndexOutOfBoundsException>(position >= mBuffer.size());
+    if (position >= mBuffer.size()) {
+        throw IndexOutOfBoundsException();
+    }
     return mBuffer[position];
 }
 
 bool ByteArray::operator==(const ByteArray& other) const {
-    return size() == other.size()
-        && std::memcmp(c_arr(), other.c_arr(), size()) == 0;
+    return size() == other.size() && std::memcmp(c_arr(), other.c_arr(), size()) == 0;
 }
 
 bool ByteArray::operator==(const sp<ByteArray>& other) const {

@@ -17,54 +17,31 @@
 
 #include <mindroid/os/Looper.h>
 #include <mindroid/os/Handler.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/RuntimeException.h>
 
 namespace mindroid {
 
-pthread_once_t Looper::sTlsOneTimeInitializer = PTHREAD_ONCE_INIT;
-pthread_key_t Looper::sTlsKey;
+thread_local sp<Looper> tlsLooper;
 
 Looper::Looper(bool quitAllowed) {
     mMessageQueue = new MessageQueue(quitAllowed);
     mThread = Thread::currentThread();
 }
 
-void Looper::init() {
-    pthread_key_create(&sTlsKey, Looper::finalize);
-}
-
-void Looper::finalize(void* l) {
-    sp<Looper> looper((Looper*) l);
-    looper->mSelf = nullptr;
-}
-
-bool Looper::prepare(bool quitAllowed) {
-    pthread_once(&sTlsOneTimeInitializer, Looper::init);
-    Looper* l = (Looper*) pthread_getspecific(sTlsKey);
-    if (l == nullptr) {
-        sp<Looper> looper = new Looper(quitAllowed);
-        if (looper != nullptr) {
-            if (pthread_setspecific(sTlsKey, looper.getPointer()) == 0) {
-                looper->mSelf = looper;
-                return true;
-            } else {
-                looper = nullptr;
-                return false;
-            }
-        } else {
-            return false;
-        }
-    } else {
-        Assert::assertTrue<RuntimeException>("Only one Looper may be created per thread", l == nullptr);
-        return false;
+void Looper::prepare(bool quitAllowed) {
+    if (tlsLooper != nullptr) {
+        throw RuntimeException("Only one Looper may be created per thread");
     }
+    tlsLooper = new Looper(quitAllowed);
 }
 
 void Looper::loop() {
     sp<Looper> me = myLooper();
-    Assert::assertNotNull("No Looper; Looper.prepare() wasn't called on this thread", me);
-
+    if (me == nullptr) {
+        throw RuntimeException("No Looper; Looper.prepare() wasn't called on this thread");
+    }
     sp<MessageQueue> mq = me->mMessageQueue;
+
     for (;;) {
         sp<Message> message = mq->dequeueMessage();
         if (message == nullptr) {
@@ -76,9 +53,7 @@ void Looper::loop() {
 }
 
 sp<Looper> Looper::myLooper() {
-    pthread_once(&sTlsOneTimeInitializer, Looper::init);
-    Looper* looper = (Looper*) pthread_getspecific(sTlsKey);
-    return looper;
+    return tlsLooper;
 }
 
 void Looper::quit() {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_HASHMAP_H_
-#define MINDROID_HASHMAP_H_
+#ifndef MINDROID_UTIL_HASHMAP_H_
+#define MINDROID_UTIL_HASHMAP_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/util/HashSet.h>
@@ -798,4 +798,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_HASHMAP_H_ */
+#endif /* MINDROID_UTIL_HASHMAP_H_ */

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_SERVICECONNECTION_H_
-#define MINDROID_SERVICECONNECTION_H_
+#ifndef MINDROID_CONTENT_SERVICECONNECTION_H_
+#define MINDROID_CONTENT_SERVICECONNECTION_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -60,4 +60,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_SERVICECONNECTION_H_ */
+#endif /* MINDROID_CONTENT_SERVICECONNECTION_H_ */

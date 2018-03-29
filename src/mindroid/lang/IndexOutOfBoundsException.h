@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_INDEXOUTOFBOUNDSEXCEPTION_H_
-#define MINDROID_INDEXOUTOFBOUNDSEXCEPTION_H_
+#ifndef MINDROID_LANG_INDEXOUTOFBOUNDSEXCEPTION_H_
+#define MINDROID_LANG_INDEXOUTOFBOUNDSEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,8 +30,26 @@ public:
 
     IndexOutOfBoundsException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    IndexOutOfBoundsException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IndexOutOfBoundsException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IndexOutOfBoundsException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IndexOutOfBoundsException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IndexOutOfBoundsException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    IndexOutOfBoundsException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_INDEXOUTOFBOUNDSEXCEPTION_H_ */
+#endif /* MINDROID_LANG_INDEXOUTOFBOUNDSEXCEPTION_H_ */

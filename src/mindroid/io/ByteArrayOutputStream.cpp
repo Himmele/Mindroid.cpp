@@ -16,7 +16,8 @@
 
 #include <mindroid/io/ByteArrayOutputStream.h>
 #include <mindroid/lang/System.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
@@ -59,8 +60,12 @@ void ByteArrayOutputStream::write(const sp<ByteArray>& buffer)  {
 }
 
 void ByteArrayOutputStream::write(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull(buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
     if (count == 0) {
         return;

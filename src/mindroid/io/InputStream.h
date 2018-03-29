@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_INPUTSTREAM_H_
-#define MINDROID_INPUTSTREAM_H_
+#ifndef MINDROID_IO_INPUTSTREAM_H_
+#define MINDROID_IO_INPUTSTREAM_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -171,7 +171,7 @@ public:
      * has been reached.
      *
      * @throws IndexOutOfBoundsException
-     *   if {@code byteOffset < 0 || byteCount < 0 || byteOffset + byteCount > buffer.length}.
+     *   if {@code offset < 0 || count < 0 || offset + count > buffer.length}.
      * @throws IOException
      *             if the stream is closed or another IOException occurs.
      */
@@ -213,4 +213,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_INPUTSTREAM_H_ */
+#endif /* MINDROID_IO_INPUTSTREAM_H_ */

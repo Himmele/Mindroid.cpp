@@ -23,6 +23,7 @@
 #include <mindroid/os/Process.h>
 #include <mindroid/os/IProcess.h>
 #include <mindroid/os/ServiceManager.h>
+#include <mindroid/lang/RuntimeException.h>
 #include <mindroid/util/concurrent/Promise.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <mindroid/util/Log.h>
@@ -224,7 +225,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
 
         protected:
             void onResult(const sp<Bundle>& data) {
-                sp<ServiceManager> serviceManager = mServiceManager.lock();
+                sp<ServiceManager> serviceManager = mServiceManager.get();
                 if (serviceManager != nullptr) {
                     bool result = data->getBoolean("result");
                     if (result) {
@@ -247,7 +248,7 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
         try {
             process->stopService(service, callback->asInterface());
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
+            throw RuntimeException("System failure", e);
         }
 
         serviceRecord->alive = false;
@@ -285,7 +286,7 @@ bool ServiceManager::ServiceManagerImpl::bindService(const sp<Intent>& intent, c
             try {
                 serviceRecord->processRecord->process->bindService(intent, conn, flags, callback);
             } catch (const RemoteException& e) {
-                Assert::fail("System failure");
+                throw RuntimeException("System failure", e);
             }
 
             Log::d(ServiceManager::TAG, "Bound to service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
@@ -313,7 +314,7 @@ void ServiceManager::ServiceManagerImpl::unbindService(const sp<Intent>& service
                 process->unbindService(service);
             }
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
+            throw RuntimeException("System failure", e);
         }
         Log::d(ServiceManager::TAG, "Unbound from service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
 
@@ -322,7 +323,7 @@ void ServiceManager::ServiceManagerImpl::unbindService(const sp<Intent>& service
             try {
                 sServiceManager->stopService(service);
             } catch (const RemoteException& e) {
-                Assert::fail("System failure");
+                throw RuntimeException("System failure", e);
             }
         }
     }
@@ -375,13 +376,12 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
     } else {
         if (mPackageManager == nullptr) {
             mPackageManager = binder::PackageManager::Stub::asInterface(getSystemService(Context::PACKAGE_MANAGER));
-            Assert::assertNotNull("System failure", mPackageManager);
         }
         sp<ResolveInfo> resolveInfo = nullptr;
         try {
             resolveInfo = mPackageManager->resolveService(service, 0);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
+            throw RuntimeException("System failure", e);
         }
 
         if (resolveInfo == nullptr || resolveInfo->serviceInfo == nullptr) {
@@ -430,7 +430,7 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
 
         protected:
             void onResult(const sp<Bundle>& data) {
-                sp<ServiceManager> serviceManager = mServiceManager.lock();
+                sp<ServiceManager> serviceManager = mServiceManager.get();
                 if (serviceManager != nullptr) {
                     sp<ComponentName> component = mService->getComponent();
                     if (serviceManager->mServices->containsKey(component)) {
@@ -458,7 +458,7 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
         try {
             process->createService(service, callback->asInterface());
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
+            throw RuntimeException("System failure", e);
         }
     }
 
@@ -483,7 +483,7 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
 
     protected:
         void onResult(const sp<Bundle>& data) {
-            sp<ServiceManager> serviceManager = mServiceManager.lock();
+            sp<ServiceManager> serviceManager = mServiceManager.get();
             if (serviceManager != nullptr) {
                 bool result = data->getBoolean("result");
                 if (result) {
@@ -507,7 +507,7 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
     try {
         serviceRecord->processRecord->process->startService(service, 0, mStartId++, callback->asInterface());
     } catch (const RemoteException& e) {
-        Assert::fail("System failure");
+        throw RuntimeException("System failure", e);
     }
 
     return service->getComponent();

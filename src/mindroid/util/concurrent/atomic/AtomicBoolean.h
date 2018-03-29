@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ATOMICBOOLEAN_H_
-#define MINDROID_ATOMICBOOLEAN_H_
+#ifndef MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICBOOLEAN_H_
+#define MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICBOOLEAN_H_
 
 #include <mindroid/lang/Object.h>
 #include <atomic>
@@ -40,4 +40,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ATOMICBOOLEAN_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_ATOMIC_ATOMICBOOLEAN_H_ */

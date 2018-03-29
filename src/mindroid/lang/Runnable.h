@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNNABLE_H_
-#define MINDROID_RUNNABLE_H_
+#ifndef MINDROID_LANG_RUNNABLE_H_
+#define MINDROID_LANG_RUNNABLE_H_
 
 #include <mindroid/lang/Object.h>
 #include <functional>
@@ -44,4 +44,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNNABLE_H_ */
+#endif /* MINDROID_LANG_RUNNABLE_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_DOUBLE_H_
-#define MINDROID_DOUBLE_H_
+#ifndef MINDROID_LANG_DOUBLE_H_
+#define MINDROID_LANG_DOUBLE_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -109,4 +109,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_DOUBLE_H_ */
+#endif /* MINDROID_LANG_DOUBLE_H_ */

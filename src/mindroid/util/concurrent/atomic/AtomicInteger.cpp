@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 E.S.R.Labs
+ * Copyright (C) 2017 E.S.R.Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,38 +15,27 @@
  */
 
 #include <mindroid/util/concurrent/atomic/AtomicInteger.h>
-#include <atomic>
 
 namespace mindroid {
 
-int32_t AtomicInteger::getAndIncrement(volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return a->fetch_add(1, std::memory_order_release);
+AtomicInteger::AtomicInteger() {
+    set(0);
 }
 
-int32_t AtomicInteger::getAndDecrement(volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return a->fetch_sub(1, std::memory_order_release);
+AtomicInteger::AtomicInteger(int32_t initialValue) {
+    set(initialValue);
 }
 
-int32_t AtomicInteger::getAndAdd(int32_t value, volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return a->fetch_add(value, std::memory_order_release);
+int32_t AtomicInteger::get() {
+    return mValue.load();
 }
 
-int32_t AtomicInteger::getAndAnd(int32_t value, volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return a->fetch_and(value, std::memory_order_release);
+void AtomicInteger::set(int32_t newValue) {
+    mValue.store(newValue);
 }
 
-int32_t AtomicInteger::getAndOr(int32_t value, volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return a->fetch_or(value, std::memory_order_release);
-}
-
-int32_t AtomicInteger::compareAndSwap(int32_t oldValue, int32_t newValue, volatile int32_t* address) {
-    volatile std::atomic<int_least32_t>* a = (volatile std::atomic<int_least32_t>*) address;
-    return (int32_t) (!a->compare_exchange_strong(oldValue, newValue, std::memory_order_release, std::memory_order_relaxed));
+bool AtomicInteger::compareAndSet(int32_t expect, int32_t update) {
+    return mValue.compare_exchange_strong(expect, update);
 }
 
 } /* namespace mindroid */

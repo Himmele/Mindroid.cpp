@@ -25,8 +25,8 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-#ifndef MINDROID_FUTURE_H_
-#define MINDROID_FUTURE_H_
+#ifndef MINDROID_UTIL_CONCURRENT_FUTURE_H_
+#define MINDROID_UTIL_CONCURRENT_FUTURE_H_
 
 #include <mindroid/util/concurrent/Thenable.h>
 
@@ -116,4 +116,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FUTURE_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_FUTURE_H_ */

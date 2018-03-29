@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_CONTEXTIMPL_H_
-#define MINDROID_CONTEXTIMPL_H_
+#ifndef MINDROID_APP_CONTEXTIMPL_H_
+#define MINDROID_APP_CONTEXTIMPL_H_
 
 #include <mindroid/content/Context.h>
 #include <mindroid/content/Intent.h>
@@ -87,4 +87,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_CONTEXTIMPL_H_ */
+#endif /* MINDROID_APP_CONTEXTIMPL_H_ */

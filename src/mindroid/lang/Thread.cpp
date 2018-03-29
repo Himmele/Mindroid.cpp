@@ -23,39 +23,34 @@ namespace mindroid {
 
 Thread::Thread(const sp<Runnable>& runnable, const sp<String>& name) :
         mName(name),
-        mRunnable(runnable),
-        mStarted(false),
-        mInterrupted(false) {
+        mRunnable(runnable) {
 }
 
 Thread::Thread(pthread_t thread) :
-        mThread(thread),
-        mStarted(true),
-        mInterrupted(false) {
+        mThread(thread) {
 }
 
-bool Thread::start() {
+void Thread::start() {
     if (!mStarted) {
         mSelf = this;
-        if (pthread_create(&mThread, nullptr, &Thread::exec, this) != 0) {
+        if (::pthread_create(&mThread, nullptr, &Thread::exec, this) == 0) {
+            if (mName != nullptr) {
+                ::pthread_setname_np(mThread, mName->c_str());
+            }
+        } else {
             mSelf.clear();
         }
-        if (mName != nullptr) {
-            pthread_setname_np(mThread, mName->c_str());
-        }
         mStarted = (mSelf != nullptr);
-        return mStarted;
     }
-    return false;
 }
 
 void Thread::sleep(uint32_t milliseconds) {
-    ::usleep((milliseconds % 1000) * 1000);
     ::sleep(milliseconds / 1000);
+    ::usleep((milliseconds % 1000) * 1000);
 }
 
 void Thread::join() const {
-    pthread_join(mThread, nullptr);
+    ::pthread_join(mThread, nullptr);
 }
 
 void* Thread::exec(void* args) {
@@ -74,23 +69,25 @@ bool Thread::isInterrupted() const {
     return mInterrupted;
 }
 
-sp<Thread> Thread::currentThread() {
-    return new Thread(pthread_self());
-}
-
 bool Thread::isAlive() const {
     return mSelf != nullptr;
 }
 
-pthread_t Thread::getId() const {
-    return pthread_self();
+int32_t Thread::getId() const {
+    return ::pthread_self();
 }
 
-void Thread::setSchedulingParams(int32_t policy, int32_t priority) {
+sp<Thread> Thread::currentThread() {
+    return new Thread(::pthread_self());
+}
+
+void Thread::setPriority(int32_t priority) {
     sched_param schedulingParameters;
-    memset(&schedulingParameters, 0, sizeof(schedulingParameters));
+    std::memset(&schedulingParameters, 0, sizeof(schedulingParameters));
+    int32_t policy = 0;
+    ::pthread_getschedparam(mThread, &policy, &schedulingParameters);
     schedulingParameters.sched_priority = priority;
-    pthread_setschedparam(mThread, policy, &schedulingParameters);
+    ::pthread_setschedparam(mThread, policy, &schedulingParameters);
 }
 
 } /* namespace mindroid */

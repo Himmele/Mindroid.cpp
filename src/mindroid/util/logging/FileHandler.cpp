@@ -16,6 +16,8 @@
 
 #include <mindroid/util/logging/FileHandler.h>
 #include <mindroid/os/Environment.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IllegalArgumentException.h>
 #include <cstdio>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -44,7 +46,7 @@ void FileHandler::init(const sp<String>& pattern, bool append, int32_t limit, in
 void FileHandler::initProperties(const sp<String>& p, bool a, int32_t l, int32_t c, int32_t bufferSize, int32_t dataVolumeLimit) {
     mPattern = (p == nullptr) ? DEFAULT_PATTERN : p;
     if (mPattern == nullptr || (mPattern->length() == 0)) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw NullPointerException("Pattern cannot be null or empty");
     }
     mAppend = a;
     mCount = c;
@@ -146,7 +148,7 @@ sp<String> FileHandler::parseFileName(uint32_t gen) {
 FileHandler::FileHandler(const sp<String>& pattern) :
         mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw IllegalArgumentException("Pattern cannot be null or empty");
     }
     init(pattern, false, DEFAULT_LIMIT, DEFAULT_COUNT, 0, 0);
 }
@@ -154,7 +156,7 @@ FileHandler::FileHandler(const sp<String>& pattern) :
 FileHandler::FileHandler(const sp<String>& pattern, bool append) :
         mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw IllegalArgumentException("Pattern cannot be null or empty");
     }
     init(pattern, append, DEFAULT_LIMIT, DEFAULT_COUNT, 0, 0);
 }
@@ -162,10 +164,10 @@ FileHandler::FileHandler(const sp<String>& pattern, bool append) :
 FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count) :
         mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw IllegalArgumentException("Pattern cannot be null or empty");
     }
     if (limit < 0 || count < 1) {
-        Assert::fail("limit < 0 || count < 1");
+        throw IllegalArgumentException("limit < 0 || count < 1");
     }
     init(pattern, false, limit, count, 0, 0);
 }
@@ -173,10 +175,10 @@ FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count
 FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append) :
         mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw IllegalArgumentException("Pattern cannot be null or empty");
     }
     if (limit < 0 || count < 1) {
-        Assert::fail("limit < 0 || count < 1");
+        throw IllegalArgumentException("limit < 0 || count < 1");
     }
     init(pattern, append, limit, count, 0, 0);
 }
@@ -184,13 +186,13 @@ FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count
 FileHandler::FileHandler(const sp<String>& pattern, int32_t limit, int32_t count, bool append, int32_t bufferSize, int32_t dataVolumeLimit) :
         mLock(new ReentrantLock()) {
     if (pattern == nullptr || pattern->length() == 0) {
-        Assert::fail("Pattern cannot be null or empty");
+        throw IllegalArgumentException("Pattern cannot be null or empty");
     }
     if (limit < 0 || count < 1) {
-        Assert::fail("limit < 0 || count < 1");
+        throw IllegalArgumentException("limit < 0 || count < 1");
     }
     if (bufferSize < 0 || dataVolumeLimit < 0) {
-        Assert::fail("bufferSize < 0 || dataVolumeLimit < 0");
+        throw IllegalArgumentException("bufferSize < 0 || dataVolumeLimit < 0");
     }
     init(pattern, append, limit, count, bufferSize, dataVolumeLimit);
 }

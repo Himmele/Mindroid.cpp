@@ -19,7 +19,6 @@
 #include <mindroid/lang/Thread.h>
 #include <cstdio>
 #include <cstring>
-#include <pthread.h>
 
 namespace mindroid {
 

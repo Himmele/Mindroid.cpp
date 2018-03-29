@@ -19,6 +19,7 @@
 #include <mindroid/app/Service.h>
 #include <mindroid/content/Intent.h>
 #include <mindroid/content/ComponentName.h>
+#include <mindroid/lang/RuntimeException.h>
 
 namespace mindroid {
 
@@ -28,7 +29,7 @@ void Service::stopSelf(int32_t startId) {
     try {
         mProcess->stopService(intent);
     } catch (const RemoteException& e) {
-        Assert::fail("System failure");
+        throw RuntimeException("System failure", e);
     }
 }
 

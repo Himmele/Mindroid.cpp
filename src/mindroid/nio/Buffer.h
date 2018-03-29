@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BUFFER_H_
-#define MINDROID_BUFFER_H_
+#ifndef MINDROID_NIO_BUFFER_H_
+#define MINDROID_NIO_BUFFER_H_
 
-#include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/ByteArray.h>
 
 namespace mindroid {
 
@@ -108,4 +108,4 @@ protected:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BUFFER_H_ */
+#endif /* MINDROID_NIO_BUFFER_H_ */

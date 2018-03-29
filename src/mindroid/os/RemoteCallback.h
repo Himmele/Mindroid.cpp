@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_REMOTECALLBACK_H_
-#define MINDROID_REMOTECALLBACK_H_
+#ifndef MINDROID_OS_REMOTECALLBACK_H_
+#define MINDROID_OS_REMOTECALLBACK_H_
 
 #include <mindroid/lang/Object.h>
-#include <mindroid/lang/RuntimeException.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/os/IRemoteCallback.h>
 #include <mindroid/util/Log.h>
 
@@ -36,7 +36,7 @@ public:
         virtual void onResult(const sp<Bundle>& result) = 0;
 
         sp<RemoteCallback> getCallback() {
-            return mCallback.lock();
+            return mCallback.get();
         }
 
     private:
@@ -51,7 +51,7 @@ public:
 
     RemoteCallback(const sp<OnResultListener>& listener, const sp<Handler>& handler) {
         if (listener == nullptr) {
-            Assert::assertNotNull("Listener cannot be null", listener);
+            throw NullPointerException("Listener cannot be null");
         }
         listener->mCallback = this;
         mCallback = new Stub(listener, handler);
@@ -105,4 +105,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_REMOTECALLBACK_H_ */
+#endif /* MINDROID_OS_REMOTECALLBACK_H_ */

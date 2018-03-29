@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_TIMEOUTEXCEPTION_H_
-#define MINDROID_TIMEOUTEXCEPTION_H_
+#ifndef MINDROID_UTIL_CONCURRENT_TIMEOUTEXCEPTION_H_
+#define MINDROID_UTIL_CONCURRENT_TIMEOUTEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
@@ -46,4 +46,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_TIMEOUTEXCEPTION_H_ */
+#endif /* MINDROID_UTIL_CONCURRENT_TIMEOUTEXCEPTION_H_ */

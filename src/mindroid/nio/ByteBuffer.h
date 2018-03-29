@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEBUFFER_H_
-#define MINDROID_BYTEBUFFER_H_
+#ifndef MINDROID_NIO_BYTEBUFFER_H_
+#define MINDROID_NIO_BYTEBUFFER_H_
 
 #include <mindroid/lang/ByteArray.h>
 #include <mindroid/nio/Buffer.h>
@@ -49,9 +49,9 @@ public:
     /**
      * Compares this buffer to another.
      */
-    int compareTo(const sp<ByteBuffer>& other) const;
+    int32_t compareTo(const sp<ByteBuffer>& other) const;
 
-    int compareTo(const ByteBuffer& other) const;
+    int32_t compareTo(const ByteBuffer& other) const;
 
     /**
      * Creates a new byte buffer that shares this buffer's content.
@@ -79,7 +79,7 @@ public:
     /**
      * Relative bulk get method.
      */
-    sp<ByteBuffer> get(const sp<ByteArray> &dst, size_t offset, size_t size);
+    sp<ByteBuffer> get(const sp<ByteArray> &dst, size_t offset, size_t count);
 
     /**
      * Absolute get method.
@@ -253,7 +253,7 @@ public:
 
 protected:
     ByteBuffer(const sp<ByteArray>& buffer, bool readOnly);
-    ByteBuffer(const sp<ByteArray>& buffer, size_t offset, size_t size, bool readOnly);
+    ByteBuffer(const sp<ByteArray>& buffer, size_t offset, size_t count, bool readOnly);
     void checkBufferOverflow(size_t index, size_t amount);
 
     sp<ByteArray> mBuffer;
@@ -261,4 +261,4 @@ protected:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_HEAPBYTEBUFFER_H_ */
+#endif /* MINDROID_NIO_BYTEBUFFER_H_ */

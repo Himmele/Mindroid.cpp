@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ILLEGALARGUMENTEXCEPTION_H_
-#define MINDROID_ILLEGALARGUMENTEXCEPTION_H_
+#ifndef MINDROID_LANG_ILLEGALARGUMENTEXCEPTION_H_
+#define MINDROID_LANG_ILLEGALARGUMENTEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,8 +30,26 @@ public:
 
     IllegalArgumentException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    IllegalArgumentException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalArgumentException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalArgumentException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalArgumentException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalArgumentException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    IllegalArgumentException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ILLEGALARGUMENTEXCEPTION_H_ */
+#endif /* MINDROID_LANG_ILLEGALARGUMENTEXCEPTION_H_ */

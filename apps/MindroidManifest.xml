@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:mindroid="http://schemas.esrlabs.com/mindroid"
-    package="test"
+    package="examples"
     mindroid:versionCode="1"
     mindroid:versionName="1.0">
 
     <application>
-    	 <service
-            mindroid:name=".Service1"
+        <service
+            mindroid:name=".ServiceExample1"
             mindroid:autostart="true" />
         <service
-            mindroid:name=".Service2"
+            mindroid:name=".ServiceExample2"
             mindroid:autostart="false" />
         <service
-            mindroid:name=".Service3"
+            mindroid:name=".HandlerExample"
             mindroid:autostart="true" />
         <service
-            mindroid:name=".Service4"
+            mindroid:name=".PromiseExample"
+            mindroid:autostart="true" />
+        <service
+            mindroid:name=".AsyncTaskExample"
             mindroid:autostart="true" />
     </application>
 </manifest>

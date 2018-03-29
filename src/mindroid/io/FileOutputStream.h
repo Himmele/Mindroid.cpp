@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILEOUTPUTSTREAM_H_
-#define MINDROID_FILEOUTPUTSTREAM_H_
+#ifndef MINDROID_IO_FILEOUTPUTSTREAM_H_
+#define MINDROID_IO_FILEOUTPUTSTREAM_H_
 
 #include <mindroid/io/OutputStream.h>
 #include <fstream>
@@ -47,4 +47,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILEOUTPUTSTREAM_H_ */
+#endif /* MINDROID_IO_FILEOUTPUTSTREAM_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAYINPUTSTREAM_H_
-#define MINDROID_BYTEARRAYINPUTSTREAM_H_
+#ifndef MINDROID_IO_BYTEARRAYINPUTSTREAM_H_
+#define MINDROID_IO_BYTEARRAYINPUTSTREAM_H_
 
 #include <mindroid/io/InputStream.h>
 
@@ -148,4 +148,4 @@ protected:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BYTEARRAYINPUTSTREAM_H_ */
+#endif /* MINDROID_IO_BYTEARRAYINPUTSTREAM_H_ */

@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
-#include "mindroid/util/LinkedList.h"
-#include "mindroid/lang/String.h"
+#include <mindroid/util/LinkedList.h>
+#include <mindroid/lang/String.h>
 
 using namespace mindroid;
 
 TEST(Mindroid, LinkedListOfInteger) {
-    sp<LinkedList<int>> list = new LinkedList<int>();
+    sp<LinkedList<int32_t>> list = new LinkedList<int32_t>();
     list->add(1);
     list->add(2);
     list->add(17);

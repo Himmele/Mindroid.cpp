@@ -18,7 +18,8 @@
 #include <mindroid/io/EOFException.h>
 #include <mindroid/lang/Float.h>
 #include <mindroid/lang/Double.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
@@ -63,16 +64,19 @@ size_t DataInputStream::skip(size_t count) {
     return mInputStream->skip(count);
 }
 
-
 bool DataInputStream::readBoolean() {
     int32_t value = mInputStream->read();
-    Assert::assertFalse<EOFException>(value < 0);
+    if (value < 0) {
+        throw EOFException();
+    }
     return value != 0;
 }
 
 uint8_t DataInputStream::readByte() {
     int32_t value = mInputStream->read();
-    Assert::assertFalse<EOFException>(value < 0);
+    if (value < 0) {
+        throw EOFException();
+    }
     return (uint8_t) value;
 }
 
@@ -92,18 +96,24 @@ void DataInputStream::readFully(const sp<ByteArray>& buffer) {
     readFully(buffer, 0, buffer->size());
 }
 
-void DataInputStream::readFully(const sp<ByteArray>& buffer, size_t offset, size_t size) {
-    if (size == 0) {
+void DataInputStream::readFully(const sp<ByteArray>& buffer, size_t offset, size_t count) {
+    if (count == 0) {
         return;
     }
-    Assert::assertNotNull("buffer == null", buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (size < 0) || ((offset + size) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
-    while (size > 0) {
-        int count = mInputStream->read(buffer, offset, size);
-        Assert::assertFalse<EOFException>(count < 0);
-        offset += count;
-        size -= count;
+    while (count > 0) {
+        ssize_t size = mInputStream->read(buffer, offset, count);
+        if (size < 0) {
+            throw EOFException();
+        }
+        offset += size;
+        count -= size;
     }
 }
 
@@ -138,7 +148,9 @@ int64_t DataInputStream::readLong() {
 
 uint8_t DataInputStream::readUnsignedByte() {
     int32_t value = mInputStream->read();
-    Assert::assertFalse<EOFException>(value < 0);
+    if (value < 0) {
+        throw EOFException();
+    }
     return (uint8_t) value;
 }
 

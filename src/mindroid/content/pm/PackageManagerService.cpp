@@ -50,12 +50,13 @@ int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t 
         while (itr.hasNext()) {
             sp<File> manifest = itr.next();
             sp<PackageInfo> packageInfo = parseManifest(manifest);
-
-            mPackages->put(packageInfo->packageName, packageInfo);
-            auto itr = packageInfo->services->iterator();
-            while (itr.hasNext()) {
-                sp<ServiceInfo> si = itr.next();
-                mComponents->put(new ComponentName(si->packageName, si->name), si);
+            if (packageInfo != nullptr) {
+                mPackages->put(packageInfo->packageName, packageInfo);
+                auto itr = packageInfo->services->iterator();
+                while (itr.hasNext()) {
+                    sp<ServiceInfo> si = itr.next();
+                    mComponents->put(new ComponentName(si->packageName, si->name), si);
+                }
             }
         }
     }
@@ -109,7 +110,8 @@ sp<PackageInfo> PackageManagerService::parseManifest(const sp<File>& file) {
                 packageName = String::valueOf(attribute->Value());
             }
             if (packageName == nullptr || packageName->length() == 0) {
-                Assert::fail("Manifest is missing a package name");
+                Log::e(TAG, "Manifest is missing a package name");
+                return nullptr;
             }
             pi->packageName = packageName;
             ai->packageName = pi->packageName;

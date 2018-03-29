@@ -17,12 +17,14 @@
  */
 
 #include <mindroid/content/ContextWrapper.h>
-#include <mindroid/util/Assert.h>
+#include <mindroid/lang/IllegalStateException.h>
 
 namespace mindroid {
 
 void ContextWrapper::attachBaseContext(const sp<Context> baseContext) {
-    Assert::assertTrue<IllegalStateException>("Base context already set", mBaseContext == nullptr);
+    if (mBaseContext != nullptr) {
+        throw IllegalStateException("Base context already set");
+    }
     mBaseContext = baseContext;
 }
 

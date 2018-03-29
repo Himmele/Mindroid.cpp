@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_ILLEGALSTATEEXCEPTION_H_
-#define MINDROID_ILLEGALSTATEEXCEPTION_H_
+#ifndef MINDROID_LANG_ILLEGALSTATEEXCEPTION_H_
+#define MINDROID_LANG_ILLEGALSTATEEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,8 +30,26 @@ public:
 
     IllegalStateException(const sp<String>& message) : RuntimeException(message) {
     }
+
+    IllegalStateException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalStateException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalStateException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalStateException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
+    }
+
+    IllegalStateException(const Exception& cause) : RuntimeException(cause) {
+    }
+
+    IllegalStateException(const sp<Exception>& cause) : RuntimeException(cause) {
+    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_ILLEGALSTATEEXCEPTION_H_ */
+#endif /* MINDROID_LANG_ILLEGALSTATEEXCEPTION_H_ */

@@ -16,14 +16,19 @@
 
 #include <mindroid/io/InputStream.h>
 #include <mindroid/io/IOException.h>
-#include <mindroid/util/Assert.h>
 #include <mindroid/lang/Math.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/IndexOutOfBoundsException.h>
 
 namespace mindroid {
 
 ssize_t InputStream::read(const sp<ByteArray>& buffer, size_t offset, size_t count) {
-    Assert::assertNotNull(buffer);
-    Assert::assertFalse<IndexOutOfBoundsException>((offset < 0) || (count < 0) || ((offset + count) > buffer->size()));
+    if (buffer == nullptr) {
+        throw NullPointerException();
+    }
+    if ((offset + count) > buffer->size()) {
+        throw IndexOutOfBoundsException();
+    }
 
     for (size_t i = 0; i < count; ++i) {
         int32_t c;
@@ -36,7 +41,7 @@ ssize_t InputStream::read(const sp<ByteArray>& buffer, size_t offset, size_t cou
 }
 
 void InputStream::reset() {
-    Assert::assertTrue<IOException>(false);
+    throw IOException();
 }
 
 size_t InputStream::skip(size_t count) {

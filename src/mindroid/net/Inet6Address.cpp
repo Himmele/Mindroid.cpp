@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Daniel Himmelein
+ * Copyright (C) 2017 E.S.R. Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-#include <mindroid/lang/Closure.h>
-#include <mindroid/os/Handler.h>
+#include <mindroid/net/Inet6Address.h>
 
 namespace mindroid {
 
-void Closure::cancel() {
-    if (mFunc) {
-        mHandler->removeCallbacks(this);
-    }
-}
+sp<InetAddress> Inet6Address::ANY = new Inet6Address(ByteArray::valueOf({ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }), nullptr, 0);
+
+sp<InetAddress> Inet6Address::LOOPBACK = new Inet6Address(ByteArray::valueOf({ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 }), "ip6-localhost", 0);
 
 } /* namespace mindroid */

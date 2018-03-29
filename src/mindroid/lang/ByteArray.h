@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_BYTEARRAY_H_
-#define MINDROID_BYTEARRAY_H_
+#ifndef MINDROID_LANG_BYTEARRAY_H_
+#define MINDROID_LANG_BYTEARRAY_H_
 
 #include <mindroid/lang/Object.h>
 #include <vector>
@@ -64,7 +64,7 @@ public:
     /**
      * Returns the const element in the given position.
      *
-     * Asserts IndexOutOfBoundsException if position is out of bounds.
+     * throws IndexOutOfBoundsException if position is out of bounds.
      */
     const uint8_t& get(size_t position) const;
     const uint8_t& operator[](size_t position) const;
@@ -72,7 +72,7 @@ public:
     /**
      * Returns the element in the given position.
      *
-     * Asserts IndexOutOfBoundsException if position is out of bounds.
+     * throws IndexOutOfBoundsException if position is out of bounds.
      */
     uint8_t& get(size_t position);
     void set(size_t position, uint8_t value);
@@ -96,4 +96,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_BYTEARRAY_H_ */
+#endif /* MINDROID_LANG_BYTEARRAY_H_ */

@@ -18,12 +18,12 @@
 #include <mindroid/io/FilenameFilter.h>
 #include <mindroid/lang/System.h>
 #include <cstdio>
+#include <cerrno>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <errno.h>
 
 namespace mindroid {
 

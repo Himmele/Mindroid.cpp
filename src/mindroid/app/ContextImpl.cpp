@@ -20,6 +20,7 @@
 #include <mindroid/app/SharedPreferencesImpl.h>
 #include <mindroid/content/pm/PackageManager.h>
 #include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/lang/RuntimeException.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/os/Environment.h>
 #include <mindroid/util/Log.h>
@@ -69,8 +70,7 @@ sp<ComponentName> ContextImpl::startService(const sp<Intent>& service) {
         try {
             return mServiceManager->startService(service);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
-            return nullptr;
+            throw RuntimeException("System failure", e);
         }
     } else {
         return nullptr;
@@ -82,8 +82,7 @@ bool ContextImpl::stopService(const sp<Intent>& service) {
         try {
             return mServiceManager->stopService(service);
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
-            return false;
+            throw RuntimeException("System failure", e);
         }
     } else {
         return false;
@@ -107,7 +106,7 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
 
         protected:
             void onResult(const sp<Bundle>& data) {
-                sp<ContextImpl> context = mContext.lock();
+                sp<ContextImpl> context = mContext.get();
                 if (context != nullptr) {
                     bool result = data->getBoolean("result");
                     if (result) {
@@ -132,8 +131,7 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
         try {
             return mServiceManager->bindService(service, conn, flags, callback->asInterface());
         } catch (const RemoteException& e) {
-            Assert::fail("System failure");
-            return false;
+            throw RuntimeException("System failure", e);
         }
     } else {
         return false;
@@ -164,8 +162,7 @@ sp<File> ContextImpl::makeFilename(const sp<File>& baseDir, const sp<String>& na
     if (name->indexOf(File::separatorChar) < 0) {
         return new File(baseDir, name);
     }
-    Assert::assertTrue<IllegalArgumentException>(String::format("File %s contains a path separator", name->c_str())->c_str(), false);
-    return nullptr;
+    throw IllegalArgumentException(String::format("File %s contains a path separator", name->c_str()));
 }
 
 void ContextImpl::cleanup() {

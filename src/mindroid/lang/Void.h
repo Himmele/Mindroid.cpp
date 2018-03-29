@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_VOID_H_
-#define MINDROID_VOID_H_
+#ifndef MINDROID_LANG_VOID_H_
+#define MINDROID_LANG_VOID_H_
 
 #include <mindroid/lang/Object.h>
 
@@ -30,4 +30,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_VOID_H_ */
+#endif /* MINDROID_LANG_VOID_H_ */

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_FILENOTFOUNDEXCEPTION_H_
-#define MINDROID_FILENOTFOUNDEXCEPTION_H_
+#ifndef MINDROID_IO_FILENOTFOUNDEXCEPTION_H_
+#define MINDROID_IO_FILENOTFOUNDEXCEPTION_H_
 
 #include <mindroid/io/IOException.h>
 
@@ -34,4 +34,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_FILENOTFOUNDEXCEPTION_H_ */
+#endif /* MINDROID_IO_FILENOTFOUNDEXCEPTION_H_ */

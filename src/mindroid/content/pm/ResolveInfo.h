@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RESOLVEINFO_H_
-#define MINDROID_RESOLVEINFO_H_
+#ifndef MINDROID_CONTENT_PM_RESOLVEINFO_H_
+#define MINDROID_CONTENT_PM_RESOLVEINFO_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/content/pm/ServiceInfo.h>
@@ -42,4 +42,4 @@ public:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RESOLVEINFO_H_ */
+#endif /* MINDROID_CONTENT_PM_RESOLVEINFO_H_ */

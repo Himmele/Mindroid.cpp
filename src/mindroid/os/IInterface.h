@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_IINTERFACE_H_
-#define MINDROID_IINTERFACE_H_
+#ifndef MINDROID_OS_IINTERFACE_H_
+#define MINDROID_OS_IINTERFACE_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/os/IBinder.h>
@@ -51,4 +51,4 @@ inline sp<INTERFACE> interface_cast(const sp<IInterface>& interface) {
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_IINTERFACE_H_ */
+#endif /* MINDROID_OS_IINTERFACE_H_ */

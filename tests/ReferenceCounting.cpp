@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "mindroid/lang/Object.h"
+#include <mindroid/lang/Object.h>
 
 using namespace mindroid;
 
@@ -27,12 +27,12 @@ TEST(Mindroid, ReferenceCounting) {
     }
 
     wp<::Test> ref3 = ref1;
-    sp<::Test> ref31 = ref3.lock();
+    sp<::Test> ref31 = ref3.get();
     ASSERT_NE(ref31, nullptr);
     ref31 = nullptr;
 
     ref1 = nullptr;
-    ref31 = ref3.lock();
+    ref31 = ref3.get();
     ASSERT_EQ(ref31, nullptr);
 
     wp<::Test> ref4 = new ::Test(4);
@@ -41,9 +41,9 @@ TEST(Mindroid, ReferenceCounting) {
     ASSERT_NE(ref5, nullptr);
     ref4 = nullptr;
     ASSERT_EQ(ref4, nullptr);
-    ASSERT_NE(ref5.lock(), nullptr);
-    sp<::Test> ref6 = ref5.lock();
+    ASSERT_NE(ref5.get(), nullptr);
+    sp<::Test> ref6 = ref5.get();
     ref6 = nullptr;
     ASSERT_NE(ref5, nullptr);
-    ASSERT_EQ(ref5.lock(), nullptr);
+    ASSERT_EQ(ref5.get(), nullptr);
 }
