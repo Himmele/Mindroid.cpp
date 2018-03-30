@@ -51,7 +51,7 @@ uint8_t* ByteArray::c_arr() {
 }
 
 sp<String> ByteArray::toString() const {
-    sp<StringBuilder> sb = new StringBuilder{"{"};
+    sp<StringBuilder> sb = new StringBuilder("{");
     const uint8_t* arr = c_arr();
     for (size_t i = 0; i < size(); ++i) {
         if (i != 0) {

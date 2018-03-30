@@ -22,8 +22,8 @@
  * delegate(123);
  */
 
-#ifndef MINDROID_DELEGATE_H_
-#define MINDROID_DELEGATE_H_
+#ifndef MINDROID_UTIL_DELEGATE_H_
+#define MINDROID_UTIL_DELEGATE_H_
 
 #include <cstdlib>
 
@@ -629,4 +629,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_DELEGATE_H_ */
+#endif /* MINDROID_UTIL_DELEGATE_H_ */

@@ -54,7 +54,6 @@ const sp<String>& StringArray::get(size_t position) const {
     return mArray[position];
 }
 
-
 const sp<String>& StringArray::operator[](size_t position) const {
     if (position >= mSize) {
         throw IndexOutOfBoundsException();

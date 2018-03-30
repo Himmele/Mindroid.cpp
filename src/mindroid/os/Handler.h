@@ -190,20 +190,20 @@ public:
     }
 
     /**
-     * Causes the Runnable r to be added to the message queue. The runnable will be run on the
+     * Causes the Runnable runnable to be added to the message queue. The runnable will be run on the
      * thread to which this handler is attached.
      *
      * @param runnable The Runnable that will be executed.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting.
+     * @return Returns The Runnable if the Runnable was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
      */
-    bool post(const sp<Runnable>& runnable) {
-        return sendMessageDelayed(getPostMessage(runnable), 0);
+    sp<Runnable> post(const sp<Runnable>& runnable) {
+        return sendMessageDelayed(getPostMessage(runnable), 0) ? runnable : nullptr;
     }
 
     /**
-     * Causes the Runnable r to be added to the message queue, to be run at a specific time given by
+     * Causes the Runnable runnable to be added to the message queue, to be run at a specific time given by
      * <var>uptimeMillis</var>. <b>The time-base is {@link mindroid.os.SystemClock#uptimeMillis}
      * .</b> The runnable will be run on the thread to which this handler is attached.
      *
@@ -211,17 +211,17 @@ public:
      * @param uptimeMillis The absolute time at which the callback should run, using the
      * {@link mindroid.os.SystemClock#uptimeMillis} time-base.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns the Runnable if the Runnable was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    bool postAtTime(const sp<Runnable>& runnable, uint64_t uptimeMillis) {
-        return sendMessageAtTime(getPostMessage(runnable), uptimeMillis);
+    sp<Runnable> postAtTime(const sp<Runnable>& runnable, uint64_t uptimeMillis) {
+        return sendMessageAtTime(getPostMessage(runnable), uptimeMillis) ? runnable : nullptr;
     }
 
     /**
-     * Causes the Runnable r to be added to the message queue, to be run at a specific time given by
+     * Causes the Runnable runnable to be added to the message queue, to be run at a specific time given by
      * <var>uptimeMillis</var>. <b>The time-base is {@link mindroid.os.SystemClock#uptimeMillis}
      * .</b> The runnable will be run on the thread to which this handler is attached.
      *
@@ -229,31 +229,31 @@ public:
      * @param uptimeMillis The absolute time at which the callback should run, using the
      * {@link mindroid.os.SystemClock#uptimeMillis} time-base.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns the Runnable if the Runnable was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      *
      * @see mindroid.os.SystemClock#uptimeMillis
      */
-    bool postAtTime(const sp<Runnable>& runnable, const sp<Object>& token, uint64_t uptimeMillis) {
-        return sendMessageAtTime(getPostMessage(runnable, token), uptimeMillis);
+    sp<Runnable> postAtTime(const sp<Runnable>& runnable, const sp<Object>& token, uint64_t uptimeMillis) {
+        return sendMessageAtTime(getPostMessage(runnable, token), uptimeMillis) ? runnable : nullptr;
     }
 
     /**
-     * Causes the Runnable r to be added to the message queue, to be run after the specified amount
+     * Causes the Runnable runnable to be added to the message queue, to be run after the specified amount
      * of time elapses. The runnable will be run on the thread to which this handler is attached.
      *
      * @param runnable The Runnable that will be executed.
      * @param delayMillis The delay (in milliseconds) until the Runnable will be executed.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns the Runnable if the Runnable was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    bool postDelayed(const sp<Runnable>& runnable, uint64_t delayMillis) {
-        return sendMessageDelayed(getPostMessage(runnable), delayMillis);
+    sp<Runnable> postDelayed(const sp<Runnable>& runnable, uint64_t delayMillis) {
+        return sendMessageDelayed(getPostMessage(runnable), delayMillis) ? runnable : nullptr;
     }
 
     /**
@@ -262,15 +262,15 @@ public:
      *
      * @param runnable The std::function that will be executed.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns a Function<void, void> if the std::function was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    bool post(const std::function<void (void)>& func) {
+    sp<Runnable> post(const std::function<void (void)>& func) {
         return post(new Function<void, void>(func));
     }
-    bool post(std::function<void (void)>&& func) {
+    sp<Runnable> post(std::function<void (void)>&& func) {
         return post(new Function<void, void>(func));
     }
 
@@ -283,16 +283,39 @@ public:
      * @param uptimeMillis The absolute time at which the callback should run, using the
      * {@link mindroid.os.SystemClock#uptimeMillis} time-base.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns a Function<void, void> if the std::function was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    bool postAtTime(const std::function<void (void)>& func, uint64_t uptimeMillis) {
+    sp<Runnable> postAtTime(const std::function<void (void)>& func, uint64_t uptimeMillis) {
         return postAtTime(new Function<void, void>(func), uptimeMillis);
     }
-    bool postAtTime(std::function<void (void)>&& func, uint64_t uptimeMillis) {
+    sp<Runnable> postAtTime(std::function<void (void)>&& func, uint64_t uptimeMillis) {
         return postAtTime(new Function<void, void>(func), uptimeMillis);
+    }
+
+    /**
+     * Causes the std::function func to be added to the message queue, to be run at a specific time given by
+     * <var>uptimeMillis</var>. <b>The time-base is {@link mindroid.os.SystemClock#uptimeMillis}
+     * .</b> The runnable will be run on the thread to which this handler is attached.
+     *
+     * @param func The std::function that will be executed.
+     * @param uptimeMillis The absolute time at which the callback should run, using the
+     * {@link mindroid.os.SystemClock#uptimeMillis} time-base.
+     *
+     * @return Returns a Function<void, void> if the std::function was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * before the delivery time of the message occurs then the message will be dropped.
+     *
+     * @see mindroid.os.SystemClock#uptimeMillis
+     */
+    sp<Runnable> postAtTime(const std::function<void (void)>& func, const sp<Object>& token, uint64_t uptimeMillis) {
+        return postAtTime(new Function<void, void>(func), token, uptimeMillis);
+    }
+    sp<Runnable> postAtTime(std::function<void (void)>&& func, const sp<Object>& token, uint64_t uptimeMillis) {
+        return postAtTime(new Function<void, void>(func), token, uptimeMillis);
     }
 
     /**
@@ -302,15 +325,15 @@ public:
      * @param func The std::function that will be executed.
      * @param delayMillis The delay (in milliseconds) until the std::function will be executed.
      *
-     * @return Returns true if the Runnable was successfully placed in to the message queue. Returns
-     * false on failure, usually because the looper processing the message queue is exiting. Note
-     * that a result of true does not mean the Runnable will be processed -- if the looper is quit
+     * @return Returns a Function<void, void> if the std::function was successfully placed in to the message queue.
+     * Returns nullptr on failure, usually because the looper processing the message queue is exiting.
+     * Note that a result of true does not mean the Runnable will be processed -- if the looper is quit
      * before the delivery time of the message occurs then the message will be dropped.
      */
-    bool postDelayed(const std::function<void (void)>& func, uint32_t delayMillis) {
+    sp<Runnable> postDelayed(const std::function<void (void)>& func, uint32_t delayMillis) {
         return postDelayed(new Function<void, void>(func), delayMillis);
     }
-    bool postDelayed(std::function<void (void)>&& func, uint32_t delayMillis) {
+    sp<Runnable> postDelayed(std::function<void (void)>&& func, uint32_t delayMillis) {
         return postDelayed(new Function<void, void>(func), delayMillis);
     }
 

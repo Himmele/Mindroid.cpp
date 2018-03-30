@@ -194,13 +194,13 @@ sp<ByteBuffer> ByteBuffer::putInt(int32_t value) {
 
 sp<ByteBuffer> ByteBuffer::putInt(size_t index, int32_t value) {
     checkBufferOverflow(index, sizeof(value));
-    *reinterpret_cast<int32_t*>(mBuffer->c_arr() + index) = (value);
+    *reinterpret_cast<int32_t*>(mBuffer->c_arr() + index) = value;
     return this;
 }
 
 sp<ByteBuffer> ByteBuffer::putLong(size_t index, int64_t value) {
     checkBufferOverflow(index, sizeof(value));
-    *reinterpret_cast<int64_t*>(mBuffer->c_arr() + index) = (value);
+    *reinterpret_cast<int64_t*>(mBuffer->c_arr() + index) = value;
     return this;
 }
 
@@ -212,7 +212,7 @@ sp<ByteBuffer> ByteBuffer::putLong(int64_t value) {
 
 sp<ByteBuffer> ByteBuffer::putShort(size_t index, int16_t value) {
     checkBufferOverflow(index, sizeof(value));
-    *reinterpret_cast<short*>(mBuffer->c_arr() + index) = (value);
+    *reinterpret_cast<short*>(mBuffer->c_arr() + index) = value;
     return this;
 }
 
