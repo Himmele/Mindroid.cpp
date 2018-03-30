@@ -84,7 +84,7 @@ char ByteBuffer::getChar() {
 
 char ByteBuffer::getChar(size_t index) {
     checkBufferOverflow(index, sizeof(char));
-    return getChar(index);
+    return (char) mBuffer->get(index);
 }
 
 double ByteBuffer::getDouble() {

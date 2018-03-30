@@ -100,6 +100,7 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
         saSize = sizeof(sockaddr_in);
     }
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) == 0) {
+        mPort = port;
         mIsBound = true;
     } else {
         ::close(mFd);
