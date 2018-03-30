@@ -70,22 +70,22 @@ sp<StringBuilder> StringBuilder::append(float value) {
 }
 
 sp<StringBuilder> StringBuilder::append(int8_t value) {
-    mString.append(std::to_string(value));
+    mString.append(std::to_string((int32_t) value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint8_t value) {
-    mString.append(std::to_string(value));
+    mString.append(std::to_string((uint32_t) value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(int16_t value) {
-    mString.append(std::to_string(value));
+    mString.append(std::to_string((int32_t) value));
     return this;
 }
 
 sp<StringBuilder> StringBuilder::append(uint16_t value) {
-    mString.append(std::to_string(value));
+    mString.append(std::to_string((uint32_t) value));
     return this;
 }
 

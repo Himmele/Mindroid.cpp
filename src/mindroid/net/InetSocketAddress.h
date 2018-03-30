@@ -63,6 +63,9 @@ public:
      * @param host the hostname of the socket endpoint.
      * @param port the port number of the socket endpoint.
      */
+    InetSocketAddress(const char* host, uint16_t port) : InetSocketAddress(String::valueOf(host), port, true) {
+    }
+
     InetSocketAddress(const sp<String>& host, uint16_t port) : InetSocketAddress(host, port, true) {
     }
 
