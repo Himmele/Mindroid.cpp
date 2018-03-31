@@ -20,7 +20,6 @@
 #include <cstdio>
 #include <cstring>
 #include <typeinfo>
-#include <sys/types.h>
 #include <mutex>
 
 // Log all reference counting operations
