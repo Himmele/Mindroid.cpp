@@ -41,6 +41,9 @@ public:
     RemoteException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
     }
 
+    RemoteException(const Exception& cause) : Exception(cause.getMessage(), cause) {
+    }
+
     RemoteException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
     }
 };

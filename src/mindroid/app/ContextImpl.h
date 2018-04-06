@@ -31,6 +31,7 @@ namespace mindroid {
 
 class IServiceManager;
 class PackageManager;
+class URI;
 
 /**
  * Common implementation of Context API, which provides the base
@@ -59,11 +60,7 @@ public:
 
     sp<SharedPreferences> getSharedPreferences(const sp<String>& name, int32_t mode);
 
-    sp<IBinder> getSystemService(const char* name) {
-        return getSystemService(String::valueOf(name));
-    }
-
-    sp<IBinder> getSystemService(const sp<String>& name);
+    sp<IBinder> getSystemService(const sp<URI>& name);
 
     sp<ComponentName> startService(const sp<Intent>& service);
     bool stopService(const sp<Intent>& service);

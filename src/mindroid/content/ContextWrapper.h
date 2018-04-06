@@ -26,6 +26,7 @@
 #include <mindroid/lang/String.h>
 #include <mindroid/os/Looper.h>
 #include <mindroid/io/File.h>
+#include <mindroid/net/URI.h>
 
 namespace mindroid {
 
@@ -71,11 +72,7 @@ public:
         return mBaseContext->getSharedPreferences(name, mode);
     }
 
-    virtual sp<IBinder> getSystemService(const char* name) {
-        return getSystemService(String::valueOf(name));
-    }
-
-    virtual sp<IBinder> getSystemService(const sp<String>& name) {
+    virtual sp<IBinder> getSystemService(const sp<URI>& name) {
         return mBaseContext->getSystemService(name);
     }
 

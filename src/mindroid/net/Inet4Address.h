@@ -47,6 +47,8 @@ private:
     }
 
     friend class InetAddress;
+    friend class ServerSocket;
+    friend class Socket;
     friend class DatagramSocket;
 };
 

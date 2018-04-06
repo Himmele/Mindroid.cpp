@@ -44,11 +44,11 @@ sp<String> LogBuffer::LogRecord::toString() {
 
     char time[64];
     struct tm t;
-    tzset();
-    if (localtime_r(&(ts.tv_sec), &t) != NULL) {
+    ::tzset();
+    if (::localtime_r(&(ts.tv_sec), &t) != NULL) {
         size_t s = strftime(time, sizeof(time), "%F %T.000", &t);
         if (s > 0) {
-            snprintf(&time[strlen(time) - 4], 5, ".%03ld", ts.tv_nsec / 1000000);
+            ::snprintf(&time[strlen(time) - 4], 5, ".%03ld", ts.tv_nsec / 1000000);
         } else {
             time[0] = '\0';
         }

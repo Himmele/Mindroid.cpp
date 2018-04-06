@@ -78,10 +78,10 @@ void PromiseExample::onCreate() {
 
 
     action1(42)
-        ->thenCompose<int>([=] (int value, const sp<Exception>& exception) { return action2(value, exception); })
-        ->thenCompose<int>(object_cast<Executor>(mExecutor), [=] (int value) { return action3(value); })
-        ->thenCompose<int>([=] (int value) { return action4(value); })
-        ->then([=] (const int& value, const sp<Exception>& exception) {
+        ->thenCompose<int32_t>([=] (int32_t value, const sp<Exception>& exception) { return action2(value, exception); })
+        ->thenCompose<int32_t>(object_cast<Executor>(mExecutor), [=] (int32_t value) { return action3(value); })
+        ->thenCompose<int32_t>([=] (int32_t value) { return action4(value); })
+        ->then([=] (const int32_t& value, const sp<Exception>& exception) {
             if (exception != nullptr) {
                 Log::i(TAG, "Exception: %s", exception->getMessage()->c_str());
             } else {
@@ -90,8 +90,8 @@ void PromiseExample::onCreate() {
         });
 
 
-    object_cast<Promise<int>>(new Promise<int>(42))
-        ->thenApply<sp<String>>([=] (int value) { return String::valueOf(value); })
+    sp<Promise<int32_t>>(new Promise<int32_t>(42))
+        ->thenApply<sp<String>>([=] (int32_t value) { return String::valueOf(value); })
         ->thenAccept([=] (const sp<String>& value) { Log::i(TAG, "Result: %s", value->c_str()); });
 
 

@@ -124,6 +124,12 @@ public:
     static int wtf(const char* tag, const char* format, ...);
 
     /** @hide */
+    static int32_t priority;
+
+    /** @hide */
+    static void println(char priority, const char* tag, const char* format, ...);
+
+    /** @hide */
     static int println(int32_t logId, int32_t priority, const char* tag, const char* msg) {
         return println(logId, priority, String::valueOf(tag), String::valueOf(msg));
     }
@@ -179,7 +185,12 @@ public:
             c = priority->charAt(0);
         }
 
-        switch (c) {
+        return parsePriority(c);
+    }
+
+    /** @hide */
+    static int32_t parsePriority(const char priority) {
+        switch (priority) {
         case 'V':
             return Log::VERBOSE;
         case 'D':

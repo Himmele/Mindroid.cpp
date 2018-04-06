@@ -30,10 +30,10 @@ template<typename T, typename R>
 class Function :
         public Object {
 public:
-    Function(const std::function<T (R)>& func) : mFunc(func) {
+    Function(const std::function<R (T)>& func) : mFunc(func) {
     }
 
-    Function(std::function<T (R)>&& func) : mFunc(std::move(func)) {
+    Function(std::function<R (T)>&& func) : mFunc(std::move(func)) {
     }
 
     R apply(T t) {
@@ -41,7 +41,7 @@ public:
     }
 
 private:
-    std::function<T (R)> mFunc;
+    std::function<R (T)> mFunc;
 };
 
 template<>

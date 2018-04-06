@@ -20,5 +20,13 @@
         <service
             mindroid:name=".AsyncTaskExample"
             mindroid:autostart="true" />
+        <service
+            mindroid:name=".ElizaService"
+            mindroid:process="eliza"
+            mindroid:autostart="true" />
+        <service
+            mindroid:name=".You"
+            mindroid:process="eliza"
+            mindroid:autostart="true" />
     </application>
 </manifest>

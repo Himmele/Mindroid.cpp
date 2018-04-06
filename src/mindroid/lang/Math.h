@@ -18,6 +18,7 @@
 #define MINDROID_LANG_MATH_H_
 
 #include <cstdint>
+#include <random>
 
 namespace mindroid {
 
@@ -83,6 +84,20 @@ public:
     static uint64_t max(uint64_t a, uint64_t b) {
         return (a > b) ? a : b;
     }
+
+    /**
+     * Returns a pseudo-random double {@code n}, where {@code n >= 0.0 && n < 1.0}.
+     * This method reuses a single instance of {@link java.util.Random}.
+     * This method is thread-safe because access to the {@code Random} is synchronized,
+     * but this harms scalability. Applications may find a performance benefit from
+     * allocating a {@code Random} for each of their threads.
+     *
+     * @return a pseudo-random number.
+     */
+    static double random();
+
+private:
+    static std::random_device sRandomDevice; // Seed.
 };
 
 } /* namespace mindroid */

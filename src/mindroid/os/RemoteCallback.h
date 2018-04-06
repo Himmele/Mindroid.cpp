@@ -87,7 +87,7 @@ private:
                 mListener(listener), mHandler(handler) {
         }
 
-        virtual void sendResult(const sp<Bundle>& result) {
+        void sendResult(const sp<Bundle>& result) override {
             if (mHandler != nullptr) {
                 mHandler->post([=] { mListener->onResult(result); });
             } else {

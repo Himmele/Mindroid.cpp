@@ -25,7 +25,7 @@ namespace mindroid {
 
 void Service::stopSelf(int32_t startId) {
     sp<Intent> intent = new Intent();
-    intent->setComponent(new ComponentName(object_cast<Context>(this), mClassName));
+    intent->setComponent(new ComponentName(sp<Context>(this), mClassName));
     try {
         mProcess->stopService(intent);
     } catch (const RemoteException& e) {

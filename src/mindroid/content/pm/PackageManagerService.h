@@ -56,8 +56,8 @@ private:
     public:
         PackageManagerImpl(const sp<PackageManagerService>& packageManagerService) : mPackageManagerService(packageManagerService) { }
 
-        virtual sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
-        virtual sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
+        sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) override;
+        sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) override;
 
     private:
         sp<PackageManagerService> mPackageManagerService;

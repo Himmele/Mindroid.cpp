@@ -680,9 +680,14 @@ sp<T> Object::Destroyer::reviveObject(Object* obj) {
 }
 
 
-template<typename OBJECT>
-inline sp<OBJECT> object_cast(const sp<Object>& object) {
-    return (object != nullptr) ? static_cast<OBJECT*>(object.getPointer()) : nullptr;
+template<typename DESTINATION_CLASS, typename SOURCE_CLASS>
+inline sp<DESTINATION_CLASS> object_cast(const sp<SOURCE_CLASS>& object) {
+    return static_cast<DESTINATION_CLASS*>(object.getPointer());
+}
+
+template<typename DESTINATION_CLASS, typename SOURCE_CLASS>
+inline sp<DESTINATION_CLASS> object_cast(SOURCE_CLASS* object) {
+    return static_cast<DESTINATION_CLASS*>(object);
 }
 
 template<typename K>

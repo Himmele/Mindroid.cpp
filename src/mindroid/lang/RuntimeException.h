@@ -47,10 +47,10 @@ public:
     RuntimeException(const sp<String>& message, const sp<Exception>& cause) : Exception(message, cause) {
     }
 
-    RuntimeException(const Exception& cause) : Exception(cause) {
+    RuntimeException(const Exception& cause) : Exception(cause.getMessage(), cause) {
     }
 
-    RuntimeException(const sp<Exception>& cause) : Exception(cause) {
+    RuntimeException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
     }
 };
 

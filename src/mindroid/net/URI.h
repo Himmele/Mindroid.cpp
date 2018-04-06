@@ -32,6 +32,27 @@ public:
      * @param scheme the URI scheme, or null for a non-absolute URI.
      */
     URI(const sp<String>& scheme,
+        const sp<String>& userInfo,
+        const sp<String>& host,
+        int32_t port,
+        const sp<String>& path,
+        const sp<String>& query,
+        const sp<String>& fragment);
+
+    URI(const char* scheme,
+        const char* userInfo,
+        const char* host,
+        int32_t port,
+        const char* path,
+        const char* query,
+        const char* fragment);
+
+    /**
+     * Creates a new URI instance of the given unencoded component parts.
+     *
+     * @param scheme the URI scheme, or null for a non-absolute URI.
+     */
+    URI(const sp<String>& scheme,
         const sp<String>& authority,
         const sp<String>& path,
         const sp<String>& query,
@@ -53,27 +74,73 @@ public:
     static sp<URI> create(const sp<String>& uri);
     static sp<URI> create(const char* uri);
 
+    /**
+     * Returns the scheme of this URI, or null if this URI has no scheme. This
+     * is also known as the protocol.
+     */
     sp<String> getScheme() const {
         return mScheme;
     }
 
+    /**
+     * Returns the decoded authority part of this URI, or null if this URI has
+     * no authority.
+     */
     sp<String> getAuthority() const {
         return mAuthority;
     }
 
+    /**
+     * Returns the decoded user info of this URI, or null if this URI has no
+     * user info.
+     */
+    sp<String> getUserInfo() const {
+        return mUserInfo;
+    }
+
+    /**
+     * Returns the host of this URI, or null if this URI has no host.
+     */
+    sp<String> getHost() const {
+        return mHost;
+    }
+
+    /**
+     * Returns the port number of this URI, or {@code -1} if this URI has no
+     * explicit port.
+     */
+    int32_t getPort() const{
+        return mPort;
+    }
+
+    /**
+     * Returns the decoded path of this URI, or null if this URI has no path.
+     */
     sp<String> getPath() const {
         return mPath;
     }
 
+    /**
+     * Returns the decoded query of this URI, or null if this URI has no query.
+     */
     sp<String> getQuery() const {
         return mQuery;
     }
 
+    /**
+     * Returns the decoded fragment of this URI, or null if this URI has no
+     * fragment.
+     */
     sp<String> getFragment() const {
         return mFragment;
     }
 
-    sp<String> toString() const;
+    /**
+     * Returns the encoded URI.
+     */
+    sp<String> toString() const {
+        return mString;
+    }
 
 private:
     /**
@@ -90,12 +157,23 @@ private:
      */
     void parseURI(const sp<String>& uri);
 
+    /**
+     * Breaks this URI's authority into user info, host and port parts.
+     *   [user-info@][host][:port]
+     * If any part of this fails this method will give up and potentially leave
+     * these fields with their default values.
+     */
+    void parseAuthority();
+
     static size_t indexOf(const sp<String>& string, const char c, size_t start, size_t end);
     static size_t indexOf(const sp<String>& string, const char* chars, size_t start, size_t end);
 
     sp<String> mString;
     sp<String> mScheme;
     sp<String> mAuthority;
+    sp<String> mUserInfo;
+    sp<String> mHost;
+    int32_t mPort = -1;
     sp<String> mPath;
     sp<String> mQuery;
     sp<String> mFragment;

@@ -28,6 +28,8 @@ class Looper;
 class Message;
 class String;
 class Variant;
+class URI;
+class Parcel;
 template<typename T> class Promise;
 
 /**
@@ -49,9 +51,19 @@ public:
     static const int32_t FLAG_ONEWAY = 0x00000001;
 
     /**
+     * Returns the binder's id.
+     */
+    virtual uint64_t getId() const = 0;
+
+    /**
+     * Returns the binder's URI.
+     */
+    virtual sp<URI> getUri() const = 0;
+
+    /**
      * Get the canonical name of the interface supported by this binder.
      */
-    virtual sp<String> getInterfaceDescriptor() = 0;
+    virtual sp<String> getInterfaceDescriptor() const = 0;
 
     /**
      * Attempt to retrieve a local implementation of an interface for this Binder object. If null is
@@ -69,19 +81,33 @@ public:
      * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
      * for a one-way RPC.
      */
-    virtual void transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
-    virtual void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) = 0;
+    virtual sp<Promise<sp<Parcel>>> transact(int32_t what, const sp<Parcel>& data, int32_t flags) = 0;
 
-    virtual bool runsOnSameThread() = 0;
+    /**
+     * Perform a lightweight operation with the object.
+     *
+     * @param what The action to perform.
+     * @param num A number to send to the target.
+     * @param obj An object to send to the target.
+     * @param data data to send to the target.
+     * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
+     * for a one-way RPC.
+     */
+    virtual void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) = 0;
 
     /**
      * Release unmanaged Binder resources.
      */
     virtual void dispose() = 0;
+
+    class Supervisor : public Object {
+    public:
+        virtual void onExit(int32_t reason) = 0;
+    };
+
+    virtual void link(const sp<Supervisor>& supervisor, int32_t flags) = 0;
+
+    virtual bool unlink(const sp<Supervisor>& supervisor, int32_t flags) = 0;
 };
 
 } /* namespace mindroid */

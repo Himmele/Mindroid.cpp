@@ -40,6 +40,12 @@ Project {
         Files "examples/Concurrency/src/HandlerExample.cpp"
         Files "examples/Concurrency/src/PromiseExample.cpp"
         Files "examples/Concurrency/src/AsyncTaskExample.cpp"
+        Files "examples/Eliza/src/Eliza.cpp"
+        Files "examples/Eliza/src/ElizaService.cpp"
+        Files "examples/Eliza/src/IEliza.cpp"
+        Files "examples/Eliza/src/IElizaListener.cpp"
+        Files "examples/Eliza/src/You.cpp"
+        Files "examples/Eliza/src/util/Eliza.cpp"
         IncludeDir "."
         IncludeDir "src"        
     }

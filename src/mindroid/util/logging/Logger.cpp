@@ -45,7 +45,7 @@ Logger::LogWorker::LogWorker(const sp<Bundle>& arguments) :
             mConsoleHandler->setFlag(ConsoleHandler::FLAG_TIMESTAMP);
         }
     } else {
-        printf("D/%s: Console logging: disabled\n", TAG);
+        Log::println('D', TAG, "Console logging: disabled");
     }
     bool fileLogging = arguments->getBoolean("fileLogging", false);
     if (fileLogging) {
@@ -145,7 +145,7 @@ int32_t Logger::onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t 
 }
 
 void Logger::onDestroy() {
-    printf("D/%s: Flushing logs\n", TAG);
+    Log::println('D', TAG, "Flushing logs");
     auto itr = mLogWorkers->iterator();
     while (itr.hasNext()) {
         auto entry = itr.next();
@@ -163,14 +163,14 @@ sp<IBinder> Logger::onBind(const sp<Intent>& intent) {
 void Logger::startLogging(const sp<Bundle>& arguments) {
     int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     if (!mLogWorkers->containsKey(logBuffer)) {
-        printf("D/%s: Starting logging {%d}\n", TAG, logBuffer);
+        Log::println('D', TAG, "Starting logging {%d}", logBuffer);
         try {
             sp<LogWorker> logWorker = new LogWorker(arguments);
             mLogWorkers->put(logBuffer, logWorker);
             logWorker->start();
-            printf("D/%s: Logging has been started {%d}\n", TAG, logBuffer);
+            Log::println('D', TAG, "Logging has been started {%d}", logBuffer);
         } catch (const Exception& e) {
-            printf("D/%s: Logging: disabled {%d}\n", TAG, logBuffer);
+            Log::println('D', TAG, "Logging: disabled {%d}", logBuffer);
         }
     }
 }
@@ -178,11 +178,11 @@ void Logger::startLogging(const sp<Bundle>& arguments) {
 void Logger::stopLogging(const sp<Bundle>& arguments) {
     int logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     if (mLogWorkers->containsKey(logBuffer)) {
-        printf("D/%s: Stopping logging {%d}\n", TAG, logBuffer);
+        Log::println('D', TAG, "Stopping logging {%d}", logBuffer);
         sp<LogWorker> logWorker = mLogWorkers->get(logBuffer);
         logWorker->quit();
         mLogWorkers->remove(logBuffer);
-        printf("D/%s: Logging has been stopped {%d}\n", TAG, logBuffer);
+        Log::println('D', TAG, "Logging has been stopped {%d}", logBuffer);
     }
 }
 
@@ -191,14 +191,14 @@ void Logger::dumpLog(const sp<Bundle>& arguments) {
     sp<String> fileName = arguments->getString("fileName");
     sp<IRemoteCallback> callback = binder::RemoteCallback::Stub::asInterface(arguments->getBinder("binder"));
     if (mLogWorkers->containsKey(logBuffer)) {
-        printf("D/%s: Dumping log to file %s {%d}\n", TAG, fileName->c_str(), logBuffer);
+        Log::println('D', TAG, "Dumping log to file %s {%d}", fileName->c_str(), logBuffer);
         sp<LogWorker> logWorker = mLogWorkers->get(logBuffer);
         sp<Bundle> result = new Bundle();
         if (logWorker->dumpLog(fileName)) {
-            printf("D/%s: Log has been dumped to file %s {%d}\n", TAG, fileName->c_str(), logBuffer);
+            Log::println('D', TAG, "Log has been dumped to file %s {%d}", fileName->c_str(), logBuffer);
             result->putBoolean("result", true);
         } else {
-            printf("D/%s: Failed to dump log to file %s {%d}\n", TAG, fileName->c_str(), logBuffer);
+            Log::println('D', TAG, "Failed to dump log to file %s {%d}", fileName->c_str(), logBuffer);
             result->putBoolean("result", false);
         }
         if (callback != nullptr) {
@@ -213,7 +213,7 @@ void Logger::dumpLog(const sp<Bundle>& arguments) {
 void Logger::flushLog(const sp<Bundle>& arguments) {
     int logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     if (mLogWorkers->containsKey(logBuffer)) {
-        printf("D/%s: Flushing log {%d}\n", TAG, logBuffer);
+        Log::println('D', TAG, "Flushing log {%d}", logBuffer);
         sp<LogWorker> logWorker = mLogWorkers->get(logBuffer);
         logWorker->flush();
     }
@@ -222,7 +222,7 @@ void Logger::flushLog(const sp<Bundle>& arguments) {
 void Logger::clearLog(const sp<Bundle>& arguments) {
     int logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     if (mLogWorkers->containsKey(logBuffer)) {
-        printf("D/%s: Clearing log {%d}\n", TAG, logBuffer);
+        Log::println('D', TAG, "Clearing log {%d}", logBuffer);
         sp<LogWorker> logWorker = mLogWorkers->get(logBuffer);
         logWorker->clear();
     }

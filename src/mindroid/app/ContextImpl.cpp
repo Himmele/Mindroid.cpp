@@ -23,6 +23,7 @@
 #include <mindroid/lang/RuntimeException.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/os/Environment.h>
+#include <mindroid/net/URI.h>
 #include <mindroid/util/Log.h>
 
 namespace mindroid {
@@ -57,7 +58,7 @@ sp<SharedPreferences> ContextImpl::getSharedPreferences(const sp<String>& name, 
     return Environment::getSharedPreferences(getSharedPrefsFile(name),mode);
 }
 
-sp<IBinder> ContextImpl::getSystemService(const sp<String>& name) {
+sp<IBinder> ContextImpl::getSystemService(const sp<URI>& name) {
     if (name != nullptr) {
         return ServiceManager::getSystemService(name);
     } else {

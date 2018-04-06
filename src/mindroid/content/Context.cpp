@@ -17,20 +17,20 @@
  */
 
 #include <mindroid/content/Context.h>
-#include <mindroid/lang/String.h>
+#include <mindroid/net/URI.h>
 
 namespace mindroid {
 
-const sp<String> Context::SERVICE_MANAGER = String::valueOf("serviceManager");
-const sp<String> Context::PACKAGE_MANAGER = String::valueOf("packageManager");
-const sp<String> Context::LOGGER_SERVICE = String::valueOf("logger");
-const sp<String> Context::ALARM_MANAGER = String::valueOf("alarmManager");
-const sp<String> Context::POWER_MANAGER = String::valueOf("powerManager");
-const sp<String> Context::LOCATION_SERVICE = String::valueOf("locationService");
-const sp<String> Context::AUDIO_SERVICE = String::valueOf("audioService");
-const sp<String> Context::TELEPHONY_SERVICE = String::valueOf("telephonyService");
-const sp<String> Context::MEDIA_PLAYER_SERVICE = String::valueOf("mediaPlayerService");
-const sp<String> Context::MESSAGE_BROKER = String::valueOf("messageBroker");
-const sp<String> Context::VOICE_SERVICE = String::valueOf("voiceService");
+const sp<URI> Context::SERVICE_MANAGER = URI::create("mindroid://serviceManager");
+const sp<URI> Context::PACKAGE_MANAGER = URI::create("mindroid://packageManager");
+const sp<URI> Context::LOGGER_SERVICE = URI::create("mindroid://logger");
+const sp<URI> Context::ALARM_MANAGER = URI::create("mindroid://alarmManager");
+const sp<URI> Context::POWER_MANAGER = URI::create("mindroid://powerManager");
+const sp<URI> Context::LOCATION_SERVICE = URI::create("mindroid://locationService");
+const sp<URI> Context::AUDIO_SERVICE = URI::create("mindroid://audioService");
+const sp<URI> Context::TELEPHONY_SERVICE = URI::create("mindroid://telephonyService");
+const sp<URI> Context::MEDIA_PLAYER_SERVICE = URI::create("mindroid://mediaPlayerService");
+const sp<URI> Context::MESSAGE_BROKER = URI::create("mindroid://messageBroker");
+const sp<URI> Context::VOICE_SERVICE = URI::create("mindroid://voiceService");
 
 } /* namespace mindroid */

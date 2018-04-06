@@ -50,7 +50,9 @@ void Thread::sleep(uint32_t milliseconds) {
 }
 
 void Thread::join() const {
-    ::pthread_join(mThread, nullptr);
+    if (mThread != 0) {
+        ::pthread_join(mThread, nullptr);
+    }
 }
 
 void* Thread::exec(void* args) {
@@ -79,6 +81,13 @@ int32_t Thread::getId() const {
 
 sp<Thread> Thread::currentThread() {
     return new Thread(::pthread_self());
+}
+
+void Thread::setName(const sp<String>& name) {
+    if (name != nullptr) {
+        mName = name;
+        ::pthread_setname_np(mThread, mName->c_str());
+    }
 }
 
 void Thread::setPriority(int32_t priority) {

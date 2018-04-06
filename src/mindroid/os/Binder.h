@@ -25,11 +25,14 @@
 #include <mindroid/os/Handler.h>
 #include <mindroid/os/Looper.h>
 #include <mindroid/os/RemoteException.h>
+#include <mindroid/net/URI.h>
 #include <mindroid/util/concurrent/Executor.h>
 #include <mindroid/util/Log.h>
 #include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
+
+class Runtime;
 
 /**
  * Base class for a remotable object, the core part of a lightweight remote procedure call mechanism
@@ -45,11 +48,13 @@ class Binder :
         public IBinder {
 private:
     static const char* const TAG;
+    static const int32_t TRANSACTION = 1;
+    static const int32_t LIGHTWEIGHT_TRANSACTION = 2;
     static const sp<String> EXCEPTION_MESSAGE;
 
     class IMessenger : public Object {
     public:
-        virtual bool runsOnSameThread() = 0;
+        virtual bool isCurrentThread() = 0;
         virtual bool send(const sp<Message>& message) = 0;
     };
 
@@ -75,7 +80,7 @@ private:
             mHandler = new BinderHandler(binder, looper);
         }
 
-        bool runsOnSameThread() override {
+        bool isCurrentThread() override {
             return mHandler->getLooper()->isCurrentThread();
         }
 
@@ -85,6 +90,8 @@ private:
 
     private:
         sp<Handler> mHandler;
+
+        friend class Binder;
     };
 
     class ExecutorMessenger : public IMessenger {
@@ -92,7 +99,7 @@ private:
         ExecutorMessenger(const sp<Binder>& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
         }
 
-        bool runsOnSameThread() override {
+        bool isCurrentThread() override {
             return false;
         }
 
@@ -109,16 +116,28 @@ private:
     };
 
 public:
-    Binder() {
-        mTarget = new Messenger(this);
+    Binder();
+    Binder(const sp<Looper>& looper);
+    Binder(const sp<Executor>& executor);
+    /** @hide */
+    Binder(const sp<Binder>& binder);
+    virtual ~Binder();
+
+    /**
+     * Release unmanaged Binder resources.
+     *
+     * Messenger holds a reference to Binder which holds a reference to Messenger.
+     */
+    void dispose() override {
+        mTarget.clear();
     }
 
-    Binder(const sp<Looper>& looper) {
-        mTarget = new Messenger(this, looper);
+    uint64_t getId() const override {
+        return mId & 0xFFFFFFFFL;
     }
 
-    Binder(const sp<Executor>& executor) {
-        mTarget = new ExecutorMessenger(this, executor);
+    sp<URI> getUri() const override {
+        return mUri;
     }
 
     /**
@@ -126,15 +145,12 @@ public:
      * queryInterface() will be implemented for you to return the given owner IInterface when the
      * corresponding descriptor is requested.
      */
-    void attachInterface(const wp<IInterface>& owner, const sp<String>& descriptor) {
-        mOwner = owner;
-        mDescriptor = descriptor;
-    }
+    void attachInterface(const wp<IInterface>& owner, const sp<String>& descriptor);
 
     /**
      * Default implementation returns an empty interface name.
      */
-    sp<String> getInterfaceDescriptor() override {
+    sp<String> getInterfaceDescriptor() const override {
         return mDescriptor;
     }
 
@@ -153,28 +169,23 @@ public:
     }
 
     /**
-     * Default implementations rewinds the parcels and calls onTransact. On the remote side,
-     * transact calls into the binder to do the IPC.
+     * Returns true if the current thread is this binder's thread.
      */
-    void transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-    void transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-    void transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-    void transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) final;
-
-    bool runsOnSameThread() final {
-        return mTarget->runsOnSameThread();
+    bool isCurrentThread() {
+        return mTarget->isCurrentThread();
     }
 
     /**
-     * Release unmanaged Binder resources.
-     *
-     * Messenger holds a reference to Binder which holds a reference to Messenger.
+     * Default implementations rewinds the parcels and calls onTransact. On the remote side,
+     * transact calls into the binder to do the IPC.
      */
-    void dispose() override {
-        mTarget.clear();
-    }
+    sp<Promise<sp<Parcel>>> transact(int32_t what, const sp<Parcel>& data, int32_t flags) override;
+
+    void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
+
+    void link(const sp<Supervisor>& supervisor, int32_t flags) override;
+
+    bool unlink(const sp<Supervisor>& supervisor, int32_t flags) override;
 
     template<typename T>
     static T get(const sp<Promise<T>>& result) {
@@ -208,37 +219,80 @@ public:
 
 protected:
     /**
-     * Default implementation is a stub that does nothing.  You will want
-     * to override this to do the appropriate unmarshalling of transactions.
+     * Default implementation is a stub that returns null. You will want to override this to do the
+     * appropriate unmarshalling of transactions.
      *
-     * <p>If you want to call this, call transact().
+     * <p>
+     * If you want to call this, call transact().
      */
-    virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+    virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
+    }
+
+    virtual void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     }
 
 private:
-    void transact(const sp<Message>& message, int32_t flags) {
-        if (!mTarget->send(message)) {
-            throw RemoteException(EXCEPTION_MESSAGE);
-        }
-    }
+    void onTransact(const sp<Message>& message);
+    /** @hide */
+    void setId(uint64_t id);
 
-    void onTransact(const sp<Message>& message) {
-        try {
-            onTransact(message->what, message->arg1, message->arg2, message->obj, message->peekData(), message->result);
-        } catch (const RemoteException& e) {
-            if (message->result != nullptr) {
-                message->result->completeWith(e);
-            } else {
-                Log::w(TAG, EXCEPTION_MESSAGE->c_str());
-            }
-        }
-        message->result = nullptr;
-    }
-
+    uint64_t mId;
+    sp<Runtime> mRuntime;
     sp<IMessenger> mTarget;
     wp<IInterface> mOwner;
     sp<String> mDescriptor;
+    sp<URI> mUri;
+
+    friend class Runtime;
+
+public:
+    class Proxy final : public IBinder {
+    public:
+        static sp<Proxy> create(const sp<URI>& uri);
+
+        virtual ~Proxy();
+
+        void dispose() override {
+        }
+
+        uint64_t getId() const override {
+            return mId;
+        }
+
+        sp<URI> getUri() const override {
+            return mUri;
+        }
+
+        sp<String> getInterfaceDescriptor() const override {
+            return mDescriptor;
+        }
+
+        sp<IInterface> queryLocalInterface(const char* descriptor) override {
+            return nullptr;
+        }
+        sp<IInterface> queryLocalInterface(const sp<String>& descriptor) override {
+            return nullptr;
+        }
+
+        sp<Promise<sp<Parcel>>> transact(int32_t what, const sp<Parcel>& data, int32_t flags) override;
+
+        void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
+
+        void link(const sp<Supervisor>& supervisor, int32_t flags) override;
+
+        bool unlink(const sp<Supervisor>& supervisor, int32_t flags) override;
+
+    private:
+        Proxy(const sp<URI>& uri);
+
+        static const sp<String> EXCEPTION_MESSAGE;
+
+        uint64_t mProxyId = 0;
+        uint64_t mId;
+        sp<Runtime> mRuntime;
+        sp<String> mDescriptor;
+        sp<URI> mUri;
+    };
 };
 
 } /* namespace mindroid */

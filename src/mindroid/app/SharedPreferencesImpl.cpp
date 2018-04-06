@@ -309,7 +309,7 @@ sp<HashMap<sp<String>, sp<Variant>>> SharedPreferencesImpl::readMap(const sp<Fil
     if (rootNode != nullptr) {
         sp<HashMap<sp<String>, sp<Variant>>> map = new HashMap<sp<String>, sp<Variant>>();
         XMLElement* element;
-        for(element = rootNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
+        for (element = rootNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
             if (XMLUtil::StringEqual(BOOLEAN_TAG, element->Name())) {
                 parseBoolean(map, element);
             } else if (XMLUtil::StringEqual(INT_TAG, element->Name())) {
@@ -375,7 +375,7 @@ void SharedPreferencesImpl::parseStringSet(sp<HashMap<sp<String>, sp<Variant>>>&
     if (name != nullptr) {
         sp<HashSet<sp<String>>> values = new HashSet<sp<String>>();
         const XMLElement* childElement;
-        for(childElement = element->FirstChildElement(); childElement != nullptr; childElement = childElement->NextSiblingElement()) {
+        for (childElement = element->FirstChildElement(); childElement != nullptr; childElement = childElement->NextSiblingElement()) {
             if (XMLUtil::StringEqual(STRING_TAG, childElement->Name())) {
                 const XMLNode* value = childElement->FirstChild();
                 if (value != nullptr) {

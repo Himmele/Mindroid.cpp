@@ -18,12 +18,20 @@
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/os/Environment.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/Integer.h>
+#include <mindroid/lang/NumberFormatException.h>
+#include <mindroid/lang/System.h>
+#include <mindroid/io/File.h>
+#include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/logging/Logger.h>
 #include "examples/Services/src/ServiceExample1.h"
 #include "examples/Services/src/ServiceExample2.h"
 #include "examples/Concurrency/src/PromiseExample.h"
 #include "examples/Concurrency/src/AsyncTaskExample.h"
 #include "examples/Concurrency/src/HandlerExample.h"
+#include "examples/Eliza/src/ElizaService.h"
+#include "examples/Eliza/src/You.h"
+#include <signal.h>
 
 using namespace mindroid;
 
@@ -34,6 +42,8 @@ CLASS(examples, ServiceExample2);
 CLASS(examples, HandlerExample);
 CLASS(examples, PromiseExample);
 CLASS(examples, AsyncTaskExample);
+CLASS(examples, ElizaService);
+CLASS(examples, You);
 
 void startSystemSerices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
@@ -42,7 +52,7 @@ void startSystemSerices() {
     logFlags->add(String::valueOf("timestamp"));
     sp<Intent> logger = new Intent(Logger::ACTION_LOG);
     logger->setComponent(new ComponentName("mindroid", "Logger"))
-            ->putExtra("name", Context::LOGGER_SERVICE)
+            ->putExtra("name", Context::LOGGER_SERVICE->toString())
             ->putExtra("process", "main")
             ->putExtra("logBuffer", Log::LOG_ID_MAIN)
             ->putExtra("logPriority", Log::DEBUG)
@@ -52,7 +62,7 @@ void startSystemSerices() {
 
     sp<Intent> packageManager = new Intent();
     packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"))
-            ->putExtra("name", "PackageManager")
+            ->putExtra("name", Context::PACKAGE_MANAGER->toString())
             ->putExtra("process", "main");
     serviceManager->startSystemService(packageManager);
     ServiceManager::waitForSystemService(Context::PACKAGE_MANAGER);
@@ -121,8 +131,38 @@ void shutdownServices() {
     }
 }
 
-int32_t main() {
-    Environment::setRootDirectory(".");
+static sp<Promise<int32_t>> sShutdownHandler = new Promise<int32_t>();
+
+static void signalHandler(int32_t signal) {
+    sShutdownHandler->complete(signal);
+}
+
+int32_t main(int32_t argc, char* argv[]) {
+    ::signal(SIGINT, signalHandler);
+
+    const sp<String> ID_ARG = String::valueOf("id=");
+    const sp<String> ROOT_DIR_ARG = String::valueOf("rootDir=");
+
+    uint32_t nodeId = 1;
+    sp<String> rootDir = String::valueOf(".");
+    for (int32_t i = 0; i < argc; ++i) {
+        sp<String> arg = String::valueOf(argv[i]);
+        if (arg->startsWith(ID_ARG)) {
+            try {
+                nodeId = Integer::valueOf(arg->substring(ID_ARG->length()))->intValue();
+            } catch (const NumberFormatException& e) {
+                Log::println('E', "Main", "Invalid node id: %s", arg->c_str());
+                System::exit(-1);
+            }
+        } else if (arg->startsWith(ROOT_DIR_ARG)) {
+            rootDir = arg->substring(ROOT_DIR_ARG->length());
+        }
+    }
+
+    Environment::setRootDirectory(rootDir);
+
+    sp<File> file = new File(Environment::getRootDirectory(), "res/MindroidRuntimeSystem.xml");
+    Runtime::start(nodeId, file->exists() ? file : nullptr);
 
     sp<ServiceManager> serviceManager = new ServiceManager();
     serviceManager->start();
@@ -130,12 +170,15 @@ int32_t main() {
     startSystemSerices();
     startServices();
 
-    Thread::sleep(10000);
+    sShutdownHandler->get();
+    Log::println('D', "Main", "Shutting down...");
 
     shutdownServices();
     shutdownSystemSerices();
 
     serviceManager->shutdown();
+
+    Runtime::shutdown();
 
     return 0;
 }

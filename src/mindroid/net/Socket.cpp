@@ -34,7 +34,8 @@
 
 namespace mindroid {
 
-Socket::Socket(const sp<String>& host, uint16_t port) {
+Socket::Socket(const sp<String>& host, uint16_t port) :
+        mLocalAddress(Inet6Address::ANY) {
     sp<InetAddress> inetAddress = InetAddress::getByName(host);
     connect(new InetSocketAddress(inetAddress, port));
 }
@@ -46,6 +47,7 @@ Socket::~Socket() {
 void Socket::close() {
     mIsClosed = true;
     mIsConnected = false;
+    mLocalAddress = Inet6Address::ANY;
     if (mFd != -1) {
         ::shutdown(mFd, SHUT_RDWR);
         ::close(mFd);
@@ -81,6 +83,40 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         saSize = sizeof(sockaddr_in);
     }
     if (::connect(mFd, (struct sockaddr*) &ss, saSize) == 0) {
+        mInetAddress = socketAddress->getAddress();
+        mPort = socketAddress->getPort();
+
+        sockaddr_storage ss;
+        sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+        socklen_t saSize = sizeof(ss);
+        std::memset(&ss, 0, saSize);
+        int32_t rc = ::getsockname(mFd, sa, &saSize);
+        if (rc == 0) {
+            switch (ss.ss_family) {
+            case AF_INET6: {
+                const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
+                const void* ipAddress = &sin6.sin6_addr.s6_addr;
+                size_t ipAddressSize = 16;
+                int32_t scope_id = sin6.sin6_scope_id;
+                sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
+                mLocalAddress = new Inet6Address(ba, nullptr, scope_id);
+                mLocalPort = sin6.sin6_port;
+                break;
+            }
+            case AF_INET: {
+                const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
+                const void* ipAddress = &sin.sin_addr.s_addr;
+                size_t ipAddressSize = 4;
+                sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
+                mLocalAddress = new Inet4Address(ba, nullptr);
+                mLocalPort = sin.sin_port;
+                break;
+            }
+            default:
+                break;
+            }
+        }
+        mIsBound = true;
         mIsConnected = true;
     } else {
         close();
@@ -100,6 +136,45 @@ sp<OutputStream> Socket::getOutputStream() {
         throw IOException("Socket is not connected");
     }
     return new SocketOutputStream(this);
+}
+
+sp<InetAddress> Socket::getLocalAddress() const {
+    return mLocalAddress;
+}
+
+int32_t Socket::getLocalPort() const {
+    if (!isBound()) {
+        return -1;
+    }
+    return mLocalPort;
+}
+
+sp<InetAddress> Socket::getInetAddress() const {
+    if (!isConnected()) {
+        return nullptr;
+    }
+    return mInetAddress;
+}
+
+int32_t Socket::getPort() const {
+    if (!isConnected()) {
+        return 0;
+    }
+    return mPort;
+}
+
+sp<InetSocketAddress> Socket::getLocalSocketAddress() const {
+    if (!isBound()) {
+        return nullptr;
+    }
+    return new InetSocketAddress(getLocalAddress(), getLocalPort());
+}
+
+sp<InetSocketAddress> Socket::getRemoteSocketAddress() const {
+    if (!isConnected()) {
+        return nullptr;
+    }
+    return new InetSocketAddress(getInetAddress(), getPort());
 }
 
 size_t Socket::SocketInputStream::available() {

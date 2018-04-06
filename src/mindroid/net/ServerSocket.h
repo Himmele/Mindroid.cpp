@@ -125,6 +125,32 @@ public:
     sp<Socket> accept();
 
     /**
+     * Gets the local IP address of this server socket if this socket has ever been bound,
+     * {@code null} otherwise. This is useful for multihomed hosts.
+     *
+     * @return the local address of this server socket.
+     */
+    sp<InetAddress> getInetAddress() const;
+
+    /**
+     * Gets the local port of this server socket or {@code -1} if the socket is not bound.
+     * If the socket has ever been bound this method will return the local port it was bound to,
+     * even after it has been closed.
+     *
+     * @return the local port this server is listening on.
+     */
+    int32_t getLocalPort() const;
+
+    /**
+     * Gets the local socket address of this server socket or {@code null} if the socket is unbound.
+     * This is useful on multihomed hosts. If the socket has ever been bound this method will return
+     * the local address it was bound to, even after it has been closed.
+     *
+     * @return the local socket address and port this socket is bound to.
+     */
+    sp<InetSocketAddress> getLocalSocketAddress() const;
+
+    /**
      * Returns whether this server socket is bound to a local address and port
      * or not.
      *
@@ -153,6 +179,8 @@ private:
     void bind(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress);
 
     int32_t mFd = -1;
+    sp<InetAddress> mLocalAddress;
+    int32_t mLocalPort = -1;
     bool mIsBound = false;
     bool mIsClosed = false;
     bool mReuseAddress = false;

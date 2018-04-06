@@ -80,6 +80,14 @@ public:
     static const int32_t NORM_PRIORITY = 5;
 
     /**
+     * Changes the name of this thread to be equal to the argument name.
+     */
+    void setName(const char* name) {
+        setName(String::valueOf(name));
+    }
+    void setName(const sp<String>& name);
+
+    /**
      * Returns the name of the Thread.
      */
     sp<String> getName() { return mName; }
@@ -196,7 +204,7 @@ private:
     sp<Thread> mSelf;
     sp<String> mName;
     sp<Runnable> mRunnable;
-    pthread_t mThread = -1;
+    pthread_t mThread = 0;
     bool mStarted = false;
     bool mInterrupted = false;
 

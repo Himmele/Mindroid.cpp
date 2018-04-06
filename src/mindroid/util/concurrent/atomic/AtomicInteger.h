@@ -30,9 +30,37 @@ public:
     AtomicInteger(const AtomicInteger&) = delete;
     AtomicInteger& operator=(const AtomicInteger&) = delete;
 
+    /**
+     * Gets the current value.
+     *
+     * @return the current value
+     */
     int32_t get();
+
+    /**
+     * Sets to the given value.
+     *
+     * @param newValue the new value
+     */
     void set(int32_t newValue);
+
+    /**
+     * Atomically sets the value to the given updated value
+     * if the current value {@code ==} the expected value.
+     *
+     * @param expect the expected value
+     * @param update the new value
+     * @return true if successful. False return indicates that
+     * the actual value was not equal to the expected value.
+     */
     bool compareAndSet(int32_t expect, int32_t update);
+
+    /**
+     * Atomically increments by one the current value.
+     *
+     * @return the previous value
+     */
+    int32_t getAndIncrement();
 
 private:
     std::atomic<int32_t> mValue;

@@ -16,24 +16,32 @@
 
 #include <mindroid/lang/Integer.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/NumberFormatException.h>
 #include <cstdlib>
 
 namespace mindroid {
 
-sp<Integer> Integer::valueOf(const char* s) {
-    return new Integer(strtol(s, nullptr, 10));
+sp<Integer> Integer::valueOf(const char* string) {
+    return valueOf(string, 10);
 }
 
-sp<Integer> Integer::valueOf(const sp<String>& s) {
-    return valueOf(s->c_str());
+sp<Integer> Integer::valueOf(const sp<String>& string) {
+    return valueOf(string, 10);
 }
 
-sp<Integer> Integer::valueOf(const char* s, int32_t radix) {
-    return new Integer(strtol(s, nullptr, radix));
+sp<Integer> Integer::valueOf(const char* string, int32_t radix) {
+    return valueOf(String::valueOf(string), radix);
 }
 
-sp<Integer> Integer::valueOf(const sp<String>& s, int32_t radix) {
-    return valueOf(s->c_str(), radix);
+sp<Integer> Integer::valueOf(const sp<String>& string, int32_t radix) {
+    if (string == nullptr) {
+        throw NumberFormatException("String is null");
+    }
+    int32_t value = strtol(string->c_str(), nullptr, radix);
+    if (value == 0 && !string->equals("0")) {
+        throw NumberFormatException(String::format("Invalid integral value: %s", string->c_str()));
+    }
+    return new Integer(value);
 }
 
 } /* namespace mindroid */

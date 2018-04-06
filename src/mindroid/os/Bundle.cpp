@@ -369,7 +369,7 @@ void Bundle::retainBasicTypes() {
                 continue;
             }
             if (value->isBundle()) {
-                object_cast<Bundle>(value)->retainBasicTypes();
+                object_cast<Bundle, Object>(value)->retainBasicTypes();
                 continue;
             }
             itr.remove();

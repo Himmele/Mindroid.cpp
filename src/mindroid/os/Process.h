@@ -54,13 +54,13 @@ private:
         ProcessImpl(const sp<Looper>& looper, sp<Process> process) : Stub(looper), mProcess(process) {
         }
 
-        void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-        void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback);
-        void stopService(const sp<Intent>& intent);
-        void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
-        void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
-        void unbindService(const sp<Intent>& intent);
-        void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback);
+        void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+        void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
+        void stopService(const sp<Intent>& intent) override;
+        void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+        void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+        void unbindService(const sp<Intent>& intent) override;
+        void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
 
     private:
         sp<Process> mProcess;

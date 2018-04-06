@@ -17,7 +17,9 @@
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
 #include <mindroid/lang/StringBuilder.h>
+#include <mindroid/lang/Integer.h>
 #include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
 
@@ -51,6 +53,62 @@ sp<URI> URI::create(const char* uri) {
     } catch (const URISyntaxException& e) {
         throw IllegalArgumentException(e);
     }
+}
+
+URI::URI(const sp<String>& scheme, const sp<String>& userInfo, const sp<String>& host, int32_t port,
+        const sp<String>& path, const sp<String>& query, const sp<String>& fragment) {
+    if (scheme == nullptr && userInfo == nullptr && host == nullptr && path == nullptr && query == nullptr && fragment == nullptr) {
+        mPath = String::EMPTY_STRING;
+        return;
+    }
+    if (scheme != nullptr && path != nullptr && !path->isEmpty() && path->charAt(0) != '/') {
+        throw URISyntaxException("Relative path");
+    }
+
+    sp<StringBuilder> uri = new StringBuilder();
+    if (scheme != nullptr) {
+        uri->append(scheme);
+        uri->append(':');
+    }
+
+    if (userInfo != nullptr || host != nullptr || port != -1) {
+        uri->append("//");
+    }
+    if (userInfo != nullptr) {
+        uri->append(userInfo);
+        uri->append('@');
+    }
+    if (host != nullptr) {
+        sp<String> h = host;
+        // Check for IPv6 addresses without square brackets.
+        if (host->indexOf(':') != -1 && host->indexOf(']') == -1 && host->indexOf('[') == -1) {
+            h = String::format("[%s]", host->c_str());
+        }
+        uri->append(h);
+    }
+    if (port != -1) {
+        uri->append(':');
+        uri->append(port);
+    }
+
+    if (path != nullptr) {
+        uri->append(path);
+    }
+    if (query != nullptr) {
+        uri->append('?');
+        uri->append(query);
+    }
+    if (fragment != nullptr) {
+        uri->append('#');
+        uri->append(fragment);
+    }
+
+    parseURI(uri->toString());
+}
+
+URI::URI(const char* scheme, const char* userInfo, const char* host, int32_t port, const char* path, const char* query, const char* fragment) :
+        URI(String::valueOf(scheme), String::valueOf(userInfo), String::valueOf(host), port,
+                String::valueOf(path), String::valueOf(query), String::valueOf(fragment)) {
 }
 
 URI::URI(const sp<String>& scheme, const sp<String>& authority, const sp<String>& path, const sp<String>& query, const sp<String>& fragment) {
@@ -134,6 +192,55 @@ void URI::parseURI(const sp<String>& uri) {
     if (queryStart < fragmentStart) {
         mQuery = uri->substring(queryStart + 1, fragmentStart);
     }
+
+    parseAuthority();
+}
+
+void URI::parseAuthority()  {
+    if (mAuthority == nullptr) {
+        return;
+    }
+
+    sp<String> authority = mAuthority;
+    sp<String> userInfo = nullptr;
+    ssize_t userIndex = authority->indexOf('@');
+    __attribute__((unused)) ssize_t hostIndex = 0;
+    if (userIndex != -1) {
+        userInfo = authority->substring(0, userIndex);
+        authority = authority->substring(userIndex + 1); // Host[:Port]
+        hostIndex = userIndex + 1;
+    }
+
+    sp<String> host;
+    int32_t port = -1;
+    ssize_t portIndex = authority->lastIndexOf(':');
+    ssize_t endIndex = authority->indexOf(']');
+    if (portIndex != -1 && endIndex < portIndex) {
+        host = authority->substring(0, portIndex);
+
+        if (portIndex < ((ssize_t) authority->length() - 1)) {
+            try {
+                char firstPortChar = authority->charAt(portIndex + 1);
+                if (firstPortChar >= '0' && firstPortChar <= '9') {
+                    port = Integer::valueOf(authority->substring(portIndex + 1))->intValue();
+                } else {
+                    throw URISyntaxException("Invalid port number");
+                }
+            } catch (const NumberFormatException& e) {
+                throw URISyntaxException("Invalid port number");
+            }
+        }
+    } else {
+        host = authority;
+    }
+
+    if (host->isEmpty()) {
+        throw URISyntaxException("Invalid host");
+    }
+
+    mUserInfo = userInfo;
+    mHost = host;
+    mPort = port;
 }
 
 size_t URI::indexOf(const sp<String>& string, const char c, size_t start, size_t end) {

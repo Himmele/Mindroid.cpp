@@ -49,6 +49,16 @@ public:
         return entry.second;
     }
 
+    bool addAll(const sp<HashSet<T>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+        return true;
+    }
+
     void clear() {
         mSet.clear();
     }
@@ -155,6 +165,16 @@ public:
     bool add(const sp<T>& value) {
         auto entry = mSet.insert(value);
         return entry.second;
+    }
+
+    bool addAll(const sp<HashSet<sp<T>>>& collection) {
+        if (collection != nullptr) {
+            auto itr = collection->iterator();
+            while (itr.hasNext()) {
+                add(itr.next());
+            }
+        }
+        return true;
     }
 
     void clear() {

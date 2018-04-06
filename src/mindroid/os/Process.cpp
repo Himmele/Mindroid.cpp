@@ -86,7 +86,7 @@ void Process::stop(uint64_t timeout) {
 
     Log::d(TAG, "Process %s has been stopped", mName->c_str());
     if (SystemClock::uptimeMillis() - start >= 1000) {
-        printf("W/Process: Stopping process %s took %" PRIu64 " ms", mName->c_str(), SystemClock::uptimeMillis() - start);
+        Log::println('W', "Process", "Stopping process %s took %" PRIu64 " ms", mName->c_str(), SystemClock::uptimeMillis() - start);
     }
 }
 

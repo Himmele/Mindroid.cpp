@@ -65,7 +65,7 @@ int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t 
 }
 
 void PackageManagerService::onDestroy() {
-    ServiceManager::removeService(Context::PACKAGE_MANAGER);
+    ServiceManager::removeService(mBinder);
 }
 
 sp<ArrayList<sp<PackageInfo>>> PackageManagerService::PackageManagerImpl::getInstalledPackages(int32_t flags) {

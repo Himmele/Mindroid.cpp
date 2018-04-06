@@ -38,4 +38,8 @@ bool AtomicInteger::compareAndSet(int32_t expect, int32_t update) {
     return mValue.compare_exchange_strong(expect, update);
 }
 
+int32_t AtomicInteger::getAndIncrement() {
+    return mValue.fetch_add(1, std::memory_order_relaxed);
+}
+
 } /* namespace mindroid */

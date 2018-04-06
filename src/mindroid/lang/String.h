@@ -141,6 +141,10 @@ public:
 
     sp<String> replace(char oldChar, char newChar);
 
+    sp<String> append(const char c) const {
+        return append(&c, 1);
+    }
+
     sp<String> append(const char* string) const {
         return append(string, strlen(string));
     }

@@ -45,10 +45,18 @@ public:
     explicit Integer(int32_t value) : mValue(value) {
     }
 
-    static sp<Integer> valueOf(const char* s);
-    static sp<Integer> valueOf(const sp<String>& s);
-    static sp<Integer> valueOf(const char* s, int32_t radix);
-    static sp<Integer> valueOf(const sp<String>& s, int32_t radix);
+    /**
+     * Constructs a new {@code Integer} from the specified string.
+     *
+     * @param string
+     *            the string representation of an integer value.
+     * @throws NumberFormatException
+     *             if {@code string} cannot be parsed as an integer value.
+     */
+    static sp<Integer> valueOf(const char* string);
+    static sp<Integer> valueOf(const sp<String>& string);
+    static sp<Integer> valueOf(const char* string, int32_t radix);
+    static sp<Integer> valueOf(const sp<String>& string, int32_t radix);
 
     int32_t intValue() const {
         return mValue;

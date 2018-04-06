@@ -32,6 +32,7 @@ class ServiceConnection;
 class Looper;
 class PackageManager;
 class File;
+class URI;
 
 /**
  * Interface to global information about an application environment. This is an class whose
@@ -42,17 +43,17 @@ class File;
 class Context :
         public Object {
 public:
-    static const sp<String> SERVICE_MANAGER;
-    static const sp<String> PACKAGE_MANAGER;
-    static const sp<String> LOGGER_SERVICE;
-    static const sp<String> ALARM_MANAGER;
-    static const sp<String> POWER_MANAGER;
-    static const sp<String> LOCATION_SERVICE;
-    static const sp<String> AUDIO_SERVICE;
-    static const sp<String> TELEPHONY_SERVICE;
-    static const sp<String> MEDIA_PLAYER_SERVICE;
-    static const sp<String> MESSAGE_BROKER;
-    static const sp<String> VOICE_SERVICE;
+    static const sp<URI> SERVICE_MANAGER;
+    static const sp<URI> PACKAGE_MANAGER;
+    static const sp<URI> LOGGER_SERVICE;
+    static const sp<URI> ALARM_MANAGER;
+    static const sp<URI> POWER_MANAGER;
+    static const sp<URI> LOCATION_SERVICE;
+    static const sp<URI> AUDIO_SERVICE;
+    static const sp<URI> TELEPHONY_SERVICE;
+    static const sp<URI> MEDIA_PLAYER_SERVICE;
+    static const sp<URI> MESSAGE_BROKER;
+    static const sp<URI> VOICE_SERVICE;
 
     /**
      * File creation mode: the default mode.
@@ -111,8 +112,7 @@ public:
      *
      * @param name Name of the system service.
      */
-    virtual sp<IBinder> getSystemService(const char* name) = 0;
-    virtual sp<IBinder> getSystemService(const sp<String>& name) = 0;
+    virtual sp<IBinder> getSystemService(const sp<URI>& name) = 0;
 
     /**
      * Request that a given application service be started. The Intent must contain the complete

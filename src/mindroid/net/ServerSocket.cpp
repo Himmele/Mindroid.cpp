@@ -80,17 +80,16 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         throw SocketException("Socket is already closed");
     }
 
-    sp<InetAddress> address;
     if (localAddress == nullptr) {
-        address = Inet6Address::ANY;
+        mLocalAddress = Inet6Address::ANY;
     } else {
-        address = localAddress;
+        mLocalAddress = localAddress;
     }
 
     sockaddr_storage ss;
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
-    if (Class<Inet6Address>::isInstance(address)) {
+    if (Class<Inet6Address>::isInstance(mLocalAddress)) {
         mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
         int32_t value = 0;
         ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
@@ -99,7 +98,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
 
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
-        std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
+        std::memcpy(&sin6.sin6_addr.s6_addr, mLocalAddress->getAddress()->c_arr(), 16);
         sin6.sin6_port = htons(port);
         saSize = sizeof(sockaddr_in6);
     } else {
@@ -109,7 +108,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
-        std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
+        std::memcpy(&sin.sin_addr.s_addr, mLocalAddress->getAddress()->c_arr(), 4);
         sin.sin_port = htons(port);
         saSize = sizeof(sockaddr_in);
     }
@@ -117,6 +116,31 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         close();
     }
     if (mFd != -1 && ::listen(mFd, backlog) == 0) {
+        if (port != 0) {
+            mLocalPort = port;
+        } else {
+            sockaddr_storage ss;
+            sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+            socklen_t saSize = sizeof(ss);
+            std::memset(&ss, 0, saSize);
+            int32_t rc = ::getsockname(mFd, sa, &saSize);
+            if (rc == 0) {
+                switch (ss.ss_family) {
+                case AF_INET6: {
+                    const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
+                    mLocalPort = sin6.sin6_port;
+                    break;
+                }
+                case AF_INET: {
+                    const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
+                    mLocalPort = sin.sin_port;
+                    break;
+                }
+                default:
+                    break;
+                }
+            }
+        }
         mIsBound = true;
     } else {
         close();
@@ -135,9 +159,64 @@ sp<Socket> ServerSocket::accept() {
         throw IOException();
     } else {
         socket->mFd = rc;
+        socket->mLocalAddress = mLocalAddress;
+        socket->mLocalPort = mLocalPort;
+        socket->mIsBound = true;
         socket->mIsConnected = true;
+
+        sockaddr_storage ss;
+        sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+        socklen_t saSize = sizeof(ss);
+        std::memset(&ss, 0, saSize);
+        int32_t rc = ::getsockname(socket->mFd, sa, &saSize);
+        if (rc == 0) {
+            switch (ss.ss_family) {
+            case AF_INET6: {
+                const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
+                const void* ipAddress = &sin6.sin6_addr.s6_addr;
+                size_t ipAddressSize = 16;
+                int32_t scope_id = sin6.sin6_scope_id;
+                sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
+                socket->mInetAddress = new Inet6Address(ba, nullptr, scope_id);
+                socket->mPort = sin6.sin6_port;
+                break;
+            }
+            case AF_INET: {
+                const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
+                const void* ipAddress = &sin.sin_addr.s_addr;
+                size_t ipAddressSize = 4;
+                sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
+                socket->mInetAddress = new Inet4Address(ba, nullptr);
+                socket->mPort = sin.sin_port;
+                break;
+            }
+            default:
+                break;
+            }
+        }
         return socket;
     }
+}
+
+sp<InetAddress> ServerSocket::getInetAddress() const {
+    if (!isBound()) {
+        return nullptr;
+    }
+    return mLocalAddress;
+}
+
+int32_t ServerSocket::getLocalPort() const {
+    if (!isBound()) {
+        return -1;
+    }
+    return mLocalPort;
+}
+
+sp<InetSocketAddress> ServerSocket::getLocalSocketAddress() const {
+    if (!isBound()) {
+        return nullptr;
+    }
+    return new InetSocketAddress(mLocalAddress, getLocalPort());
 }
 
 void ServerSocket::setReuseAddress(bool reuse) {

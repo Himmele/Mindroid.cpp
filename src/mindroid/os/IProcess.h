@@ -42,6 +42,8 @@ namespace binder {
 
 class Process {
 public:
+    class Proxy;
+
     class Stub : public Binder, public IProcess {
     public:
         Stub() {
@@ -56,15 +58,15 @@ public:
             if (binder == nullptr) {
                 return nullptr;
             }
-            return new Process::Stub::SmartProxy(binder);
+            return new Process::Proxy(binder);
         }
 
-        virtual sp<IBinder> asBinder() override {
+        sp<IBinder> asBinder() override {
             return this;
         }
 
     protected:
-        virtual void onTransact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) override;
+        void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) override;
 
     private:
         class Proxy : public IProcess {
@@ -73,15 +75,15 @@ public:
                 mRemote = remote;
             }
 
-            virtual sp<IBinder> asBinder() override {
+            sp<IBinder> asBinder() override {
                 return mRemote;
             }
 
             bool equals(const sp<Object>& obj) const override {
                 if (obj == nullptr) return false;
                 if (obj == this) return true;
-                if (Class<Proxy>::isInstance(obj)) {
-                    sp<Proxy> other = Class<Proxy>::cast(obj);
+                if (Class<Stub::Proxy>::isInstance(obj)) {
+                    sp<Stub::Proxy> other = Class<Stub::Proxy>::cast(obj);
                     return mRemote->equals(other->mRemote);
                 } else {
                     return false;
@@ -92,53 +94,16 @@ public:
                 return mRemote->hashCode();
             }
 
-            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
-            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
-            virtual void stopService(const sp<Intent>& intent) override;
-            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
-            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
-            virtual void unbindService(const sp<Intent>& intent) override;
-            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
+            void stopService(const sp<Intent>& intent) override;
+            void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+            void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+            void unbindService(const sp<Intent>& intent) override;
+            void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
 
         private:
             sp<IBinder> mRemote;
-        };
-
-        class SmartProxy : public IProcess {
-        public:
-            SmartProxy(const sp<IBinder>& remote);
-
-            virtual sp<IBinder> asBinder() override {
-                return mRemote;
-            }
-
-            bool equals(const sp<Object>& obj) const override {
-                if (obj == nullptr) return false;
-                if (obj == this) return true;
-                if (Class<SmartProxy>::isInstance(obj)) {
-                    sp<SmartProxy> other = Class<SmartProxy>::cast(obj);
-                    return mRemote->equals(other->mRemote);
-                } else {
-                    return false;
-                }
-            }
-
-            size_t hashCode() const override {
-                return mRemote->hashCode();
-            }
-
-            virtual void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
-            virtual void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
-            virtual void stopService(const sp<Intent>& intent) override;
-            virtual void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
-            virtual void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
-            virtual void unbindService(const sp<Intent>& intent) override;
-            virtual void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
-
-        private:
-            sp<IBinder> mRemote;
-            sp<IProcess> mStub;
-            sp<IProcess> mProxy;
         };
 
         static const char* const DESCRIPTOR;
@@ -147,6 +112,45 @@ public:
         static const int32_t MSG_STOP_SERVICE = 3;
         static const int32_t MSG_BIND_SERVICE = 4;
         static const int32_t MSG_UNBIND_SERVICE = 5;
+
+        friend class Process::Proxy;
+    };
+
+    class Proxy : public IProcess {
+    public:
+        Proxy(const sp<IBinder>& binder);
+
+        sp<IBinder> asBinder() override {
+            return mBinder;
+        }
+
+        bool equals(const sp<Object>& obj) const override {
+            if (obj == nullptr) return false;
+            if (obj == this) return true;
+            if (Class<Proxy>::isInstance(obj)) {
+                sp<Proxy> other = Class<Proxy>::cast(obj);
+                return mBinder->equals(other->mBinder);
+            } else {
+                return false;
+            }
+        }
+
+        size_t hashCode() const override {
+            return mBinder->hashCode();
+        }
+
+        void createService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+        void startService(const sp<Intent>& intent, int32_t flags, int32_t startId, const sp<IRemoteCallback>& callback) override;
+        void stopService(const sp<Intent>& intent) override;
+        void stopService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+        void bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+        void unbindService(const sp<Intent>& intent) override;
+        void unbindService(const sp<Intent>& intent, const sp<IRemoteCallback>& callback) override;
+
+    private:
+        sp<IBinder> mBinder;
+        sp<Process::Stub> mStub;
+        sp<IProcess> mProxy;
     };
 };
 

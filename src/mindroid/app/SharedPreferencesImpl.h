@@ -73,7 +73,7 @@ public:
 
         virtual sp<Editor> putStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& values) {
             AutoLock autoLock(mSharedPreferences->mLock);
-            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(object_cast<HashSet<sp<String>>>(new HashSet<sp<String>>(values))));
+            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(new HashSet<sp<String>>(values)));
             return this;
         }
 
@@ -150,21 +150,21 @@ private:
                 mListener(listener) {
         }
 
-        virtual void onSharedPreferenceChanged(const sp<String>& key) override {
+        void onSharedPreferenceChanged(const sp<String>& key) override {
             sp<SharedPreferences> sharedPreferences = mSharedPreferences.get();
             if (sharedPreferences != nullptr) {
                 mListener->onSharedPreferenceChanged(sharedPreferences, key);
             }
         }
 
-        virtual void onSharedPreferenceChanged() override {
+        void onSharedPreferenceChanged() override {
             sp<SharedPreferences> sharedPreferences = mSharedPreferences.get();
             if (sharedPreferences != nullptr) {
                 mListener->onSharedPreferenceChanged(sharedPreferences);
             }
         }
 
-        virtual void dispose() override {
+        void dispose() override {
             Binder::dispose();
         }
 

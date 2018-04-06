@@ -24,6 +24,8 @@
 #include <mindroid/os/IProcess.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/lang/RuntimeException.h>
+#include <mindroid/net/URI.h>
+#include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/concurrent/Promise.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
 #include <mindroid/util/Log.h>
@@ -52,9 +54,9 @@ void ServiceManager::ProcessManager::start() {
 
 void ServiceManager::ProcessManager::shutdown() {
     if (mThread->quit()) {
-        printf("D/%s: Shutting down ProcessManager\n", TAG);
+        Log::println('D', TAG, "Shutting down ProcessManager");
         mThread->join();
-        printf("D/%s: ProcessManager has been shut down\n", TAG);
+        Log::println('D', TAG, "ProcessManager has been shut down");
     }
 }
 
@@ -183,12 +185,12 @@ void ServiceManager::shutdown() {
         }
     }
 
-    removeService(Context::SERVICE_MANAGER);
+    removeService(sStub);
 
     if (mMainThread->quit()) {
-        printf("D/%s: Shutting down ServiceManager\n", TAG);
+        Log::println('D', TAG, "Shutting down ServiceManager");
         mMainThread->join();
-        printf("D/%s: ServiceManager has been shut down\n", TAG);
+        Log::println('D', TAG, "ServiceManager has been shut down");
     }
 
     mProcessManager->shutdown();
@@ -553,37 +555,45 @@ sp<IServiceManager> ServiceManager::getServiceManager() {
     return sServiceManager;
 }
 
-sp<IBinder> ServiceManager::getSystemService(const sp<String>& name) {
-    AutoLock autoLock(sLock);
-    sp<IBinder> service = sSystemServices->get(name);
+sp<IBinder> ServiceManager::getSystemService(const sp<URI>& uri) {
+    sp<IBinder> service = Runtime::getRuntime()->getService(uri);
     return service;
 }
 
-void ServiceManager::addService(const sp<String>& name, const sp<IBinder>& service) {
+void ServiceManager::addService(const sp<URI>& uri, const sp<IBinder>& service) {
     AutoLock autoLock(sLock);
-    if (!sSystemServices->containsKey(name)) {
-        sSystemServices->put(name, service);
+    if (!sSystemServices->containsKey(uri->toString())) {
+        sSystemServices->put(uri->toString(), service);
+        Runtime::getRuntime()->addService(uri, service);
         sCondition->signalAll();
     }
 }
 
-void ServiceManager::removeService(const sp<String>& name) {
+void ServiceManager::removeService(const sp<IBinder>& service) {
     AutoLock autoLock(sLock);
-    sSystemServices->remove(name);
+    Runtime::getRuntime()->removeService(service);
+    auto itr = sSystemServices->iterator();
+    while (itr.hasNext()) {
+        auto entry = itr.next();
+        if (entry.getValue()->equals(service)) {
+            itr.remove();
+            break;
+        }
+    }
     sCondition->signalAll();
 }
 
-void ServiceManager::waitForSystemService(const sp<String>& name) {
+void ServiceManager::waitForSystemService(const sp<URI>& name) {
     AutoLock autoLock(sLock);
     const int64_t TIMEOUT = 10000;
     uint64_t start = SystemClock::uptimeMillis();
     int64_t duration = TIMEOUT;
-    while (!sSystemServices->containsKey(name)) {
+    while (!sSystemServices->containsKey(name->toString())) {
         sCondition->await(duration);
-        if (!sSystemServices->containsKey(name)) {
+        if (!sSystemServices->containsKey(name->toString())) {
             duration = start + TIMEOUT - SystemClock::uptimeMillis();
             if (duration <= 0) {
-                Log::w(TAG, "Starting %s takes very long", name->c_str());
+                Log::w(TAG, "Starting %s takes very long", name->toString()->c_str());
                 start = SystemClock::uptimeMillis();
                 duration = TIMEOUT;
             }
@@ -591,17 +601,17 @@ void ServiceManager::waitForSystemService(const sp<String>& name) {
     }
 }
 
-void ServiceManager::waitForSystemServiceShutdown(const sp<String>& name) {
+void ServiceManager::waitForSystemServiceShutdown(const sp<URI>& name) {
     AutoLock autoLock(sLock);
     const int64_t TIMEOUT = 10000;
     uint64_t start = SystemClock::uptimeMillis();
     int64_t duration = TIMEOUT;
-    while (sSystemServices->containsKey(name)) {
+    while (sSystemServices->containsKey(name->toString())) {
         sCondition->await(duration);
-        if (sSystemServices->containsKey(name)) {
+        if (sSystemServices->containsKey(name->toString())) {
             duration = start + TIMEOUT - SystemClock::uptimeMillis();
             if (duration <= 0) {
-                Log::w(TAG, "Stopping %s takes very long", name->c_str());
+                Log::w(TAG, "Stopping %s takes very long", name->toString()->c_str());
                 start = SystemClock::uptimeMillis();
                 duration = TIMEOUT;
             }

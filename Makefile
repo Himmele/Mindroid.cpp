@@ -53,6 +53,7 @@ SRCS = \
 	src/mindroid/lang/Float.cpp \
 	src/mindroid/lang/Integer.cpp \
 	src/mindroid/lang/Long.cpp \
+	src/mindroid/lang/Math.cpp \
 	src/mindroid/lang/Object.cpp \
 	src/mindroid/lang/Short.cpp \
 	src/mindroid/lang/StringArray.cpp \
@@ -83,13 +84,19 @@ SRCS = \
 	src/mindroid/os/Looper.cpp \
 	src/mindroid/os/Message.cpp \
 	src/mindroid/os/MessageQueue.cpp \
+	src/mindroid/os/Parcel.cpp \
 	src/mindroid/os/Process.cpp \
 	src/mindroid/os/ServiceManager.cpp \
 	src/mindroid/os/SystemClock.cpp \
+	src/mindroid/runtime/system/Configuration.cpp \
+	src/mindroid/runtime/system/Plugin.cpp \
+	src/mindroid/runtime/system/Runtime.cpp \
+	src/mindroid/runtime/system/plugins/Mindroid.cpp \
 	src/mindroid/util/Assert.cpp \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \
 	src/mindroid/util/Variant.cpp \
+	src/mindroid/util/concurrent/Executors.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
 	src/mindroid/util/concurrent/Thenable.cpp \
 	src/mindroid/util/concurrent/ThreadPoolExecutor.cpp \
@@ -173,7 +180,13 @@ MAIN_SRCS := src/main/Main.cpp \
 	examples/Services/src/ServiceExample1.cpp \
 	examples/Concurrency/src/PromiseExample.cpp \
 	examples/Concurrency/src/AsyncTaskExample.cpp \
-	examples/Concurrency/src/HandlerExample.cpp
+	examples/Concurrency/src/HandlerExample.cpp \
+	examples/Eliza/src/Eliza.cpp \
+	examples/Eliza/src/ElizaService.cpp \
+	examples/Eliza/src/IEliza.cpp \
+	examples/Eliza/src/IElizaListener.cpp \
+	examples/Eliza/src/You.cpp \
+	examples/Eliza/src/util/Eliza.cpp
 MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
 MAIN_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(MAIN_OBJS))
 

@@ -189,7 +189,7 @@ public:
             sp<Handler> handler = new Handler();
             return allOf(handler->asExecutor(), promises);
         } else {
-            return allOf(object_cast<Executor>(nullptr), promises);
+            return allOf(sp<Executor>(nullptr), promises);
         }
     }
 
@@ -276,7 +276,7 @@ public:
             sp<Handler> handler = new Handler();
             return anyOf(handler->asExecutor(), promises);
         } else {
-            return anyOf(object_cast<Executor>(nullptr), promises);
+            return anyOf(sp<Executor>(nullptr), promises);
         }
     }
 
@@ -471,7 +471,7 @@ public:
     }
 
     virtual bool cancel() override {
-        bool cancelled = completeWith(object_cast<Exception>(new CancellationException("Cancellation exception")));
+        bool cancelled = completeWith(sp<Exception>(new CancellationException("Cancellation exception")));
         return cancelled || isCancelled();
     }
 
@@ -1681,7 +1681,7 @@ private:
 
             virtual void run() override final {
                 if (mConsumer != nullptr && !mConsumer->isDone()) {
-                    mConsumer->completeWith(object_cast<mindroid::Exception>(new TimeoutException("Timeout exception")));
+                    mConsumer->completeWith(sp<mindroid::Exception>(new TimeoutException("Timeout exception")));
                 }
             }
 

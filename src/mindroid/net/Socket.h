@@ -25,6 +25,7 @@
 namespace mindroid {
 
 class ServerSocket;
+class InetAddress;
 class InetSocketAddress;
 
 class Socket :
@@ -115,6 +116,56 @@ public:
     sp<OutputStream> getOutputStream();
 
     /**
+     * Returns the local IP address this socket is bound to, or an address for which
+     * {@link InetAddress#isAnyLocalAddress()} returns true if the socket is closed or unbound.
+     */
+    sp<InetAddress> getLocalAddress() const;
+
+    /**
+     * Returns the local port this socket is bound to, or -1 if the socket is unbound. If the socket
+     * has been closed this method will still return the local port the socket was bound to.
+     */
+    int32_t getLocalPort() const;
+
+    /**
+     * Returns the IP address of the target host this socket is connected to, or null if this
+     * socket is not yet connected.
+     */
+    sp<InetAddress> getInetAddress() const;
+
+    /**
+     * Returns the port number of the target host this socket is connected to, or 0 if this socket
+     * is not yet connected.
+     */
+    int32_t getPort() const;
+
+    /**
+     * Returns the local address and port of this socket as a SocketAddress or null if the socket
+     * has never been bound. If the socket is closed but has previously been bound then an address
+     * for which {@link InetAddress#isAnyLocalAddress()} returns true will be returned with the
+     * previously-bound port. This is useful on multihomed hosts.
+     */
+    sp<InetSocketAddress> getLocalSocketAddress() const;
+
+    /**
+     * Returns the remote address and port of this socket as a {@code
+     * SocketAddress} or null if the socket is not connected.
+     *
+     * @return the remote socket address and port.
+     */
+    sp<InetSocketAddress> getRemoteSocketAddress() const;
+
+    /**
+     * Returns whether this socket is bound to a local address and port.
+     *
+     * @return {@code true} if the socket is bound to a local address, {@code
+     *         false} otherwise.
+     */
+    bool isBound() const {
+        return mIsBound;
+    }
+
+    /**
      * Returns whether this socket is connected to a remote host.
      *
      * @return {@code true} if the socket is connected, {@code false} otherwise.
@@ -181,6 +232,11 @@ private:
     };
 
     int32_t mFd = -1;
+    int32_t mLocalPort = -1;
+    sp<InetAddress> mLocalAddress;
+    sp<InetAddress> mInetAddress;
+    int32_t mPort = -1;
+    bool mIsBound = false;
     bool mIsConnected = false;
     bool mIsClosed = false;
 

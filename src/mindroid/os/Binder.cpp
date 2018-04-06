@@ -16,62 +16,202 @@
  */
 
 #include <mindroid/os/Binder.h>
+#include <mindroid/os/Parcel.h>
+#include <mindroid/lang/Integer.h>
+#include <mindroid/lang/NumberFormatException.h>
+#include <mindroid/net/URI.h>
+#include <mindroid/net/URISyntaxException.h>
+#include <mindroid/runtime/system/Runtime.h>
+#include <mindroid/util/concurrent/Executors.h>
+#include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
 
 const char* const Binder::TAG = "Binder";
 const sp<String> Binder::EXCEPTION_MESSAGE = String::valueOf("Binder transaction failure");
+const sp<String> Binder::Proxy::EXCEPTION_MESSAGE = String::valueOf("Binder transaction failure");
 
-void Binder::transact(int32_t what, const sp<Promise<sp<Object>>>& result, int32_t flags) {
-    sp<Message> message = Message::obtain();
-    message->what = what;
-    message->result = result;
-    transact(message, flags);
+Binder::Binder() {
+    mRuntime = Runtime::getRuntime();
+    mTarget = new Messenger(this);
+    mId = mRuntime->attachBinder(this);
 }
 
-void Binder::transact(int32_t what, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) {
+Binder::Binder(const sp<Looper>& looper) {
+    mRuntime = Runtime::getRuntime();
+    mTarget = new Messenger(this, looper);
+    mId = mRuntime->attachBinder(this);
+}
+
+Binder::Binder(const sp<Executor>& executor) {
+    mRuntime = Runtime::getRuntime();
+    mTarget = new ExecutorMessenger(this, executor);
+    mId = mRuntime->attachBinder(this);
+}
+
+Binder::Binder(const sp<Binder>& binder) {
+    mRuntime = binder->mRuntime;
+    if (Class<Messenger>::isInstance(binder->mTarget)) {
+        mTarget = new Messenger(this, Class<Messenger>::cast(binder->mTarget)->mHandler->getLooper());
+    } else {
+        mTarget = binder->mTarget;
+    }
+    mId = binder->mId;
+}
+
+Binder::~Binder() {
+    mRuntime->detachBinder(mId, mUri);
+}
+
+void Binder::attachInterface(const wp<IInterface>& owner, const sp<String>& descriptor) {
+    mOwner = owner;
+    mDescriptor = descriptor;
+
+    try {
+        sp<URI> uri = new URI(mDescriptor);
+        uint32_t nodeId = (uint32_t) ((mId >> 32) & 0xFFFFFFFFL);
+        uint32_t id = (uint32_t) (mId & 0xFFFFFFFFL);
+        mUri = new URI(uri->getScheme(), String::format("%u.%u", nodeId, id), nullptr, nullptr, nullptr);
+        mRuntime->attachBinder(mUri, this);
+    } catch (const URISyntaxException& e) {
+        Log::e(TAG, "Failed to attach interface to runtime system", e);
+    }
+}
+
+sp<Promise<sp<Parcel>>> Binder::transact(int32_t what, const sp<Parcel>& data, int32_t flags) {
+    if (data != nullptr) {
+        data->asInput();
+    }
     sp<Message> message = Message::obtain();
-    message->what = what;
+    message->what = TRANSACTION;
+    message->arg1 = what;
+    message->obj = data;
+    sp<Promise<sp<Parcel>>> promise;
+    if (flags == FLAG_ONEWAY) {
+        message->result = nullptr;
+        promise = nullptr;
+    } else {
+        sp<Promise<sp<Parcel>>> p = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
+        message->result = object_cast<Promise<sp<Object>>, Object>(p);
+        promise = p->then([=] (const sp<Parcel>& parcel) {
+            parcel->asInput();
+        });
+    }
+    if (!mTarget->send(message)) {
+        throw RemoteException(EXCEPTION_MESSAGE);
+    }
+    return promise;
+}
+
+void Binder::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) {
+    sp<Message> message = Message::obtain();
+    message->what = LIGHTWEIGHT_TRANSACTION;
+    message->arg1 = what;
+    message->arg2 = num;
     message->obj = obj;
-    message->result = result;
-    transact(message, flags);
-}
-
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Promise<sp<Object>>>& result, int32_t flags) {
-    sp<Message> message = Message::obtain();
-    message->what = what;
-    message->arg1 = arg1;
-    message->arg2 = arg2;
-    message->result = result;
-    transact(message, flags);
-}
-
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Object>& obj, const sp<Promise<sp<Object>>>& result, int32_t flags) {
-    sp<Message> message = Message::obtain();
-    message->what = what;
-    message->arg1 = arg1;
-    message->arg2 = arg2;
-    message->obj = obj;
-    message->result = result;
-    transact(message, flags);
-}
-
-void Binder::transact(int32_t what, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) {
-    sp<Message> message = Message::obtain();
-    message->what = what;
     message->setData(data);
-    message->result = result;
-    transact(message, flags);
+    message->result = promise;
+    if (!mTarget->send(message)) {
+        throw RemoteException(EXCEPTION_MESSAGE);
+    }
 }
 
-void Binder::transact(int32_t what, int32_t arg1, int32_t arg2, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result, int32_t flags) {
-    sp<Message> message = Message::obtain();
-    message->what = what;
-    message->arg1 = arg1;
-    message->arg2 = arg2;
-    message->setData(data);
-    message->result = result;
-    transact(message, flags);
+void Binder::onTransact(const sp<Message>& message) {
+    try {
+        switch (message->what) {
+        case TRANSACTION:
+            onTransact(message->arg1, object_cast<Parcel>(message->obj),  object_cast<Promise<sp<Parcel>>, Object>(message->result));
+            break;
+        case LIGHTWEIGHT_TRANSACTION:
+            onTransact(message->arg1, message->arg2, message->obj, message->peekData(), message->result);
+            break;
+        default:
+            break;
+        }
+    } catch (const RemoteException& e) {
+        if (message->result != nullptr) {
+            message->result->completeWith(e);
+        } else {
+            Log::w(TAG, EXCEPTION_MESSAGE->c_str());
+        }
+    }
+    message->result = nullptr;
+}
+
+void Binder::link(const sp<Supervisor>& supervisor, int32_t flags) {
+}
+
+bool Binder::unlink(const sp<Supervisor>& supervisor, int32_t flags) {
+    return true;
+}
+
+void Binder::setId(uint64_t id) {
+    mId = id;
+    mUri = URI::create(String::format("%s://%u.%u", mUri->getScheme()->c_str(), (uint32_t) ((mId >> 32) & 0xFFFFFFFFL), (uint32_t) (mId & 0xFFFFFFFFL)));
+}
+
+sp<Binder::Proxy> Binder::Proxy::create(const sp<URI>& uri) {
+    sp<Binder::Proxy> proxy = new Binder::Proxy(uri);
+    proxy->mProxyId = proxy->mRuntime->attachProxy(proxy);
+    return proxy;
+}
+
+Binder::Proxy::Proxy(const sp<URI>& uri) {
+    if (uri == nullptr) {
+        throw IllegalArgumentException("Invalid URI: nullptr");
+    }
+    mRuntime = Runtime::getRuntime();
+    sp<String> authority = uri->getAuthority();
+    sp<StringArray> parts = authority->split(".");
+    if (parts->size() == 2) {
+        try {
+            mId = ((uint64_t) Integer::valueOf(parts->get(0))->intValue() << 32) | ((uint64_t) Integer::valueOf(parts->get(1))->intValue() & 0xFFFFFFFFL);
+        } catch (const NumberFormatException& e) {
+            throw IllegalArgumentException(String::format("Invalid URI: %s", uri->toString()->c_str()));
+        }
+    } else {
+        throw IllegalArgumentException(String::format("Invalid URI: %s", uri->toString()->c_str()));
+    }
+    sp<String> path = uri->getPath();
+    if (path != nullptr && !path->isEmpty()) {
+        sp<StringArray> pairs = path->substring(1)->split(",");
+        for (size_t i = 0; i < pairs->size(); i++) {
+            sp<String> pair = pairs->get(i);
+            ssize_t j = pair->indexOf("=");
+            if (j >= 0) {
+                sp<String> key = pair->substring(0, j)->trim();
+                sp<String> value = pair->substring(j + 1)->trim();
+                if (key->equals("if")) {
+                    mDescriptor = String::format("%s://interfaces/%s", uri->getScheme()->c_str(), value->c_str());
+                    break;
+                }
+            }
+        }
+    }
+    if (mDescriptor == nullptr) {
+        throw IllegalArgumentException(String::format("Invalid URI: %s", uri->toString()->c_str()));
+    }
+    mUri = URI::create(String::format("%s://%s", uri->getScheme()->c_str(), uri->getAuthority()->c_str()));
+}
+
+Binder::Proxy::~Proxy() {
+    mRuntime->detachProxy(mId, mUri, mProxyId);
+}
+
+sp<Promise<sp<Parcel>>> Binder::Proxy::transact(int32_t what, const sp<Parcel>& data, int32_t flags) {
+    return mRuntime->transact(this, what, data, flags);
+}
+
+void Binder::Proxy::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) {
+    throw RemoteException(EXCEPTION_MESSAGE);
+}
+
+void Binder::Proxy::link(const sp<Supervisor>& supervisor, int32_t flags) {
+    mRuntime->link(this, supervisor, flags);
+}
+
+bool Binder::Proxy::unlink(const sp<Supervisor>& supervisor, int32_t flags) {
+    return mRuntime->unlink(this, supervisor, flags);
 }
 
 } /* namespace mindroid */

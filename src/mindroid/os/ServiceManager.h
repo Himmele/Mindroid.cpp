@@ -93,13 +93,13 @@ private:
                 Stub(looper), mServiceManager(serviceManager) {
         }
 
-        sp<ComponentName> startService(const sp<Intent>& intent);
-        bool stopService(const sp<Intent>& service);
-        bool bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback);
-        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn);
-        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback);
-        sp<ComponentName> startSystemService(const sp<Intent>& service);
-        bool stopSystemService(const sp<Intent>& service);
+        sp<ComponentName> startService(const sp<Intent>& intent) override;
+        bool stopService(const sp<Intent>& service) override;
+        bool bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) override;
+        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) override;
+        sp<ComponentName> startSystemService(const sp<Intent>& service) override;
+        bool stopSystemService(const sp<Intent>& service) override;
 
     private:
         sp<ServiceManager> mServiceManager;
@@ -124,27 +124,27 @@ public:
      * @param name the name of the service to get
      * @return a reference to the service, or <code>null</code> if the service doesn't exist
      */
-    static sp<IBinder> getSystemService(const sp<String>& name);
+    static sp<IBinder> getSystemService(const sp<URI>& name);
 
     /**
      * @hide
      */
-    static void addService(const sp<String>& name, const sp<IBinder>& service);
+    static void addService(const sp<URI>& name, const sp<IBinder>& service);
 
     /**
      * @hide
      */
-    static void removeService(const sp<String>& name);
+    static void removeService(const sp<IBinder>& service);
 
     /**
      * @hide
      */
-    static void waitForSystemService(const sp<String>& name);
+    static void waitForSystemService(const sp<URI>& name);
 
     /**
      * @hide
      */
-    static void waitForSystemServiceShutdown(const sp<String>& name);
+    static void waitForSystemServiceShutdown(const sp<URI>& name);
 
 private:
     static const char* const TAG;
