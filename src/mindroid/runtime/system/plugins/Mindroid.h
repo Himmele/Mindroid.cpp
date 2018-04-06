@@ -149,7 +149,7 @@ public:
         };
 
     private:
-       static const bool DEBUG = true;
+       static const bool DEBUG = false;
 
        sp<Thread> mThread;
        sp<ServerSocket> mServerSocket;
@@ -213,7 +213,7 @@ public:
         };
 
     private:
-        static const bool DEBUG = true;
+        static const bool DEBUG = false;
 
         uint32_t mNodeId;
         sp<Thread> mThread;

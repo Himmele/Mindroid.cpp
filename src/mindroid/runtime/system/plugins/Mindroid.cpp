@@ -101,7 +101,7 @@ void Mindroid::attachProxy(uint64_t proxyId, const sp<Binder::Proxy>& proxy) {
 }
 
 void Mindroid::detachProxy(uint64_t proxyId, uint64_t binderId) {
-    // TODO: Lazy connection shutdown to clients without proxies.
+    // TODO: Lazy connection shutdown for clients without proxies.
 //    AutoLock autoLock(mLock);
 //    uint32_t nodeId = (uint32_t) ((binderId >> 32) & 0xFFFFFFFFL);
 //    if (mProxies->containsKey(nodeId)) {
