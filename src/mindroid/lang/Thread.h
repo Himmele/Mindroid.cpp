@@ -19,7 +19,6 @@
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Runnable.h>
-#include <mindroid/util/function/Function.h>
 #include <pthread.h>
 
 namespace mindroid {
@@ -37,19 +36,19 @@ public:
             Thread((sp<Runnable>) nullptr, name) {
     }
     Thread(const std::function<void (void)>& func) :
-            Thread(new Function<void, void>(func), nullptr) {
+            Thread(new Runnable(func), nullptr) {
     }
     Thread(const sp<Runnable>& runnable) :
             Thread(runnable, nullptr) {
     }
     Thread(const std::function<void (void)>& func, const char* name) :
-            Thread(new Function<void, void>(func), String::valueOf(name)) {
+            Thread(new Runnable(func), String::valueOf(name)) {
     }
     Thread(const sp<Runnable>& runnable, const char* name) :
             Thread(runnable, String::valueOf(name)) {
     }
     Thread(const std::function<void (void)>& func, const sp<String>& name) :
-            Thread(new Function<void, void>(func), name) {
+            Thread(new Runnable(func), name) {
     }
     Thread(const sp<Runnable>& runnable, const sp<String>& name);
 

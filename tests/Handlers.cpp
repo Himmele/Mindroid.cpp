@@ -36,8 +36,8 @@ TEST(Mindroid, Handler3) {
     sp<Handler> handler = new Handler(thread->getLooper());
 
     sp<Promise<int32_t>> promise = new Promise<int32_t>();
-    sp<Function<void, void>> function = new Function<void, void>([promise] { promise->complete(42); });
-    handler->postDelayed(function, 100);
+    sp<Runnable> runnable = new Runnable([promise] { promise->complete(42); });
+    handler->postDelayed(runnable, 100);
     ASSERT_EQ(promise->get(), 42);
 
     thread->quit();
@@ -49,9 +49,9 @@ TEST(Mindroid, Handler4) {
     sp<Handler> handler = new Handler(thread->getLooper());
 
     sp<Promise<int32_t>> promise = new Promise<int32_t>();
-    sp<Function<void, void>> function = new Function<void, void>([promise] { promise->complete(42); });
-    handler->postDelayed(function, 1000);
-    ASSERT_EQ(handler->removeCallbacks(function), true);
+    sp<Runnable> runnable = new Runnable([promise] { promise->complete(42); });
+    handler->postDelayed(runnable, 1000);
+    ASSERT_EQ(handler->removeCallbacks(runnable), true);
 
     thread->quit();
 }

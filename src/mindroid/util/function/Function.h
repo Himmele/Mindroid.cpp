@@ -48,18 +48,15 @@ template<>
 class Function<void, void> :
         public Runnable {
 public:
-    Function(const std::function<void (void)>& func) : mFunc(func) {
+    Function(const std::function<void (void)>& func) : Runnable(func) {
     }
 
-    Function(std::function<void (void)>&& func) : mFunc(std::move(func)) {
+    Function(std::function<void (void)>&& func) : Runnable(func) {
     }
 
-    void run() override {
-        return mFunc();
+    void apply(void) {
+        run();
     }
-
-private:
-    std::function<void (void)> mFunc;
 };
 
 } /* namespace mindroid */
