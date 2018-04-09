@@ -74,7 +74,7 @@ void Binder::attachInterface(const wp<IInterface>& owner, const sp<String>& desc
         mUri = new URI(uri->getScheme(), String::format("%u.%u", nodeId, id), nullptr, nullptr, nullptr);
         mRuntime->attachBinder(mUri, this);
     } catch (const URISyntaxException& e) {
-        Log::e(TAG, "Failed to attach interface to runtime system", e);
+        Log::e(TAG, "Failed to attach interface to runtime system");
     }
 }
 

@@ -53,7 +53,7 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configuration) :
         try {
             mConfiguration = Configuration::read(configuration);
         } catch (const Exception& e) {
-            Log::println('E', TAG, "Failed to read Mindroid runtime system configuration", e);
+            Log::println('E', TAG, "Failed to read Mindroid runtime system configuration");
         }
     }
     if (mConfiguration != nullptr) {

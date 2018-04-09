@@ -198,7 +198,7 @@ void Mindroid::Server::shutdown() {
     try {
         mServerSocket->close();
     } catch (const IOException& e) {
-        Log::e(TAG, "Cannot close server socket", e);
+        Log::e(TAG, "Cannot close server socket");
     }
     mThread->interrupt();
     mThread->join();
@@ -222,7 +222,7 @@ void Mindroid::Server::Connection::start() {
         mReader->start();
         mWriter->start();
     } catch (const IOException& e) {
-        Log::d(TAG, "Failed to set up connection", e);
+        Log::d(TAG, "Failed to set up connection");
         shutdown();
     }
 }
@@ -496,7 +496,7 @@ void Mindroid::Client::Connection::start(const sp<Socket>& socket, const sp<Clie
                 socket->getOutputStream(),
                 this);
     } catch (const IOException& e) {
-        Log::d(TAG, "Failed to set up connection", e);
+        Log::d(TAG, "Failed to set up connection");
         mClient->shutdown();
     }
 }
@@ -506,7 +506,7 @@ void Mindroid::Client::Connection::shutdown() {
         try {
             mSocket->close();
         } catch (const IOException& e) {
-            Log::e(TAG, "Cannot close socket", e);
+            Log::e(TAG, "Cannot close socket");
         }
     }
     if (mReader != nullptr) {
@@ -519,7 +519,7 @@ void Mindroid::Client::Connection::shutdown() {
                 Log::d(TAG, "Reader has been shut down");
             }
         } catch (const Exception& e) {
-            Log::e(TAG, "Cannot shutdown reader", e);
+            Log::e(TAG, "Cannot shutdown reader");
         }
     }
     if (mWriter != nullptr) {
@@ -532,7 +532,7 @@ void Mindroid::Client::Connection::shutdown() {
                 Log::d(TAG, "Writer has been shut down");
             }
         } catch (const Exception& e) {
-            Log::e(TAG, "Cannot shutdown writer", e);
+            Log::e(TAG, "Cannot shutdown writer");
         }
     }
     mClient.clear();

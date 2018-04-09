@@ -262,25 +262,17 @@ sp<String> Parcel::getString() {
 
 sp<ByteArray> Parcel::getBytes() {
     checkInput();
-    if (mInputStream->available() >= 0) {
-        sp<ByteArray> buffer = new ByteArray(mInputStream->available());
-        mInputStream->read(buffer);
-        return buffer;
-    } else {
-        return nullptr;
-    }
+    sp<ByteArray> buffer = new ByteArray(mInputStream->available());
+    mInputStream->read(buffer);
+    return buffer;
 }
 
 sp<ByteArray> Parcel::getBytes(size_t size) {
     checkInput();
-    if (mInputStream->available() >= 0) {
-        size = Math::min(mInputStream->available(), size);
-        sp<ByteArray> buffer = new ByteArray(size);
-        mInputStream->read(buffer, 0, size);
-        return buffer;
-    } else {
-        return nullptr;
-    }
+    size = Math::min(mInputStream->available(), size);
+    sp<ByteArray> buffer = new ByteArray(size);
+    mInputStream->read(buffer, 0, size);
+    return buffer;
 }
 
 sp<IBinder> Parcel::getBinder() {
