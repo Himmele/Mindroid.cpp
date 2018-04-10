@@ -19,7 +19,8 @@
 #include <mindroid/runtime/system/Plugin.h>
 #include <mindroid/runtime/system/plugins/Mindroid.h>
 #include <mindroid/lang/Integer.h>
-#include <mindroid/lang/IllegalStateException.h>
+#include <mindroid/lang/IllegalArgumentException.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
@@ -145,6 +146,9 @@ void Runtime::attachBinder(const sp<URI>& uri, const sp<Binder>& binder) {
     if (uri == nullptr || binder == nullptr) {
         throw NullPointerException();
     }
+    if (binder->getUri() == nullptr) {
+        throw IllegalArgumentException("Binder URI must not be null");
+    }
     AutoLock autoLock(mLock);
     if (!mBinderUris->containsKey(uri->toString())) {
         mBinderUris->put(uri->toString(), binder);
@@ -247,8 +251,11 @@ void Runtime::addService(const sp<URI>& uri, const sp<IBinder>& service) {
     if (uri == nullptr || service == nullptr) {
         throw NullPointerException();
     }
-    if (!uri->getScheme()->equals(service->getUri()->getScheme())) {
-        throw IllegalStateException(String::format("Binder scheme mismatch: %s != %s", uri->toString()->c_str(), service->getUri()->toString()->c_str()));
+    if (service->getUri() == nullptr) {
+        throw IllegalArgumentException("Service URI must not be null");
+    }
+    if (uri->getScheme() == nullptr || !uri->getScheme()->equals(service->getUri()->getScheme())) {
+        throw IllegalArgumentException(String::format("Binder scheme mismatch: %s != %s", uri->toString()->c_str(), service->getUri()->toString()->c_str()));
     }
     AutoLock autoLock(mLock);
     if (!mServices->containsKey(uri->toString())) {

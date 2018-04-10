@@ -69,6 +69,9 @@ void Binder::attachInterface(const wp<IInterface>& owner, const sp<String>& desc
 
     try {
         sp<URI> uri = new URI(mDescriptor);
+        if (uri->getScheme() == nullptr) {
+            throw URISyntaxException("Scheme must not be null");
+        }
         uint32_t nodeId = (uint32_t) ((mId >> 32) & 0xFFFFFFFFL);
         uint32_t id = (uint32_t) (mId & 0xFFFFFFFFL);
         mUri = new URI(uri->getScheme(), String::format("%u.%u", nodeId, id), nullptr, nullptr, nullptr);
