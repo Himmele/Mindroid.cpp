@@ -215,7 +215,7 @@ void Mindroid::Server::Connection::start() {
                 mSocket->getRemoteSocketAddress()->toString()->c_str()),
                 mSocket->getInputStream(),
                 this);
-        mWriter = new Writer(String::format("Server.Writer: %s << %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
+        mWriter = new Writer(String::format("Server.Writer: %s >> %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
                 mSocket->getRemoteSocketAddress()->toString()->c_str()),
                 mSocket->getOutputStream(),
                 this);
@@ -491,7 +491,7 @@ void Mindroid::Client::Connection::start(const sp<Socket>& socket, const sp<Clie
                 mSocket->getRemoteSocketAddress()->toString()->c_str()),
                 socket->getInputStream(),
                 this);
-        mWriter->start(String::format("Client.Writer: %s << %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
+        mWriter->start(String::format("Client.Writer: %s >> %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
                 mSocket->getRemoteSocketAddress()->toString()->c_str()),
                 socket->getOutputStream(),
                 this);

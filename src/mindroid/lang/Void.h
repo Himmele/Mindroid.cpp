@@ -24,7 +24,7 @@ namespace mindroid {
 class Void :
         public Object {
 public:
-    explicit Void(){
+    explicit Void() {
     }
 };
 
