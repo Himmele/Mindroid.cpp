@@ -1244,6 +1244,17 @@ public:
         return this;
     }
 
+    sp<Promise<T>> await(uint64_t delay) {
+        sp<Promise<T>> p = new Promise<T>(mExecutor);
+        sp<Thenable::Action> a = new DelayAction(this, p, delay);
+        if (isDone()) {
+            a->tryRun();
+        } else {
+            addAction(a);
+        }
+        return p;
+    }
+
 private:
     template<typename U>
     class RelayAction : public Thenable::Action {
@@ -1640,6 +1651,40 @@ private:
         sp<Promise<T>> mSupplier;
         sp<Promise<T>> mConsumer;
         std::function<void (const sp<Exception>&)> mFunction;
+    };
+
+    class DelayAction : public Thenable::Action {
+    public:
+        DelayAction(const sp<Promise<T>>& supplier, const sp<Promise<T>>& consumer, uint64_t delay) :
+            Action(nullptr), mSupplier(supplier), mConsumer(consumer), mDelay(delay) {
+        }
+
+        virtual void tryRun() override final {
+            if (claim()) {
+                run();
+            }
+        }
+
+        virtual void run() override final {
+            if (mSupplier->getException() == nullptr) {
+                try {
+                    mConsumer->completeOnTimeout(mSupplier->getResult(), mDelay);
+                } catch (const Exception& e) {
+                    mConsumer->setException(toCompletionException(e));
+                } catch (const std::exception& e) {
+                    mConsumer->setException(new CompletionException(e));
+                } catch (...) {
+                    mConsumer->setException(new CompletionException("Unknown exception"));
+                }
+            } else {
+                mConsumer->setException(toCompletionException(mSupplier->getException()));
+            }
+        }
+
+    private:
+        sp<Promise<T>> mSupplier;
+        sp<Promise<T>> mConsumer;
+        uint64_t mDelay;
     };
 
     class Timeout {
