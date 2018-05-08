@@ -121,11 +121,11 @@ public:
 
     void writeFloat(float value);
 
-    void writeShort(uint16_t value);
+    void writeShort(int16_t value);
 
     void writeInt(int32_t value);
 
-    void writeLong(uint64_t value);
+    void writeLong(int64_t value);
 
     void writeUTF(const sp<String>& string);
 

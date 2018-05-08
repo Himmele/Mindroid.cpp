@@ -9,8 +9,7 @@ RM := rm
 INCLUDES := -I. -Isrc -Igoogletest/include
 CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions -fstack-protector -Wa,--noexecstack -Werror=format-security -D_FORTIFY_SOURCE=2
 LDFLAGS := -pie -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
-LIB_DIR := lib
-BIN_DIR := bin
+OUT_DIR := out
 
 #==== Misc ====
 
@@ -19,8 +18,7 @@ BIN_DIR := bin
 all: tinyxml2 Mindroid.cpp googletest Tests Main
 
 clean:
-	$(RM) -rf $(LIB_DIR)
-	$(RM) -rf $(BIN_DIR)
+	$(RM) -rf $(OUT_DIR)
 
 #==== Mindroid.cpp ====
 
@@ -110,16 +108,16 @@ SRCS = \
 	src/mindroid/util/logging/Logger.cpp
 
 OBJS = $(SRCS:.cpp=.o)
-LIB_OBJS = $(addprefix $(LIB_DIR)/,$(OBJS))
+LIB_OBJS = $(addprefix $(OUT_DIR)/,$(OBJS))
 
-Mindroid.cpp = $(LIB_DIR)/libmindroid.a
+Mindroid.cpp = $(OUT_DIR)/libmindroid.a
 
 Mindroid.cpp: $(Mindroid.cpp)
 
 $(Mindroid.cpp): $(LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(LIB_DIR)/%.o: %.cpp
+$(OUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -127,16 +125,16 @@ $(LIB_DIR)/%.o: %.cpp
 
 TINYXML2_SRCS := $(wildcard src/tinyxml2/*.cpp)
 TINYXML2_OBJS = $(TINYXML2_SRCS:.cpp=.o)
-TINYXML2_LIB_OBJS = $(addprefix $(LIB_DIR)/,$(TINYXML2_OBJS))
+TINYXML2_LIB_OBJS = $(addprefix $(OUT_DIR)/,$(TINYXML2_OBJS))
 
-tinyxml2 = $(LIB_DIR)/libtinyxml2.a
+tinyxml2 = $(OUT_DIR)/libtinyxml2.a
 
 tinyxml2: $(tinyxml2)
  
 $(tinyxml2): $(TINYXML2_LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(LIB_DIR)/%.o: %.cpp
+$(OUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -144,16 +142,16 @@ $(LIB_DIR)/%.o: %.cpp
 
 GOOGLETEST_SRCS := $(wildcard googletest/src/gtest-all.cc)
 GOOGLETEST_OBJS = $(GOOGLETEST_SRCS:.cc=.o)
-GOOGLETEST_LIB_OBJS = $(addprefix $(LIB_DIR)/,$(GOOGLETEST_OBJS))
+GOOGLETEST_LIB_OBJS = $(addprefix $(OUT_DIR)/,$(GOOGLETEST_OBJS))
 
-googletest = $(LIB_DIR)/libgoogletest.a
+googletest = $(OUT_DIR)/libgoogletest.a
 
 googletest: $(googletest)
  
 $(googletest): $(GOOGLETEST_LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(LIB_DIR)/%.o: %.cc
+$(OUT_DIR)/%.o: %.cc
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -Igoogletest -c $< -o $@
 
@@ -161,16 +159,16 @@ $(LIB_DIR)/%.o: %.cc
 
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
-TEST_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(TEST_OBJS))
+TEST_BIN_OBJS = $(addprefix $(OUT_DIR)/,$(TEST_OBJS))
 
-Tests = $(BIN_DIR)/Tests
+Tests = $(OUT_DIR)/Tests
 
 Tests: $(Tests) Mindroid.cpp tinyxml2 googletest
 
 $(Tests): $(TEST_BIN_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^ -Llib -lmindroid -ltinyxml2 -lgoogletest -lpthread -lrt
+	$(LD) $(LDFLAGS) -o $@ $^ -Lout -lmindroid -ltinyxml2 -lgoogletest -lpthread -lrt
 	
-$(BIN_DIR)/%.o: %.cpp
+$(OUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
@@ -188,15 +186,15 @@ MAIN_SRCS := src/main/Main.cpp \
 	examples/Eliza/src/You.cpp \
 	examples/Eliza/src/util/Eliza.cpp
 MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
-MAIN_BIN_OBJS = $(addprefix $(BIN_DIR)/,$(MAIN_OBJS))
+MAIN_BIN_OBJS = $(addprefix $(OUT_DIR)/,$(MAIN_OBJS))
 
-Main = $(BIN_DIR)/Main
+Main = $(OUT_DIR)/Main
 
 Main: $(Main) Mindroid.cpp tinyxml2
 
 $(Main): $(MAIN_BIN_OBJS)
-	$(LD) $(LDFLAGS) -o $@ $^ -Llib -lmindroid -ltinyxml2 -lpthread -lrt
+	$(LD) $(LDFLAGS) -o $@ $^ -Lout -lmindroid -ltinyxml2 -lpthread -lrt
 	
-$(BIN_DIR)/%.o: %.cpp
+$(OUT_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<

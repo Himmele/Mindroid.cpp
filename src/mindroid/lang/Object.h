@@ -40,6 +40,7 @@ public:
     void incStrongReference(const void* id) const;
     void decStrongReference(const void* id) const;
 
+    /// @private
     class WeakReference {
     public:
         Object* toObject() const;
@@ -690,10 +691,12 @@ inline sp<DESTINATION_CLASS> object_cast(SOURCE_CLASS* object) {
     return static_cast<DESTINATION_CLASS*>(object);
 }
 
+/// @private
 template<typename K>
 struct Hasher {
 };
 
+/// @private
 template<typename K>
 struct Hasher<mindroid::sp<K>> {
     std::size_t operator()(const mindroid::sp<K>& object) const {
@@ -702,10 +705,12 @@ struct Hasher<mindroid::sp<K>> {
     }
 };
 
+/// @private
 template<typename K>
 struct EqualityComparator {
 };
 
+/// @private
 template<typename K>
 struct EqualityComparator<mindroid::sp<K>> {
     bool operator() (const mindroid::sp<K>& lhs, const mindroid::sp<K>& rhs) const {
@@ -715,10 +720,12 @@ struct EqualityComparator<mindroid::sp<K>> {
     }
 };
 
+/// @private
 template<typename K>
 struct LessThanComparator {
 };
 
+/// @private
 template<typename K>
 struct LessThanComparator<mindroid::sp<K>> {
     bool operator() (const mindroid::sp<K>& lhs, const mindroid::sp<K>& rhs) const {

@@ -25,6 +25,7 @@ namespace mindroid {
 
 class Factory;
 
+/// @private
 class Classes {
 public:
     void put(const sp<String>& name, Factory* factory);
@@ -41,6 +42,7 @@ private:
     sp<HashMap<sp<String>, Factory*>> mClasses;
 };
 
+/// @private
 class Factory {
 public:
     Factory(const char* name) {

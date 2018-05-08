@@ -29,6 +29,7 @@ class Handler;
 class Message;
 template<typename T> class Promise;
 
+/// @private
 struct MessagePool {
     MessagePool();
     ~MessagePool();

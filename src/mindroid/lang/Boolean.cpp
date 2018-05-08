@@ -24,7 +24,11 @@ const sp<Boolean> Boolean::FALSE = new Boolean(false);
 const sp<Boolean> Boolean::TRUE = new Boolean(true);
 
 sp<Boolean> Boolean::valueOf(const char* s) {
-    return new Boolean(strtol(s, nullptr, 10) != 0);
+    if (strcmp("true", s) == 0 || strcmp("TRUE", s) == 0) {
+        return new Boolean(true);
+    } else {
+        return new Boolean(strtol(s, nullptr, 10) != 0);
+    }
 }
 
 sp<Boolean> Boolean::valueOf(const sp<String>& s) {

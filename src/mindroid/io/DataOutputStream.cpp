@@ -87,7 +87,7 @@ void DataOutputStream::writeFloat(float value) {
     writeInt(Float::floatToIntBits(value));
 }
 
-void DataOutputStream::writeShort(uint16_t value) {
+void DataOutputStream::writeShort(int16_t value) {
     uint8_t* scratchpad = mScratchpad->c_arr();
     scratchpad[0] = (uint8_t) ((value >>  8) & 0xff);
     scratchpad[1] = (uint8_t) ((value >>  0) & 0xff);
@@ -103,7 +103,7 @@ void DataOutputStream::writeInt(int32_t value) {
     mOutputStream->write(mScratchpad, 0, 4);
 }
 
-void DataOutputStream::writeLong(uint64_t value) {
+void DataOutputStream::writeLong(int64_t value) {
     uint8_t* scratchpad = mScratchpad->c_arr();
     scratchpad[0] = (uint8_t) ((value >> 56) & 0xff);
     scratchpad[1] = (uint8_t) ((value >> 48) & 0xff);

@@ -10,4 +10,5 @@ lib
 *.o
 *.d
 *.so
+prefs
 

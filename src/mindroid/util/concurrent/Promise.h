@@ -1232,14 +1232,14 @@ public:
 
     sp<Promise<T>> orTimeout(uint64_t timeout) {
         if (!isDone()) {
-            then(Timeout::add(new typename Promise<T>::Timeout::Exception(this), timeout));
+            return then(Timeout::add(new typename Promise<T>::Timeout::Exception(this), timeout));
         }
         return this;
     }
 
     sp<Promise<T>> completeOnTimeout(T value, uint64_t timeout) {
         if (!isDone()) {
-            then(Timeout::add(new typename Promise<T>::Timeout::Completion(this, value), timeout));
+            return then(Timeout::add(new typename Promise<T>::Timeout::Completion(this, value), timeout));
         }
         return this;
     }
@@ -1687,6 +1687,7 @@ private:
         uint64_t mDelay;
     };
 
+    /// @private
     class Timeout {
     public:
         static std::function<void (T, const sp<mindroid::Exception>&)> add(const sp<Runnable>& command, uint64_t delay) {
@@ -1703,6 +1704,7 @@ private:
             };
         }
 
+        /// @private
         class Completion : public Runnable {
         public:
             Completion(const sp<Promise<T>>& consumer, T value) : mConsumer(consumer), mValue(value) {
@@ -1719,6 +1721,7 @@ private:
             T mValue;
         };
 
+        /// @private
         class Exception : public Runnable {
         public:
             Exception(const sp<Promise<T>>& consumer) : mConsumer(consumer) {
