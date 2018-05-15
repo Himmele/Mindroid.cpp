@@ -1244,7 +1244,7 @@ public:
         return this;
     }
 
-    sp<Promise<T>> await(uint64_t delay) {
+    sp<Promise<T>> delay(uint64_t delay) {
         sp<Promise<T>> p = new Promise<T>(mExecutor);
         sp<Thenable::Action> a = new DelayAction(this, p, delay);
         if (isDone()) {
