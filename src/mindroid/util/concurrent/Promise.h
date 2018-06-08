@@ -1232,14 +1232,14 @@ public:
 
     sp<Promise<T>> orTimeout(uint64_t timeout) {
         if (!isDone()) {
-            return then(Timeout::add(new typename Promise<T>::Timeout::Exception(this), timeout));
+            then(Timeout::add(new typename Promise<T>::Timeout::Exception(this), timeout));
         }
         return this;
     }
 
     sp<Promise<T>> completeOnTimeout(T value, uint64_t timeout) {
         if (!isDone()) {
-            return then(Timeout::add(new typename Promise<T>::Timeout::Completion(this, value), timeout));
+            then(Timeout::add(new typename Promise<T>::Timeout::Completion(this, value), timeout));
         }
         return this;
     }

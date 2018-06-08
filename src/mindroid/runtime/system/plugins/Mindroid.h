@@ -46,6 +46,7 @@ class HandlerThread;
 class Mindroid : public Plugin {
 public:
     static const char* const TAG;
+    static const uint64_t BINDER_TRANSACTION_TIMEOUT = 10000;
 
     Mindroid();
     virtual ~Mindroid() = default;

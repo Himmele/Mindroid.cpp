@@ -472,7 +472,16 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         result = nullptr;
     } else {
         result = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
-        mTransactions->put(transactionId, result);
+        sp<Promise<sp<Parcel>>> promise = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
+        promise->orTimeout(Mindroid::BINDER_TRANSACTION_TIMEOUT)->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
+            mTransactions->remove(transactionId);
+            if (exception == nullptr) {
+                result->complete(value);
+            } else {
+                result->completeWith(exception);
+            }
+        });
+        mTransactions->put(transactionId, promise);
     }
     mConnection->mWriter->write(Message::newMessage(binder->getUri()->toString(), transactionId, what, data->toByteArray()));
     return result;
@@ -570,12 +579,12 @@ void Mindroid::Client::Connection::Reader::run() {
 
             sp<Promise<sp<Parcel>>> promise = mConnection->mClient->mTransactions->get(transactionId);
             if (promise != nullptr) {
+                mConnection->mClient->mTransactions->remove(transactionId);
                 if (type == Message::MESSAGE_TYPE_TRANSACTION) {
                     promise->complete(Parcel::obtain(data)->asInput());
                 } else {
                     promise->completeWith(sp<Exception>(new RemoteException()));
                 }
-                mConnection->mClient->mTransactions->remove(transactionId);
             } else {
                 Log::e(TAG, "Invalid transaction id: %d", transactionId);
             }

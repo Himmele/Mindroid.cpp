@@ -123,18 +123,30 @@ public:
      */
     static int wtf(const char* tag, const char* format, ...);
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static int32_t priority;
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static void println(char priority, const char* tag, const char* format, ...);
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static int println(int32_t logId, int32_t priority, const char* tag, const char* msg) {
         return println(logId, priority, String::valueOf(tag), String::valueOf(msg));
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static int println(int32_t logId, int32_t priority, const sp<String>& tag, const sp<String>& msg) {
 #ifdef ANDROID
         int androidPriority = ANDROID_LOG_DEFAULT;
@@ -176,7 +188,10 @@ public:
         }
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static int32_t parsePriority(const sp<String>& priority) {
         char c;
         if (priority->length() > 1 && priority->toUpperCase()->equals("WTF")) {
@@ -188,7 +203,10 @@ public:
         return parsePriority(c);
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static int32_t parsePriority(const char priority) {
         switch (priority) {
         case 'V':
@@ -208,7 +226,10 @@ public:
         }
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static sp<String> toPriority(int32_t priority) {
         const char logLevels[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
         if (priority >= 0 && size_t(priority) < sizeof(logLevels)) {
@@ -218,7 +239,10 @@ public:
         }
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static sp<LogBuffer> getLogBuffer(int32_t logId) {
         switch (logId) {
         case LOG_ID_MAIN:
@@ -232,11 +256,20 @@ public:
         }
     }
 
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static const int32_t LOG_ID_MAIN = 0;
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static const int32_t LOG_ID_EVENTS = 1;
-    /** @hide */
+    /**
+     * @hide
+     * @private
+     */
     static const int32_t LOG_ID_DEBUG = 2;
 
 private:

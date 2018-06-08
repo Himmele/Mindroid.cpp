@@ -28,6 +28,7 @@ distribution.
 #include <cstddef>
 
 #include <fcntl.h>
+#include <unistd.h>
 using namespace tinyxml2;
 
 static const char LINE_FEED                = (char)0x0a;            // all line endings are normalized to LF
@@ -1580,6 +1581,8 @@ int XMLDocument::SaveFile( const char* filename )
         return errorID;
     }
     SaveFile(fp);
+    fflush ( fp );
+    fsync ( fd );
     fclose( fp );
     return errorID;
 }
