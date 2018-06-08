@@ -45,6 +45,8 @@ void You::onCreate() {
             } catch (const RemoteException& e) {
                 Log::e(TAG, "You: Cannot talk to Eliza");
             }
+        })->catchException([=] (const sp<Exception>& exception) {
+            Log::e(TAG, "You: Cannot talk to Eliza");
         });
     } catch (const RemoteException& e) {
         Log::e(TAG, "You: Cannot talk to Eliza");
