@@ -51,7 +51,6 @@ void You::onCreate() {
     } catch (const RemoteException& e) {
         Log::e(TAG, "You: Cannot talk to Eliza");
     }
-
 }
 
 void You::onDestroy() {
