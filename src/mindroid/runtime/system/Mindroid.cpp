@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <mindroid/runtime/system/plugins/Mindroid.h>
+#include <mindroid/runtime/system/Mindroid.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/os/Handler.h>
@@ -38,6 +38,7 @@
 namespace mindroid {
 
 const char* const Mindroid::TAG = "Mindroid";
+const sp<String> Mindroid::TIMEOUT = String::valueOf("timeout");
 sp<HandlerThread> Mindroid::sThread = nullptr;
 sp<Handler> Mindroid::sExecutor = nullptr;
 
@@ -471,15 +472,10 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
     if (flags == Binder::FLAG_ONEWAY) {
         result = nullptr;
     } else {
-        result = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
         sp<Promise<sp<Parcel>>> promise = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
-        promise->orTimeout(Mindroid::BINDER_TRANSACTION_TIMEOUT)->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
+        result = promise->orTimeout(data->getLongExtra(Mindroid::TIMEOUT, Mindroid::DEFAULT_TRANSACTION_TIMEOUT))
+        ->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
             mTransactions->remove(transactionId);
-            if (exception == nullptr) {
-                result->complete(value);
-            } else {
-                result->completeWith(exception);
-            }
         });
         mTransactions->put(transactionId, promise);
     }

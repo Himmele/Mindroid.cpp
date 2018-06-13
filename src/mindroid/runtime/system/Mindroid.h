@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNTIME_SYSTEM_PLUGINS_MINDROID_H_
-#define MINDROID_RUNTIME_SYSTEM_PLUGINS_MINDROID_H_
+#ifndef MINDROID_RUNTIME_SYSTEM_MINDROID_H_
+#define MINDROID_RUNTIME_SYSTEM_MINDROID_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -46,7 +46,8 @@ class HandlerThread;
 class Mindroid : public Plugin {
 public:
     static const char* const TAG;
-    static const uint64_t BINDER_TRANSACTION_TIMEOUT = 10000;
+    static const sp<String> TIMEOUT;
+    static const uint64_t DEFAULT_TRANSACTION_TIMEOUT = 10000;
 
     Mindroid();
     virtual ~Mindroid() = default;
@@ -243,4 +244,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNTIME_SYSTEM_PLUGINS_MINDROID_H_ */
+#endif /* MINDROID_RUNTIME_SYSTEM_MINDROID_H_ */

@@ -17,7 +17,7 @@
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/runtime/system/Configuration.h>
 #include <mindroid/runtime/system/Plugin.h>
-#include <mindroid/runtime/system/plugins/Mindroid.h>
+#include <mindroid/runtime/system/Mindroid.h>
 #include <mindroid/lang/Integer.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/lang/NullPointerException.h>

@@ -81,7 +81,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/runtime/system/Configuration.cpp \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
-	src/mindroid/runtime/system/plugins/Mindroid.cpp \
+	src/mindroid/runtime/system/Mindroid.cpp \
 	src/mindroid/util/Assert.cpp \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \

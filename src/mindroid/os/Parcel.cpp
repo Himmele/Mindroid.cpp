@@ -341,4 +341,109 @@ sp<IBinder> Parcel::fromUri(const sp<URI>& uri) {
     return Runtime::getRuntime()->getBinder(uri);
 }
 
+sp<Parcel> Parcel::putExtra(const sp<String>& name, bool value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putBoolean(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, uint8_t value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putByte(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, char value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putChar(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, int16_t value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putShort(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, int32_t value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putInt(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, int64_t value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putLong(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, float value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putFloat(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, double value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putDouble(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtra(const sp<String>& name, const sp<String>& value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putString(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putIntegerArrayListExtra(const sp<String>& name, sp<ArrayList<int32_t>> value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putIntegerArrayList(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putStringArrayListExtra(const sp<String>& name, const sp<ArrayList<sp<String>>>& value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putStringArrayList(name, value);
+    return this;
+}
+
+sp<Parcel> Parcel::putExtras(const sp<Bundle>& extras) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putAll(extras);
+    return this;
+}
+
+void Parcel::removeExtra(const sp<String>& name) {
+    if (mExtras != nullptr) {
+        mExtras->remove(name);
+        if (mExtras->size() == 0) {
+            mExtras = nullptr;
+        }
+    }
+}
+
 } /* namespace mindroid */
