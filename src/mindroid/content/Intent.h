@@ -322,6 +322,23 @@ public:
     }
 
     /**
+     * Retrieve extended data from the intent.
+     *
+     * @param name The name of the desired item.
+     *
+     * @return the value of an item that previously added with putExtra() or null if no Bundle value
+     * was found.
+     *
+     * @see #putExtra(String, Bundle)
+     */
+    sp<Bundle> getBundleExtra(const char* name) {
+        return getBundleExtra(String::valueOf(name));
+    }
+    sp<Bundle> getBundleExtra(const sp<String>& name) {
+        return mExtras == nullptr ? nullptr : mExtras->getBundle(name);
+    }
+
+    /**
      * Retrieves a map of extended data from the intent.
      *
      * @return the map of all extras previously added with putExtra(), or null if none have been
@@ -551,6 +568,24 @@ public:
         return putStringArrayListExtra(String::valueOf(name), value);
     }
     sp<Intent> putStringArrayListExtra(const sp<String>& name, const sp<ArrayList<sp<String>>>& value);
+
+    /**
+     * Add extended data to the intent. The name must include a package prefix, for example the app
+     * com.android.contacts would use names like "com.android.contacts.ShowAll".
+     *
+     * @param name The name of the extra data, with package prefix.
+     * @param value The Bundle data value.
+     *
+     * @return Returns the same Intent object, for chaining multiple calls into a single statement.
+     *
+     * @see #putExtras
+     * @see #removeExtra
+     * @see #getBundleExtra(String)
+     */
+    sp<Intent> putExtra(const char* name, const sp<Bundle>& value) {
+        return putExtra(String::valueOf(name), value);
+    }
+    sp<Intent> putExtra(const sp<String>& name, const sp<Bundle>& value);
 
     /**
      * Add a set of extended data to the intent.

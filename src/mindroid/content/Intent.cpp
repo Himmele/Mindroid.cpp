@@ -124,6 +124,14 @@ sp<Intent> Intent::putStringArrayListExtra(const sp<String>& name, const sp<Arra
     return this;
 }
 
+sp<Intent> Intent::putExtra(const sp<String>& name, const sp<Bundle>& value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putBundle(name, value);
+    return this;
+}
+
 sp<Intent> Intent::putExtras(const sp<Bundle>& extras) {
     if (mExtras == nullptr) {
         mExtras = new Bundle();
