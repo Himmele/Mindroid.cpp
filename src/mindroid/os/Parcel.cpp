@@ -429,6 +429,14 @@ sp<Parcel> Parcel::putStringArrayListExtra(const sp<String>& name, const sp<Arra
     return this;
 }
 
+sp<Parcel> Parcel::putExtra(const sp<String>& name, const sp<Bundle>& value) {
+    if (mExtras == nullptr) {
+        mExtras = new Bundle();
+    }
+    mExtras->putBundle(name, value);
+    return this;
+}
+
 sp<Parcel> Parcel::putExtras(const sp<Bundle>& extras) {
     if (mExtras == nullptr) {
         mExtras = new Bundle();
