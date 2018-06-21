@@ -95,6 +95,7 @@ void shutdownSystemSerices() {
     sp<Intent> console = new Intent();
     console->setComponent(new ComponentName("mindroid", "ConsoleService"));
     serviceManager->stopSystemService(console);
+    ServiceManager::waitForSystemServiceShutdown(Context::CONSOLE_SERVICE);
 
     sp<Intent> logger = new Intent();
     logger->setComponent(new ComponentName("mindroid", "Logger"));
