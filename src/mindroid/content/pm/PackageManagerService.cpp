@@ -16,6 +16,7 @@
  */
 
 #include <mindroid/content/pm/PackageManagerService.h>
+#include <mindroid/content/pm/PackageManager.h>
 #include <mindroid/os/Environment.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/io/File.h>
@@ -38,24 +39,71 @@ void PackageManagerService::onCreate() {
 }
 
 int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) {
-    class ManifestFilenameFilter : public FilenameFilter {
-    public:
-        bool accept(const sp<File>& dir, const sp<String>& filename) override {
-            return filename->toLowerCase()->endsWith(".xml");
-        }
-    };
-    sp<ArrayList<sp<File>>> apps = Environment::getAppsDirectory()->listFiles(new ManifestFilenameFilter());
-    if (apps != nullptr) {
-        auto itr = apps->iterator();
-        while (itr.hasNext()) {
-            sp<File> manifest = itr.next();
-            sp<PackageInfo> packageInfo = parseManifest(manifest);
-            if (packageInfo != nullptr) {
-                mPackages->put(packageInfo->packageName, packageInfo);
-                auto itr = packageInfo->services->iterator();
+    sp<String> action = intent->getAction();
+    if (action != nullptr) {
+        if (action->equals(PackageManager::ACTION_START_APPLICATIONS)) {
+            class ManifestFilenameFilter : public FilenameFilter {
+            public:
+                bool accept(const sp<File>& dir, const sp<String>& filename) override {
+                    return filename->toLowerCase()->endsWith(".xml");
+                }
+            };
+            sp<ArrayList<sp<File>>> apps = Environment::getAppsDirectory()->listFiles(new ManifestFilenameFilter());
+            if (apps != nullptr) {
+                auto itr = apps->iterator();
                 while (itr.hasNext()) {
-                    sp<ServiceInfo> si = itr.next();
-                    mComponents->put(new ComponentName(si->packageName, si->name), si);
+                    sp<File> manifest = itr.next();
+                    sp<PackageInfo> packageInfo = parseManifest(manifest);
+                    if (packageInfo != nullptr) {
+                        mPackages->put(packageInfo->packageName, packageInfo);
+                        auto itr = packageInfo->services->iterator();
+                        while (itr.hasNext()) {
+                            sp<ServiceInfo> si = itr.next();
+                            mComponents->put(new ComponentName(si->packageName, si->name), si);
+                        }
+                    }
+                }
+            }
+
+            sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(PackageManager::GET_SERVICES);
+            if (packages != nullptr) {
+                sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+                auto packageItr = packages->iterator();
+                while (packageItr.hasNext()) {
+                    sp<PackageInfo> package = packageItr.next();
+                    if (package->services != nullptr) {
+                        sp<ArrayList<sp<ServiceInfo>>> services = package->services;
+                        auto serviceItr = services->iterator();
+                        while (serviceItr.hasNext()) {
+                            sp<ServiceInfo> serviceInfo = serviceItr.next();
+                            if (serviceInfo->isEnabled() && serviceInfo->hasFlag(ServiceInfo::FLAG_AUTO_START)) {
+                                sp<Intent> service = new Intent();
+                                service->setComponent(new ComponentName(serviceInfo->packageName, serviceInfo->name));
+                                serviceManager->startService(service);
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (action->equals(PackageManager::ACTION_SHUTDOWN_APPLICATIONS)) {
+            sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(PackageManager::GET_SERVICES);
+            if (packages != nullptr) {
+                sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+                auto packageItr = packages->iterator();
+                while (packageItr.hasNext()) {
+                    sp<PackageInfo> package = packageItr.next();
+                    if (package->services != nullptr) {
+                        sp<ArrayList<sp<ServiceInfo>>> services = package->services;
+                        auto serviceItr = services->iterator();
+                        while (serviceItr.hasNext()) {
+                            sp<ServiceInfo> serviceInfo = serviceItr.next();
+                            if (serviceInfo->isEnabled()) {
+                                sp<Intent> service = new Intent();
+                                service->setComponent(new ComponentName(serviceInfo->packageName, serviceInfo->name));
+                                serviceManager->stopService(service);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -68,10 +116,10 @@ void PackageManagerService::onDestroy() {
     ServiceManager::removeService(mBinder);
 }
 
-sp<ArrayList<sp<PackageInfo>>> PackageManagerService::PackageManagerImpl::getInstalledPackages(int32_t flags) {
+sp<ArrayList<sp<PackageInfo>>> PackageManagerService::getInstalledPackages(int32_t flags) {
     if ((flags & PackageManager::GET_SERVICES) == PackageManager::GET_SERVICES) {
         sp<ArrayList<sp<PackageInfo>>> packages = new ArrayList<sp<PackageInfo>>();
-        auto itr = mPackageManagerService->mPackages->iterator();
+        auto itr = mPackages->iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();
             sp<PackageInfo> p = entry.getValue();
@@ -83,10 +131,10 @@ sp<ArrayList<sp<PackageInfo>>> PackageManagerService::PackageManagerImpl::getIns
     }
 }
 
-sp<ResolveInfo> PackageManagerService::PackageManagerImpl::resolveService(const sp<Intent>& intent, int32_t flags) {
+sp<ResolveInfo> PackageManagerService::resolveService(const sp<Intent>& intent, int32_t flags) {
     sp<ResolveInfo> resolveInfo = nullptr;
-    if (mPackageManagerService->mComponents->containsKey(intent->getComponent())) {
-        sp<ComponentInfo> componentInfo = mPackageManagerService->mComponents->get(intent->getComponent());
+    if (mComponents->containsKey(intent->getComponent())) {
+        sp<ComponentInfo> componentInfo = mComponents->get(intent->getComponent());
         if (Class<ServiceInfo>::isInstance(componentInfo)) {
             resolveInfo = new ResolveInfo();
             resolveInfo->serviceInfo = object_cast<ServiceInfo>(componentInfo);

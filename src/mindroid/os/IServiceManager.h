@@ -20,6 +20,7 @@
 #include <mindroid/util/concurrent/Promise.h>
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/Boolean.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/content/ComponentName.h>
 #include <mindroid/content/Intent.h>
@@ -32,13 +33,13 @@ class IRemoteCallback;
 class IServiceManager :
         public IInterface {
 public:
-    virtual sp<ComponentName> startService(const sp<Intent>& service) = 0;
-    virtual bool stopService(const sp<Intent>& service) = 0;
-    virtual bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) = 0;
+    virtual sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) = 0;
     virtual void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) = 0;
     virtual void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) = 0;
-    virtual sp<ComponentName> startSystemService(const sp<Intent>& service) = 0;
-    virtual bool stopSystemService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<ComponentName>>> startSystemService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<Boolean>>> stopSystemService(const sp<Intent>& service) = 0;
 };
 
 namespace binder {
@@ -61,7 +62,7 @@ public:
             if (binder == nullptr) {
                 return nullptr;
             }
-            return new ServiceManager::Proxy(binder);
+            return new ServiceManager::Stub::Proxy(binder);
         }
 
         sp<IBinder> asBinder() override {
@@ -95,13 +96,13 @@ public:
                 return mRemote->hashCode();
             }
 
-            sp<ComponentName> startService(const sp<Intent>& service) override;
-            bool stopService(const sp<Intent>& service) override;
-            bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+            sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service) override;
+            sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service) override;
+            sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
             void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) override;
             void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) override;
-            sp<ComponentName> startSystemService(const sp<Intent>& service) override;
-            bool stopSystemService(const sp<Intent>& service) override;
+            sp<Promise<sp<ComponentName>>> startSystemService(const sp<Intent>& service) override;
+            sp<Promise<sp<Boolean>>> stopSystemService(const sp<Intent>& service) override;
 
         private:
             sp<IBinder> mRemote;
@@ -117,43 +118,6 @@ public:
         static const int32_t MSG_STOP_SYSTEM_SERVICE = 6;
 
         friend class ServiceManager::Proxy;
-    };
-
-    class Proxy : public IServiceManager {
-    public:
-        Proxy(const sp<IBinder>& binder);
-
-        sp<IBinder> asBinder() override {
-            return mBinder;
-        }
-
-        bool equals(const sp<Object>& obj) const override {
-            if (obj == nullptr) return false;
-            if (obj == this) return true;
-            if (Class<Proxy>::isInstance(obj)) {
-                sp<Proxy> other = Class<Proxy>::cast(obj);
-                return mBinder->equals(other->mBinder);
-            } else {
-                return false;
-            }
-        }
-
-        size_t hashCode() const override {
-            return mBinder->hashCode();
-        }
-
-        sp<ComponentName> startService(const sp<Intent>& service) override;
-        bool stopService(const sp<Intent>& service) override;
-        bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
-        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) override;
-        void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) override;
-        sp<ComponentName> startSystemService(const sp<Intent>& service) override;
-        bool stopSystemService(const sp<Intent>& service) override;
-
-    private:
-        sp<IBinder> mBinder;
-        sp<ServiceManager::Stub> mStub;
-        sp<IServiceManager> mProxy;
     };
 };
 

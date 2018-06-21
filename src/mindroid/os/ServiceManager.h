@@ -19,6 +19,7 @@
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/Boolean.h>
 #include <mindroid/os/IServiceManager.h>
 #include <mindroid/os/RemoteCallback.h>
 #include <mindroid/util/Pair.h>
@@ -93,13 +94,13 @@ private:
                 Stub(looper), mServiceManager(serviceManager) {
         }
 
-        sp<ComponentName> startService(const sp<Intent>& intent) override;
-        bool stopService(const sp<Intent>& service) override;
-        bool bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
+        sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& intent) override;
+        sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service) override;
+        sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) override;
         void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn) override;
         void unbindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, const sp<IRemoteCallback>& callback) override;
-        sp<ComponentName> startSystemService(const sp<Intent>& service) override;
-        bool stopSystemService(const sp<Intent>& service) override;
+        sp<Promise<sp<ComponentName>>> startSystemService(const sp<Intent>& service) override;
+        sp<Promise<sp<Boolean>>> stopSystemService(const sp<Intent>& service) override;
 
     private:
         sp<ServiceManager> mServiceManager;
@@ -107,7 +108,7 @@ private:
 
     sp<IProcess> prepareProcess(const sp<String>& name);
     bool prepareService(const sp<Intent>& service);
-    sp<ComponentName> startService(const sp<Intent>& service);
+    sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service);
     bool cleanupService(const sp<Intent>& service);
 
 public:

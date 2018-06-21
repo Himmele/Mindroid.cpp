@@ -38,6 +38,9 @@ namespace mindroid {
 class PackageManager :
         public Object {
 public:
+    static const char* const ACTION_START_APPLICATIONS;
+    static const char* const ACTION_SHUTDOWN_APPLICATIONS;
+
     /**
      * {@link PackageInfo} flag: return information about services in the package in
      * {@link PackageInfo#services}.

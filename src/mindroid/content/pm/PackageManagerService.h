@@ -43,11 +43,11 @@ public:
 
     virtual ~PackageManagerService() = default;
 
-    virtual void onCreate();
-    virtual int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId);
-    virtual void onDestroy();
+    void onCreate() override;
+    int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) override;
+    void onDestroy() override;
 
-    virtual sp<IBinder> onBind(const sp<Intent>& intent) {
+    sp<IBinder> onBind(const sp<Intent>& intent) override {
         return mBinder;
     }
 
@@ -56,14 +56,22 @@ private:
     public:
         PackageManagerImpl(const sp<PackageManagerService>& packageManagerService) : mPackageManagerService(packageManagerService) { }
 
-        sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) override;
-        sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) override;
+        sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags) override {
+            return mPackageManagerService->getInstalledPackages(flags);
+        }
+
+        sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags) override {
+            return mPackageManagerService->resolveService(intent, flags);
+        }
 
     private:
         sp<PackageManagerService> mPackageManagerService;
     };
 
     sp<binder::PackageManager::Stub> mBinder = new PackageManagerImpl(this);
+
+    sp<ArrayList<sp<PackageInfo>>> getInstalledPackages(int32_t flags);
+    sp<ResolveInfo> resolveService(const sp<Intent>& intent, int32_t flags);
 
     static sp<PackageInfo> parseManifest(const sp<File>& file);
     static sp<ArrayList<sp<ServiceInfo>>> parseApplication(sp<ApplicationInfo>& ai, const tinyxml2::XMLElement* applicationNode);

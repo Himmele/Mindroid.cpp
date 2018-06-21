@@ -70,27 +70,9 @@ void startSystemSerices() {
 
 void startServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
-
-    sp<IPackageManager> packageManager = binder::PackageManager::Stub::asInterface(ServiceManager::getSystemService(Context::PACKAGE_MANAGER));
-    sp<ArrayList<sp<PackageInfo>>> packages = packageManager->getInstalledPackages(PackageManager::GET_SERVICES);
-    if (packages != nullptr) {
-        auto packageItr = packages->iterator();
-        while (packageItr.hasNext()) {
-            sp<PackageInfo> package = packageItr.next();
-            if (package->services != nullptr) {
-                sp<ArrayList<sp<ServiceInfo>>> services = package->services;
-                auto serviceItr = services->iterator();
-                while (serviceItr.hasNext()) {
-                    sp<ServiceInfo> service = serviceItr.next();
-                    if (service->isEnabled() && service->hasFlag(ServiceInfo::FLAG_AUTO_START)) {
-                        sp<Intent> intent = new Intent();
-                        intent->setComponent(new ComponentName(service->packageName, service->name));
-                        serviceManager->startService(intent);
-                    }
-                }
-            }
-        }
-    }
+    sp<Intent> intent = new Intent(PackageManager::ACTION_START_APPLICATIONS);
+    intent->setComponent(new ComponentName("mindroid", "PackageManagerService"));
+    serviceManager->startSystemService(intent);
 }
 
 void shutdownSystemSerices() {
@@ -108,27 +90,9 @@ void shutdownSystemSerices() {
 
 void shutdownServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
-
-    sp<IPackageManager> packageManager = binder::PackageManager::Stub::asInterface(ServiceManager::getSystemService(Context::PACKAGE_MANAGER));
-    sp<ArrayList<sp<PackageInfo>>> packages = packageManager->getInstalledPackages(PackageManager::GET_SERVICES);
-    if (packages != nullptr) {
-        auto packageItr = packages->iterator();
-        while (packageItr.hasNext()) {
-            sp<PackageInfo> package = packageItr.next();
-            if (package->services != nullptr) {
-                sp<ArrayList<sp<ServiceInfo>>> services = package->services;
-                auto serviceItr = services->iterator();
-                while (serviceItr.hasNext()) {
-                    sp<ServiceInfo> service = serviceItr.next();
-                    if (service->isEnabled()) {
-                        sp<Intent> intent = new Intent();
-                        intent->setComponent(new ComponentName(service->packageName, service->name));
-                        serviceManager->stopService(intent);
-                    }
-                }
-            }
-        }
-    }
+    sp<Intent> intent = new Intent(PackageManager::ACTION_SHUTDOWN_APPLICATIONS);
+    intent->setComponent(new ComponentName("mindroid", "PackageManagerService"));
+    serviceManager->startSystemService(intent);
 }
 
 static sp<Promise<int32_t>> sShutdownHandler = new Promise<int32_t>();

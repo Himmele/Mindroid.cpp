@@ -198,24 +198,24 @@ void ServiceManager::shutdown() {
     sServiceManager = nullptr;
 }
 
-sp<ComponentName> ServiceManager::ServiceManagerImpl::startService(const sp<Intent>& intent) {
+sp<Promise<sp<ComponentName>>> ServiceManager::ServiceManagerImpl::startService(const sp<Intent>& intent) {
     intent->putExtra(SYSTEM_SERVICE, false);
     return mServiceManager->startService(intent);
 }
 
-bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) {
+sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) {
     if (mServiceManager->mServices->containsKey(service->getComponent())) {
         sp<ServiceRecord> serviceRecord = mServiceManager->mServices->get(service->getComponent());
         sp<ProcessRecord> processRecord = serviceRecord->processRecord;
         sp<IProcess> process = processRecord->process;
 
         if (!serviceRecord->alive) {
-            return false;
+            return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
         }
 
         if (serviceRecord->getNumServiceConnections() != 0) {
             Log::d(ServiceManager::TAG, "Cannot stop service %s due to active bindings", service->getComponent()->toShortString()->c_str());
-            return false;
+            return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
         }
 
         class OnResultListener : public RemoteCallback::OnResultListener {
@@ -266,18 +266,18 @@ bool ServiceManager::ServiceManagerImpl::stopService(const sp<Intent>& service) 
             }
         }
 
-        return true;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(true)));
     } else {
         Log::d(ServiceManager::TAG, "Cannot find and stop service %s", service->getComponent()->toShortString()->c_str());
-        return false;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
     }
 }
 
-bool ServiceManager::ServiceManagerImpl::bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) {
+sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::bindService(const sp<Intent>& intent, const sp<ServiceConnection>& conn, int32_t flags, const sp<IRemoteCallback>& callback) {
     intent->putExtra(SYSTEM_SERVICE, false);
 
     if (!mServiceManager->prepareService(intent)) {
-        return false;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
     }
 
     if (mServiceManager->mServices->containsKey(intent->getComponent())) {
@@ -294,10 +294,10 @@ bool ServiceManager::ServiceManagerImpl::bindService(const sp<Intent>& intent, c
             Log::d(ServiceManager::TAG, "Bound to service %s in process %s", serviceRecord->name->c_str(), serviceRecord->processRecord->name->c_str());
         }
 
-        return true;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(true)));
     } else {
         Log::d(ServiceManager::TAG, "Cannot find and bind service %s", intent->getComponent()->toShortString()->c_str());
-        return false;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
     }
 }
 
@@ -331,7 +331,7 @@ void ServiceManager::ServiceManagerImpl::unbindService(const sp<Intent>& service
     }
 }
 
-sp<ComponentName> ServiceManager::ServiceManagerImpl::startSystemService(const sp<Intent>& service) {
+sp<Promise<sp<ComponentName>>> ServiceManager::ServiceManagerImpl::startSystemService(const sp<Intent>& service) {
     if (!service->hasExtra("name")) {
         service->putExtra("name", service->getComponent()->getClassName()->c_str());
     }
@@ -342,7 +342,7 @@ sp<ComponentName> ServiceManager::ServiceManagerImpl::startSystemService(const s
     return mServiceManager->startService(service);
 }
 
-bool ServiceManager::ServiceManagerImpl::stopSystemService(const sp<Intent>& service) {
+sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopSystemService(const sp<Intent>& service) {
     service->putExtra(SYSTEM_SERVICE, true);
     return stopService(service);
 }
@@ -467,9 +467,9 @@ bool ServiceManager::prepareService(const sp<Intent>& service) {
     return true;
 }
 
-sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
+sp<Promise<sp<ComponentName>>> ServiceManager::startService(const sp<Intent>& service) {
     if (!prepareService(service)) {
-        return nullptr;
+        return new Promise<sp<ComponentName>>(sp<ComponentName>(nullptr));
     }
 
     sp<ServiceRecord> serviceRecord = mServices->get(service->getComponent());
@@ -512,7 +512,7 @@ sp<ComponentName> ServiceManager::startService(const sp<Intent>& service) {
         throw RuntimeException("System failure", e);
     }
 
-    return service->getComponent();
+    return new Promise<sp<ComponentName>>(service->getComponent());
 }
 
 bool ServiceManager::cleanupService(const sp<Intent>& service) {

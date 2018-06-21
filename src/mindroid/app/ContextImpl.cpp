@@ -69,7 +69,11 @@ sp<IBinder> ContextImpl::getSystemService(const sp<URI>& name) {
 sp<ComponentName> ContextImpl::startService(const sp<Intent>& service) {
     if (service != nullptr) {
         try {
-            return mServiceManager->startService(service);
+            return mServiceManager->startService(service)->get();
+        } catch (CancellationException& e) {
+            throw RuntimeException("System failure", e);
+        } catch (ExecutionException& e) {
+            throw RuntimeException("System failure", e);
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
@@ -81,7 +85,11 @@ sp<ComponentName> ContextImpl::startService(const sp<Intent>& service) {
 bool ContextImpl::stopService(const sp<Intent>& service) {
     if (service != nullptr) {
         try {
-            return mServiceManager->stopService(service);
+            return mServiceManager->stopService(service)->get()->booleanValue();
+        } catch (CancellationException& e) {
+            throw RuntimeException("System failure", e);
+        } catch (ExecutionException& e) {
+            throw RuntimeException("System failure", e);
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
@@ -130,7 +138,11 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
         sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, service, conn), mHandler);
         mServiceConnectionCallbacks->add(callback);
         try {
-            return mServiceManager->bindService(service, conn, flags, callback->asInterface());
+            return mServiceManager->bindService(service, conn, flags, callback->asInterface())->get()->booleanValue();
+        } catch (CancellationException& e) {
+            throw RuntimeException("System failure", e);
+        } catch (ExecutionException& e) {
+            throw RuntimeException("System failure", e);
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
