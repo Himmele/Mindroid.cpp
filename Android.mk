@@ -79,6 +79,10 @@ LOCAL_SRC_FILES := \
 	src/mindroid/os/Process.cpp \
 	src/mindroid/os/ServiceManager.cpp \
 	src/mindroid/os/SystemClock.cpp \
+	src/mindroid/runtime/console/Console.cpp \
+	src/mindroid/runtime/console/ConsoleService.cpp \
+	src/mindroid/runtime/console/ICommandHandler.cpp \
+	src/mindroid/runtime/console/IConsole.cpp \
 	src/mindroid/runtime/system/Configuration.cpp \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
