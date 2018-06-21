@@ -76,11 +76,11 @@ void ConsoleService::addCommands() {
         auto itr = mCommands->iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();
-            sp<String> command = entry.getKey();
-            sp<Command> c = entry.getValue();
-            sb->append(command);
+            sp<String> string = entry.getKey();
+            sp<Command> command = entry.getValue();
+            sb->append(string);
             sb->append(": ");
-            sb->append(c->description);
+            sb->append(command->description);
             if (itr.hasNext()) {
                 sb->append("\n");
             }
