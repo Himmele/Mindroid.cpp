@@ -150,6 +150,10 @@ private:
                 mListener(listener) {
         }
 
+        virtual ~OnSharedPreferenceChangeListenerWrapper() {
+            Binder::dispose();
+        }
+
         void onSharedPreferenceChanged(const sp<String>& key) override {
             sp<SharedPreferences> sharedPreferences = mSharedPreferences.get();
             if (sharedPreferences != nullptr) {
@@ -162,10 +166,6 @@ private:
             if (sharedPreferences != nullptr) {
                 mListener->onSharedPreferenceChanged(sharedPreferences);
             }
-        }
-
-        void dispose() override {
-            Binder::dispose();
         }
 
     private:

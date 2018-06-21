@@ -200,10 +200,7 @@ void SharedPreferencesImpl::registerOnSharedPreferenceChangeListener(const sp<Sh
 void SharedPreferencesImpl::unregisterOnSharedPreferenceChangeListener(const sp<SharedPreferences::OnSharedPreferenceChangeListener>& listener) {
     if (listener != nullptr) {
         AutoLock autoLock(mLock);
-        auto wrapper = mListeners->remove(listener);
-        if (wrapper != nullptr) {
-            wrapper->dispose();
-        }
+        mListeners->remove(listener);
     }
 }
 

@@ -46,6 +46,7 @@ public:
     static const sp<URI> SERVICE_MANAGER;
     static const sp<URI> PACKAGE_MANAGER;
     static const sp<URI> LOGGER_SERVICE;
+    static const sp<URI> CONSOLE_SERVICE;
     static const sp<URI> ALARM_MANAGER;
     static const sp<URI> POWER_MANAGER;
     static const sp<URI> LOCATION_SERVICE;

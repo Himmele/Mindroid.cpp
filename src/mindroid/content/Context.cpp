@@ -24,6 +24,7 @@ namespace mindroid {
 const sp<URI> Context::SERVICE_MANAGER = URI::create("mindroid://serviceManager");
 const sp<URI> Context::PACKAGE_MANAGER = URI::create("mindroid://packageManager");
 const sp<URI> Context::LOGGER_SERVICE = URI::create("mindroid://logger");
+const sp<URI> Context::CONSOLE_SERVICE = URI::create("mindroid://console");
 const sp<URI> Context::ALARM_MANAGER = URI::create("mindroid://alarmManager");
 const sp<URI> Context::POWER_MANAGER = URI::create("mindroid://powerManager");
 const sp<URI> Context::LOCATION_SERVICE = URI::create("mindroid://locationService");

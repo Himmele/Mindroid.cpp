@@ -22,6 +22,7 @@
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/lang/System.h>
 #include <mindroid/io/File.h>
+#include <mindroid/runtime/console/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/logging/Logger.h>
 #include "examples/Services/src/ServiceExample1.h"
@@ -35,8 +36,9 @@
 
 using namespace mindroid;
 
-CLASS(mindroid, Logger);
 CLASS(mindroid, PackageManagerService);
+CLASS(mindroid, Logger);
+CLASS(mindroid, ConsoleService);
 CLASS(examples, ServiceExample1);
 CLASS(examples, ServiceExample2);
 CLASS(examples, HandlerExample);
@@ -60,6 +62,13 @@ void startSystemSerices() {
             ->putExtra("consoleLogging", true);
     serviceManager->startSystemService(logger);
 
+    sp<Intent> console = new Intent();
+    console->setComponent(new ComponentName("mindroid", "ConsoleService"))
+            ->putExtra("name", Context::CONSOLE_SERVICE->toString())
+            ->putExtra("process", "main");
+    serviceManager->startSystemService(console);
+    ServiceManager::waitForSystemService(Context::CONSOLE_SERVICE);
+
     sp<Intent> packageManager = new Intent();
     packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"))
             ->putExtra("name", Context::PACKAGE_MANAGER->toString())
@@ -82,6 +91,10 @@ void shutdownSystemSerices() {
     packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"));
     serviceManager->stopSystemService(packageManager);
     ServiceManager::waitForSystemServiceShutdown(Context::PACKAGE_MANAGER);
+
+    sp<Intent> console = new Intent();
+    console->setComponent(new ComponentName("mindroid", "ConsoleService"));
+    serviceManager->stopSystemService(console);
 
     sp<Intent> logger = new Intent();
     logger->setComponent(new ComponentName("mindroid", "Logger"));
