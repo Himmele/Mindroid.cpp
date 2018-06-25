@@ -120,16 +120,16 @@ public: \
 static volatile Clazz##Factory s##Clazz##Factory;
 
 #define CLASS2(Package, Clazz) \
-class Package##Clazz##Factory : public mindroid::Factory { \
+class Clazz##Factory : public mindroid::Factory { \
 public: \
-    Package##Clazz##Factory() : mindroid::Factory(#Package"::"#Clazz) { \
+    Clazz##Factory() : mindroid::Factory(#Package"::"#Clazz) { \
     } \
     \
     virtual mindroid::sp<mindroid::Object> newInstance() { \
         return new Package::Clazz(); \
     } \
 }; \
-static volatile Package##Clazz##Factory s##Package##Clazz##Factory;
+static volatile Clazz##Factory s##Clazz##Factory;
 
 } /* namespace mindroid */
 
