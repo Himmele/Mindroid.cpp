@@ -35,6 +35,29 @@ const char* PackageManagerService::APPLICATION_TAG = "application";
 const char* PackageManagerService::SERVICE_TAG = "service";
 
 void PackageManagerService::onCreate() {
+    class ManifestFilenameFilter : public FilenameFilter {
+    public:
+        bool accept(const sp<File>& dir, const sp<String>& filename) override {
+            return filename->toLowerCase()->endsWith(".xml");
+        }
+    };
+    sp<ArrayList<sp<File>>> apps = Environment::getAppsDirectory()->listFiles(new ManifestFilenameFilter());
+    if (apps != nullptr) {
+        auto itr = apps->iterator();
+        while (itr.hasNext()) {
+            sp<File> manifest = itr.next();
+            sp<PackageInfo> packageInfo = parseManifest(manifest);
+            if (packageInfo != nullptr) {
+                mPackages->put(packageInfo->packageName, packageInfo);
+                auto itr = packageInfo->services->iterator();
+                while (itr.hasNext()) {
+                    sp<ServiceInfo> si = itr.next();
+                    mComponents->put(new ComponentName(si->packageName, si->name), si);
+                }
+            }
+        }
+    }
+
     ServiceManager::addService(Context::PACKAGE_MANAGER, mBinder);
 }
 
@@ -42,29 +65,6 @@ int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t 
     sp<String> action = intent->getAction();
     if (action != nullptr) {
         if (action->equals(PackageManager::ACTION_START_APPLICATIONS)) {
-            class ManifestFilenameFilter : public FilenameFilter {
-            public:
-                bool accept(const sp<File>& dir, const sp<String>& filename) override {
-                    return filename->toLowerCase()->endsWith(".xml");
-                }
-            };
-            sp<ArrayList<sp<File>>> apps = Environment::getAppsDirectory()->listFiles(new ManifestFilenameFilter());
-            if (apps != nullptr) {
-                auto itr = apps->iterator();
-                while (itr.hasNext()) {
-                    sp<File> manifest = itr.next();
-                    sp<PackageInfo> packageInfo = parseManifest(manifest);
-                    if (packageInfo != nullptr) {
-                        mPackages->put(packageInfo->packageName, packageInfo);
-                        auto itr = packageInfo->services->iterator();
-                        while (itr.hasNext()) {
-                            sp<ServiceInfo> si = itr.next();
-                            mComponents->put(new ComponentName(si->packageName, si->name), si);
-                        }
-                    }
-                }
-            }
-
             sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(PackageManager::GET_SERVICES);
             if (packages != nullptr) {
                 sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();

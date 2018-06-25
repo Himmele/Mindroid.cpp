@@ -14,42 +14,39 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNTIME_CONSOLE_ICONSOLE_H_
-#define MINDROID_RUNTIME_CONSOLE_ICONSOLE_H_
+#ifndef MINDROID_RUNTIME_INSPECTION_ICOMMANDHANDLER_H_
+#define MINDROID_RUNTIME_INSPECTION_ICOMMANDHANDLER_H_
 
 #include <mindroid/os/Binder.h>
 #include <mindroid/lang/StringArray.h>
-#include <mindroid/runtime/console/ICommandHandler.h>
 
 namespace mindroid {
 
 class Intent;
 
-class IConsole :
+class ICommandHandler :
         public IInterface {
 public:
-    virtual bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) = 0;
-    virtual bool removeCommand(const sp<String>& command) = 0;
-    virtual sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) = 0;
+    virtual sp<Promise<sp<String>>> execute(const sp<StringArray>& arguments) = 0;
 };
 
 namespace binder {
 
-class Console {
+class CommandHandler {
 public:
     class Proxy;
 
-    class Stub : public Binder, public IConsole {
+    class Stub : public Binder, public ICommandHandler {
     public:
         Stub() {
             attachInterface(this, String::valueOf(DESCRIPTOR));
         }
 
-        static sp<IConsole> asInterface(const sp<IBinder>& binder) {
+        static sp<ICommandHandler> asInterface(const sp<IBinder>& binder) {
             if (binder == nullptr) {
                 return nullptr;
             }
-            return new Console::Proxy(binder);
+            return new CommandHandler::Proxy(binder);
         }
 
         sp<IBinder> asBinder() override {
@@ -58,7 +55,7 @@ public:
 
         void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) override;
 
-        class Proxy : public IConsole {
+        class Proxy : public ICommandHandler {
         public:
             Proxy(const sp<IBinder>& remote) {
                 mRemote = remote;
@@ -83,9 +80,7 @@ public:
                 return mRemote->hashCode();
             }
 
-            bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) override;
-            bool removeCommand(const sp<String>& command) override;
-            sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) override;
+            sp<Promise<sp<String>>> execute(const sp<StringArray>& arguments) override;
 
         private:
             sp<IBinder> mRemote;
@@ -93,14 +88,12 @@ public:
 
     private:
         static const char* const DESCRIPTOR;
-        static const int32_t MSG_ADD_COMMAND = 1;
-        static const int32_t MSG_REMOVE_COMMAND = 2;
-        static const int32_t MSG_EXECUTE_COMMAND = 3;
+        static const int32_t MSG_EXECUTE = 1;
 
-        friend class Console::Proxy;
+        friend class CommandHandler::Proxy;
     };
 
-    class Proxy : public IConsole {
+    class Proxy : public ICommandHandler {
     public:
         Proxy(const sp<IBinder>& binder);
 
@@ -123,18 +116,16 @@ public:
             return mBinder->hashCode();
         }
 
-        bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) override;
-        bool removeCommand(const sp<String>& command) override;
-        sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) override;
+        sp<Promise<sp<String>>> execute(const sp<StringArray>& arguments) override;
 
     private:
         sp<IBinder> mBinder;
-        sp<Console::Stub> mStub;
-        sp<IConsole> mProxy;
+        sp<CommandHandler::Stub> mStub;
+        sp<ICommandHandler> mProxy;
     };
 };
 
 } /* namespace binder */
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNTIME_CONSOLE_ICONSOLE_H_ */
+#endif /* MINDROID_RUNTIME_INSPECTION_ICOMMANDHANDLER_H_ */

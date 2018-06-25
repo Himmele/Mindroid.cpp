@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <mindroid/runtime/console/ConsoleService.h>
+#include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/lang/StringBuilder.h>
 
 namespace mindroid {

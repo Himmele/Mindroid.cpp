@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <mindroid/runtime/console/Console.h>
+#include <mindroid/runtime/inspection/Console.h>
 #include <mindroid/os/RemoteException.h>
 #include <mindroid/lang/RuntimeException.h>
 

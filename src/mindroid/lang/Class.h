@@ -104,17 +104,32 @@ private:
     sp<String> mName;
 };
 
-#define CLASS(Package, Clazz) \
-class Clazz##Factory : public Factory { \
+#define GET_CLASS_MACRO(_1, _2, NAME, ...) NAME
+#define CLASS(...) GET_CLASS_MACRO(__VA_ARGS__, CLASS2, CLASS1)(__VA_ARGS__)
+
+#define CLASS1(Clazz) \
+class Clazz##Factory : public mindroid::Factory { \
 public: \
-    Clazz##Factory() : Factory(#Package"::"#Clazz) { \
+    Clazz##Factory() : mindroid::Factory("::"#Clazz) { \
     } \
     \
-    virtual sp<Object> newInstance() { \
-        return new Package::Clazz(); \
+    virtual mindroid::sp<mindroid::Object> newInstance() { \
+        return new ::Clazz(); \
     } \
 }; \
 static volatile Clazz##Factory s##Clazz##Factory;
+
+#define CLASS2(Package, Clazz) \
+class Package##Clazz##Factory : public mindroid::Factory { \
+public: \
+    Package##Clazz##Factory() : mindroid::Factory(#Package"::"#Clazz) { \
+    } \
+    \
+    virtual mindroid::sp<mindroid::Object> newInstance() { \
+        return new Package::Clazz(); \
+    } \
+}; \
+static volatile Package##Clazz##Factory s##Package##Clazz##Factory;
 
 } /* namespace mindroid */
 

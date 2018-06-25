@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNTIME_CONSOLE_CONSOLE_H_
-#define MINDROID_RUNTIME_CONSOLE_CONSOLE_H_
+#ifndef MINDROID_RUNTIME_INSPECTION_CONSOLE_H_
+#define MINDROID_RUNTIME_INSPECTION_CONSOLE_H_
 
-#include <mindroid/runtime/console/IConsole.h>
-#include <mindroid/runtime/console/CommandHandler.h>
+#include <mindroid/runtime/inspection/IConsole.h>
+#include <mindroid/runtime/inspection/CommandHandler.h>
 #include <mindroid/content/Context.h>
 #include <mindroid/os/ServiceManager.h>
 #include <mindroid/lang/StringArray.h>
@@ -63,4 +63,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNTIME_CONSOLE_CONSOLE_H_ */
+#endif /* MINDROID_RUNTIME_INSPECTION_CONSOLE_H_ */

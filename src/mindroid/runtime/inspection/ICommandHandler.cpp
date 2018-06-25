@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-#include <mindroid/runtime/console/ICommandHandler.h>
+#include <mindroid/runtime/inspection/ICommandHandler.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
 namespace binder {
 
-const char* const CommandHandler::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/console/ICommandHandler";
+const char* const CommandHandler::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/inspection/ICommandHandler";
 
 void CommandHandler::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     switch (what) {

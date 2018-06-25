@@ -6,7 +6,7 @@ LD := g++
 AS := gas
 AR := ar
 RM := rm
-INCLUDES := -I. -Isrc -Igoogletest/include
+INCLUDES := -I. -Isrc -Itests -Igoogletest/include
 CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions -fstack-protector -Wa,--noexecstack -Werror=format-security -D_FORTIFY_SOURCE=2
 LDFLAGS := -pie -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
 OUT_DIR := out
@@ -87,10 +87,10 @@ SRCS = \
 	src/mindroid/os/Process.cpp \
 	src/mindroid/os/ServiceManager.cpp \
 	src/mindroid/os/SystemClock.cpp \
-	src/mindroid/runtime/console/Console.cpp \
-	src/mindroid/runtime/console/ConsoleService.cpp \
-	src/mindroid/runtime/console/ICommandHandler.cpp \
-	src/mindroid/runtime/console/IConsole.cpp \
+	src/mindroid/runtime/inspection/Console.cpp \
+	src/mindroid/runtime/inspection/ConsoleService.cpp \
+	src/mindroid/runtime/inspection/ICommandHandler.cpp \
+	src/mindroid/runtime/inspection/IConsole.cpp \
 	src/mindroid/runtime/system/Configuration.cpp \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
@@ -162,7 +162,7 @@ $(OUT_DIR)/%.o: %.cc
 
 #==== Tests ====
 
-TEST_SRCS := $(wildcard tests/*.cpp)
+TEST_SRCS := $(wildcard tests/mindroid/*/*.cpp)
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 TEST_BIN_OBJS = $(addprefix $(OUT_DIR)/,$(TEST_OBJS))
 

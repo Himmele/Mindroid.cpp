@@ -22,7 +22,7 @@
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/lang/System.h>
 #include <mindroid/io/File.h>
-#include <mindroid/runtime/console/ConsoleService.h>
+#include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/logging/Logger.h>
 #include "examples/Services/src/ServiceExample1.h"

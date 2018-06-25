@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <mindroid/runtime/console/IConsole.h>
+#include <mindroid/runtime/inspection/IConsole.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/lang/Boolean.h>
 #include <mindroid/util/concurrent/Promise.h>
@@ -22,7 +22,7 @@
 namespace mindroid {
 namespace binder {
 
-const char* const Console::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/console/IConsole";
+const char* const Console::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/inspection/IConsole";
 
 void Console::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
     switch (what) {

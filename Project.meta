@@ -49,4 +49,28 @@ Project {
         IncludeDir "."
         IncludeDir "src"        
     }
+    
+    ExecutableConfig Tests {
+        DefaultToolchain GCC {
+            Compiler CPP {
+                Flags "-O0 -g -Wall -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
+                Define "__STDC_FORMAT_MACROS"
+            }
+            Compiler C {
+                Flags "-O0 -g -Wall -Wextra -pthread"
+            }
+            Linker {
+                Flags add: "-pthread"
+            }
+        }
+        
+        ArtifactName "Tests"
+        Dependency "Mindroid.cpp", config: default        
+
+        Files "tests/mindroid/**/*.cpp"
+        Files "googletest/src/gtest-all.cc"
+        IncludeDir "tests"
+        IncludeDir "googletest"
+        IncludeDir "googletest/include"
+    }
 }
