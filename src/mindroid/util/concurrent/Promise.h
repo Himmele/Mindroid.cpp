@@ -1394,7 +1394,7 @@ private:
         virtual void run() override final {
             if (mSupplier->getException() == nullptr) {
                 try {
-                    sp<Promise<T>> u = mFunction(mSupplier->getResult());
+                    sp<Promise<U>> u = mFunction(mSupplier->getResult());
                     mConsumer->completeWith(u);
                     return;
                 } catch (const Exception& e) {
@@ -1427,7 +1427,7 @@ private:
 
         virtual void run() override final {
             try {
-                sp<Promise<T>> u;
+                sp<Promise<U>> u;
                 if (mSupplier->getException() == nullptr) {
                     u = mFunction(mSupplier->getResult(), nullptr);
                 } else {
@@ -1669,6 +1669,7 @@ private:
             if (mSupplier->getException() == nullptr) {
                 try {
                     mConsumer->completeOnTimeout(mSupplier->getResult(), mDelay);
+                    return;
                 } catch (const Exception& e) {
                     mConsumer->setException(toCompletionException(e));
                 } catch (const std::exception& e) {
@@ -1679,6 +1680,8 @@ private:
             } else {
                 mConsumer->setException(toCompletionException(mSupplier->getException()));
             }
+
+            mConsumer->onComplete();
         }
 
     private:

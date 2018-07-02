@@ -43,9 +43,6 @@ Thenable::Thenable(const sp<Handler>& handler) :
 Thenable::Thenable(const sp<Executor>& executor) :
         mLock(new ReentrantLock()),
         mCondition(mLock->newCondition()) {
-    if (executor == nullptr) {
-        throw NullPointerException("Executor must not be null");
-    }
     mExecutor = executor;
 }
 
