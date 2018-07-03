@@ -180,6 +180,10 @@ public:
         return mList.size();
     }
 
+    const std::vector<T>& arr() const {
+        return mList;
+    }
+
     const T* c_arr() const {
         return &mList[0];
     }
@@ -397,6 +401,10 @@ public:
 
     size_t size() const {
         return mList.size();
+    }
+
+    const std::vector<sp<T>>& arr() const {
+        return mList;
     }
 
     class Iterator {

@@ -23,18 +23,16 @@ namespace mindroid {
 
 class ByteArrayBuffer : public ByteBuffer {
 public:
-    ByteArrayBuffer(size_t capacity);
-    ByteArrayBuffer(const sp<ByteArray>& byteArray);
-
     sp<ByteArray> array() const override;
     sp<ByteBuffer> compact() override;
     sp<ByteBuffer> duplicate() override;
     sp<ByteBuffer> slice() override;
 
 private:
+    ByteArrayBuffer(size_t capacity);
+    ByteArrayBuffer(const sp<ByteArray>& byteArray);
     ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, size_t size);
-
-    sp<ByteArray> mByteArray;
+    ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t position, size_t limit, size_t capacity, size_t offset, bool readOnly);
 
     friend class ByteBuffer;
 };

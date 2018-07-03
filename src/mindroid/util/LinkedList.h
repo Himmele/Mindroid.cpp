@@ -180,6 +180,10 @@ public:
         return mList.size();
     }
 
+    const std::list<T>& list() const {
+        return mList;
+    }
+
     class Iterator {
     public:
         Iterator(std::list<T>& list) :
@@ -401,6 +405,10 @@ public:
 
     size_t size() const {
         return mList.size();
+    }
+
+    const std::list<sp<T>>& list() const {
+        return mList;
     }
 
     class Iterator {

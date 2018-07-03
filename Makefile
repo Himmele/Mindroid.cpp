@@ -99,6 +99,7 @@ SRCS = \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \
 	src/mindroid/util/Variant.cpp \
+	src/mindroid/util/concurrent/AsyncAwait.cpp \
 	src/mindroid/util/concurrent/Executors.cpp \
 	src/mindroid/util/concurrent/SerialExecutor.cpp \
 	src/mindroid/util/concurrent/Thenable.cpp \

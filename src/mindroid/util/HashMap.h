@@ -18,6 +18,7 @@
 #define MINDROID_UTIL_HASHMAP_H_
 
 #include <mindroid/lang/Object.h>
+#include <mindroid/util/ArrayList.h>
 #include <mindroid/util/HashSet.h>
 #include <unordered_map>
 
@@ -80,10 +81,6 @@ public:
     }
 
     sp<HashSet<K>> keySet() {
-        if (isEmpty()) {
-            return nullptr;
-        }
-
         sp<HashSet<K>> keys = new HashSet<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
@@ -125,6 +122,16 @@ public:
 
     size_t size() const {
         return mMap.size();
+    }
+
+    sp<ArrayList<V>> values() {
+        sp<ArrayList<V>> values = new ArrayList<V>();
+        auto itr = iterator();
+        while (itr.hasNext()) {
+            auto entry = itr.next();
+            values->add(entry.getValue());
+        }
+        return values;
     }
 
     class Iterator;
@@ -273,10 +280,6 @@ public:
     }
 
     sp<HashSet<K>> keySet() {
-        if (isEmpty()) {
-            return nullptr;
-        }
-
         sp<HashSet<K>> keys = new HashSet<K>();
         auto itr = iterator();
         while (itr.hasNext()) {
@@ -318,6 +321,16 @@ public:
 
     size_t size() const {
         return mMap.size();
+    }
+
+    sp<ArrayList<sp<V>>> values() {
+        sp<ArrayList<sp<V>>> values = new ArrayList<sp<V>>();
+        auto itr = iterator();
+        while (itr.hasNext()) {
+            auto entry = itr.next();
+            values->add(entry.getValue());
+        }
+        return values;
     }
 
     class Iterator;
@@ -467,10 +480,6 @@ public:
     }
 
     sp<HashSet<sp<K>>> keySet() {
-        if (isEmpty()) {
-            return nullptr;
-        }
-
         sp<HashSet<sp<K>>> keys = new HashSet<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
@@ -512,6 +521,16 @@ public:
 
     size_t size() const {
         return mMap.size();
+    }
+
+    sp<ArrayList<V>> values() {
+        sp<ArrayList<V>> values = new ArrayList<V>();
+        auto itr = iterator();
+        while (itr.hasNext()) {
+            auto entry = itr.next();
+            values->add(entry.getValue());
+        }
+        return values;
     }
 
     class Iterator;
@@ -663,10 +682,6 @@ public:
     }
 
     sp<HashSet<sp<K>>> keySet() {
-        if (isEmpty()) {
-            return nullptr;
-        }
-
         sp<HashSet<sp<K>>> keys = new HashSet<sp<K>>();
         auto itr = iterator();
         while (itr.hasNext()) {
@@ -708,6 +723,16 @@ public:
 
     size_t size() const {
         return mMap.size();
+    }
+
+    sp<ArrayList<sp<V>>> values() {
+        sp<ArrayList<sp<V>>> values = new ArrayList<V>();
+        auto itr = iterator();
+        while (itr.hasNext()) {
+            auto entry = itr.next();
+            values->add(entry.getValue());
+        }
+        return values;
     }
 
     class Iterator;

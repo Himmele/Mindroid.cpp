@@ -75,7 +75,7 @@ bool Thread::isAlive() const {
     return mSelf != nullptr;
 }
 
-int32_t Thread::getId() const {
+uint64_t Thread::getId() const {
     return ::pthread_self();
 }
 

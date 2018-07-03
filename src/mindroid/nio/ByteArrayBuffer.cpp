@@ -28,28 +28,32 @@ ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray) :
 }
 
 ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, size_t size) :
-        ByteBuffer(byteArray, offset, size, false), mByteArray(byteArray) {
-    mOffset = offset;
+        ByteBuffer(byteArray, offset, offset + size, byteArray->size(), false, 0) {
+}
+
+ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t position, size_t limit, size_t capacity, size_t offset, bool readOnly) :
+        ByteBuffer(byteArray, position, limit, capacity, false, offset) {
 }
 
 sp<ByteArray> ByteArrayBuffer::array() const {
-    return mByteArray;
+    return mBuffer;
 }
 
 sp<ByteBuffer> ByteArrayBuffer::compact() {
     size_t count = mLimit - mPosition;
-    std::memmove(mBuffer->c_arr(), mBuffer->c_arr() + mPosition, count);
+    std::memmove(mBuffer->c_arr() + mOffset, mBuffer->c_arr() + mOffset + mPosition, count);
     mPosition = count;
     mLimit = mCapacity;
     return this;
 }
 
 sp<ByteBuffer> ByteArrayBuffer::duplicate() {
-    return new ByteArrayBuffer(array()->clone());
+    return new ByteArrayBuffer(mBuffer, mPosition, mLimit, mCapacity, false, mOffset);
 }
 
 sp<ByteBuffer> ByteArrayBuffer::slice() {
-    return new ByteArrayBuffer(mByteArray, mPosition + mOffset, mLimit - mPosition);
+    size_t count = mLimit - mPosition;
+    return new ByteArrayBuffer(mBuffer, 0, count, count, false, mPosition + mOffset);
 }
 
 } /* namespace mindroid */

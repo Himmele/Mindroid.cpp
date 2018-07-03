@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_
-#define MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_
+#ifndef MINDROID_NIO_BUFFERUNDERFLOWEXCEPTION_H_
+#define MINDROID_NIO_BUFFERUNDERFLOWEXCEPTION_H_
 
 #include <mindroid/lang/Exception.h>
 
 namespace mindroid {
 
-class BufferOverflowException : public Exception {
+class BufferUnderflowException : public Exception {
 public:
-    BufferOverflowException() = default;
+    BufferUnderflowException() = default;
 
-    BufferOverflowException(const char* message) : Exception(message) {
+    BufferUnderflowException(const char* message) : Exception(message) {
     }
 
-    BufferOverflowException(const sp<String>& message) : Exception(message) {
+    BufferUnderflowException(const sp<String>& message) : Exception(message) {
     }
 
-    virtual ~BufferOverflowException() = default;
+    virtual ~BufferUnderflowException() = default;
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_NIO_BUFFEROVERFLOWEXCEPTION_H_ */
+#endif /* MINDROID_NIO_BUFFERUNDERFLOWEXCEPTION_H_ */

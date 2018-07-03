@@ -187,7 +187,7 @@ public:
      *
      * @return the thread's ID.
      */
-    int32_t getId() const;
+    uint64_t getId() const;
 
     /**
      * Returns the Thread of the caller, that is, the current Thread.

@@ -72,16 +72,6 @@ public:
     virtual uint8_t get();
 
     /**
-     * Relative bulk get method.
-     */
-    sp<ByteBuffer> get(const sp<ByteArray>& dst);
-
-    /**
-     * Relative bulk get method.
-     */
-    sp<ByteBuffer> get(const sp<ByteArray> &dst, size_t offset, size_t count);
-
-    /**
      * Absolute get method.
      */
     virtual uint8_t get(size_t index);
@@ -147,24 +137,19 @@ public:
     virtual int16_t getShort(size_t index);
 
     /**
+     * Relative bulk get method.
+     */
+    sp<ByteBuffer> get(const sp<ByteArray>& dst);
+
+    /**
+     * Relative bulk get method.
+     */
+    sp<ByteBuffer> get(const sp<ByteArray>& dst, size_t offset, size_t count);
+
+    /**
      * Relative put method  (optional operation).
      */
     virtual sp<ByteBuffer> put(uint8_t value);
-
-    /**
-     * Relative bulk put method  (optional operation).
-     */
-    sp<ByteBuffer> put(sp<ByteArray>& byteArray);
-
-    /**
-     * Relative bulk put method  (optional operation).
-     */
-    sp<ByteBuffer> put(sp<ByteArray>& byteArray, size_t offset, size_t size);
-
-    /**
-     * Relative bulk put method  (optional operation).
-     */
-    sp<ByteBuffer> put(const sp<ByteBuffer>& byteArray);
 
     /**
      * Absolute put method  (optional operation).
@@ -212,14 +197,19 @@ public:
     virtual sp<ByteBuffer> putInt(size_t index, int32_t value);
 
     /**
+     * Relative put method for writing a long value  (optional operation).
+     */
+    virtual sp<ByteBuffer> putLong(int64_t value);
+
+    /**
      * Absolute put method for writing a long value  (optional operation).
      */
     virtual sp<ByteBuffer> putLong(size_t index, int64_t value);
 
     /**
-     * Relative put method for writing a long value  (optional operation).
+     * Relative put method for writing a short value  (optional operation).
      */
-    virtual sp<ByteBuffer> putLong(int64_t value);
+    virtual sp<ByteBuffer> putShort(int16_t value);
 
     /**
      * Absolute put method for writing a short value  (optional operation).
@@ -227,9 +217,14 @@ public:
     virtual sp<ByteBuffer> putShort(size_t index, int16_t value);
 
     /**
-     * Relative put method for writing a short value  (optional operation).
+     * Relative bulk put method  (optional operation).
      */
-    virtual sp<ByteBuffer> putShort(int16_t value);
+    sp<ByteBuffer> put(const sp<ByteArray>& byteArray);
+
+    /**
+     * Relative bulk put method  (optional operation).
+     */
+    sp<ByteBuffer> put(const sp<ByteArray>& byteArray, size_t offset, size_t size);
 
     /**
      * Creates a new byte buffer whose content is a shared subsequence of this buffer's content.
@@ -253,10 +248,12 @@ public:
 
 protected:
     ByteBuffer(const sp<ByteArray>& buffer, bool readOnly);
-    ByteBuffer(const sp<ByteArray>& buffer, size_t offset, size_t count, bool readOnly);
+    ByteBuffer(const sp<ByteArray>& buffer, size_t position, size_t limit, size_t capacity, bool readOnly, size_t offset);
     void checkBufferOverflow(size_t index, size_t amount);
+    void checkBufferUnderflow(size_t index, size_t amount);
 
     sp<ByteArray> mBuffer;
+    size_t mOffset = 0;
 };
 
 } /* namespace mindroid */

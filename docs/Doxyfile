@@ -848,6 +848,7 @@ INPUT = Main.md \
     \
     ../src/mindroid/nio/ByteBuffer.h \
     ../src/mindroid/nio/BufferOverflowException.h \
+    ../src/mindroid/nio/BufferUnderflowException.h \
     ../src/mindroid/nio/Buffer.h \
     \
     ../src/mindroid/os/AsyncTask.h \
@@ -877,6 +878,7 @@ INPUT = Main.md \
     ../src/mindroid/util/NoSuchElementException.h \
     ../src/mindroid/util/Pair.h \
     ../src/mindroid/util/Variant.h \
+    ../src/mindroid/util/concurrent/AsyncAwait.h \
     ../src/mindroid/util/concurrent/CancellationException.h \
     ../src/mindroid/util/concurrent/CompletionException.h \
     ../src/mindroid/util/concurrent/ExecutionException.h \

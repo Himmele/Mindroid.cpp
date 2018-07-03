@@ -193,6 +193,10 @@ public:
         }
     }
 
+    static sp<Promise<sp<Void>>> allOf(const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(promises->arr());
+    }
+
     /**
      * Returns a new Promise that is completed when all of
      * the given Promises complete and is executed using
@@ -219,6 +223,10 @@ public:
      */
     static sp<Promise<sp<Void>>> allOf(const sp<Handler>& handler, const std::vector<sp<Thenable>>& promises) {
         return allOf(handler->asExecutor(), promises);
+    }
+
+    static sp<Promise<sp<Void>>> allOf(const sp<Handler>& handler, const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(handler->asExecutor(), promises->arr());
     }
 
     /**
@@ -254,6 +262,10 @@ public:
         return andTree(executor, promises, 0, promises.size() - 1);
     }
 
+    static sp<Promise<sp<Void>>> allOf(const sp<Executor>& executor, const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(executor, promises->arr());
+    }
+
     /**
      * Returns a new Promise that is completed when any of
      * the given Promises complete, with the same result
@@ -280,6 +292,10 @@ public:
         }
     }
 
+    static sp<Promise<T>> anyOf(const sp<ArrayList<sp<Promise<T>>>>& promises) {
+        return anyOf(promises->arr());
+    }
+
     /**
      * Returns a new Promise that is completed when any of
      * the given Promises complete, with the same result
@@ -299,6 +315,10 @@ public:
      */
     static sp<Promise<T>> anyOf(const sp<Handler>& handler, const std::vector<sp<Promise<T>>>& promises) {
         return anyOf(handler->asExecutor(), promises);
+    }
+
+    static sp<Promise<T>> anyOf(const sp<Handler>& handler, const sp<ArrayList<sp<Promise<T>>>>& promises) {
+        return anyOf(handler->asExecutor(), promises->arr());
     }
 
     /**
@@ -357,6 +377,10 @@ public:
 
             return consumer;
         }
+    }
+
+    static sp<Promise<T>> anyOf(const sp<Executor>& executor, const sp<ArrayList<sp<Promise<T>>>>& promises) {
+        return anyOf(executor, promises->arr());
     }
 
     sp<Promise<T>> onHandler(const sp<Handler>& handler) {

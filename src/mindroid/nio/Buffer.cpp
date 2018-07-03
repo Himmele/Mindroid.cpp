@@ -19,10 +19,11 @@
 
 namespace mindroid {
 
-Buffer::Buffer(size_t capacity, bool readOnly) :
+Buffer::Buffer(size_t position, size_t limit, size_t capacity, bool readOnly) :
+        mPosition(position),
+        mLimit(limit),
         mCapacity(capacity),
-        mReadOnly(readOnly),
-        mLimit(capacity) {
+        mReadOnly(readOnly) {
 }
 
 size_t Buffer::capacity() const {
@@ -66,7 +67,7 @@ size_t Buffer::position() const {
 }
 
 sp<Buffer> Buffer::position(size_t newPos) {
-    if (newPos > mCapacity) {
+    if (newPos > mLimit) {
         throw BufferOverflowException("Cannot position outside of the buffer");
     }
     mPosition = newPos;
@@ -83,7 +84,7 @@ sp<Buffer> Buffer::rewind() {
 }
 
 sp<String> Buffer::toString() const {
-    return String::format("Buffer: offset = %zu, position = %zu, limit = %zu, capacity = %zu", mOffset, mPosition, mLimit, mCapacity);
+    return String::format("Buffer: position = %zu, limit = %zu, capacity = %zu", mPosition, mLimit, mCapacity);
 }
 
 } /* namespace mindroid */

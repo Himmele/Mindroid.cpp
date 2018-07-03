@@ -96,14 +96,13 @@ public:
     sp<String> toString() const;
 
 protected:
-    Buffer(size_t capacity, bool rw);
+    Buffer(size_t position, size_t limit, size_t capacity, bool readOnly);
 
     /* 0 <= mark <= position <= limit <= capacity */
-    const size_t mCapacity;
-    const bool mReadOnly;
-    size_t mOffset = 0;
     size_t mPosition = 0;
     size_t mLimit;
+    const size_t mCapacity;
+    const bool mReadOnly;
 };
 
 } /* namespace mindroid */
