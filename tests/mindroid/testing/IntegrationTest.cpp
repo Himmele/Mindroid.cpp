@@ -17,19 +17,19 @@
 #include <mindroid/testing/IntegrationTest.h>
 #include <mindroid/content/pm/PackageManager.h>
 #include <mindroid/content/pm/PackageManagerService.h>
-#include <mindroid/os/ServiceManager.h>
-#include <mindroid/os/Environment.h>
+#include <mindroid/io/File.h>
 #include <mindroid/lang/Class.h>
 #include <mindroid/lang/Integer.h>
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/lang/System.h>
-#include <mindroid/io/File.h>
+#include <mindroid/os/ServiceManager.h>
+#include <mindroid/os/Environment.h>
 #include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
-#include <mindroid/util/logging/Logger.h>
+#include <mindroid/util/logging/LoggerService.h>
 
 CLASS(mindroid, PackageManagerService);
-CLASS(mindroid, Logger);
+CLASS(mindroid, LoggerService);
 CLASS(mindroid, ConsoleService);
 
 namespace mindroid {
@@ -39,6 +39,8 @@ sp<ServiceManager> IntegrationTest::sServiceManager = nullptr;
 void IntegrationTest::SetUpTestCase() {
     const uint32_t nodeId = 1;
     const sp<String> rootDir = String::valueOf(".");
+
+    Log::setIntegrationTesting(true);
 
     Environment::setRootDirectory(rootDir);
 
@@ -74,7 +76,7 @@ void IntegrationTest::startSystemSerices() {
     sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
     logFlags->add(String::valueOf("timestamp"));
     sp<Intent> logger = new Intent(Logger::ACTION_LOG);
-    logger->setComponent(new ComponentName("mindroid", "Logger"))
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
             ->putExtra("name", Context::LOGGER_SERVICE->toString())
             ->putExtra("process", "main")
             ->putExtra("logBuffer", Log::LOG_ID_MAIN)
@@ -82,6 +84,7 @@ void IntegrationTest::startSystemSerices() {
             ->putStringArrayListExtra("logFlags", logFlags)
             ->putExtra("consoleLogging", true);
     serviceManager->startSystemService(logger);
+    ServiceManager::waitForSystemService(Context::LOGGER_SERVICE);
 
     sp<Intent> console = new Intent();
     console->setComponent(new ComponentName("mindroid", "ConsoleService"))
@@ -136,8 +139,9 @@ void IntegrationTest::shutdownSystemSerices() {
     ServiceManager::waitForSystemServiceShutdown(Context::CONSOLE_SERVICE);
 
     sp<Intent> logger = new Intent();
-    logger->setComponent(new ComponentName("mindroid", "Logger"));
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"));
     serviceManager->stopSystemService(logger);
+    ServiceManager::waitForSystemServiceShutdown(Context::LOGGER_SERVICE);
 }
 
 void IntegrationTest::shutdownServices() {

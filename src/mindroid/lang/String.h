@@ -67,6 +67,9 @@ public:
     char operator[](const size_t index) const;
     char charAt(size_t index) const;
 
+    bool matches(const char* regex) const;
+    bool matches(const sp<String>& regex) const;
+
     bool contains(const char* subString) const;
     bool contains(const sp<String>& subString) const;
 

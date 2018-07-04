@@ -17,11 +17,23 @@
 #ifndef MINDROID_TESTS_SERVICES_H_
 #define MINDROID_TESTS_SERVICES_H_
 
+#include <mindroid/content/ComponentName.h>
+#include <mindroid/lang/Boolean.h>
+#include <mindroid/util/concurrent/Promise.h>
 #include <mindroid/testing/IntegrationTest.h>
+
+using mindroid::sp;
+using mindroid::wp;
+using mindroid::Object;
+using mindroid::String;
 
 class Services : public mindroid::IntegrationTest {
 public:
-    void test();
+    void test1();
+    void test2();
+
+    sp<mindroid::Promise<sp<mindroid::ComponentName>>> startService();
+    sp<mindroid::Promise<sp<mindroid::Boolean>>> stopService();
 };
 
 #endif /* MINDROID_TESTS_SERVICES_H_ */

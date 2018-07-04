@@ -20,10 +20,11 @@
 
 namespace mindroid {
 
-sp<LogBuffer> Log::sMainLogBuffer = new LogBuffer(LOG_ID_MAIN, 262144); // 256KB
-sp<LogBuffer> Log::sEventLogBuffer = new LogBuffer(LOG_ID_EVENTS, 262144); // 256KB
-sp<LogBuffer> Log::sDebugLogBuffer = new LogBuffer(LOG_ID_DEBUG, 262144); // 256KB
-int32_t Log::priority = DEBUG;
+const sp<LogBuffer> Log::MAIN_LOG_BUFFER = new LogBuffer(LOG_ID_MAIN, 262144); // 256KB
+const sp<LogBuffer> Log::EVENT_LOG_BUFFER = new LogBuffer(LOG_ID_EVENTS, 262144); // 256KB
+const sp<LogBuffer> Log::TEST_LOG_BUFFER = new LogBuffer(LOG_ID_TEST, 262144); // 256KB
+std::mutex Log::sLock;
+bool Log::sIntegrationTesting = false;
 
 int Log::v(const char* tag, const char* format, ...) {
     char msg[LOG_MESSAGE_SIZE];
@@ -92,10 +93,8 @@ void Log::println(char priority, const char* tag, const char* format, ...) {
     vsnprintf(msg, LOG_MESSAGE_SIZE, format, args);
     va_end(args);
 
-    if (parsePriority(priority) >= Log::priority) {
-        ::printf("%c/%s: %s\n", priority, tag, msg);
-        ::fflush(stdout);
-    }
+    ::printf("%c/%s: %s\n", priority, tag, msg);
+    ::fflush(stdout);
 }
 
 } /* namespace mindroid */

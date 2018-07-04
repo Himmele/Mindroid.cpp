@@ -102,8 +102,10 @@ LOCAL_SRC_FILES := \
 	src/mindroid/util/concurrent/locks/ReentrantLock.cpp \
 	src/mindroid/util/logging/ConsoleHandler.cpp \
 	src/mindroid/util/logging/FileHandler.cpp \
+	src/mindroid/util/logging/ILogger.cpp \
 	src/mindroid/util/logging/LogBuffer.cpp \
-	src/mindroid/util/logging/Logger.cpp
+	src/mindroid/util/logging/Logger.cpp \
+	src/mindroid/util/logging/LoggerService.cpp
 
 LOCAL_CFLAGS := -DANDROID -Wno-unused-parameter -fexceptions
 LOCAL_PRELINK_MODULE := false

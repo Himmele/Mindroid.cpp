@@ -110,8 +110,10 @@ SRCS = \
 	src/mindroid/util/concurrent/locks/ReentrantLock.cpp \
 	src/mindroid/util/logging/ConsoleHandler.cpp \
 	src/mindroid/util/logging/FileHandler.cpp \
+	src/mindroid/util/logging/ILogger.cpp \
 	src/mindroid/util/logging/LogBuffer.cpp \
-	src/mindroid/util/logging/Logger.cpp
+	src/mindroid/util/logging/Logger.cpp \
+	src/mindroid/util/logging/LoggerService.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 LIB_OBJS = $(addprefix $(OUT_DIR)/,$(OBJS))

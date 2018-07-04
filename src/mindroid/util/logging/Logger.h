@@ -17,56 +17,40 @@
 #ifndef MINDROID_UTIL_LOGGING_LOGGER_H_
 #define MINDROID_UTIL_LOGGING_LOGGER_H_
 
-#include <mindroid/app/Service.h>
-#include <mindroid/lang/Thread.h>
-#include <mindroid/util/Log.h>
-#include <mindroid/util/logging/ConsoleHandler.h>
-#include <mindroid/util/logging/FileHandler.h>
+#include <mindroid/util/logging/ILogger.h>
+#include <mindroid/content/Context.h>
+#include <mindroid/os/ServiceManager.h>
 
 namespace mindroid {
 
-class Logger : public Service {
+class Logger : public Object {
 public:
     static const char* const ACTION_LOG;
     static const char* const ACTION_DUMP_LOG;
     static const char* const ACTION_FLUSH_LOG;
     static const char* const ACTION_CLEAR_LOG;
 
-    class LogWorker : public Thread {
-    public:
-        LogWorker(const sp<Bundle>& arguments);
+    /** @hide */
+    static char LOG_LEVELS[];
 
-        void run() override;
-        void open();
-        void close();
-        void quit();
-        bool dumpLog(const sp<String>& fileName);
-        void flush();
-        void clear();
+    /**
+     * @hide
+     */
+    Logger() {
+        mLogger = binder::Logger::Stub::asInterface(ServiceManager::getSystemService(Context::LOGGER_SERVICE));
+    }
 
-    private:
-        sp<LogBuffer> mLogBuffer;
-        int32_t mLogPriority = Log::VERBOSE;
-        sp<ArrayList<sp<String>>> mFlags;
-        sp<ConsoleHandler> mConsoleHandler;
-        sp<FileHandler> mFileHandler;
-    };
+    Logger(const sp<Context>& context) {
+        mLogger = binder::Logger::Stub::asInterface(context->getSystemService(Context::LOGGER_SERVICE));
+    }
 
-    void onCreate() override;
-    int32_t onStartCommand(const sp<Intent>& intent, int32_t flags, int32_t startId) override;
-    void onDestroy() override;
-    sp<IBinder> onBind(const sp<Intent>& intent) override;
+    sp<Promise<sp<String>>> assumeThat(const char* tag, const char* message, int64_t timeout) {
+        return assumeThat(String::valueOf(tag), String::valueOf(message), timeout);
+    }
+    sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout);
 
 private:
-    void startLogging(const sp<Bundle>& arguments);
-    void stopLogging(const sp<Bundle>& arguments);
-    void dumpLog(const sp<Bundle>& arguments);
-    void flushLog(const sp<Bundle>& arguments);
-    void clearLog(const sp<Bundle>& arguments);
-
-    static const char* const TAG;
-
-    sp<HashMap<int32_t, sp<LogWorker>>> mLogWorkers = new HashMap<int32_t, sp<LogWorker>>();
+    sp<ILogger> mLogger;
 };
 
 } /* namespace mindroid */

@@ -24,7 +24,7 @@
 #include <mindroid/io/File.h>
 #include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
-#include <mindroid/util/logging/Logger.h>
+#include <mindroid/util/logging/LoggerService.h>
 #include "examples/Services/src/ServiceExample1.h"
 #include "examples/Services/src/ServiceExample2.h"
 #include "examples/Concurrency/src/PromiseExample.h"
@@ -37,7 +37,7 @@
 using namespace mindroid;
 
 CLASS(mindroid, PackageManagerService);
-CLASS(mindroid, Logger);
+CLASS(mindroid, LoggerService);
 CLASS(mindroid, ConsoleService);
 CLASS(examples, ServiceExample1);
 CLASS(examples, ServiceExample2);
@@ -53,7 +53,7 @@ void startSystemSerices() {
     sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
     logFlags->add(String::valueOf("timestamp"));
     sp<Intent> logger = new Intent(Logger::ACTION_LOG);
-    logger->setComponent(new ComponentName("mindroid", "Logger"))
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
             ->putExtra("name", Context::LOGGER_SERVICE->toString())
             ->putExtra("process", "main")
             ->putExtra("logBuffer", Log::LOG_ID_MAIN)
@@ -61,6 +61,7 @@ void startSystemSerices() {
             ->putStringArrayListExtra("logFlags", logFlags)
             ->putExtra("consoleLogging", true);
     serviceManager->startSystemService(logger);
+    ServiceManager::waitForSystemService(Context::LOGGER_SERVICE);
 
     sp<Intent> console = new Intent();
     console->setComponent(new ComponentName("mindroid", "ConsoleService"))
@@ -98,8 +99,9 @@ void shutdownSystemSerices() {
     ServiceManager::waitForSystemServiceShutdown(Context::CONSOLE_SERVICE);
 
     sp<Intent> logger = new Intent();
-    logger->setComponent(new ComponentName("mindroid", "Logger"));
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"));
     serviceManager->stopSystemService(logger);
+    ServiceManager::waitForSystemServiceShutdown(Context::LOGGER_SERVICE);
 }
 
 void shutdownServices() {

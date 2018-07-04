@@ -18,6 +18,7 @@
 #define MINDROID_UTIL_LOG_H_
 
 #include <mindroid/util/logging/LogBuffer.h>
+#include <mutex>
 #if defined(ANDROID)
 #include <android/log.h>
 #endif
@@ -127,27 +128,21 @@ public:
      * @hide
      * @private
      */
-    static int32_t priority;
-
-    /**
-     * @hide
-     * @private
-     */
     static void println(char priority, const char* tag, const char* format, ...);
 
     /**
      * @hide
      * @private
      */
-    static int println(int32_t logId, int32_t priority, const char* tag, const char* msg) {
-        return println(logId, priority, String::valueOf(tag), String::valueOf(msg));
+    static int println(int32_t id, int32_t priority, const char* tag, const char* msg) {
+        return println(id, priority, String::valueOf(tag), String::valueOf(msg));
     }
 
     /**
      * @hide
      * @private
      */
-    static int println(int32_t logId, int32_t priority, const sp<String>& tag, const sp<String>& msg) {
+    static int println(int32_t id, int32_t priority, const sp<String>& tag, const sp<String>& msg) {
 #ifdef ANDROID
         int androidPriority = ANDROID_LOG_DEFAULT;
         switch (priority) {
@@ -173,15 +168,21 @@ public:
         __android_log_write(androidPriority, tag->c_str(), msg->c_str());
 #endif
 
-        switch (logId) {
+        switch (id) {
         case LOG_ID_MAIN:
-            sMainLogBuffer->offer(priority, tag, msg);
+            MAIN_LOG_BUFFER->put(priority, tag, msg);
+            if (sIntegrationTesting) {
+                TEST_LOG_BUFFER->put(priority, tag, msg);
+            }
             return 0;
         case LOG_ID_EVENTS:
-            sEventLogBuffer->offer(priority, tag, msg);
+            EVENT_LOG_BUFFER->put(priority, tag, msg);
+            if (sIntegrationTesting) {
+                TEST_LOG_BUFFER->put(priority, tag, msg);
+            }
             return 0;
-        case LOG_ID_DEBUG:
-            sDebugLogBuffer->offer(priority, tag, msg);
+        case LOG_ID_TEST:
+            TEST_LOG_BUFFER->put(priority, tag, msg);
             return 0;
         default:
             return -1;
@@ -231,9 +232,9 @@ public:
      * @private
      */
     static sp<String> toPriority(int32_t priority) {
-        const char logLevels[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
-        if (priority >= 0 && size_t(priority) < sizeof(logLevels)) {
-            return String::valueOf(logLevels[priority]);
+        static const char LOG_LEVELS[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
+        if (priority >= 0 && size_t(priority) < sizeof(LOG_LEVELS)) {
+            return String::valueOf(LOG_LEVELS[priority]);
         } else {
             return nullptr;
         }
@@ -243,14 +244,14 @@ public:
      * @hide
      * @private
      */
-    static sp<LogBuffer> getLogBuffer(int32_t logId) {
-        switch (logId) {
+    static sp<LogBuffer> getLogBuffer(int32_t id) {
+        switch (id) {
         case LOG_ID_MAIN:
-            return sMainLogBuffer;
+            return MAIN_LOG_BUFFER;
         case LOG_ID_EVENTS:
-            return sEventLogBuffer;
-        case LOG_ID_DEBUG:
-            return sDebugLogBuffer;
+            return EVENT_LOG_BUFFER;
+        case LOG_ID_TEST:
+            return TEST_LOG_BUFFER;
         default:
             return nullptr;
         }
@@ -270,14 +271,42 @@ public:
      * @hide
      * @private
      */
-    static const int32_t LOG_ID_DEBUG = 2;
+    static const int32_t LOG_ID_TEST = 2;
+
+    /**
+     * Integration testing.
+     *
+     * @hide
+     * @private
+     */
+    static void setIntegrationTesting(bool integrationTesting) {
+        sLock.lock();
+        sIntegrationTesting = integrationTesting;
+        sLock.unlock();
+    }
+
+    /**
+     * Integration testing.
+     *
+     * @hide
+     * @private
+     */
+    static bool getIntegrationTesting() {
+        sLock.lock();
+        bool integrationTesting = sIntegrationTesting;
+        sLock.unlock();
+        return integrationTesting;
+    }
 
 private:
     static const size_t LOG_MESSAGE_SIZE = 256;
 
-    static sp<LogBuffer> sMainLogBuffer;
-    static sp<LogBuffer> sEventLogBuffer;
-    static sp<LogBuffer> sDebugLogBuffer;
+    static const sp<LogBuffer> MAIN_LOG_BUFFER;
+    static const sp<LogBuffer> EVENT_LOG_BUFFER;
+    static const sp<LogBuffer> TEST_LOG_BUFFER;
+
+    static std::mutex sLock;
+    static bool sIntegrationTesting;
 };
 
 } /* namespace mindroid */

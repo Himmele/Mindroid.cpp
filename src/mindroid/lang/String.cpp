@@ -19,6 +19,7 @@
 #include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/util/ArrayList.h>
 #include <cstdio>
+#include <regex>
 
 namespace mindroid {
 
@@ -138,6 +139,14 @@ char String::charAt(size_t index) const {
         throw IndexOutOfBoundsException();
     }
     return mStringBuffer->mData[index];
+}
+
+bool String::matches(const char* regex) const {
+    return matches(String::valueOf(regex));
+}
+
+bool String::matches(const sp<String>& regex) const {
+    return std::regex_match(c_str(), std::regex(regex->c_str()));
 }
 
 bool String::contains(const char* subString) const {

@@ -18,12 +18,21 @@
 #define MINDROID_UTIL_LOGGING_LOGHANDLER_H_
 
 #include <mindroid/lang/Object.h>
+#include <mindroid/util/Log.h>
 #include <mindroid/util/logging/LogBuffer.h>
 
 namespace mindroid {
 
 class LogHandler : public Object {
 public:
+    int32_t getPriority() {
+        return mPriority;
+    }
+
+    void setPriority(int32_t priority) {
+        mPriority = priority;
+    }
+
     /**
      * Closes this handler. A flush operation will be performed and all the
      * associated resources will be freed. Client applications should not use
@@ -43,6 +52,9 @@ public:
      *            the log record to be logged; {@code null} records are ignored.
      */
     virtual void publish(const sp<LogBuffer::LogRecord>& record) = 0;
+
+private:
+    int32_t mPriority = Log::INFO;
 };
 
 } /* namespace mindroid */
