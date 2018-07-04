@@ -146,7 +146,15 @@ bool String::matches(const char* regex) const {
 }
 
 bool String::matches(const sp<String>& regex) const {
-    return std::regex_match(c_str(), std::regex(regex->c_str()));
+    if (regex != nullptr) {
+        if (!isEmpty() && !regex->isEmpty()) {
+            return std::regex_match(c_str(), std::regex(regex->c_str()));
+        } else {
+            return isEmpty() && regex->isEmpty();
+        }
+    } else {
+        return false;
+    }
 }
 
 bool String::contains(const char* subString) const {
