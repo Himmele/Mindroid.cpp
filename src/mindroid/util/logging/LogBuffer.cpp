@@ -51,7 +51,7 @@ sp<String> LogBuffer::LogRecord::toString() {
         time[0] = '\0';
     }
 
-    return String::format("%s  0x%" PRIx64 "%c %s: %s", time, mThreadId, Logger::LOG_LEVELS[mPriority], mTag->c_str(), mMessage->c_str());
+    return String::format("%s  0x%" PRIx64 " %c %s: %s", time, mThreadId, Logger::LOG_LEVELS[mPriority], mTag->c_str(), mMessage->c_str());
 }
 
 sp<String> LogBuffer::LogRecord::toShortString() {
