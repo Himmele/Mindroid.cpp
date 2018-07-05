@@ -22,6 +22,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace concurrency {
 
 const char* const PromiseExample::TAG = "PromiseExample";
 
@@ -168,4 +169,5 @@ sp<Promise<int32_t>> PromiseExample::action4(int32_t value) {
     return promise;
 }
 
+} /* namespace concurrency */
 } /* namespace examples */

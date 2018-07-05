@@ -24,6 +24,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace eliza {
 
 void ElizaService::onCreate() {
     if (Runtime::getRuntime()->getNodeId() == 1) {
@@ -42,7 +43,7 @@ sp<IBinder> ElizaService::onBind(const sp<Intent>& intent) {
     return mBinder;
 }
 
-ElizaService::Stub::Stub() : mHandler(new Handler()), mEliza(new eliza::Eliza()) {
+ElizaService::Stub::Stub() : mHandler(new Handler()), mEliza(new ::eliza::Eliza()) {
 }
 
 sp<String> ElizaService::Stub::ask1(const sp<String>& question) {
@@ -70,4 +71,5 @@ sp<String> ElizaService::Stub::talk(const sp<String>& input) {
     return mEliza->talk(input);
 }
 
+} /* namespace eliza */
 } /* namespace examples */

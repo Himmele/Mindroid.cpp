@@ -22,6 +22,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace concurrency {
 
 const char* const HandlerExample::TAG = "HandlerExample";
 
@@ -72,4 +73,5 @@ void HandlerExample::WorldHandler::handleMessage(const sp<Message>& msg) {
     }
 }
 
+} /* namespace concurrency */
 } /* namespace examples */

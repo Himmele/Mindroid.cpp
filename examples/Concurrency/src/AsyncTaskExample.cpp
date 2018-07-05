@@ -21,6 +21,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace concurrency {
 
 const char* const AsyncTaskExample::TAG = "AsyncTaskExample";
 
@@ -77,4 +78,5 @@ void AsyncTaskExample::Task::onCancelled() {
     Log::i(TAG, "onCancelled");
 }
 
+} /* namespace concurrency */
 } /* namespace examples */

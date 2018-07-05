@@ -39,13 +39,13 @@ using namespace mindroid;
 CLASS(mindroid, PackageManagerService);
 CLASS(mindroid, LoggerService);
 CLASS(mindroid, ConsoleService);
-CLASS(examples, ServiceExample1);
-CLASS(examples, ServiceExample2);
-CLASS(examples, HandlerExample);
-CLASS(examples, PromiseExample);
-CLASS(examples, AsyncTaskExample);
-CLASS(examples, ElizaService);
-CLASS(examples, You);
+CLASS(examples::services, ServiceExample1);
+CLASS(examples::services, ServiceExample2);
+CLASS(examples::concurrency, HandlerExample);
+CLASS(examples::concurrency, PromiseExample);
+CLASS(examples::concurrency, AsyncTaskExample);
+CLASS(examples::eliza, ElizaService);
+CLASS(examples::eliza, You);
 
 void startSystemSerices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();

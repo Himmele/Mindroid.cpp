@@ -25,6 +25,7 @@ class Eliza;
 }
 
 namespace examples {
+namespace eliza {
 
 using mindroid::sp;
 
@@ -49,12 +50,13 @@ private:
         sp<String> talk(const sp<String>& input);
 
         sp<mindroid::Handler> mHandler;
-        sp<eliza::Eliza> mEliza;
+        sp<::eliza::Eliza> mEliza;
     };
 
     sp<binder::Eliza::Stub> mBinder;
 };
 
+} /* namespace eliza */
 } /* namespace examples */
 
 #endif /* EXAMPLES_ELIZA_SERVICE_H_ */

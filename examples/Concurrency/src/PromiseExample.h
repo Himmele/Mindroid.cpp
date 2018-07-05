@@ -20,6 +20,7 @@
 #include <mindroid/util/concurrent/SerialExecutor.h>
 
 namespace examples {
+namespace concurrency {
 
 using mindroid::sp;
 
@@ -53,4 +54,5 @@ private:
     static const char* const TAG;
 };
 
+} /* namespace concurrency */
 } /* namespace examples */

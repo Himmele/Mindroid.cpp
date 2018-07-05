@@ -31,6 +31,7 @@ class URI;
 }
 
 namespace examples {
+namespace eliza {
 
 using mindroid::sp;
 using mindroid::wp;
@@ -78,6 +79,7 @@ private:
     sp<mindroid::ArrayList<sp<ListenerWrapper>>> mListeners = new mindroid::ArrayList<sp<ListenerWrapper>>();
 };
 
+} /* namespace eliza */
 } /* namespace examples */
 
 #endif /* EXAMPLES_ELIZA_H_ */

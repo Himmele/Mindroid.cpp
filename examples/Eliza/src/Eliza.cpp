@@ -23,6 +23,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace eliza {
 
 const sp<URI> Eliza::ELIZA = URI::create("mindroid://eliza");
 
@@ -95,4 +96,5 @@ void Eliza::ask3(const sp<String>& question, const std::function<void (const sp<
     }
 }
 
+} /* namespace eliza */
 } /* namespace examples */

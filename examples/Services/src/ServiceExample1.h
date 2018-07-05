@@ -21,6 +21,7 @@
 #include <mindroid/os/Handler.h>
 
 namespace examples {
+namespace services {
 
 using mindroid::sp;
 
@@ -59,4 +60,5 @@ private:
     sp<mindroid::ServiceConnection> mServiceConnection;
 };
 
+} /* namespace services */
 } /* namespace examples */

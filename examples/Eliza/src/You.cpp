@@ -22,6 +22,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace eliza {
 
 const char* const You::TAG = "Rogerian therapy";
 
@@ -60,4 +61,5 @@ sp<IBinder> You::onBind(const sp<Intent>& intent) {
     return nullptr;
 }
 
+} /* namespace eliza */
 } /* namespace examples */

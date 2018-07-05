@@ -19,6 +19,7 @@
 #include <mindroid/os/Message.h>
 
 namespace examples {
+namespace concurrency {
 
 using mindroid::sp;
 
@@ -63,4 +64,5 @@ private:
     sp<mindroid::Handler> mWorldHandler;
 };
 
+} /* namespace concurrency */
 } /* namespace examples */

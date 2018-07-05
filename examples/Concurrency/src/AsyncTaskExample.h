@@ -18,6 +18,7 @@
 #include <mindroid/os/AsyncTask.h>
 
 namespace examples {
+namespace concurrency {
 
 using mindroid::sp;
 
@@ -52,4 +53,5 @@ private:
     static const char* const TAG;
 };
 
+} /* namespace concurrecny */
 } /* namespace examples */

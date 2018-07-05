@@ -20,6 +20,7 @@
 #include <mindroid/app/Service.h>
 
 namespace examples {
+namespace eliza {
 
 using mindroid::sp;
 
@@ -36,6 +37,7 @@ private:
     static const char* const TAG;
 };
 
+} /* namespace eliza */
 } /* namespace examples */
 
 #endif /* EXAMPLES_YOU_H_ */

@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:mindroid="http://schemas.esrlabs.com/mindroid"
-    package="examples"
+    package="examples::concurrency"
     mindroid:versionCode="1"
     mindroid:versionName="1.0">
 
     <application>
-        <service
-            mindroid:name=".ServiceExample1"
-            mindroid:autostart="true" />
-        <service
-            mindroid:name=".ServiceExample2"
-            mindroid:autostart="false" />
         <service
             mindroid:name=".HandlerExample"
             mindroid:autostart="true" />
@@ -19,14 +13,6 @@
             mindroid:autostart="true" />
         <service
             mindroid:name=".AsyncTaskExample"
-            mindroid:autostart="true" />
-        <service
-            mindroid:name=".ElizaService"
-            mindroid:process="eliza"
-            mindroid:autostart="true" />
-        <service
-            mindroid:name=".You"
-            mindroid:process="eliza"
             mindroid:autostart="true" />
     </application>
 </manifest>

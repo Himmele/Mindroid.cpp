@@ -21,6 +21,7 @@
 #include <mindroid/lang/Class.h>
 
 namespace examples {
+namespace eliza {
 
 using mindroid::sp;
 using mindroid::Object;
@@ -128,6 +129,7 @@ public:
 };
 
 } /* namespace binder */
+} /* namespace eliza */
 } /* namespace examples */
 
 #endif /* EXAMPLES_IELIZALISTENER_H_ */

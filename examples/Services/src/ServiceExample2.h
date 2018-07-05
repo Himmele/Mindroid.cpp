@@ -18,6 +18,7 @@
 #include <mindroid/util/Log.h>
 
 namespace examples {
+namespace services {
 
 using mindroid::sp;
 
@@ -56,4 +57,5 @@ private:
 
 const char* const ServiceExample2::TAG = "Service2";
 
+} /* namespace services */
 } /* namespace examples */

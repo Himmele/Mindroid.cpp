@@ -19,6 +19,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace services {
 
 const char* const ServiceExample1::TAG = "ServiceExample1";
 
@@ -59,4 +60,5 @@ void ServiceExample1::onDestroy() {
     Log::d(TAG, "Service1::onDestroy");
 }
 
+} /* namespace services */
 } /* namespace examples */

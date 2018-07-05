@@ -24,6 +24,7 @@
 using namespace mindroid;
 
 namespace examples {
+namespace eliza {
 namespace binder {
 
 const char* const Eliza::Stub::DESCRIPTOR = "mindroid://interfaces/examples/eliza/IEliza";
@@ -150,4 +151,5 @@ void Eliza::Proxy::ask3(const sp<String> question, const sp<IElizaListener>& lis
 }
 
 } /* namespace binder */
+} /* namespace eliza */
 } /* namespace examples */
