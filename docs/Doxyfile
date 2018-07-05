@@ -877,6 +877,7 @@ INPUT = Main.md \
     ../src/mindroid/util/Log.h \
     ../src/mindroid/util/NoSuchElementException.h \
     ../src/mindroid/util/Pair.h \
+    ../src/mindroid/util/Properties.h \
     ../src/mindroid/util/Variant.h \
     ../src/mindroid/util/concurrent/AsyncAwait.h \
     ../src/mindroid/util/concurrent/CancellationException.h \

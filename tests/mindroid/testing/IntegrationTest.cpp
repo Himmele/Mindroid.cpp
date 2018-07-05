@@ -26,6 +26,7 @@
 #include <mindroid/os/Environment.h>
 #include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
+#include <mindroid/util/Properties.h>
 #include <mindroid/util/logging/LoggerService.h>
 
 CLASS(mindroid, PackageManagerService);
@@ -40,6 +41,7 @@ void IntegrationTest::SetUpTestCase() {
     const uint32_t nodeId = 1;
     const sp<String> rootDir = String::valueOf(".");
 
+    System::setProperty(Properties::INTEGRATION_TESTING, "true");
     Log::setIntegrationTesting(true);
 
     Environment::setRootDirectory(rootDir);

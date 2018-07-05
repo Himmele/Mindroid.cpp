@@ -18,8 +18,11 @@
 #include <mindroid/content/Intent.h>
 #include <mindroid/os/Environment.h>
 #include <mindroid/os/IRemoteCallback.h>
+#include <mindroid/lang/Boolean.h>
+#include <mindroid/lang/System.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/util/Log.h>
+#include <mindroid/util/Properties.h>
 #include <cstdio>
 
 namespace mindroid {
@@ -101,7 +104,8 @@ void LoggerService::LoggerThread::quit() {
 }
 
 void LoggerService::onCreate() {
-    if (Log::getIntegrationTesting()) {
+    const sp<String> integrationTesting = System::getProperty(Properties::INTEGRATION_TESTING);
+    if (integrationTesting != nullptr && Boolean::valueOf(integrationTesting)->booleanValue()) {
         mTestHandler = new TestHandler();
         sp<ArrayList<sp<LogHandler>>> handlers = new ArrayList<sp<LogHandler>>();
         handlers->add(mTestHandler);

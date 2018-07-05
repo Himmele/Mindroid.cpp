@@ -90,6 +90,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/util/Assert.cpp \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \
+	src/mindroid/util/Properties.cpp \
 	src/mindroid/util/Variant.cpp \
 	src/mindroid/util/concurrent/AsyncAwait.cpp \
 	src/mindroid/util/concurrent/Executors.cpp \
