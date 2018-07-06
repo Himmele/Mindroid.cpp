@@ -228,11 +228,13 @@ void FileHandler::clear() {
 }
 
 void FileHandler::publish(const sp<LogBuffer::LogRecord>& record) {
-    AutoLock autoLock(mLock);
-
+    if (record->getPriority() < getPriority()) {
+        return;
+    }
     sp<String> logMessage = record->toString();
     int32_t logMessageSize = logMessage->length() + CRLF->length();
 
+    AutoLock autoLock(mLock);
     if (mDataVolumeLimit > 0) {
         if (mDataVolume + logMessageSize > mDataVolumeLimit) {
             return;

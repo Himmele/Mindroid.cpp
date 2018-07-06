@@ -21,6 +21,9 @@
 namespace mindroid {
 
 void ConsoleHandler::publish(const sp<LogBuffer::LogRecord>& record) {
+    if (record->getPriority() < getPriority()) {
+        return;
+    }
     sp<String> message;
     if ((mFlags & FLAG_TIMESTAMP) == FLAG_TIMESTAMP) {
         message = record->toString();

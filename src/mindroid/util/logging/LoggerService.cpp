@@ -110,6 +110,7 @@ void LoggerService::onCreate() {
         sp<ArrayList<sp<LogHandler>>> handlers = new ArrayList<sp<LogHandler>>();
         handlers->add(mTestHandler);
         const int32_t id = Log::LOG_ID_TEST;
+        AutoLock autoLock(mLock);
         mLogHandlers->put(id, handlers);
     }
     mLogger->start();
@@ -164,6 +165,7 @@ sp<IBinder> LoggerService::onBind(const sp<Intent>& intent) {
 
 void LoggerService::startLogging(const sp<Bundle>& arguments) {
     const int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
+    AutoLock autoLock(mLock);
     if (!mLogHandlers->containsKey(logBuffer)) {
         Log::println('D', TAG, "Starting logging {%d}", logBuffer);
         try {
@@ -216,6 +218,7 @@ void LoggerService::startLogging(const sp<Bundle>& arguments) {
 
 void LoggerService::stopLogging(const sp<Bundle>& arguments) {
     const int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
+    AutoLock autoLock(mLock);
     if (mLogHandlers->containsKey(logBuffer)) {
         Log::println('D', TAG, "Stopping logging {%d}", logBuffer);
         sp<ArrayList<sp<LogHandler>>> logHandlers = mLogHandlers->get(logBuffer);
@@ -234,6 +237,7 @@ void LoggerService::dumpLog(const sp<Bundle>& arguments) {
     const int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
     sp<String> fileName = arguments->getString("fileName");
     sp<IRemoteCallback> callback = binder::RemoteCallback::Stub::asInterface(arguments->getBinder("binder"));
+    AutoLock autoLock(mLock);
     if (mLogHandlers->containsKey(logBuffer)) {
         Log::println('D', TAG, "Dumping log to file %s {%d}", fileName->c_str(), logBuffer);
         sp<ArrayList<sp<LogHandler>>> logHandlers = mLogHandlers->get(logBuffer);
@@ -262,6 +266,7 @@ void LoggerService::dumpLog(const sp<Bundle>& arguments) {
 
 void LoggerService::flushLog(const sp<Bundle>& arguments) {
     const int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
+    AutoLock autoLock(mLock);
     if (mLogHandlers->containsKey(logBuffer)) {
         Log::println('D', TAG, "Flushing log {%d}", logBuffer);
         sp<ArrayList<sp<LogHandler>>> logHandlers = mLogHandlers->get(logBuffer);
@@ -275,6 +280,7 @@ void LoggerService::flushLog(const sp<Bundle>& arguments) {
 
 void LoggerService::clearLog(const sp<Bundle>& arguments) {
     const int32_t logBuffer = arguments->getInt("logBuffer", Log::LOG_ID_MAIN);
+    AutoLock autoLock(mLock);
     if (mLogHandlers->containsKey(logBuffer)) {
         Log::println('D', TAG, "Clearing log {%d}", logBuffer);
         sp<ArrayList<sp<LogHandler>>> logHandlers = mLogHandlers->get(logBuffer);
