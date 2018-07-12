@@ -67,9 +67,21 @@ void IntegrationTest::TearDownTestCase() {
 }
 
 void IntegrationTest::SetUp() {
+    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+
+    sp<Intent> logger = new Intent(Logger::ACTION_MARK_LOG);
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
+            ->putExtra("logBuffer", Log::LOG_ID_TEST);
+    serviceManager->startSystemService(logger);
 }
 
 void IntegrationTest::TearDown() {
+    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+
+    sp<Intent> logger = new Intent(Logger::ACTION_RESET_LOG);
+    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
+            ->putExtra("logBuffer", Log::LOG_ID_TEST);
+    serviceManager->startSystemService(logger);
 }
 
 void IntegrationTest::startSystemSerices() {

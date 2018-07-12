@@ -57,6 +57,8 @@ public:
     }
     sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments);
 
+    sp<HashMap<sp<String>, sp<String>>> listCommands();
+
 private:
     sp<IConsole> mConsole;
 };

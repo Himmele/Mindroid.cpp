@@ -29,6 +29,8 @@ public:
     static const char* const ACTION_DUMP_LOG;
     static const char* const ACTION_FLUSH_LOG;
     static const char* const ACTION_CLEAR_LOG;
+    static const char* const ACTION_MARK_LOG;
+    static const char* const ACTION_RESET_LOG;
 
     /** @hide */
     static char LOG_LEVELS[];

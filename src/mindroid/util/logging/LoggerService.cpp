@@ -129,6 +129,14 @@ int32_t LoggerService::onStartCommand(const sp<Intent>& intent, int32_t flags, i
             flushLog(intent->getExtras());
         } else if (action->equals(Logger::ACTION_CLEAR_LOG)) {
             clearLog(intent->getExtras());
+        } else if (action->equals(Logger::ACTION_MARK_LOG)) {
+            if (mTestHandler != nullptr) {
+                mTestHandler->mark();
+            }
+        } else if (action->equals(Logger::ACTION_RESET_LOG)) {
+            if (mTestHandler != nullptr) {
+                mTestHandler->reset();
+            }
         }
     }
 
@@ -139,7 +147,7 @@ void LoggerService::onDestroy() {
     ServiceManager::removeService(mBinder);
     mLogger->quit();
     if (mTestHandler != nullptr) {
-        mTestHandler->reset();
+        mTestHandler->clear();
     }
     Log::println('D', TAG, "Flushing logs");
     AutoLock autoLock(mLock);
@@ -308,7 +316,9 @@ void LoggerService::TestHandler::publish(const sp<LogBuffer::LogRecord>& logReco
     auto itr = mAssumptions->iterator();
     while (itr.hasNext()) {
         sp<Assumption> assumption = itr.next();
-        assumption->match(logRecord->getPriority(), logRecord->getTag(), logRecord->getMessage());
+        if (assumption->match(logRecord->getPriority(), logRecord->getTag(), logRecord->getMessage())) {
+            itr.remove();
+        }
     }
 }
 
@@ -324,19 +334,23 @@ sp<Promise<sp<String>>> LoggerService::TestHandler::assumeThat(const sp<String>&
         return assumption;
     } else {
         mAssumptions->add(assumption);
-        sp<Promise<sp<String>>> p = assumption->orTimeout(timeout)->then([=] (const sp<String>& value, const sp<Exception>& exception) {
+        sp<Promise<sp<String>>> p = assumption->orTimeout(timeout)->catchException([=] (const sp<Exception>& exception) {
+            AutoLock autoLock(mLock);
+            mAssumptions->remove(assumption);
+        })
+        ->then([=] (const sp<String>& value, const sp<Exception>& exception) {
             if (exception == nullptr) {
                 Log::println('D', TAG, "Log assumption success: %s", value->c_str());
             } else {
-                Log::println('E', TAG, "Log assumption timeout: %s", exception->getMessage()->c_str());
+                Log::println('E', TAG, "Log assumption timeout: %s", assumption->toString()->c_str());
             }
-            mAssumptions->remove(assumption);
         });
         return p;
     }
 }
 
-void LoggerService::TestHandler::reset() {
+void LoggerService::TestHandler::clear() {
+    AutoLock autoLock(mLock);
     auto itr = mAssumptions->iterator();
     while (itr.hasNext()) {
         sp<Assumption> assumption = itr.next();
@@ -344,6 +358,24 @@ void LoggerService::TestHandler::reset() {
     }
     mAssumptions->clear();
     mLogHistory->clear();
+}
+
+void LoggerService::TestHandler::mark() {
+    AutoLock autoLock(mLock);
+    mMark = mLogHistory->size();
+}
+
+void LoggerService::TestHandler::reset() {
+    AutoLock autoLock(mLock);
+    auto itr = mAssumptions->iterator();
+    while (itr.hasNext()) {
+        sp<Assumption> assumption = itr.next();
+        assumption->cancel();
+    }
+    mAssumptions->clear();
+    while (mLogHistory->size() > mMark) {
+        mLogHistory->remove(mLogHistory->size() - 1);
+    }
 }
 
 bool LoggerService::TestHandler::matchLogHistory(const sp<Assumption>& assumption) {

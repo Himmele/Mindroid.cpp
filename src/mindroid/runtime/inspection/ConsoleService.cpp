@@ -70,6 +70,18 @@ sp<Promise<sp<String>>> ConsoleService::executeCommand(const sp<String>& command
     return result;
 }
 
+sp<HashMap<sp<String>, sp<String>>> ConsoleService::listCommands() {
+    sp<HashMap<sp<String>, sp<String>>> map = new HashMap<sp<String>, sp<String>>();
+    auto itr = mCommands->iterator();
+    while (itr.hasNext()) {
+        auto entry = itr.next();
+        sp<String> key = entry.getKey();
+        sp<Command> value = entry.getValue();
+        map->put(key, value->description);
+    }
+    return map;
+}
+
 void ConsoleService::addCommands() {
     addCommand("help", "Print commands", [=] (const sp<StringArray>& arguments) {
         sp<StringBuilder> sb = new StringBuilder();

@@ -60,4 +60,16 @@ sp<Promise<sp<String>>> Console::executeCommand(const sp<String>& command, const
     }
 }
 
+sp<HashMap<sp<String>, sp<String>>> Console::listCommands() {
+    if (mConsole != nullptr) {
+        try {
+            return mConsole->listCommands();
+        } catch (const RemoteException& e) {
+            throw RuntimeException("System failure", e);
+        }
+    } else {
+        return nullptr;
+    }
+}
+
 } /* namespace mindroid */

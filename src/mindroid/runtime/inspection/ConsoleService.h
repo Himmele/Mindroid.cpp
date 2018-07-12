@@ -69,6 +69,10 @@ private:
             return mConsoleService->executeCommand(command, arguments);
         }
 
+        sp<HashMap<sp<String>, sp<String>>> listCommands() override {
+            return mConsoleService->listCommands();
+        }
+
     private:
         sp<ConsoleService> mConsoleService;
     };
@@ -80,6 +84,7 @@ private:
     void addCommand(const sp<String>& command, const sp<String>& description, const std::function<sp<String> (sp<StringArray>)>& function);
     bool removeCommand(const sp<String>& command);
     sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments);
+    sp<HashMap<sp<String>, sp<String>>> listCommands();
 
     void addCommands();
 

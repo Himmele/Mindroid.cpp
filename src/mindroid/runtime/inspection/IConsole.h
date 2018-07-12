@@ -20,6 +20,7 @@
 #include <mindroid/os/Binder.h>
 #include <mindroid/lang/StringArray.h>
 #include <mindroid/runtime/inspection/ICommandHandler.h>
+#include <mindroid/util/HashMap.h>
 
 namespace mindroid {
 
@@ -31,6 +32,7 @@ public:
     virtual bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) = 0;
     virtual bool removeCommand(const sp<String>& command) = 0;
     virtual sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) = 0;
+    virtual sp<HashMap<sp<String>, sp<String>>> listCommands() = 0;
 };
 
 namespace binder {
@@ -86,6 +88,7 @@ public:
             bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) override;
             bool removeCommand(const sp<String>& command) override;
             sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) override;
+            sp<HashMap<sp<String>, sp<String>>> listCommands() override;
 
         private:
             sp<IBinder> mRemote;
@@ -96,6 +99,7 @@ public:
         static const int32_t MSG_ADD_COMMAND = 1;
         static const int32_t MSG_REMOVE_COMMAND = 2;
         static const int32_t MSG_EXECUTE_COMMAND = 3;
+        static const int32_t MSG_LIST_COMMANDS = 4;
 
         friend class Console::Proxy;
     };
@@ -126,6 +130,7 @@ public:
         bool addCommand(const sp<String>& command, const sp<String>& description, const sp<ICommandHandler>& commandHandler) override;
         bool removeCommand(const sp<String>& command) override;
         sp<Promise<sp<String>>> executeCommand(const sp<String>& command, const sp<StringArray>& arguments) override;
+        sp<HashMap<sp<String>, sp<String>>> listCommands() override;
 
     private:
         sp<IBinder> mBinder;

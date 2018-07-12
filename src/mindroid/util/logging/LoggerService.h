@@ -72,6 +72,10 @@ private:
 
             bool match(int32_t priority, const sp<String>& tag, const sp<String>& message);
 
+            sp<String> toString() {
+                return String::format("%s: %s", mTag->c_str(), mMessage->c_str());
+            }
+
             sp<String> mTag;
             sp<String> mMessage;
         };
@@ -86,6 +90,8 @@ private:
 
         sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, uint64_t timeout);
 
+        void clear();
+        void mark();
         void reset();
 
     private:
@@ -94,6 +100,7 @@ private:
         sp<LinkedList<sp<LogBuffer::LogRecord>>> mLogHistory = new LinkedList<sp<LogBuffer::LogRecord>>();
         sp<LinkedList<sp<Assumption>>> mAssumptions = new LinkedList<sp<Assumption>>();
         sp<Lock> mLock = new ReentrantLock();
+        size_t mMark = 0;
     };
 
     sp<binder::Logger::Stub> mBinder = new LoggerImpl(this);

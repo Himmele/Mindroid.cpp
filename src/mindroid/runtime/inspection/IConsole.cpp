@@ -44,6 +44,10 @@ void Console::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj,
         object_cast<Promise<sp<String>>, Object>(result)->completeWith(executeCommand(command, arguments));
         break;
     }
+    case MSG_LIST_COMMANDS: {
+        object_cast<Promise<sp<HashMap<sp<String>, sp<String>>>>, Object>(result)->complete(listCommands());
+        break;
+    }
     default:
         Binder::onTransact(what, num, obj, data, result);
     }
@@ -72,6 +76,12 @@ sp<Promise<sp<String>>> Console::Stub::Proxy::executeCommand(const sp<String>& c
     sp<Promise<sp<String>>> promise = new Promise<sp<String>>();
     mRemote->transact(MSG_EXECUTE_COMMAND, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
     return promise;
+}
+
+sp<HashMap<sp<String>, sp<String>>> Console::Stub::Proxy::listCommands() {
+    sp<Promise<sp<HashMap<sp<String>, sp<String>>>>> promise = new Promise<sp<HashMap<sp<String>, sp<String>>>>();
+    mRemote->transact(MSG_LIST_COMMANDS, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    return Binder::get(promise);
 }
 
 Console::Proxy::Proxy(const sp<IBinder>& binder) {
@@ -107,6 +117,14 @@ sp<Promise<sp<String>>> Console::Proxy::executeCommand(const sp<String>& command
         return mStub->executeCommand(command, arguments);
     } else {
         return mProxy->executeCommand(command, arguments);
+    }
+}
+
+sp<HashMap<sp<String>, sp<String>>> Console::Proxy::listCommands() {
+    if (mStub != nullptr && mStub->isCurrentThread()) {
+        return mStub->listCommands();
+    } else {
+        return mProxy->listCommands();
     }
 }
 
