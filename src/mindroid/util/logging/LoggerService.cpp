@@ -334,7 +334,8 @@ sp<Promise<sp<String>>> LoggerService::TestHandler::assumeThat(const sp<String>&
         return assumption;
     } else {
         mAssumptions->add(assumption);
-        sp<Promise<sp<String>>> p = assumption->orTimeout(timeout)->catchException([=] (const sp<Exception>& exception) {
+        sp<Promise<sp<String>>> p = assumption->orTimeout(timeout, String::format("Log assumption timeout: %s", assumption->toString()->c_str()))
+        ->catchException([=] (const sp<Exception>& exception) {
             AutoLock autoLock(mLock);
             mAssumptions->remove(assumption);
         })

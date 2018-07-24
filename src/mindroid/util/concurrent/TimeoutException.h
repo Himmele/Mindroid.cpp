@@ -40,6 +40,12 @@ public:
     TimeoutException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
     }
 
+    TimeoutException(const char* message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
+    TimeoutException(const sp<String>& message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
     TimeoutException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
     }
 };

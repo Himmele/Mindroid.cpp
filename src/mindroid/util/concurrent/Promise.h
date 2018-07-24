@@ -1255,8 +1255,24 @@ public:
     }
 
     sp<Promise<T>> orTimeout(uint64_t timeout) {
+        return orTimeout(timeout, nullptr, nullptr);
+    }
+
+    sp<Promise<T>> orTimeout(uint64_t timeout, const char* message) {
+        return orTimeout(timeout, String::valueOf(message), nullptr);
+    }
+
+    sp<Promise<T>> orTimeout(uint64_t timeout, const sp<String>& message) {
+        return orTimeout(timeout, message, nullptr);
+    }
+
+    sp<Promise<T>> orTimeout(uint64_t timeout, const char* message, const sp<Exception>& cause) {
+        return orTimeout(timeout, String::valueOf(message), cause);
+    }
+
+    sp<Promise<T>> orTimeout(uint64_t timeout, const sp<String>& message, const sp<Exception>& cause) {
         if (!isDone()) {
-            then(Timeout::add(new typename Promise<T>::Timeout::Exception(this), timeout));
+            then(Timeout::add(new typename Promise<T>::Timeout::Exception(this, message, cause), timeout));
         }
         return this;
     }
@@ -1751,17 +1767,22 @@ private:
         /// @private
         class Exception : public Runnable {
         public:
-            Exception(const sp<Promise<T>>& consumer) : mConsumer(consumer) {
+            Exception(const sp<Promise<T>>& consumer, const sp<String>& message, const sp<mindroid::Exception>& cause) :
+                    mConsumer(consumer),
+                    mMessage(message),
+                    mCause(cause) {
             }
 
             virtual void run() override final {
                 if (mConsumer != nullptr && !mConsumer->isDone()) {
-                    mConsumer->completeWith(sp<mindroid::Exception>(new TimeoutException("Timeout exception")));
+                    mConsumer->completeWith(sp<mindroid::Exception>(new TimeoutException(mMessage, mCause)));
                 }
             }
 
         private:
             sp<Promise<T>> mConsumer;
+            sp<String> mMessage;
+            sp<mindroid::Exception> mCause;
         };
 
     private:
