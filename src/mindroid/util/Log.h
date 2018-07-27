@@ -280,22 +280,7 @@ public:
      * @private
      */
     static void setIntegrationTesting(bool integrationTesting) {
-        sLock.lock();
         sIntegrationTesting = integrationTesting;
-        sLock.unlock();
-    }
-
-    /**
-     * Integration testing.
-     *
-     * @hide
-     * @private
-     */
-    static bool getIntegrationTesting() {
-        sLock.lock();
-        bool integrationTesting = sIntegrationTesting;
-        sLock.unlock();
-        return integrationTesting;
     }
 
 private:
@@ -305,7 +290,6 @@ private:
     static const sp<LogBuffer> EVENT_LOG_BUFFER;
     static const sp<LogBuffer> TEST_LOG_BUFFER;
 
-    static std::mutex sLock;
     static bool sIntegrationTesting;
 };
 

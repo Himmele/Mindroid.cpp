@@ -23,7 +23,6 @@ namespace mindroid {
 const sp<LogBuffer> Log::MAIN_LOG_BUFFER = new LogBuffer(LOG_ID_MAIN, 262144); // 256KB
 const sp<LogBuffer> Log::EVENT_LOG_BUFFER = new LogBuffer(LOG_ID_EVENTS, 262144); // 256KB
 const sp<LogBuffer> Log::TEST_LOG_BUFFER = new LogBuffer(LOG_ID_TEST, 262144); // 256KB
-std::mutex Log::sLock;
 bool Log::sIntegrationTesting = false;
 
 int Log::v(const char* tag, const char* format, ...) {
