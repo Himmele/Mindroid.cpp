@@ -97,22 +97,19 @@ void IntegrationTest::startSystemSerices() {
             ->putExtra("logPriority", Log::DEBUG)
             ->putStringArrayListExtra("logFlags", logFlags)
             ->putExtra("consoleLogging", true);
-    serviceManager->startSystemService(logger);
-    ServiceManager::waitForSystemService(Context::LOGGER_SERVICE);
+    serviceManager->startSystemService(logger)->get();
 
     sp<Intent> console = new Intent();
     console->setComponent(new ComponentName("mindroid", "ConsoleService"))
             ->putExtra("name", Context::CONSOLE_SERVICE->toString())
             ->putExtra("process", "main");
-    serviceManager->startSystemService(console);
-    ServiceManager::waitForSystemService(Context::CONSOLE_SERVICE);
+    serviceManager->startSystemService(console)->get();
 
     sp<Intent> packageManager = new Intent();
     packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"))
             ->putExtra("name", Context::PACKAGE_MANAGER->toString())
             ->putExtra("process", "main");
-    serviceManager->startSystemService(packageManager);
-    ServiceManager::waitForSystemService(Context::PACKAGE_MANAGER);
+    serviceManager->startSystemService(packageManager)->get();
 }
 
 void IntegrationTest::startServices() {
@@ -144,18 +141,15 @@ void IntegrationTest::shutdownSystemSerices() {
 
     sp<Intent> packageManager = new Intent();
     packageManager->setComponent(new ComponentName("mindroid", "PackageManagerService"));
-    serviceManager->stopSystemService(packageManager);
-    ServiceManager::waitForSystemServiceShutdown(Context::PACKAGE_MANAGER);
+    serviceManager->stopSystemService(packageManager)->get();
 
     sp<Intent> console = new Intent();
     console->setComponent(new ComponentName("mindroid", "ConsoleService"));
-    serviceManager->stopSystemService(console);
-    ServiceManager::waitForSystemServiceShutdown(Context::CONSOLE_SERVICE);
+    serviceManager->stopSystemService(console)->get();
 
     sp<Intent> logger = new Intent();
     logger->setComponent(new ComponentName("mindroid", "LoggerService"));
-    serviceManager->stopSystemService(logger);
-    ServiceManager::waitForSystemServiceShutdown(Context::LOGGER_SERVICE);
+    serviceManager->stopSystemService(logger)->get();
 }
 
 void IntegrationTest::shutdownServices() {

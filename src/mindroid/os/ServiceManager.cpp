@@ -220,9 +220,10 @@ sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopService(const s
 
         class OnResultListener : public RemoteCallback::OnResultListener {
         public:
-            OnResultListener(const wp<ServiceManager>& serviceManager, const sp<String>& serviceName) :
+            OnResultListener(const wp<ServiceManager>& serviceManager, const sp<String>& serviceName, const sp<Promise<sp<Boolean>>>& promise) :
                     mServiceManager(serviceManager),
-                    mServiceName(serviceName) {
+                    mServiceName(serviceName),
+                    mPromise(promise) {
             }
 
         protected:
@@ -235,6 +236,7 @@ sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopService(const s
                     } else {
                         Log::w(ServiceManager::TAG, "Service %s cannot be stopped", mServiceName->c_str());
                     }
+                    mPromise->complete(new Boolean(result));
 
                     serviceManager->mServiceCallbacks->remove(getCallback());
                 }
@@ -243,9 +245,11 @@ sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopService(const s
         private:
             const wp<ServiceManager> mServiceManager;
             const sp<String> mServiceName;
+            const sp<Promise<sp<Boolean>>> mPromise;
         };
 
-        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(mServiceManager, serviceRecord->name));
+        sp<Promise<sp<Boolean>>> promise = new Promise<sp<Boolean>>();
+        sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(mServiceManager, serviceRecord->name, promise));
         mServiceManager->mServiceCallbacks->add(callback);
         try {
             process->stopService(service, callback->asInterface());
@@ -266,7 +270,7 @@ sp<Promise<sp<Boolean>>> ServiceManager::ServiceManagerImpl::stopService(const s
             }
         }
 
-        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(true)));
+        return promise;
     } else {
         Log::d(ServiceManager::TAG, "Cannot find and stop service %s", service->getComponent()->toShortString()->c_str());
         return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
@@ -477,10 +481,12 @@ sp<Promise<sp<ComponentName>>> ServiceManager::startService(const sp<Intent>& se
 
     class OnResultListener : public RemoteCallback::OnResultListener {
     public:
-        OnResultListener(const wp<ServiceManager>& serviceManager, const sp<String>& serviceName, const sp<String>& processName) :
+        OnResultListener(const wp<ServiceManager>& serviceManager, const sp<String>& serviceName, const sp<String>& processName, const sp<ComponentName>& componentName, const sp<Promise<sp<ComponentName>>>& promise) :
                 mServiceManager(serviceManager),
                 mServiceName(serviceName),
-                mProcessName(processName) {
+                mProcessName(processName),
+                mComponentName(componentName),
+                mPromise(promise) {
         }
 
     protected:
@@ -493,6 +499,7 @@ sp<Promise<sp<ComponentName>>> ServiceManager::startService(const sp<Intent>& se
                 } else {
                     Log::w(TAG, "Service %s cannot be started in process %s", mServiceName->c_str(), mProcessName->c_str());
                 }
+                mPromise->complete(mComponentName);
 
                 serviceManager->mServiceCallbacks->remove(getCallback());
             }
@@ -502,9 +509,12 @@ sp<Promise<sp<ComponentName>>> ServiceManager::startService(const sp<Intent>& se
         const wp<ServiceManager> mServiceManager;
         const sp<String> mServiceName;
         const sp<String> mProcessName;
+        const sp<ComponentName> mComponentName;
+        const sp<Promise<sp<ComponentName>>> mPromise;
     };
 
-    sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, serviceRecord->name, serviceRecord->processRecord->name));
+    sp<Promise<sp<ComponentName>>> promise = new Promise<sp<ComponentName>>();
+    sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, serviceRecord->name, serviceRecord->processRecord->name, service->getComponent(), promise));
     mServiceCallbacks->add(callback);
     try {
         serviceRecord->processRecord->process->startService(service, 0, mStartId++, callback->asInterface());
@@ -512,7 +522,7 @@ sp<Promise<sp<ComponentName>>> ServiceManager::startService(const sp<Intent>& se
         throw RuntimeException("System failure", e);
     }
 
-    return new Promise<sp<ComponentName>>(service->getComponent());
+    return promise;
 }
 
 bool ServiceManager::cleanupService(const sp<Intent>& service) {
