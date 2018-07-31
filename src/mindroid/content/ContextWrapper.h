@@ -76,15 +76,15 @@ public:
         return mBaseContext->getSystemService(name);
     }
 
-    virtual sp<ComponentName> startService(const sp<Intent>& service) {
+    virtual sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service) {
         return mBaseContext->startService(service);
     }
 
-    virtual bool stopService(const sp<Intent>& service) {
+    virtual sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service) {
         return mBaseContext->stopService(service);
     }
 
-    virtual bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int flags) {
+    virtual sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int flags) {
         return mBaseContext->bindService(service, conn, flags);
     }
 

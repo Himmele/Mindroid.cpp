@@ -62,9 +62,9 @@ public:
 
     sp<IBinder> getSystemService(const sp<URI>& name);
 
-    sp<ComponentName> startService(const sp<Intent>& service);
-    bool stopService(const sp<Intent>& service);
-    bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags);
+    sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service);
+    sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service);
+    sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags);
     void unbindService(const sp<ServiceConnection>& conn);
 
 private:

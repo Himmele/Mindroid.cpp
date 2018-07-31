@@ -20,9 +20,11 @@
 #define MINDROID_CONTENT_CONTEXT_H_
 
 #include <mindroid/lang/Object.h>
+#include <mindroid/util/concurrent/Promise.h>
 
 namespace mindroid {
 
+class Boolean;
 class String;
 class IBinder;
 class ComponentName;
@@ -148,7 +150,7 @@ public:
      * @see #stopService
      * @see #bindService
      */
-    virtual sp<ComponentName> startService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<ComponentName>>> startService(const sp<Intent>& service) = 0;
 
     /**
      * Request that a given application service be stopped. If the service is not running, nothing
@@ -168,7 +170,7 @@ public:
      *
      * @see #startService
      */
-    virtual bool stopService(const sp<Intent>& service) = 0;
+    virtual sp<Promise<sp<Boolean>>> stopService(const sp<Intent>& service) = 0;
 
     /**
      * Connect to an application service, creating it if needed. This defines a dependency between
@@ -189,7 +191,7 @@ public:
      * @see #unbindService
      * @see #startService
      */
-    virtual bool bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags) = 0;
+    virtual sp<Promise<sp<Boolean>>> bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags) = 0;
 
     /**
      * Disconnect from an application service. You will no longer receive calls as the service is

@@ -36,7 +36,7 @@ void ServiceExample1::onCreate() {
     Log::d(TAG, "ServiceExample1::onCreate");
 
     sp<Intent> intent = new Intent();
-    intent->setComponent(new ComponentName("examples", "ServiceExample2"));
+    intent->setComponent(new ComponentName("examples::services", "ServiceExample2"));
     mServiceConnection = new ServiceConnection1();
     bindService(intent, mServiceConnection, 0);
     startService(intent);

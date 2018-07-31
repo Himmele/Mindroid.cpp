@@ -66,42 +66,34 @@ sp<IBinder> ContextImpl::getSystemService(const sp<URI>& name) {
     }
 }
 
-sp<ComponentName> ContextImpl::startService(const sp<Intent>& service) {
+sp<Promise<sp<ComponentName>>> ContextImpl::startService(const sp<Intent>& service) {
     if (service != nullptr) {
         try {
-            return mServiceManager->startService(service)->get();
-        } catch (CancellationException& e) {
-            throw RuntimeException("System failure", e);
-        } catch (ExecutionException& e) {
-            throw RuntimeException("System failure", e);
+            return mServiceManager->startService(service);
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
     } else {
-        return nullptr;
+        return new Promise<sp<ComponentName>>(sp<ComponentName>(nullptr));
     }
 }
 
-bool ContextImpl::stopService(const sp<Intent>& service) {
+sp<Promise<sp<Boolean>>> ContextImpl::stopService(const sp<Intent>& service) {
     if (service != nullptr) {
         try {
-            return mServiceManager->stopService(service)->get()->booleanValue();
-        } catch (CancellationException& e) {
-            throw RuntimeException("System failure", e);
-        } catch (ExecutionException& e) {
-            throw RuntimeException("System failure", e);
+            return mServiceManager->stopService(service);
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
     } else {
-        return false;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
     }
 }
 
-bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags) {
+sp<Promise<sp<Boolean>>> ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnection>& conn, int32_t flags) {
     if (service != nullptr && conn != nullptr) {
         if (mServiceConnections->containsKey(conn)) {
-            return true;
+            return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(true)));
         }
         mServiceConnections->put(conn, service);
 
@@ -138,16 +130,12 @@ bool ContextImpl::bindService(const sp<Intent>& service, const sp<ServiceConnect
         sp<RemoteCallback> callback = new RemoteCallback(new OnResultListener(this, service, conn), mHandler);
         mServiceConnectionCallbacks->add(callback);
         try {
-            return mServiceManager->bindService(service, conn, flags, callback->asInterface())->get()->booleanValue();
-        } catch (CancellationException& e) {
-            throw RuntimeException("System failure", e);
-        } catch (ExecutionException& e) {
-            throw RuntimeException("System failure", e);
+            return mServiceManager->bindService(service, conn, flags, callback->asInterface());
         } catch (const RemoteException& e) {
             throw RuntimeException("System failure", e);
         }
     } else {
-        return false;
+        return new Promise<sp<Boolean>>(sp<Boolean>(new Boolean(false)));
     }
 }
 
