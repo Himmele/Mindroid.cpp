@@ -27,6 +27,7 @@
 #include <mindroid/runtime/inspection/ConsoleService.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/Properties.h>
+#include <mindroid/util/logging/Logger.h>
 #include <mindroid/util/logging/LoggerService.h>
 
 CLASS(mindroid, PackageManagerService);
@@ -67,21 +68,13 @@ void IntegrationTest::TearDownTestCase() {
 }
 
 void IntegrationTest::SetUp() {
-    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
-
-    sp<Intent> logger = new Intent(Logger::ACTION_MARK_LOG);
-    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
-            ->putExtra("logBuffer", Log::LOG_ID_TEST);
-    serviceManager->startSystemService(logger);
+    sp<Logger> logger = new Logger();
+    logger->mark();
 }
 
 void IntegrationTest::TearDown() {
-    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
-
-    sp<Intent> logger = new Intent(Logger::ACTION_RESET_LOG);
-    logger->setComponent(new ComponentName("mindroid", "LoggerService"))
-            ->putExtra("logBuffer", Log::LOG_ID_TEST);
-    serviceManager->startSystemService(logger);
+    sp<Logger> logger = new Logger();
+    logger->reset();
 }
 
 void IntegrationTest::startSystemSerices() {

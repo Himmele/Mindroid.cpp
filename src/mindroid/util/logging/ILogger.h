@@ -27,6 +27,8 @@ class ILogger :
         public IInterface {
 public:
     virtual sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout) = 0;
+    virtual void mark() = 0;
+    virtual void reset() = 0;
 };
 
 namespace binder {
@@ -80,6 +82,8 @@ public:
             }
 
             sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout) override;
+            void mark() override;
+            void reset() override;
 
         private:
             sp<IBinder> mRemote;
@@ -88,6 +92,8 @@ public:
     private:
         static const char* const DESCRIPTOR;
         static const int32_t MSG_ASSUME_THAT = 1;
+        static const int32_t MSG_MARK = 2;
+        static const int32_t MSG_RESET = 3;
 
         friend class Logger::Proxy;
     };
@@ -116,6 +122,8 @@ public:
         }
 
         sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout) override;
+        void mark() override;
+        void reset() override;
 
     private:
         sp<IBinder> mBinder;

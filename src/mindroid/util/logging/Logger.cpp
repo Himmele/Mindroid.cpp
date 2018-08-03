@@ -25,8 +25,6 @@ const char* const Logger::ACTION_LOG = "mindroid.util.logging.LOG";
 const char* const Logger::ACTION_DUMP_LOG = "mindroid.util.logging.DUMP_LOG";
 const char* const Logger::ACTION_FLUSH_LOG = "mindroid.util.logging.FLUSH_LOG";
 const char* const Logger::ACTION_CLEAR_LOG = "mindroid.util.logging.CLEAR_LOG";
-const char* const Logger::ACTION_MARK_LOG = "mindroid.util.logging.MARK_LOG";
-const char* const Logger::ACTION_RESET_LOG = "mindroid.util.logging.RESET_LOG";
 char Logger::LOG_LEVELS[] = { 'V', 'D', 'I', 'W', 'E', 'A' };
 
 sp<Promise<sp<String>>> Logger::assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout) {
@@ -38,6 +36,26 @@ sp<Promise<sp<String>>> Logger::assumeThat(const sp<String>& tag, const sp<Strin
         }
     } else {
         return new Promise<sp<String>>(sp<Exception>(new ExecutionException()));
+    }
+}
+
+void Logger::mark() {
+    if (mLogger != nullptr) {
+        try {
+            return mLogger->mark();
+        } catch (const RemoteException& e) {
+            throw new RuntimeException("System failure", e);
+        }
+    }
+}
+
+void Logger::reset() {
+    if (mLogger != nullptr) {
+        try {
+            return mLogger->reset();
+        } catch (const RemoteException& e) {
+            throw new RuntimeException("System failure", e);
+        }
     }
 }
 

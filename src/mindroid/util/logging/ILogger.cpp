@@ -32,6 +32,14 @@ void Logger::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, 
         object_cast<Promise<sp<String>>, Object>(result)->completeWith(assumeThat(tag, message, timeout));
         break;
     }
+    case MSG_MARK: {
+        mark();
+        break;
+    }
+    case MSG_RESET: {
+        reset();
+        break;
+    }
     default:
         Binder::onTransact(what, num, obj, data, result);
     }
@@ -45,6 +53,14 @@ sp<Promise<sp<String>>> Logger::Stub::Proxy::assumeThat(const sp<String>& tag, c
     data->putLong("timeout", timeout);
     mRemote->transact(MSG_ASSUME_THAT, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
     return promise;
+}
+
+void Logger::Stub::Proxy::mark() {
+    mRemote->transact(MSG_MARK, 0, nullptr, nullptr, nullptr, FLAG_ONEWAY);
+}
+
+void Logger::Stub::Proxy::reset() {
+    mRemote->transact(MSG_RESET, 0, nullptr, nullptr, nullptr, FLAG_ONEWAY);
 }
 
 Logger::Proxy::Proxy(const sp<IBinder>& binder) {
@@ -64,6 +80,22 @@ sp<Promise<sp<String>>> Logger::Proxy::assumeThat(const sp<String>& tag, const s
         return mStub->assumeThat(tag, message, timeout);
     } else {
         return mProxy->assumeThat(tag, message, timeout);
+    }
+}
+
+void Logger::Proxy::mark() {
+    if (mStub != nullptr && mStub->isCurrentThread()) {
+        mStub->mark();
+    } else {
+        mProxy->mark();
+    }
+}
+
+void Logger::Proxy::reset() {
+    if (mStub != nullptr && mStub->isCurrentThread()) {
+        mStub->reset();
+    } else {
+        mProxy->reset();
     }
 }
 

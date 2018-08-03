@@ -59,6 +59,14 @@ private:
             return mService->assumeThat(tag, message, timeout);
         }
 
+        void mark() override {
+            mService->mark();
+        }
+
+        void reset() override {
+            mService->reset();
+        }
+
     private:
         sp<LoggerService> mService;
     };
@@ -111,6 +119,8 @@ private:
     void flushLog(const sp<Bundle>& arguments);
     void clearLog(const sp<Bundle>& arguments);
     sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout);
+    void mark();
+    void reset();
 
     static const char* const TAG;
 

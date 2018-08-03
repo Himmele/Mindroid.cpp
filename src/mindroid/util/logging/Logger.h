@@ -29,8 +29,6 @@ public:
     static const char* const ACTION_DUMP_LOG;
     static const char* const ACTION_FLUSH_LOG;
     static const char* const ACTION_CLEAR_LOG;
-    static const char* const ACTION_MARK_LOG;
-    static const char* const ACTION_RESET_LOG;
 
     /** @hide */
     static char LOG_LEVELS[];
@@ -50,6 +48,19 @@ public:
         return assumeThat(String::valueOf(tag), String::valueOf(message), timeout);
     }
     sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout);
+
+    /**
+     * Sets a mark position in the test log buffer. Sending {@code reset()}
+     * will reposition the stream back to the marked position.
+     *
+     * @see #reset()
+     */
+    void mark();
+
+    /**
+     * Resets this stream to the last marked location.
+     */
+    void reset();
 
 private:
     sp<ILogger> mLogger;

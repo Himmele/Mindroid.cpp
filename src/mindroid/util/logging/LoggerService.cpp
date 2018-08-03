@@ -129,14 +129,6 @@ int32_t LoggerService::onStartCommand(const sp<Intent>& intent, int32_t flags, i
             flushLog(intent->getExtras());
         } else if (action->equals(Logger::ACTION_CLEAR_LOG)) {
             clearLog(intent->getExtras());
-        } else if (action->equals(Logger::ACTION_MARK_LOG)) {
-            if (mTestHandler != nullptr) {
-                mTestHandler->mark();
-            }
-        } else if (action->equals(Logger::ACTION_RESET_LOG)) {
-            if (mTestHandler != nullptr) {
-                mTestHandler->reset();
-            }
         }
     }
 
@@ -310,6 +302,18 @@ sp<Promise<sp<String>>> LoggerService::assumeThat(const sp<String>& tag, const s
     }
 }
 
+void LoggerService::mark() {
+    if (mTestHandler != nullptr) {
+        mTestHandler->mark();
+    }
+}
+
+void LoggerService::reset() {
+    if (mTestHandler != nullptr) {
+        mTestHandler->reset();
+    }
+}
+
 void LoggerService::TestHandler::publish(const sp<LogBuffer::LogRecord>& logRecord) {
     AutoLock autoLock(mLock);
     mLogHistory->add(logRecord);
@@ -328,8 +332,8 @@ sp<Promise<sp<String>>> LoggerService::TestHandler::assumeThat(const sp<String>&
     if (matchLogHistory(assumption)) {
         try {
             Log::println('D', TAG, "Log assumption success: %s", assumption->get()->c_str());
-        } catch (CancellationException ignore) {
-        } catch (ExecutionException ignore) {
+        } catch (const CancellationException& ignore) {
+        } catch (const ExecutionException& ignore) {
         }
         return assumption;
     } else {
