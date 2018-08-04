@@ -36,6 +36,7 @@ CLASS(mindroid, ConsoleService);
 
 namespace mindroid {
 
+const char* const IntegrationTest::TAG = "IntegrationTest";
 sp<ServiceManager> IntegrationTest::sServiceManager = nullptr;
 
 void IntegrationTest::SetUpTestCase() {
@@ -121,7 +122,11 @@ void IntegrationTest::startServices() {
                     if (serviceInfo->isEnabled() && serviceInfo->hasFlag(ServiceInfo::FLAG_AUTO_START)) {
                         sp<Intent> service = new Intent();
                         service->setComponent(new ComponentName(serviceInfo->packageName, serviceInfo->name));
-                        serviceManager->startService(service)->get(10000);
+                        try {
+                            serviceManager->startService(service)->get(10000);
+                        } catch (...) {
+                            throw RuntimeException("System failure");
+                        }
                     }
                 }
             }
@@ -161,7 +166,20 @@ void IntegrationTest::shutdownServices() {
                     if (serviceInfo->isEnabled()) {
                         sp<Intent> service = new Intent();
                         service->setComponent(new ComponentName(serviceInfo->packageName, serviceInfo->name));
-                        serviceManager->stopService(service)->get(10000);
+                        sp<String> name = String::format("%s::%s", serviceInfo->packageName->c_str(), serviceInfo->name->c_str());
+                        uint64_t start = SystemClock::uptimeMillis();
+                        try {
+                            serviceManager->stopService(service)->get(10000);
+                            uint64_t end = SystemClock::uptimeMillis();
+                            if (end - start >= 1000) {
+                                Log::println('W', TAG, String::format("Stopping service %s took very long: %" PRIu64 "ms", name->c_str(), end - start)->c_str());
+                            }
+                        } catch (const CancellationException& e) {
+                        } catch (const ExecutionException& e) {
+                        } catch (const TimeoutException& e) {
+                        } catch (const RemoteException& e) {
+                            Log::println('E', TAG, "Failed to stop service %s", name->c_str());
+                        }
                     }
                 }
             }

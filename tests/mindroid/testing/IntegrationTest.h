@@ -39,6 +39,7 @@ private:
     static void shutdownSystemSerices();
     static void shutdownServices();
 
+    static const char* const TAG;
     static sp<ServiceManager> sServiceManager;
 };
 
