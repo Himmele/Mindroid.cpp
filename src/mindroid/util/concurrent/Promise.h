@@ -33,6 +33,7 @@
 #include <mindroid/util/concurrent/CompletionException.h>
 #include <mindroid/util/concurrent/ExecutionException.h>
 #include <mindroid/util/concurrent/TimeoutException.h>
+#include <mindroid/util/concurrent/Executors.h>
 #include <mindroid/util/ArrayList.h>
 #include <mindroid/lang/Class.h>
 #include <mindroid/lang/Void.h>
@@ -264,6 +265,63 @@ public:
 
     static sp<Promise<sp<Void>>> allOf(const sp<Executor>& executor, const sp<ArrayList<sp<Thenable>>>& promises) {
         return allOf(executor, promises->arr());
+    }
+
+    static sp<Promise<sp<Void>>> allOf(bool completeOnException, const std::vector<sp<Thenable>>& promises) {
+        if (Looper::myLooper() != nullptr) {
+            sp<Handler> handler = new Handler();
+            return allOf(handler->asExecutor(), completeOnException, promises);
+        } else {
+            return allOf(sp<Executor>(nullptr), completeOnException, promises);
+        }
+    }
+
+    static sp<Promise<sp<Void>>> allOf(bool completeOnException, const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(completeOnException, promises->arr());
+    }
+
+    static sp<Promise<sp<Void>>> allOf(const sp<Handler>& handler, bool completeOnException, const std::vector<sp<Thenable>>& promises) {
+        return allOf(handler->asExecutor(), completeOnException, promises);
+    }
+
+    static sp<Promise<sp<Void>>> allOf(const sp<Handler>& handler, bool completeOnException, const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(handler->asExecutor(), completeOnException, promises->arr());
+    }
+
+    static sp<Promise<sp<Void>>> allOf(const sp<Executor>& executor, bool completeOnException, const std::vector<sp<Thenable>>& promises) {
+        if (!completeOnException) {
+            return allOf(executor, promises);
+        } else {
+            sp<Promise<sp<Void>>> p = new Promise<sp<Void>>(executor);
+            if (promises.size() == 0) {
+                p->complete(nullptr);
+                return p;
+            }
+
+            sp<Promise<sp<Void>>> values = allOf(Executors::SYNCHRONOUS_EXECUTOR, promises);
+            sp<Promise<sp<Void>>> exceptions = new Promise<sp<Void>>(Executors::SYNCHRONOUS_EXECUTOR);
+            for (auto const& promise: promises) {
+                sp<Thenable::Action> action = new ErrorRelayAction(promise, exceptions);
+                if (promise->isDone()) {
+                    action->tryRun();
+                } else {
+                    promise->addAction(action);
+                }
+            }
+
+            anyOf(Executors::SYNCHRONOUS_EXECUTOR, {values, exceptions})->then([=] (const sp<Void>& value, const sp<Exception>& exception) {
+                if (exception == nullptr) {
+                    p->complete(nullptr);
+                } else {
+                    p->completeWith(exception);
+                }
+            });
+            return p;
+        }
+    }
+
+    static sp<Promise<sp<Void>>> allOf(const sp<Executor>& executor, bool completeOnException, const sp<ArrayList<sp<Thenable>>>& promises) {
+        return allOf(executor, completeOnException, promises->arr());
     }
 
     /**
@@ -1626,6 +1684,30 @@ private:
         sp<Promise<T>> mSupplier;
         sp<Promise<T>> mConsumer;
         sp<ArrayList<wp<AnyOfAction>>> mActions;
+    };
+
+    class ErrorRelayAction : public Thenable::Action {
+    public:
+        ErrorRelayAction(const sp<Thenable>& supplier, const sp<Promise<sp<Void>>>& consumer) :
+                Action(nullptr), mSupplier(supplier), mConsumer(consumer) {
+        }
+
+        virtual void tryRun() override final {
+            if (claim()) {
+                run();
+            }
+        }
+
+        virtual void run() override final {
+            if (mSupplier->getException() != nullptr) {
+                mConsumer->setException(toCompletionException(mSupplier->getException()));
+                mConsumer->onComplete();
+            }
+        }
+
+    private:
+        sp<Thenable> mSupplier;
+        sp<Promise<sp<Void>>> mConsumer;
     };
 
     template<typename U>
