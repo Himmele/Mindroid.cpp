@@ -268,6 +268,7 @@ private:
     sp<Bundle> data;
     sp<Handler> target;
     sp<Runnable> callback;
+    sp<Message> prevMessage;
     sp<Message> nextMessage;
     static MessagePool sMessagePool;
 

@@ -32,7 +32,8 @@ namespace mindroid {
 const char* const MessageQueue::TAG = "MessageQueue";
 
 MessageQueue::MessageQueue(bool quitAllowed) :
-        mMessages(nullptr),
+        mHeadMessage(nullptr),
+        mTailMessage(nullptr),
         mLock(new ReentrantLock()),
         mCondition(mLock->newCondition()),
         mQuitAllowed(quitAllowed),
@@ -52,13 +53,14 @@ bool MessageQueue::quit() {
     }
     mQuitting = true;
 
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
     while (curMessage != nullptr) {
         sp<Message> nextMessage = curMessage->nextMessage;
         curMessage->recycle();
         curMessage = nextMessage;
     }
-    mMessages = nullptr;
+    mHeadMessage = nullptr;
+    mTailMessage = nullptr;
 
     mCondition->signal();
     return true;
@@ -85,24 +87,36 @@ bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
 
     message->markInUse();
     message->when = when;
-    sp<Message> curMessage = mMessages;
-    if (curMessage == nullptr || when == 0 || when < curMessage->when) {
-        message->nextMessage = curMessage;
-        mMessages = message;
-        mCondition->signal();
+
+    if (mHeadMessage == nullptr || when == 0 || when < mHeadMessage->when) {
+        sp<Message> oldHeadMessage = mHeadMessage;
+        mHeadMessage = message;
+        if (oldHeadMessage != nullptr) {
+            oldHeadMessage->prevMessage = mHeadMessage;
+        } else {
+            mTailMessage = mHeadMessage;
+        }
+        mHeadMessage->nextMessage = oldHeadMessage;
+    } else if (when >= mTailMessage->when) {
+        message->prevMessage = mTailMessage;
+        mTailMessage->nextMessage = message;
+        mTailMessage = message;
     } else {
-        sp<Message> prevMessage;
+        sp<Message> curMessage = mTailMessage;
+        sp<Message> nextMessage;
         for (;;) {
-            prevMessage = curMessage;
-            curMessage = curMessage->nextMessage;
-            if (curMessage == nullptr || when < curMessage->when) {
+            nextMessage = curMessage;
+            curMessage = curMessage->prevMessage;
+            if (when >= curMessage->when) {
                 break;
             }
         }
-        message->nextMessage = curMessage;
-        prevMessage->nextMessage = message;
-        mCondition->signal();
+        message->nextMessage = nextMessage;
+        message->prevMessage = curMessage;
+        nextMessage->prevMessage = message;
+        curMessage->nextMessage = message;
     }
+    mCondition->signal();
     return true;
 }
 
@@ -114,13 +128,17 @@ sp<Message> MessageQueue::dequeueMessage() {
         }
 
         const uint64_t now = SystemClock::uptimeMillis();
-        sp<Message> message = mMessages;
+        sp<Message> message = mHeadMessage;
 
         if (message != nullptr) {
             if (now < message->when) {
                 mCondition->await(Math::min(message->when - now, (uint64_t) Integer::MAX_VALUE));
             } else {
-                mMessages = message->nextMessage;
+                mHeadMessage = message->nextMessage;
+                if (mHeadMessage != nullptr) {
+                    mHeadMessage->prevMessage = nullptr;
+                }
+                message->prevMessage = nullptr;
                 message->nextMessage = nullptr;
                 return message;
             }
@@ -136,7 +154,7 @@ bool MessageQueue::hasMessages(const sp<Handler>& handler, int32_t what, const s
     }
 
     AutoLock autoLock(mLock);
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
     while (curMessage != nullptr) {
         if (curMessage->target == handler && curMessage->what == what && (object == nullptr || curMessage->obj == object)) {
             return true;
@@ -152,7 +170,7 @@ bool MessageQueue::hasMessages(const sp<Handler>& handler, const sp<Runnable>& r
     }
 
     AutoLock autoLock(mLock);
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
     while (curMessage != nullptr) {
         if (curMessage->target == handler && curMessage->callback == runnable && (object == nullptr || curMessage->obj == object)) {
             return true;
@@ -170,13 +188,18 @@ bool MessageQueue::removeMessages(const sp<Handler>& handler, int32_t what, cons
     bool foundMessage = false;
 
     AutoLock autoLock(mLock);
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
 
     // Remove all matching messages at the front of the message queue.
     while (curMessage != nullptr && curMessage->target == handler && curMessage->what == what && (object == nullptr || curMessage->obj == object)) {
         foundMessage = true;
         sp<Message> nextMessage = curMessage->nextMessage;
-        mMessages = nextMessage;
+        mHeadMessage = nextMessage;
+        if (mHeadMessage != nullptr) {
+            mHeadMessage->prevMessage = nullptr;
+        } else {
+            mTailMessage = nullptr;
+        }
         curMessage->recycle();
         curMessage = nextMessage;
     }
@@ -188,8 +211,13 @@ bool MessageQueue::removeMessages(const sp<Handler>& handler, int32_t what, cons
             if (nextMessage->target == handler && nextMessage->what == what && (object == nullptr || nextMessage->obj == object)) {
                 foundMessage = true;
                 sp<Message> nextButOneMessage = nextMessage->nextMessage;
-                nextMessage->recycle();
+                if (nextButOneMessage != nullptr) {
+                    nextButOneMessage->prevMessage = curMessage;
+                } else {
+                    mTailMessage = curMessage;
+                }
                 curMessage->nextMessage = nextButOneMessage;
+                nextMessage->recycle();
                 continue;
             }
         }
@@ -207,13 +235,18 @@ bool MessageQueue::removeCallbacks(const sp<Handler>& handler, const sp<Runnable
     bool foundMessage = false;
 
     AutoLock autoLock(mLock);
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
 
     // Remove all matching messages at the front of the message queue.
     while (curMessage != nullptr && curMessage->target == handler && curMessage->callback == runnable && (object == nullptr || curMessage->obj == object)) {
         foundMessage = true;
         sp<Message> nextMessage = curMessage->nextMessage;
-        mMessages = nextMessage;
+        mHeadMessage = nextMessage;
+        if (mHeadMessage != nullptr) {
+            mHeadMessage->prevMessage = nullptr;
+        } else {
+            mTailMessage = nullptr;
+        }
         curMessage->recycle();
         curMessage = nextMessage;
     }
@@ -225,8 +258,13 @@ bool MessageQueue::removeCallbacks(const sp<Handler>& handler, const sp<Runnable
             if (nextMessage->target == handler && nextMessage->callback == runnable && (object == nullptr || nextMessage->obj == object)) {
                 foundMessage = true;
                 sp<Message> nextButOneMessage = nextMessage->nextMessage;
-                nextMessage->recycle();
+                if (nextButOneMessage != nullptr) {
+                    nextButOneMessage->prevMessage = curMessage;
+                } else {
+                    mTailMessage = curMessage;
+                }
                 curMessage->nextMessage = nextButOneMessage;
+                nextMessage->recycle();
                 continue;
             }
         }
@@ -244,13 +282,18 @@ bool MessageQueue::removeCallbacksAndMessages(const sp<Handler>& handler, const 
     bool foundMessage = false;
 
     AutoLock autoLock(mLock);
-    sp<Message> curMessage = mMessages;
+    sp<Message> curMessage = mHeadMessage;
 
     // Remove all matching messages at the front of the message queue.
     while (curMessage != nullptr && curMessage->target == handler && (object == nullptr || curMessage->obj == object)) {
         foundMessage = true;
         sp<Message> nextMessage = curMessage->nextMessage;
-        mMessages = nextMessage;
+        mHeadMessage = nextMessage;
+        if (mHeadMessage != nullptr) {
+            mHeadMessage->prevMessage = nullptr;
+        } else {
+            mTailMessage = nullptr;
+        }
         curMessage->recycle();
         curMessage = nextMessage;
     }
@@ -262,8 +305,13 @@ bool MessageQueue::removeCallbacksAndMessages(const sp<Handler>& handler, const 
             if (nextMessage->target == handler && (object == nullptr || nextMessage->obj == object)) {
                 foundMessage = true;
                 sp<Message> nextButOneMessage = nextMessage->nextMessage;
-                nextMessage->recycle();
+                if (nextButOneMessage != nullptr) {
+                    nextButOneMessage->prevMessage = curMessage;
+                } else {
+                    mTailMessage = curMessage;
+                }
                 curMessage->nextMessage = nextButOneMessage;
+                nextMessage->recycle();
                 continue;
             }
         }

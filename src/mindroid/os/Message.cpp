@@ -46,6 +46,7 @@ Message::Message() :
         data(nullptr),
         target(nullptr),
         callback(nullptr),
+        prevMessage(nullptr),
         nextMessage(nullptr) {
 }
 
@@ -145,6 +146,8 @@ void Message::recycle() {
     callback = nullptr;
     data = nullptr;
     result = nullptr;
+    prevMessage = nullptr;
+    nextMessage = nullptr;
 
     {
         AutoLock autoLock(sMessagePool.lock);

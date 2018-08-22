@@ -56,7 +56,8 @@ public:
 private:
     static const char* const TAG;
 
-    sp<Message> mMessages;
+    sp<Message> mHeadMessage;
+    sp<Message> mTailMessage;
     sp<ReentrantLock> mLock;
     sp<Condition> mCondition;
     const bool mQuitAllowed;
