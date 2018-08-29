@@ -199,6 +199,7 @@ void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStrea
                     if (result != nullptr) {
                         try {
                             result->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
+                                AutoLock autoLock(mLock);
                                 if (exception == nullptr) {
                                     Message::newMessage(message->uri, message->transactionId, message->what, value->getByteArray(), value->size())->write(dataOutputStream);
                                 } else {
@@ -213,13 +214,16 @@ void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStrea
                         }
                     }
                 } else {
+                    AutoLock autoLock(mLock);
                     Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
                 }
             } catch (const IllegalArgumentException& e) {
                 Log::e(TAG, "IllegalArgumentException");
+                AutoLock autoLock(mLock);
                 Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
             } catch (const RemoteException& e) {
                 Log::e(TAG, "RemoteException");
+                AutoLock autoLock(mLock);
                 Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
             }
         } else {
@@ -257,7 +261,7 @@ void Mindroid::Client::shutdown() {
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
     sp<Bundle> context = getContext();
     if (!context->containsKey("datOutputStream")) {
-        sp<DataOutputStream> dataOutputStream = new DataOutputStream(getConnection()->getOutputStream());
+        sp<DataOutputStream> dataOutputStream = new DataOutputStream(getOutputStream());
         context->putObject("dataOutputStream", dataOutputStream);
     }
     sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
@@ -275,6 +279,7 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         mTransactions->put(transactionId, promise);
     }
     try {
+        AutoLock autoLock(mLock);
         Message::newMessage(binder->getUri()->toString(), transactionId, what, data->getByteArray(), data->size())->write(dataOutputStream);
     } catch (const IOException& e) {
         if (result != nullptr) {

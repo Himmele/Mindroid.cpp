@@ -43,7 +43,6 @@ public:
         return mNodeId;
     }
 
-    virtual sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) = 0;
     virtual void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) = 0;
 
     class Connection : public Thread {
@@ -78,8 +77,12 @@ public:
         return mConnection->mContext;
     }
 
-    sp<Connection> getConnection() {
-        return mConnection;
+    sp<InputStream> getInputStream() {
+        return mConnection->mInputStream;
+    }
+
+    sp<OutputStream> getOutputStream() {
+        return mConnection->mOutputStream;
     }
 
 protected:

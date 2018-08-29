@@ -127,6 +127,7 @@ public:
     private:
         const sp<ByteArray> BINDER_TRANSACTION_FAILURE = String::valueOf("Binder transaction failure")->getBytes();
         sp<Runtime> mRuntime;
+        sp<ReentrantLock> mLock = new ReentrantLock();
     };
 
     class Client : public AbstractClient {
@@ -134,7 +135,7 @@ public:
         Client(const sp<Mindroid>& plugin, uint32_t nodeId);
         void shutdown() override;
 
-        sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) override;
+        sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
         void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:
@@ -142,6 +143,7 @@ public:
         sp<AtomicInteger> mTransactionIdGenerator;
         // FIXME: Fix concurrent access to collections.
         sp<HashMap<int32_t, sp<Promise<sp<Parcel>>>>> mTransactions = new HashMap<int32_t, sp<Promise<sp<Parcel>>>>();
+        sp<ReentrantLock> mLock = new ReentrantLock();
     };
 
 private:
