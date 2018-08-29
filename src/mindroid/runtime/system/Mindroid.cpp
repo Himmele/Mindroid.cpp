@@ -78,7 +78,7 @@ void Mindroid::start() {
 
             sp<Configuration::Node> node = mConfiguration->nodes->get(nodeId);
             try {
-                mServer = new Server();
+                mServer = new Server(mRuntime);
                 mServer->start(node->uri);
             } catch (const IOException& e) {
                 Log::println('E', TAG, "IOException");
@@ -133,7 +133,7 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
         if (mConfiguration != nullptr && (node = mConfiguration->nodes->get(nodeId)) != nullptr) {
             if (!mClients->containsKey(nodeId)) {
                 try {
-                    sp<Client> client = new Client(node->id, this);
+                    sp<Client> client = new Client(this, node->id);
                     client->start(node->uri);
                     mClients->put(nodeId, client);
                 } catch (const IOException& e) {
@@ -152,321 +152,116 @@ void Mindroid::onShutdown(const sp<Client>& client) {
     mClients->remove(client->getNodeId());
 }
 
-void Mindroid::Server::start(const sp<String>& uri) {
-    sp<URI> url;
+sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& inputStream) {
+    int32_t type = inputStream->readInt();
+    sp<String> uri = inputStream->readUTF();
+    int32_t transactionId = inputStream->readInt();
+    int32_t what = inputStream->readInt();
+    int32_t size = inputStream->readInt();
+    sp<ByteArray> data = new ByteArray(size);
+    inputStream->readFully(data, 0, size);
+    return new Message(type, uri, transactionId, what, data);
+}
+
+void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
+    outputStream->writeInt(this->type);
+    outputStream->writeUTF(this->uri);
+    outputStream->writeInt(this->transactionId);
+    outputStream->writeInt(this->what);
+    outputStream->writeInt(this->data->size());
+    outputStream->write(this->data);
+    outputStream->flush();
+}
+
+Mindroid::Server::Server(const sp<Runtime>& runtime) : AbstractServer(), mRuntime(runtime) {
+}
+
+void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) {
+    if (!context->containsKey("dataInputStream")) {
+        sp<DataInputStream> dataInputStream = new DataInputStream(inputStream);
+        context->putObject("dataInputStream", dataInputStream);
+    }
+    if (!context->containsKey("datOutputStream")) {
+        sp<DataOutputStream> dataOutputStream = new DataOutputStream(outputStream);
+        context->putObject("dataOutputStream", dataOutputStream);
+    }
+    sp<DataInputStream> dataInputStream = object_cast<DataInputStream>(context->getObject("dataInputStream"));
+    sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
+
     try {
-        url = new URI(uri);
-    } catch (const URISyntaxException& e) {
-        throw IOException(String::format("Invalid URI: %s", (uri != nullptr) ? uri->c_str() : "nullptr"));
-    }
+        sp<Message> message = Message::newMessage(dataInputStream);
 
-    if (String::valueOf("tcp")->equals(url->getScheme())) {
-        try {
-            mServerSocket = new ServerSocket();
-            mServerSocket->setReuseAddress(true);
-            mServerSocket->bind(new InetSocketAddress(InetAddress::getByName(url->getHost()), url->getPort()));
-
-            mThread = new Thread([=] {
-                while (!mThread->isInterrupted()) {
-                    try {
-                        sp<Socket> socket = mServerSocket->accept();
-                        if (DEBUG) {
-                            Log::d(TAG, "New connection from %s", socket->getRemoteSocketAddress()->toString()->c_str());
-                        }
-                        sp<Connection> connection = new Connection(socket, this);
-                        connection->start();
-                        mConnections->add(connection);
-                    } catch (const IOException& e) {
-                        Log::e(TAG, "IOException");
-                    }
-                }
-            }, String::format("Server [%s]", mServerSocket->getLocalSocketAddress()->toString()->c_str()));
-            mThread->start();
-        } catch (const IOException& e) {
-            Log::e(TAG, "Cannot bind to server socket on port %u", url->getPort());
-        }
-    } else {
-        throw IllegalArgumentException(String::format("Invalid URI scheme: %s", url->getScheme()->c_str()));
-    }
-}
-
-void Mindroid::Server::shutdown() {
-    auto itr = mConnections->iterator();
-    while (itr.hasNext()) {
-        sp<Connection> connection = itr.next();
-        connection->shutdown();
-    }
-    try {
-        mServerSocket->close();
-    } catch (const IOException& e) {
-        Log::e(TAG, "Cannot close server socket");
-    }
-    mThread->interrupt();
-    mThread->join();
-}
-
-Mindroid::Server::Connection::Connection(const sp<Socket>& socket, const sp<Server>& server) :
-    mSocket(socket),
-    mServer(server) {
-}
-
-void Mindroid::Server::Connection::start() {
-    try {
-        mReader = new Reader(String::format("Server.Reader: %s << %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
-                mSocket->getRemoteSocketAddress()->toString()->c_str()),
-                mSocket->getInputStream(),
-                this);
-        mWriter = new Writer(String::format("Server.Writer: %s >> %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
-                mSocket->getRemoteSocketAddress()->toString()->c_str()),
-                mSocket->getOutputStream(),
-                this);
-        mReader->start();
-        mWriter->start();
-    } catch (const IOException& e) {
-        Log::d(TAG, "Failed to set up connection");
-        shutdown();
-    }
-}
-
-void Mindroid::Server::Connection::shutdown() {
-    if (DEBUG) {
-        Log::d(TAG, "Disconnecting from %s", mSocket->getRemoteSocketAddress()->toString()->c_str());
-    }
-    sp<Connection> holder = this;
-    mServer->mConnections->remove(this);
-
-    sExecutor->post([=] {
-        sp<Connection> connection = holder;
-        try {
-            mSocket->close();
-        } catch (const IOException& e) {
-            Log::e(TAG, "Cannot close socket");
-        }
-        if (mReader != nullptr) {
+        if (message->type == Mindroid::Message::MESSAGE_TYPE_TRANSACTION) {
             try {
-                if (DEBUG) {
-                    Log::d(TAG, "Shutting down reader");
-                }
-                mReader->shutdown();
-                if (DEBUG) {
-                    Log::d(TAG, "Reader has been shut down");
-                }
-                mReader = nullptr;
-            } catch (const Exception& e) {
-                Log::e(TAG, "Cannot shutdown reader");
-            }
-        }
-        if (mWriter != nullptr) {
-            try {
-                if (DEBUG) {
-                    Log::d(TAG, "Shutting down writer");
-                }
-                mWriter->shutdown();
-                if (DEBUG) {
-                    Log::d(TAG, "Writer has been shut down");
-                }
-                mWriter = nullptr;
-            } catch (const Exception& e) {
-                Log::e(TAG, "Cannot shutdown writer");
-            }
-        }
-        connection.clear();
-    });
-
-    mServer.clear();
-}
-
-Mindroid::Server::Connection::Reader::Reader(const sp<String>& name, const sp<InputStream>& inputStream, const sp<Connection>& connection) :
-        Thread(name),
-        mConnection(connection) {
-    mInputStream = new DataInputStream(inputStream);
-}
-
-void Mindroid::Server::Connection::Reader::shutdown() {
-    interrupt();
-    try {
-        mInputStream->close();
-    } catch (const IOException& ignore) {
-    }
-    join();
-    mConnection.clear();
-}
-
-void Mindroid::Server::Connection::Reader::run() {
-    sp<Runtime> runtime = Runtime::getRuntime();
-
-    while (!isInterrupted()) {
-        try {
-            int32_t type = mInputStream->readInt();
-            sp<String> uri = mInputStream->readUTF();
-            int32_t transactionId = mInputStream->readInt();
-            int32_t what = mInputStream->readInt();
-            int32_t size = mInputStream->readInt();
-            sp<ByteArray> data = new ByteArray(size);
-            mInputStream->readFully(data, 0, size);
-
-            if (type == Mindroid::Message::MESSAGE_TYPE_TRANSACTION) {
-                try {
-                    sp<IBinder> binder = runtime->getBinder(URI::create(uri));
-                    if (binder != nullptr) {
-                        sp<Promise<sp<Parcel>>> result = binder->transact(what, Parcel::obtain(data), 0);
-                        if (result != nullptr) {
+                sp<IBinder> binder = mRuntime->getBinder(URI::create(message->uri));
+                if (binder != nullptr) {
+                    sp<Promise<sp<Parcel>>> result = binder->transact(message->what, Parcel::obtain(message->data), 0);
+                    if (result != nullptr) {
+                        try {
                             result->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
                                 if (exception == nullptr) {
-                                    mConnection->mWriter->write(Message::newMessage(uri, transactionId, what, value->toByteArray()));
+                                    Message::newMessage(message->uri, message->transactionId, message->what, value->toByteArray())->write(dataOutputStream);
                                 } else {
-                                    mConnection->mWriter->write(Message::newExceptionMessage(uri, transactionId, what, mConnection->BINDER_TRANSACTION_FAILURE));
+                                    Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
                                 }
                             });
+                        } catch (const IOException& e) {
+                            try {
+                                object_cast<Client::Connection>(context->getObject("connection"))->close();
+                            } catch (const IOException& ignore) {
+                            }
                         }
-                    } else {
-                        mConnection->mWriter->write(Message::newExceptionMessage(uri, transactionId, what, mConnection->BINDER_TRANSACTION_FAILURE));
                     }
-                } catch (const IllegalArgumentException& e) {
-                    Log::e(TAG, "IllegalArgumentException");
-                    mConnection->mWriter->write(Message::newExceptionMessage(uri, transactionId, what, mConnection->BINDER_TRANSACTION_FAILURE));
-                } catch (const RemoteException& e) {
-                    Log::e(TAG, "RemoteException");
-                    mConnection->mWriter->write(Message::newExceptionMessage(uri, transactionId, what, mConnection->BINDER_TRANSACTION_FAILURE));
+                } else {
+                    Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
                 }
-            } else {
-                Log::e(TAG, "Invalid message type: %d", type);
+            } catch (const IllegalArgumentException& e) {
+                Log::e(TAG, "IllegalArgumentException");
+                Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
+            } catch (const RemoteException& e) {
+                Log::e(TAG, "RemoteException");
+                Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
             }
-        } catch (const IOException& e) {
-            if (DEBUG) {
-                Log::e(TAG, "IOException");
-            }
-            mConnection->shutdown();
-            break;
+        } else {
+            Log::e(TAG, "Invalid message type: %d", message->type);
         }
-    }
-
-    if (DEBUG) {
-        Log::d(TAG, "Reader is terminating");
-    }
-}
-
-Mindroid::Server::Connection::Writer::Writer(const sp<String>& name, const sp<OutputStream>& outputStream, const sp<Connection>& connection) :
-        Thread(name),
-        mConnection(connection) {
-    mOutputStream = new DataOutputStream(outputStream);
-    mLock = new ReentrantLock();
-    mCondition = mLock->newCondition();
-}
-
-void Mindroid::Server::Connection::Writer::shutdown() {
-    interrupt();
-    {
-        AutoLock autoLock(mLock);
-        mCondition->signal();
-    }
-    try {
-        mOutputStream->close();
-    } catch (const IOException& ignore) {
-    }
-    join();
-    mConnection.clear();
-}
-
-void Mindroid::Server::Connection::Writer::write(const sp<Mindroid::Message>& message) {
-    AutoLock autoLock(mLock);
-    mQueue->add(message);
-    mCondition->signal();
-}
-
-void Mindroid::Server::Connection::Writer::run() {
-    sp<Message> message;
-
-    while (!isInterrupted()) {
-        {
-            AutoLock autoLock(mLock);
-            while (!isInterrupted() && mQueue->isEmpty()) {
-                mCondition->await();
-            }
-            if (isInterrupted()) {
-                break;
-            }
-
-            message = mQueue->get(0);
-            mQueue->remove(0);
-        }
-
-        try {
-            mOutputStream->writeInt(message->type);
-            mOutputStream->writeUTF(message->uri);
-            mOutputStream->writeInt(message->transactionId);
-            mOutputStream->writeInt(message->what);
-            mOutputStream->writeInt(message->data->size());
-            mOutputStream->write(message->data);
-            mOutputStream->flush();
-        } catch (const IOException& e) {
+    } catch (const IOException& e) {
+        if (DEBUG) {
             Log::e(TAG, "IOException");
-            mConnection->shutdown();
-            break;
         }
-    }
-
-    if (DEBUG) {
-        Log::d(TAG, "Writer is terminating");
+        throw e;
     }
 }
 
-Mindroid::Client::Client(uint32_t nodeId, const sp<Mindroid>& plugin) :
-            mNodeId(nodeId),
-            mPlugin(plugin),
-            mTransactionIdGenerator(new AtomicInteger(1)) {
-}
-
-void Mindroid::Client::start(const sp<String>& uri) {
-    try {
-        sp<URI> url = new URI(uri);
-        if (!(String::valueOf("tcp")->equals(url->getScheme()))) {
-            throw IllegalArgumentException(String::format("Invalid URI scheme: %s", url->getScheme()->c_str()));
-        }
-        mHost = url->getHost();
-        mPort = url->getPort();
-        mSocket = new Socket();
-        mConnection = new Connection();
-
-        mThread = new Thread([=] {
-            try {
-                mSocket->connect(new InetSocketAddress(mHost, mPort));
-                mConnection->start(mSocket, this);
-            } catch (const IOException& e) {
-                Log::e(TAG, "IOException");
-                shutdown();
-            }
-        }, String::format("Client [%s]", uri->c_str()));
-        mThread->start();
-    } catch (const URISyntaxException& e) {
-        throw IOException(String::format("Invalid URI: %s", (uri != nullptr) ? uri->c_str() : "nullptr"));
-    }
+Mindroid::Client::Client(const sp<Mindroid>& plugin, uint32_t nodeId) : AbstractClient(nodeId),
+        mPlugin(plugin),
+        mTransactionIdGenerator(new AtomicInteger(1)) {
 }
 
 void Mindroid::Client::shutdown() {
-    sp<Client> holder = this;
     mPlugin->onShutdown(this);
+    mPlugin.clear();
+
+    auto itr = mTransactions->iterator();
+    while (itr.hasNext()) {
+        auto entry = itr.next();
+        sp<Promise<sp<Parcel>>> promise = entry.getValue();
+        promise->completeWith(sp<Exception>(new RemoteException()));
+    }
 
     sExecutor->post([=] {
-        sp<Client> client = holder;
-        if (mConnection != nullptr) {
-            mConnection->shutdown();
-        }
-
-        mThread->interrupt();
-        mThread->join();
-
-        auto itr = mTransactions->iterator();
-        while (itr.hasNext()) {
-            auto entry = itr.next();
-            sp<Promise<sp<Parcel>>> promise = entry.getValue();
-            promise->completeWith(sp<Exception>(new RemoteException()));
-        }
-        client.clear();
+        AbstractClient::shutdown();
     });
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
+    sp<Bundle> context = getContext();
+    if (!context->containsKey("datOutputStream")) {
+        sp<DataOutputStream> dataOutputStream = new DataOutputStream(getConnection()->getOutputStream());
+        context->putObject("dataOutputStream", dataOutputStream);
+    }
+    sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
+
     const int32_t transactionId = mTransactionIdGenerator->getAndIncrement();
     sp<Promise<sp<Parcel>>> result;
     if (flags == Binder::FLAG_ONEWAY) {
@@ -479,193 +274,45 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         });
         mTransactions->put(transactionId, promise);
     }
-    mConnection->mWriter->write(Message::newMessage(binder->getUri()->toString(), transactionId, what, data->toByteArray()));
+    try {
+        Message::newMessage(binder->getUri()->toString(), transactionId, what, data->toByteArray())->write(dataOutputStream);
+    } catch (const IOException& e) {
+        if (result != nullptr) {
+            result->completeWith(e);
+            mTransactions->remove(transactionId);
+        }
+        shutdown();
+        throw RemoteException(e);
+    }
     return result;
 }
 
-Mindroid::Client::Connection::Connection() {
-    mReader = new Reader();
-    mWriter = new Writer();
-}
+void Mindroid::Client::onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) {
+    if (!context->containsKey("dataInputStream")) {
+        sp<DataInputStream> dataInputStream = new DataInputStream(inputStream);
+        context->putObject("dataInputStream", dataInputStream);
+    }
+    sp<DataInputStream> dataInputStream = object_cast<DataInputStream>(context->getObject("dataInputStream"));
 
-void Mindroid::Client::Connection::start(const sp<Socket>& socket, const sp<Client>& client) {
-    mSocket = socket;
-    mClient = client;
     try {
-        mReader->start(String::format("Client.Reader: %s << %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
-                mSocket->getRemoteSocketAddress()->toString()->c_str()),
-                socket->getInputStream(),
-                this);
-        mWriter->start(String::format("Client.Writer: %s >> %s", mSocket->getLocalSocketAddress()->toString()->c_str(),
-                mSocket->getRemoteSocketAddress()->toString()->c_str()),
-                socket->getOutputStream(),
-                this);
-    } catch (const IOException& e) {
-        Log::d(TAG, "Failed to set up connection");
-        mClient->shutdown();
-    }
-}
+        sp<Message> message = Message::newMessage(dataInputStream);
 
-void Mindroid::Client::Connection::shutdown() {
-    if (mSocket != nullptr) {
-        try {
-            mSocket->close();
-        } catch (const IOException& e) {
-            Log::e(TAG, "Cannot close socket");
-        }
-    }
-    if (mReader != nullptr) {
-        try {
-            if (DEBUG) {
-                Log::d(TAG, "Shutting down reader");
-            }
-            mReader->shutdown();
-            if (DEBUG) {
-                Log::d(TAG, "Reader has been shut down");
-            }
-        } catch (const Exception& e) {
-            Log::e(TAG, "Cannot shutdown reader");
-        }
-    }
-    if (mWriter != nullptr) {
-        try {
-            if (DEBUG) {
-                Log::d(TAG, "Shutting down writer");
-            }
-            mWriter->shutdown();
-            if (DEBUG) {
-                Log::d(TAG, "Writer has been shut down");
-            }
-        } catch (const Exception& e) {
-            Log::e(TAG, "Cannot shutdown writer");
-        }
-    }
-    mClient.clear();
-}
-
-void Mindroid::Client::Connection::Reader::start(const sp<String>& name, const sp<InputStream>& inputStream, const sp<Connection>& connection) {
-    Thread::setName(name);
-    mConnection = connection;
-    mInputStream = new DataInputStream(inputStream);
-    Thread::start();
-}
-
-void Mindroid::Client::Connection::Reader::shutdown() {
-    interrupt();
-    if (mInputStream != nullptr) {
-        try {
-            mInputStream->close();
-        } catch (const IOException& ignore) {
-        }
-    }
-    join();
-    mConnection.clear();
-}
-
-void Mindroid::Client::Connection::Reader::run() {
-    while (!isInterrupted()) {
-        try {
-            int32_t type = mInputStream->readInt();
-            sp<String> uri = mInputStream->readUTF();
-            int32_t transactionId = mInputStream->readInt();
-            __attribute__((unused)) int32_t what = mInputStream->readInt();
-            int32_t size = mInputStream->readInt();
-            sp<ByteArray> data = new ByteArray(size);
-            mInputStream->readFully(data, 0, size);
-
-            sp<Promise<sp<Parcel>>> promise = mConnection->mClient->mTransactions->get(transactionId);
-            if (promise != nullptr) {
-                mConnection->mClient->mTransactions->remove(transactionId);
-                if (type == Message::MESSAGE_TYPE_TRANSACTION) {
-                    promise->complete(Parcel::obtain(data)->asInput());
-                } else {
-                    promise->completeWith(sp<Exception>(new RemoteException()));
-                }
+        sp<Promise<sp<Parcel>>> promise = mTransactions->get(message->transactionId);
+        if (promise != nullptr) {
+            mTransactions->remove(message->transactionId);
+            if (message->type == Message::MESSAGE_TYPE_TRANSACTION) {
+                promise->complete(Parcel::obtain(message->data)->asInput());
             } else {
-                Log::e(TAG, "Invalid transaction id: %d", transactionId);
+                promise->completeWith(sp<Exception>(new RemoteException()));
             }
-        } catch (const IOException& e) {
-            if (DEBUG) {
-                Log::e(TAG, "IOException");
-            }
-            mConnection->mClient->shutdown();
-            break;
+        } else {
+            Log::e(TAG, "Invalid transaction id: %d", message->transactionId);
         }
-    }
-
-    if (DEBUG) {
-        Log::d(TAG, "Reader is terminating");
-    }
-}
-
-Mindroid::Client::Connection::Writer::Writer() :
-        mLock(new ReentrantLock()),
-        mCondition(mLock->newCondition()) {
-}
-
-void Mindroid::Client::Connection::Writer::start(const sp<String>& name, const sp<OutputStream>& outputStream, const sp<Connection>& connection) {
-    setName(name);
-    mConnection = connection;
-    mOutputStream = new DataOutputStream(outputStream);
-    Thread::start();
-}
-
-void Mindroid::Client::Connection::Writer::shutdown() {
-    interrupt();
-    {
-        AutoLock autoLock(mLock);
-        mCondition->signal();
-    }
-    if (mOutputStream != nullptr) {
-        try {
-            mOutputStream->close();
-        } catch (const IOException& ignore) {
-        }
-    }
-    join();
-    mConnection.clear();
-}
-
-void Mindroid::Client::Connection::Writer::write(const sp<Mindroid::Message>& message) {
-    AutoLock autoLock(mLock);
-    mQueue->add(message);
-    mCondition->signal();
-}
-
-void Mindroid::Client::Connection::Writer::run() {
-    sp<Message> message;
-
-    while (!isInterrupted()) {
-        {
-            AutoLock autoLock(mLock);
-            while (!isInterrupted() && mQueue->isEmpty()) {
-                mCondition->await();
-            }
-            if (isInterrupted()) {
-                break;
-            }
-
-            message = mQueue->get(0);
-            mQueue->remove(0);
-        }
-
-        try {
-            mOutputStream->writeInt(message->type);
-            mOutputStream->writeUTF(message->uri);
-            mOutputStream->writeInt(message->transactionId);
-            mOutputStream->writeInt(message->what);
-            mOutputStream->writeInt(message->data->size());
-            mOutputStream->write(message->data);
-            mOutputStream->flush();
-        } catch (const IOException& e) {
+    } catch (const IOException& e) {
+        if (DEBUG) {
             Log::e(TAG, "IOException");
-            mConnection->mClient->shutdown();
-            break;
         }
-    }
-
-    if (DEBUG) {
-        Log::d(TAG, "Writer is terminating");
+        throw e;
     }
 }
 

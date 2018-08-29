@@ -20,10 +20,11 @@
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/ByteArray.h>
-#include <mindroid/lang/Thread.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/runtime/system/Plugin.h>
 #include <mindroid/runtime/system/Configuration.h>
+#include <mindroid/runtime/system/io/AbstractServer.h>
+#include <mindroid/runtime/system/io/AbstractClient.h>
 #include <mindroid/util/HashMap.h>
 #include <mindroid/util/HashSet.h>
 #include <mindroid/util/LinkedList.h>
@@ -97,6 +98,10 @@ public:
             return new Message(MESSAGE_TYPE_EXCEPTION_TRANSACTION, uri, transactionId, what, data);
         }
 
+        static sp<Message> newMessage(const sp<DataInputStream>& inputStream);
+
+        void write(const sp<DataOutputStream>& outputStream);
+
         int32_t type;
         sp<String> uri;
         int32_t transactionId;
@@ -104,128 +109,28 @@ public:
         sp<ByteArray> data;
     };
 
-    class Server : public Object {
+    class Server : public AbstractServer {
     public:
-        Server() = default;
-        void start(const sp<String>& uri);
-        void shutdown();
-
-        class Connection : public Object {
-        public:
-            Connection(const sp<Socket>& socket, const sp<Server>& server);
-            void start();
-            void shutdown();
-
-            class Reader : public Thread {
-            public:
-                Reader(const sp<String>& name, const sp<InputStream>& inputStream, const sp<Connection>& connection);
-                void shutdown();
-                void run() override;
-
-            private:
-                sp<Connection> mConnection;
-                sp<DataInputStream> mInputStream;
-            };
-
-            class Writer : public Thread {
-            public:
-                Writer(const sp<String>& name, const sp<OutputStream>& outputStream, const sp<Connection>& connection);
-                void shutdown();
-                void write(const sp<Mindroid::Message>& message);
-                void run() override;
-
-            private:
-                sp<Connection> mConnection;
-                sp<DataOutputStream> mOutputStream;
-                sp<LinkedList<sp<Message>>> mQueue = new LinkedList<sp<Message>>();
-                sp<Lock> mLock;
-                sp<Condition> mCondition;
-            };
-
-        private:
-            sp<ByteArray> BINDER_TRANSACTION_FAILURE = String::valueOf("Binder transaction failure")->getBytes();
-            sp<Socket> mSocket;
-            sp<Server> mServer;
-            sp<Reader> mReader;
-            sp<Writer> mWriter;
-        };
+        Server(const sp<Runtime>& runtime);
+        void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:
-       static const bool DEBUG = false;
-
-       sp<Thread> mThread;
-       sp<ServerSocket> mServerSocket;
-       // FIXME: Control concurrent access to collections.
-       sp<HashSet<sp<Connection>>> mConnections = new HashSet<sp<Connection>>();
+        const sp<ByteArray> BINDER_TRANSACTION_FAILURE = String::valueOf("Binder transaction failure")->getBytes();
+        sp<Runtime> mRuntime;
     };
 
-    class Client : public Object {
+    class Client : public AbstractClient {
     public:
-        Client(uint32_t nodeId, const sp<Mindroid>& plugin);
-        void start(const sp<String>& uri);
-        void shutdown();
+        Client(const sp<Mindroid>& plugin, uint32_t nodeId);
+        void shutdown() override;
 
-        sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
-
-        uint32_t getNodeId() {
-            return mNodeId;
-        }
-
-        class Connection : public Object {
-        public:
-            Connection();
-            void start(const sp<Socket>& socket, const sp<Client>& client);
-            void shutdown();
-
-            class Reader : public Thread {
-            public:
-                Reader() = default;
-                void start(const sp<String>& name, const sp<InputStream>& inputStream, const sp<Connection>& connection);
-                void shutdown();
-                void run() override;
-
-            private:
-                sp<Connection> mConnection;
-                sp<DataInputStream> mInputStream;
-            };
-
-            class Writer : public Thread {
-            public:
-                Writer();
-                void start(const sp<String>& name, const sp<OutputStream>& outputStream, const sp<Connection>& connection);
-                void shutdown();
-                void write(const sp<Mindroid::Message>& message);
-                void run() override;
-
-            private:
-                sp<Connection> mConnection;
-                sp<DataOutputStream> mOutputStream;
-                sp<LinkedList<sp<Mindroid::Message>>> mQueue = new LinkedList<sp<Mindroid::Message>>();
-                sp<Lock> mLock;
-                sp<Condition> mCondition;
-            };
-
-        private:
-            sp<Socket> mSocket;
-            sp<Client> mClient;
-            sp<Reader> mReader;
-            sp<Writer> mWriter;
-
-            friend class Client;
-        };
+        sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) override;
+        void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:
-        static const bool DEBUG = false;
-
-        uint32_t mNodeId;
-        sp<Thread> mThread;
-        sp<Socket> mSocket;
-        sp<String> mHost;
-        int32_t mPort = -1;
-        sp<Connection> mConnection;
         sp<Mindroid> mPlugin;
         sp<AtomicInteger> mTransactionIdGenerator;
-        // FIXME: Control concurrent access to collections.
+        // FIXME: Fix concurrent access to collections.
         sp<HashMap<int32_t, sp<Promise<sp<Parcel>>>>> mTransactions = new HashMap<int32_t, sp<Promise<sp<Parcel>>>>();
     };
 
@@ -234,7 +139,7 @@ private:
 
     sp<Configuration::Plugin> mConfiguration;
     sp<Server> mServer;
-    // FIXME: Control concurrent access to collections.
+    // FIXME: Fix concurrent access to collections.
     sp<HashMap<uint32_t, sp<Client>>> mClients = new HashMap<uint32_t, sp<Client>>();
     sp<HashMap<uint32_t, sp<HashMap<uint64_t, wp<IBinder>>>>> mProxies = new HashMap<uint32_t, sp<HashMap<uint64_t, wp<IBinder>>>>();
     sp<Lock> mLock;

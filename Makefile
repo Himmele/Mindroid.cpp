@@ -95,6 +95,8 @@ SRCS = \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
 	src/mindroid/runtime/system/Mindroid.cpp \
+	src/mindroid/runtime/system/io/AbstractClient.cpp \
+	src/mindroid/runtime/system/io/AbstractServer.cpp \
 	src/mindroid/util/Assert.cpp \
 	src/mindroid/util/EventLog.cpp \
 	src/mindroid/util/Log.cpp \
