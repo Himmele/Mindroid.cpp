@@ -32,7 +32,7 @@ ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, 
 }
 
 ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t position, size_t limit, size_t capacity, size_t offset, bool readOnly) :
-        ByteBuffer(byteArray, position, limit, capacity, false, offset) {
+        ByteBuffer(byteArray, position, limit, capacity, readOnly, offset) {
 }
 
 sp<ByteArray> ByteArrayBuffer::array() const {
@@ -48,12 +48,12 @@ sp<ByteBuffer> ByteArrayBuffer::compact() {
 }
 
 sp<ByteBuffer> ByteArrayBuffer::duplicate() {
-    return new ByteArrayBuffer(mBuffer, mPosition, mLimit, mCapacity, false, mOffset);
+    return new ByteArrayBuffer(mBuffer, mPosition, mLimit, mCapacity, mOffset, false);
 }
 
 sp<ByteBuffer> ByteArrayBuffer::slice() {
     size_t count = mLimit - mPosition;
-    return new ByteArrayBuffer(mBuffer, 0, count, count, false, mPosition + mOffset);
+    return new ByteArrayBuffer(mBuffer, 0, count, count, mPosition + mOffset, false);
 }
 
 } /* namespace mindroid */

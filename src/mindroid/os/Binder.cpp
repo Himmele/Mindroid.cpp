@@ -185,7 +185,11 @@ Binder::Proxy::Proxy(const sp<URI>& uri) {
                 sp<String> key = pair->substring(0, j)->trim();
                 sp<String> value = pair->substring(j + 1)->trim();
                 if (key->equals("if")) {
-                    mDescriptor = String::format("%s://interfaces/%s", uri->getScheme()->c_str(), value->c_str());
+                    if (uri->getQuery() == nullptr) {
+                        mDescriptor = String::format("%s://interfaces/%s", uri->getScheme()->c_str(), value->c_str());
+                    } else {
+                        mDescriptor = String::format("%s://interfaces/%s?%s", uri->getScheme()->c_str(), value->c_str(), uri->getQuery()->c_str());
+                    }
                     break;
                 }
             }

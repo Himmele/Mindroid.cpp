@@ -149,7 +149,7 @@ public:
 
     sp<IBinder> getBinder();
 
-    sp<ByteArray> toByteArray();
+    sp<ByteArray> getByteArray();
 
     sp<ByteArrayInputStream> asInputStream();
 

@@ -162,7 +162,7 @@ void Parcel::putBytes(const sp<ByteArray>& buffer, size_t offset, size_t size) {
 void Parcel::putBinder(const sp<IBinder>& binder) {
     try {
         sp<URI> descriptor = new URI(binder->getInterfaceDescriptor());
-        sp<URI> uri = new URI(binder->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr);
+        sp<URI> uri = new URI(binder->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), descriptor->getQuery(), nullptr);
         putString(uri->toString());
     } catch (const URISyntaxException& e) {
         throw RemoteException(e);
@@ -172,7 +172,7 @@ void Parcel::putBinder(const sp<IBinder>& binder) {
 void Parcel::putBinder(const sp<IBinder>& base, const sp<IBinder>& binder) {
     try {
         sp<URI> descriptor = new URI(binder->getInterfaceDescriptor());
-        sp<URI> uri = new URI(base->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr);
+        sp<URI> uri = new URI(base->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), descriptor->getQuery(), nullptr);
         putString(uri->toString());
     } catch (const URISyntaxException& e) {
         throw RemoteException(e);
@@ -285,13 +285,13 @@ sp<IBinder> Parcel::getBinder() {
     return Runtime::getRuntime()->getBinder(uri);
 }
 
-sp<ByteArray> Parcel::toByteArray() {
+sp<ByteArray> Parcel::getByteArray() {
     return mOutputStream->getByteArray();
 }
 
 sp<ByteArrayInputStream> Parcel::asInputStream() {
     if (mInputStream == nullptr) {
-        mInputStream = new ByteArrayInputStream(mOutputStream->getByteArray());
+        mInputStream = new ByteArrayInputStream(mOutputStream->getByteArray(), 0, mOutputStream->size());
         mDataInputStream = new DataInputStream(mInputStream);
     }
     return mInputStream;
@@ -330,7 +330,7 @@ void Parcel::checkInput() {
 sp<URI> Parcel::toUri(const sp<IBinder>& base, const sp<IBinder>& binder) {
     try {
         sp<URI> descriptor = new URI(binder->getInterfaceDescriptor());
-        sp<URI> uri = new URI(base->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr);
+        sp<URI> uri = new URI(base->getUri()->getScheme(), binder->getUri()->getAuthority(), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), descriptor->getQuery(), nullptr);
         return uri;
     } catch (const URISyntaxException& e) {
         throw RemoteException(e);

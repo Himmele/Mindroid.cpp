@@ -82,20 +82,29 @@ public:
         static const int32_t MESSAGE_TYPE_TRANSACTION = 1;
         static const int32_t MESSAGE_TYPE_EXCEPTION_TRANSACTION = 2;
 
-        Message(int32_t type, const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data) :
+        Message(int32_t type, const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data, size_t size) :
                 type(type),
                 uri(uri),
                 transactionId(transactionId),
                 what(what),
-                data(data) {
+                data(data),
+                size(size) {
         }
 
         static sp<Message> newMessage(const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data) {
-            return new Message(MESSAGE_TYPE_TRANSACTION, uri, transactionId, what, data);
+            return newMessage(uri, transactionId, what, data, data->size());
+        }
+
+        static sp<Message> newMessage(const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data, size_t size) {
+            return new Message(MESSAGE_TYPE_TRANSACTION, uri, transactionId, what, data, size);
         }
 
         static sp<Message> newExceptionMessage(const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data) {
-            return new Message(MESSAGE_TYPE_EXCEPTION_TRANSACTION, uri, transactionId, what, data);
+            return newExceptionMessage(uri, transactionId, what, data, data->size());
+        }
+
+        static sp<Message> newExceptionMessage(const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data, size_t size) {
+            return new Message(MESSAGE_TYPE_EXCEPTION_TRANSACTION, uri, transactionId, what, data, size);
         }
 
         static sp<Message> newMessage(const sp<DataInputStream>& inputStream);
@@ -107,6 +116,7 @@ public:
         int32_t transactionId;
         int32_t what;
         sp<ByteArray> data;
+        size_t size;
     };
 
     class Server : public AbstractServer {

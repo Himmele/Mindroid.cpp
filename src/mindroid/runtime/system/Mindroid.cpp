@@ -160,7 +160,7 @@ sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& i
     int32_t size = inputStream->readInt();
     sp<ByteArray> data = new ByteArray(size);
     inputStream->readFully(data, 0, size);
-    return new Message(type, uri, transactionId, what, data);
+    return new Message(type, uri, transactionId, what, data, size);
 }
 
 void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
@@ -168,8 +168,8 @@ void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
     outputStream->writeUTF(this->uri);
     outputStream->writeInt(this->transactionId);
     outputStream->writeInt(this->what);
-    outputStream->writeInt(this->data->size());
-    outputStream->write(this->data);
+    outputStream->writeInt(this->size);
+    outputStream->write(this->data, 0, this->size);
     outputStream->flush();
 }
 
@@ -200,7 +200,7 @@ void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStrea
                         try {
                             result->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
                                 if (exception == nullptr) {
-                                    Message::newMessage(message->uri, message->transactionId, message->what, value->toByteArray())->write(dataOutputStream);
+                                    Message::newMessage(message->uri, message->transactionId, message->what, value->getByteArray(), value->size())->write(dataOutputStream);
                                 } else {
                                     Message::newExceptionMessage(message->uri, message->transactionId, message->what, BINDER_TRANSACTION_FAILURE)->write(dataOutputStream);
                                 }
@@ -275,7 +275,7 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         mTransactions->put(transactionId, promise);
     }
     try {
-        Message::newMessage(binder->getUri()->toString(), transactionId, what, data->toByteArray())->write(dataOutputStream);
+        Message::newMessage(binder->getUri()->toString(), transactionId, what, data->getByteArray(), data->size())->write(dataOutputStream);
     } catch (const IOException& e) {
         if (result != nullptr) {
             result->completeWith(e);

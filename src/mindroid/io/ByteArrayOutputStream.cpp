@@ -33,7 +33,7 @@ ByteArrayOutputStream::ByteArrayOutputStream(size_t size) :
 
 ByteArrayOutputStream::ByteArrayOutputStream(const sp<ByteArray>& buffer) :
         mBuffer(buffer),
-        mCount(0) {
+        mCount(buffer->size()) {
 }
 
 void ByteArrayOutputStream::close() {
