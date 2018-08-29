@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <mindroid/runtime/system/io/AbstractServer.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/net/ServerSocket.h>
 #include <mindroid/net/Socket.h>
@@ -23,7 +24,6 @@
 #include <mindroid/io/InputStream.h>
 #include <mindroid/io/OutputStream.h>
 #include <mindroid/io/IOException.h>
-#include <mindroid/runtime/system/io/AbstractServer.h>
 #include <mindroid/util/Log.h>
 #include <mindroid/util/concurrent/Executors.h>
 #include <mindroid/util/concurrent/Promise.h>
