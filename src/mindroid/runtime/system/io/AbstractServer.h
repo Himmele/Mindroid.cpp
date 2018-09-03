@@ -48,6 +48,18 @@ public:
         void close();
         void run() override;
 
+        sp<Bundle> getContext() {
+            return mContext;
+        }
+
+        sp<InputStream> getInputStream() {
+            return mInputStream;
+        }
+
+        sp<OutputStream> getOutputStream() {
+            return mOutputStream;
+        }
+
     private:
         sp<Bundle> mContext;
         sp<Socket> mSocket;

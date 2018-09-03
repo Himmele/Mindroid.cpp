@@ -70,21 +70,22 @@ void AbstractServer::start(const sp<String>& uri) {
 }
 
 void AbstractServer::shutdown() {
-    auto itr = mConnections->iterator();
-    while (itr.hasNext()) {
-        sp<Connection> connection = itr.next();
-        try {
-            connection->close();
-        } catch (const IOException& ignore) {
-        }
-        itr.remove();
-    }
-
     try {
         mServerSocket->close();
     } catch (const IOException& e) {
         Log::e(TAG, "Cannot close server socket");
     }
+
+    auto itr = mConnections->iterator();
+    while (itr.hasNext()) {
+        sp<Connection> connection = itr.next();
+        itr.remove();
+        try {
+            connection->close();
+        } catch (const IOException& ignore) {
+        }
+    }
+
     mThread->interrupt();
     mThread->join();
 }
@@ -133,6 +134,7 @@ void AbstractServer::Connection::close() {
         }
     }
     join();
+    mServer->mConnections->remove(this);
     mServer.clear();
     if (DEBUG) {
         Log::d(TAG, "Connection has been closed");
@@ -147,10 +149,9 @@ void AbstractServer::Connection::run() {
             if (DEBUG) {
                 Log::e(TAG, "IOException");
             }
-            mServer->mConnections->remove(this);
             try {
                 close();
-            } catch (IOException ignore) {
+            } catch (const IOException& ignore) {
             }
             break;
         }
