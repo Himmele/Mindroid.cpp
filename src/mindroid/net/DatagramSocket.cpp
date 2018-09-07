@@ -166,8 +166,9 @@ void DatagramSocket::send(const sp<DatagramPacket>& datagramPacket) {
         sin.sin_port = htons(datagramPacket->getPort());
         saSize = sizeof(sockaddr_in);
     }
+
     ssize_t rc = ::sendto(mFd, reinterpret_cast<const char*>(datagramPacket->getData()->c_arr() + datagramPacket->getOffset()),
-            datagramPacket->getLength(), MSG_NOSIGNAL, (struct sockaddr*) &ss, saSize);
+            datagramPacket->getLength(), 0, (struct sockaddr*) &ss, saSize);
     if (rc < 0 || ((size_t) rc) != datagramPacket->getLength()) {
         throw IOException();
     }

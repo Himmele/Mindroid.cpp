@@ -82,6 +82,16 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         sin.sin_port = htons(socketAddress->getPort());
         saSize = sizeof(sockaddr_in);
     }
+
+#ifdef __APPLE__
+    const int32_t value = 1;
+    const int32_t rc = setsockopt(mFd, SOL_SOCKET, SO_NOSIGPIPE, (void*) &value, sizeof(int32_t));
+    if (rc < 0) {
+        close();
+        throw SocketException(String::format("Failed to set socket option SO_NOSIGPIPE (errno=%d)", errno));
+    }
+#endif
+
     if (::connect(mFd, (struct sockaddr*) &ss, saSize) == 0) {
         mInetAddress = socketAddress->getAddress();
         mPort = socketAddress->getPort();
@@ -220,7 +230,11 @@ void Socket::SocketOutputStream::write(int32_t b) {
     }
 
     uint8_t data = (uint8_t) b;
+#ifndef __APPLE__
     ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(&data), sizeof(data), MSG_NOSIGNAL);
+#else
+    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(&data), sizeof(data), 0);
+#endif
     if (rc < 0 || ((size_t) rc) != sizeof(data)) {
         throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
     }
@@ -240,7 +254,11 @@ void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offse
     if (count == 0) {
         return;
     }
+#ifndef __APPLE__
     ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, MSG_NOSIGNAL);
+#else
+    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, 0);
+#endif
     if (rc < 0 || ((size_t) rc) != count) {
         throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
     }

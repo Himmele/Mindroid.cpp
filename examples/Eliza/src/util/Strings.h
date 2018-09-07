@@ -143,7 +143,7 @@ public:
      */
     static bool matchB(sp<String> s, sp<String> pattern, const sp<mindroid::StringArray>& matches) {
         size_t j = 0; // matches index.
-        while (pattern->length() > 0 && s->length() >= 0 && j < matches->size()) {
+        while (pattern->length() > 0 && j < matches->size()) {
             char p = pattern->charAt(0);
             if (p == '*') {
                 int n;

@@ -34,9 +34,11 @@ void Thread::start() {
     if (!mStarted) {
         mSelf = this;
         if (::pthread_create(&mThread, nullptr, &Thread::exec, this) == 0) {
+#ifndef __APPLE__
             if (mName != nullptr) {
                 ::pthread_setname_np(mThread, mName->c_str());
             }
+#endif
         } else {
             mSelf.clear();
         }
@@ -76,7 +78,7 @@ bool Thread::isAlive() const {
 }
 
 uint64_t Thread::getId() const {
-    return ::pthread_self();
+    return (uint64_t) ::pthread_self();
 }
 
 sp<Thread> Thread::currentThread() {
@@ -86,7 +88,9 @@ sp<Thread> Thread::currentThread() {
 void Thread::setName(const sp<String>& name) {
     if (name != nullptr) {
         mName = name;
+#ifndef __APPLE__
         ::pthread_setname_np(mThread, mName->c_str());
+#endif
     }
 }
 

@@ -35,7 +35,10 @@ uint64_t SystemClock::elapsedRealtime() {
 #ifdef CLOCK_BOOTTIME
     clock_gettime(CLOCK_BOOTTIME, &now);
 #else
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic warning "-W#warnings"
     #warning SystemClock does not support CLOCK_BOOTTIME
+    #pragma GCC diagnostic pop
     clock_gettime(CLOCK_MONOTONIC, &now);
 #endif
     return (((uint64_t) now.tv_sec * 1000LL) + (now.tv_nsec / 1000000LL));
