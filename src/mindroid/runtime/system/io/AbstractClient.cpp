@@ -30,7 +30,8 @@ namespace mindroid {
 const char* AbstractClient::TAG = "Client";
 
 AbstractClient::AbstractClient(uint32_t nodeId) :
-            mNodeId(nodeId) {
+            mNodeId(nodeId),
+            mSocket(new Socket()) {
 }
 
 void AbstractClient::start(const sp<String>& uri) {
@@ -42,7 +43,6 @@ void AbstractClient::start(const sp<String>& uri) {
         }
         mHost = url->getHost();
         mPort = url->getPort();
-        mSocket = new Socket();
 
         try {
             mSocket->connect(new InetSocketAddress(mHost, mPort));

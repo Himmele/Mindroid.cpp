@@ -132,9 +132,9 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
         sp<Configuration::Node> node;
         if (mConfiguration != nullptr && (node = mConfiguration->nodes->get(nodeId)) != nullptr) {
             if (!mClients->containsKey(nodeId)) {
-                client = new Client(this, node->id);
-                mClients->put(nodeId, client);
                 try {
+                    client = new Client(this, node->id);
+                    mClients->put(nodeId, client);
                     client->start(node->uri);
                 } catch (const IOException& e) {
                     mClients->remove(nodeId);
@@ -259,35 +259,32 @@ void Mindroid::Client::shutdown() {
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
-    sp<Bundle> context = getContext();
-    if (!context->containsKey("datOutputStream")) {
-        sp<DataOutputStream> dataOutputStream = new DataOutputStream(getOutputStream());
-        context->putObject("dataOutputStream", dataOutputStream);
-    }
-    sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
-
     const int32_t transactionId = mTransactionIdGenerator->getAndIncrement();
     sp<Promise<sp<Parcel>>> result;
-    if (flags == Binder::FLAG_ONEWAY) {
-        result = nullptr;
-    } else {
-        sp<Promise<sp<Parcel>>> promise = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
-        result = promise->orTimeout(data->getLongExtra(Mindroid::TIMEOUT, Mindroid::DEFAULT_TRANSACTION_TIMEOUT))
-        ->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
-            mTransactions->remove(transactionId);
-        });
-        mTransactions->put(transactionId, promise);
-    }
     try {
+        sp<Bundle> context = getContext();
+        if (!context->containsKey("datOutputStream")) {
+            sp<DataOutputStream> dataOutputStream = new DataOutputStream(getOutputStream());
+            context->putObject("dataOutputStream", dataOutputStream);
+        }
+        sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
+
+        if (flags == Binder::FLAG_ONEWAY) {
+            result = nullptr;
+        } else {
+            sp<Promise<sp<Parcel>>> promise = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
+            result = promise->orTimeout(data->getLongExtra(Mindroid::TIMEOUT, Mindroid::DEFAULT_TRANSACTION_TIMEOUT))
+                    ->then([=] (const sp<Parcel>& value, const sp<Exception>& exception) {
+                        mTransactions->remove(transactionId);
+                    });
+            mTransactions->put(transactionId, promise);
+        }
         AutoLock autoLock(mLock);
         Message::newMessage(binder->getUri()->toString(), transactionId, what, data->getByteArray(), data->size())->write(dataOutputStream);
     } catch (const IOException& e) {
-        if (result != nullptr) {
-            result->completeWith(e);
-            mTransactions->remove(transactionId);
-        }
+        mTransactions->remove(transactionId);
         shutdown();
-        throw RemoteException(e);
+        throw RemoteException("Binder transaction failure", e);
     }
     return result;
 }
