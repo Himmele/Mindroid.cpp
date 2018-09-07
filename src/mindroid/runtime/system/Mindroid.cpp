@@ -132,7 +132,7 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
         sp<Configuration::Node> node;
         if (mConfiguration != nullptr && (node = mConfiguration->nodes->get(nodeId)) != nullptr) {
             if (!mClients->containsKey(nodeId)) {
-                sp<Client> client = new Client(this, node->id);
+                client = new Client(this, node->id);
                 mClients->put(nodeId, client);
                 try {
                     client->start(node->uri);
