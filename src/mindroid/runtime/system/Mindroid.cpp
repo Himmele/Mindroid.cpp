@@ -77,8 +77,8 @@ void Mindroid::start() {
             mRuntime->addIds(ids);
 
             sp<Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+            mServer = new Server(mRuntime);
             try {
-                mServer = new Server(mRuntime);
                 mServer->start(node->uri);
             } catch (const IOException& e) {
                 Log::println('E', TAG, "IOException");
@@ -132,15 +132,15 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
         sp<Configuration::Node> node;
         if (mConfiguration != nullptr && (node = mConfiguration->nodes->get(nodeId)) != nullptr) {
             if (!mClients->containsKey(nodeId)) {
+                sp<Client> client = new Client(this, node->id);
+                mClients->put(nodeId, client);
                 try {
-                    sp<Client> client = new Client(this, node->id);
                     client->start(node->uri);
-                    mClients->put(nodeId, client);
                 } catch (const IOException& e) {
+                    mClients->remove(nodeId);
                     throw RemoteException("Binder transaction failure");
                 }
             }
-            client = mClients->get(nodeId);
         } else {
             throw RemoteException("Binder transaction failure");
         }
