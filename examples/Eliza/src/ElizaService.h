@@ -44,7 +44,7 @@ private:
         Stub();
         sp<String> ask1(const sp<String>& question) override;
         sp<mindroid::Promise<sp<String>>> ask2(const sp<String>& question) override;
-        void ask3(const sp<String> question, const sp<IElizaListener>& listener) override;
+        void ask3(const sp<String>& question, const sp<IElizaListener>& listener) override;
 
     private:
         sp<String> talk(const sp<String>& input);

@@ -58,7 +58,7 @@ sp<Promise<sp<String>>> ElizaService::Stub::ask2(const sp<String>& question) {
     return promise;
 }
 
-void ElizaService::Stub::ask3(const sp<String> question, const sp<IElizaListener>& listener) {
+void ElizaService::Stub::ask3(const sp<String>& question, const sp<IElizaListener>& listener) {
     mHandler->postDelayed([=] {
         try {
             listener->onReply(talk(question));

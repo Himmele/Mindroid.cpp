@@ -34,7 +34,7 @@ class IEliza :
 public:
     virtual sp<String> ask1(const sp<String>& question) = 0;
     virtual sp<mindroid::Promise<sp<String>>> ask2(const sp<String>& question) = 0;
-    virtual void ask3(const sp<String> question, const sp<IElizaListener>& listener) = 0;
+    virtual void ask3(const sp<String>& question, const sp<IElizaListener>& listener) = 0;
 };
 
 namespace binder {
@@ -89,7 +89,7 @@ public:
 
             sp<String> ask1(const sp<String>& question) override;
             sp<mindroid::Promise<sp<String>>> ask2(const sp<String>& question) override;
-            void ask3(const sp<String> question, const sp<IElizaListener>& listener) override;
+            void ask3(const sp<String>& question, const sp<IElizaListener>& listener) override;
 
         private:
             sp<IBinder> mRemote;
@@ -129,7 +129,7 @@ public:
 
         sp<String> ask1(const sp<String>& question) override;
         sp<mindroid::Promise<sp<String>>> ask2(const sp<String>& question) override;
-        void ask3(const sp<String> question, const sp<IElizaListener>& listener) override;
+        void ask3(const sp<String>& question, const sp<IElizaListener>& listener) override;
 
     private:
         sp<mindroid::IBinder> mBinder;
