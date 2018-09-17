@@ -1,36 +1,42 @@
 /*
- * Copyright (C) 2018 Daniel Himmelein
+ * Copyright (C) 2018 ESR Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef EXAMPLES_ELIZA_IELIZA_H
+#define EXAMPLES_ELIZA_IELIZA_H
 
-#ifndef EXAMPLES_IELIZA_H_
-#define EXAMPLES_IELIZA_H_
-
-#include <mindroid/os/Binder.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/String.h>
+#include <mindroid/os/Binder.h>
+#include <mindroid/util/ArrayList.h>
+#include <mindroid/util/HashMap.h>
+#include <mindroid/util/HashSet.h>
+#include <mindroid/util/concurrent/Promise.h>
+#include <examples/eliza/IElizaListener.h>
 
 namespace examples {
 namespace eliza {
 
 using mindroid::sp;
+using mindroid::ArrayList;
+using mindroid::HashMap;
+using mindroid::HashSet;
 using mindroid::Object;
 using mindroid::String;
 
-class IElizaListener;
-
-class IEliza :
-        public mindroid::IInterface {
+class IEliza : public mindroid::IInterface {
 public:
     virtual sp<String> ask1(const sp<String>& question) = 0;
     virtual sp<mindroid::Promise<sp<String>>> ask2(const sp<String>& question) = 0;
@@ -142,4 +148,4 @@ public:
 } /* namespace eliza */
 } /* namespace examples */
 
-#endif /* EXAMPLES_IELIZA_H_ */
+#endif /* EXAMPLES_ELIZA_IELIZA_H */

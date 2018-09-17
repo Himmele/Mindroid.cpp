@@ -1,21 +1,19 @@
 /*
- * Copyright (C) 2018 Daniel Himmelein
+ * Copyright (C) 2018 ESR Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#include "IEliza.h"
-#include "IElizaListener.h"
+#include <examples/eliza/IEliza.h>
 #include <mindroid/os/Parcel.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/runtime/system/Runtime.h>
@@ -35,8 +33,12 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Prom
         sp<String> question = data->getString();
         sp<String> reply = ask1(question);
         sp<Parcel> parcel = Parcel::obtain();
-        parcel->putString(reply);
-        result->complete(parcel);
+        try {
+            parcel->putString(reply);
+            result->complete(parcel);
+        } catch (const RemoteException& e) {
+            result->completeWith(e);
+        }
         break;
     }
     case MSG_ASK2: {
@@ -46,9 +48,9 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Prom
             if (exception == nullptr) {
                 sp<Parcel> parcel = Parcel::obtain();
                 try {
-                    parcel->putString(reply->get());
+                    parcel->putString(value);
                     result->complete(parcel);
-                } catch (const Exception& e) {
+                } catch (const RemoteException& e) {
                     result->completeWith(e);
                 }
             } else {
@@ -59,8 +61,9 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Prom
     }
     case MSG_ASK3: {
         sp<String> question = data->getString();
-        sp<IBinder> binder = data->getBinder();
-        ask3(question, binder::ElizaListener::Stub::asInterface(binder));
+        sp<IElizaListener> listener = binder::ElizaListener::Stub::asInterface(data->getBinder());
+        ask3(question, listener);
+        break;
     }
     default:
         Binder::onTransact(what, data, result);
@@ -72,18 +75,18 @@ sp<String> Eliza::Stub::Proxy::ask1(const sp<String>& question) {
     sp<Parcel> data = Parcel::obtain();
     data->putString(question);
     mRemote->transact(MSG_ASK1, data, 0)
-        ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
-            if (exception == nullptr) {
-                try {
-                    sp<String> reply = parcel->getString();
-                    promise->complete(reply);
-                } catch (const RemoteException& e) {
-                    promise->completeWith(e);
+            ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
+                if (exception == nullptr) {
+                    try {
+                        sp<String> reply = parcel->getString();
+                        promise->complete(reply);
+                    } catch (const RemoteException& e) {
+                        promise->completeWith(e);
+                    }
+                } else {
+                    promise->completeWith(exception);
                 }
-            } else {
-                promise->completeWith(exception);
-            }
-        });
+            });
     return Binder::get(promise);
 }
 
@@ -92,18 +95,18 @@ sp<mindroid::Promise<sp<String>>> Eliza::Stub::Proxy::ask2(const sp<String>& que
     sp<Parcel> data = Parcel::obtain();
     data->putString(question);
     mRemote->transact(MSG_ASK2, data, 0)
-        ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
-            if (exception == nullptr) {
-                try {
-                    sp<String> reply = parcel->getString();
-                    promise->complete(reply);
-                } catch (const RemoteException& e) {
-                    promise->completeWith(e);
+            ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
+                if (exception == nullptr) {
+                    try {
+                        sp<String> reply = parcel->getString();
+                        promise->complete(reply);
+                    } catch (const RemoteException& e) {
+                        promise->completeWith(e);
+                    }
+                } else {
+                    promise->completeWith(exception);
                 }
-            } else {
-                promise->completeWith(exception);
-            }
-        });
+            });
     return promise;
 }
 
@@ -134,7 +137,7 @@ sp<String> Eliza::Proxy::ask1(const sp<String>& question) {
     }
 }
 
-sp<mindroid::Promise<sp<String>>> Eliza::Proxy::ask2(const sp<String>& question) {
+sp<Promise<sp<String>>> Eliza::Proxy::ask2(const sp<String>& question) {
     if (mStub != nullptr && mStub->isCurrentThread()) {
         return mStub->ask2(question);
     } else {

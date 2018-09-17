@@ -17,7 +17,8 @@
 #ifndef EXAMPLES_ELIZA_SERVICE_H_
 #define EXAMPLES_ELIZA_SERVICE_H_
 
-#include "IEliza.h"
+#include <examples/eliza/IEliza.h>
+#include <examples/eliza/IElizaListener.h>
 #include <mindroid/app/Service.h>
 
 namespace eliza {

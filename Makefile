@@ -6,7 +6,7 @@ LD := g++
 AS := gas
 AR := ar
 RM := rm
-INCLUDES := -I. -Isrc -Itests -Igoogletest/include
+INCLUDES := -I. -Isrc
 CFLAGS := -c -g -O0 -fPIC -std=c++11 -fexceptions -fstack-protector -Wa,--noexecstack -Werror=format-security -D_FORTIFY_SOURCE=2
 LDFLAGS := -pie -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now
 OUT_DIR := out
@@ -128,7 +128,7 @@ Mindroid.cpp: $(Mindroid.cpp)
 $(Mindroid.cpp): $(LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(OUT_DIR)/%.o: %.cpp
+$(LIB_OBJS): $(OUT_DIR)/%.o : %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -145,7 +145,7 @@ tinyxml2: $(tinyxml2)
 $(tinyxml2): $(TINYXML2_LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(OUT_DIR)/%.o: %.cpp
+$(TINYXML2_LIB_OBJS): $(OUT_DIR)/%.o : %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
@@ -162,9 +162,9 @@ googletest: $(googletest)
 $(googletest): $(GOOGLETEST_LIB_OBJS) 
 	$(AR) -r $@ $^
 
-$(OUT_DIR)/%.o: %.cc
+$(GOOGLETEST_LIB_OBJS): $(OUT_DIR)/%.o : %.cc
 	@mkdir -p $(@D)
-	$(CXX) $(CFLAGS) $(INCLUDES) -Igoogletest -c $< -o $@
+	$(CXX) $(CFLAGS) $(INCLUDES) -Igoogletest -Igoogletest/include -c $< -o $@
 
 #==== Tests ====
 
@@ -179,23 +179,25 @@ Tests: $(Tests) Mindroid.cpp tinyxml2 googletest
 $(Tests): $(TEST_BIN_OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^ -Lout -lmindroid -ltinyxml2 -lgoogletest -lpthread -lrt
 	
-$(OUT_DIR)/%.o: %.cpp
+$(TEST_BIN_OBJS): $(OUT_DIR)/%.o : %.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CXX) $(CFLAGS) $(INCLUDES) -Itests -Igoogletest/include -c -o $@ $<
 
 #==== Main ====
 
+MAIN_INCLUDES := -Iexamples/Concurrency/src -Iexamples/Eliza/src -Iexamples/Eliza/gen -Iexamples/Services/src
+
 MAIN_SRCS := src/main/Main.cpp \
-	examples/Services/src/ServiceExample1.cpp \
-	examples/Concurrency/src/PromiseExample.cpp \
 	examples/Concurrency/src/AsyncTaskExample.cpp \
 	examples/Concurrency/src/HandlerExample.cpp \
+	examples/Concurrency/src/PromiseExample.cpp \
+	examples/Eliza/gen/examples/eliza/IEliza.cpp \
+	examples/Eliza/gen/examples/eliza/IElizaListener.cpp \
 	examples/Eliza/src/Eliza.cpp \
 	examples/Eliza/src/ElizaService.cpp \
-	examples/Eliza/src/IEliza.cpp \
-	examples/Eliza/src/IElizaListener.cpp \
 	examples/Eliza/src/You.cpp \
-	examples/Eliza/src/util/Eliza.cpp
+	examples/Eliza/src/util/Eliza.cpp \
+	examples/Services/src/ServiceExample1.cpp
 MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
 MAIN_BIN_OBJS = $(addprefix $(OUT_DIR)/,$(MAIN_OBJS))
 
@@ -206,6 +208,6 @@ Main: $(Main) Mindroid.cpp tinyxml2
 $(Main): $(MAIN_BIN_OBJS)
 	$(LD) $(LDFLAGS) -o $@ $^ -Lout -lmindroid -ltinyxml2 -lpthread -lrt
 	
-$(OUT_DIR)/%.o: %.cpp
+$(MAIN_BIN_OBJS): $(OUT_DIR)/%.o : %.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CFLAGS) $(INCLUDES) -c -o $@ $<
+	$(CXX) $(CFLAGS) $(INCLUDES) $(MAIN_INCLUDES) -c -o $@ $<

@@ -17,8 +17,8 @@
 #ifndef EXAMPLES_ELIZA_H_
 #define EXAMPLES_ELIZA_H_
 
-#include "IEliza.h"
-#include "IElizaListener.h"
+#include "examples/eliza/IEliza.h"
+#include "examples/eliza/IElizaListener.h"
 #include <mindroid/lang/Object.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/util/ArrayList.h>
