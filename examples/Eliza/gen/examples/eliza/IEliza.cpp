@@ -4,20 +4,21 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <examples/eliza/IEliza.h>
+
 #include <mindroid/os/Parcel.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/concurrent/Promise.h>
+#include <examples/eliza/IEliza.h>
 
 using namespace mindroid;
 
@@ -30,26 +31,22 @@ const char* const Eliza::Stub::DESCRIPTOR = "mindroid://interfaces/examples/eliz
 void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
     switch (what) {
     case MSG_ASK1: {
-        sp<String> question = data->getString();
-        sp<String> reply = ask1(question);
-        sp<Parcel> parcel = Parcel::obtain();
-        try {
-            parcel->putString(reply);
-            result->complete(parcel);
-        } catch (const RemoteException& e) {
-            result->completeWith(e);
-        }
+        sp<String> _question = data->getString();
+        sp<String> _reply = ask1(_question);
+        sp<Parcel> _parcel = Parcel::obtain();
+        _parcel->putString(_reply);
+        result->complete(_parcel);
         break;
     }
     case MSG_ASK2: {
-        sp<String> question = data->getString();
-        sp<Promise<sp<String>>> reply = ask2(question);
-        reply->then([=] (const sp<String>& value, const sp<Exception>& exception) {
+        sp<String> _question = data->getString();
+        sp<Promise<sp<String>>> _reply = ask2(_question);
+        _reply->then([=] (const sp<String>& value, const sp<Exception>& exception) {
             if (exception == nullptr) {
-                sp<Parcel> parcel = Parcel::obtain();
+                sp<Parcel> _parcel = Parcel::obtain();
                 try {
-                    parcel->putString(value);
-                    result->complete(parcel);
+                    _parcel->putString(value);
+                    result->complete(_parcel);
                 } catch (const RemoteException& e) {
                     result->completeWith(e);
                 }
@@ -60,9 +57,9 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Prom
         break;
     }
     case MSG_ASK3: {
-        sp<String> question = data->getString();
-        sp<IElizaListener> listener = binder::ElizaListener::Stub::asInterface(data->getBinder());
-        ask3(question, listener);
+        sp<String> _question = data->getString();
+        sp<IElizaListener> _listener = binder::ElizaListener::Stub::asInterface(data->getBinder());
+        ask3(_question, _listener);
         break;
     }
     default:
@@ -71,50 +68,50 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Prom
 }
 
 sp<String> Eliza::Stub::Proxy::ask1(const sp<String>& question) {
-    sp<Promise<sp<String>>> promise = new Promise<sp<String>>();
-    sp<Parcel> data = Parcel::obtain();
-    data->putString(question);
-    mRemote->transact(MSG_ASK1, data, 0)
+    sp<Promise<sp<String>>> _promise = new Promise<sp<String>>();
+    sp<Parcel> _data = Parcel::obtain();
+    _data->putString(question);
+    mRemote->transact(MSG_ASK1, _data, 0)
             ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
                 if (exception == nullptr) {
                     try {
-                        sp<String> reply = parcel->getString();
-                        promise->complete(reply);
+                        sp<String> _reply = parcel->getString();
+                        _promise->complete(_reply);
                     } catch (const RemoteException& e) {
-                        promise->completeWith(e);
+                        _promise->completeWith(e);
                     }
                 } else {
-                    promise->completeWith(exception);
+                    _promise->completeWith(exception);
                 }
             });
-    return Binder::get(promise);
+    return Binder::get(_promise);
 }
 
 sp<mindroid::Promise<sp<String>>> Eliza::Stub::Proxy::ask2(const sp<String>& question) {
-    sp<Promise<sp<String>>> promise = new Promise<sp<String>>();
-    sp<Parcel> data = Parcel::obtain();
-    data->putString(question);
-    mRemote->transact(MSG_ASK2, data, 0)
+    sp<Promise<sp<String>>> _promise = new Promise<sp<String>>();
+    sp<Parcel> _data = Parcel::obtain();
+    _data->putString(question);
+    mRemote->transact(MSG_ASK2, _data, 0)
             ->then([=] (const sp<Parcel>& parcel, const sp<Exception>& exception) {
                 if (exception == nullptr) {
                     try {
-                        sp<String> reply = parcel->getString();
-                        promise->complete(reply);
+                        sp<String> _reply = parcel->getString();
+                        _promise->complete(_reply);
                     } catch (const RemoteException& e) {
-                        promise->completeWith(e);
+                        _promise->completeWith(e);
                     }
                 } else {
-                    promise->completeWith(exception);
+                    _promise->completeWith(exception);
                 }
             });
-    return promise;
+    return _promise;
 }
 
 void Eliza::Stub::Proxy::ask3(const sp<String>& question, const sp<IElizaListener>& listener) {
-    sp<Parcel> data = Parcel::obtain();
-    data->putString(question);
-    data->putBinder(mRemote, listener->asBinder());
-    mRemote->transact(MSG_ASK3, data, FLAG_ONEWAY);
+    sp<Parcel> _data = Parcel::obtain();
+    _data->putString(question);
+    _data->putBinder(listener->asBinder());
+    mRemote->transact(MSG_ASK3, _data, FLAG_ONEWAY);
 }
 
 Eliza::Proxy::Proxy(const sp<IBinder>& binder) {
