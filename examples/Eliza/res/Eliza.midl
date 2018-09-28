@@ -15,11 +15,11 @@
 package examples.eliza;
 
 interface IElizaListener {
-    void onReply(String reply);
+    void onReply(String reply) oneway;
 }
 
 interface IEliza {
     String ask1(String question);
     Promise<String> ask2(String question);
-    void ask3(String question, IElizaListener listener);
+    void ask3(String question, IElizaListener listener) oneway;
 }
