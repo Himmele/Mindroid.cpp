@@ -21,9 +21,10 @@
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
 #include <mindroid/os/Binder.h>
-#include <mindroid/util/ArrayList.h>
-#include <mindroid/util/HashMap.h>
-#include <mindroid/util/HashSet.h>
+#include <mindroid/os/IBinder.h>
+#include <mindroid/os/IInterface.h>
+#include <mindroid/os/Parcel.h>
+#include <mindroid/os/RemoteException.h>
 #include <mindroid/util/concurrent/Promise.h>
 #include <examples/eliza/IElizaListener.h>
 
@@ -31,9 +32,6 @@ namespace examples {
 namespace eliza {
 
 using mindroid::sp;
-using mindroid::ArrayList;
-using mindroid::HashMap;
-using mindroid::HashSet;
 using mindroid::Object;
 using mindroid::String;
 

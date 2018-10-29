@@ -10,72 +10,56 @@
 #  is strictly forbidden unless prior written permission is obtained
 #  from E.S.R.Labs.
 
-Project {
+Project default: Main {
     LibraryConfig default {
         Files "src/mindroid/**/*.cpp"
         IncludeDir "src", inherit: true
 
         Dependency "src/tinyxml2", config: default
     }
-    
-    ExecutableConfig Main {
-        DefaultToolchain GCC {
-            Compiler CPP {
-                Flags "-O0 -g -Wall -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
-                Define "__STDC_FORMAT_MACROS"
-            }
-            Compiler C {
-                Flags "-O0 -g -Wall -Wextra -pthread"
-            }
-            Linker {
-                Flags add: "-pthread"
-            }
-        }
-        
-        ArtifactName "Main"
-        Dependency "Mindroid.cpp", config: default        
 
+    ExecutableConfig Main {
         Files "src/main/Main.cpp"
-        Files "examples/Concurrency/src/AsyncTaskExample.cpp"
-        Files "examples/Concurrency/src/HandlerExample.cpp"
-        Files "examples/Concurrency/src/PromiseExample.cpp"
-        Files "examples/Eliza/gen/examples/eliza/IEliza.cpp"
-        Files "examples/Eliza/gen/examples/eliza/IElizaListener.cpp"
-        Files "examples/Eliza/src/Eliza.cpp"
-        Files "examples/Eliza/src/ElizaService.cpp"
-        Files "examples/Eliza/src/You.cpp"
-        Files "examples/Eliza/src/util/Eliza.cpp"
-        Files "examples/Services/src/ServiceExample1.cpp"
+        Files "examples/Concurrency/src/**/*.cpp"
+        Files "examples/Eliza/gen/**/*.cpp"
+        Files "examples/Eliza/src/**/*.cpp"
+        Files "examples/Services/src/**/*.cpp"
 
         IncludeDir "."
-        IncludeDir "src"        
+        IncludeDir "src"
         IncludeDir "examples/Concurrency/src"
         IncludeDir "examples/Eliza/src"
         IncludeDir "examples/Eliza/gen"
         IncludeDir "examples/Services/src"
-    }
-    
-    ExecutableConfig Tests {
-        DefaultToolchain GCC {
+
+        ArtifactName "Main"
+        Dependency config: default
+        ExternalLibrary "pthread"
+
+        DefaultToolchain CLANG {
             Compiler CPP {
-                Flags "-O0 -g -Wall -std=c++11 -pthread -Wno-strict-aliasing -fexceptions -frtti"
-                Define "__STDC_FORMAT_MACROS"
-            }
-            Compiler C {
-                Flags "-O0 -g -Wall -Wextra -pthread"
-            }
-            Linker {
-                Flags add: "-pthread"
+                Flags add: "-g -std=c++11 -pthread -fexceptions -frtti"
+                Flags add: "-Wall -Wextra -Wno-unused-parameter -Wno-strict-aliasing"
             }
         }
-        
-        ArtifactName "Tests"
-        Dependency "Mindroid.cpp", config: default        
+    }
 
+    ExecutableConfig Tests {
         Files "tests/mindroid/**/*.cpp"
         Files "googletest/src/gtest-all.cc"
         IncludeDir "tests"
         IncludeDir "googletest"
         IncludeDir "googletest/include"
+
+        ArtifactName "Tests"
+        Dependency config: default
+        ExternalLibrary "pthread"
+
+        DefaultToolchain CLANG {
+            Compiler CPP {
+                Flags add: "-g -std=c++11 -pthread -fexceptions -frtti"
+                Flags add: "-Wall -Wextra -Wno-unused-parameter -Wno-strict-aliasing -Wno-sign-compare"
+            }
+        }
     }
 }

@@ -60,9 +60,9 @@ ElizaListener::Proxy::Proxy(const sp<IBinder>& binder) {
 
 void ElizaListener::Proxy::onReply(const sp<String>& reply) {
     if (mStub != nullptr && mStub->isCurrentThread()) {
-        return mStub->onReply(reply);
+        mStub->onReply(reply);
     } else {
-        return mProxy->onReply(reply);
+        mProxy->onReply(reply);
     }
 }
 

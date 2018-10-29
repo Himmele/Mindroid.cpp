@@ -87,7 +87,7 @@ sp<String> Eliza::Stub::Proxy::ask1(const sp<String>& question) {
     return Binder::get(_promise);
 }
 
-sp<mindroid::Promise<sp<String>>> Eliza::Stub::Proxy::ask2(const sp<String>& question) {
+sp<Promise<sp<String>>> Eliza::Stub::Proxy::ask2(const sp<String>& question) {
     sp<Promise<sp<String>>> _promise = new Promise<sp<String>>();
     sp<Parcel> _data = Parcel::obtain();
     _data->putString(question);
@@ -144,9 +144,9 @@ sp<Promise<sp<String>>> Eliza::Proxy::ask2(const sp<String>& question) {
 
 void Eliza::Proxy::ask3(const sp<String>& question, const sp<IElizaListener>& listener) {
     if (mStub != nullptr && mStub->isCurrentThread()) {
-        return mStub->ask3(question, binder::ElizaListener::Stub::asInterface(listener->asBinder()));
+        mStub->ask3(question, binder::ElizaListener::Stub::asInterface(listener->asBinder()));
     } else {
-        return mProxy->ask3(question, listener);
+        mProxy->ask3(question, listener);
     }
 }
 

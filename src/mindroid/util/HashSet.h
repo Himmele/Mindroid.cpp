@@ -80,6 +80,10 @@ public:
         return mSet.size();
     }
 
+    const std::unordered_set<T>& set() const {
+        return mSet;
+    }
+
     class Iterator {
     public:
         Iterator(std::unordered_set<T>& set) :
@@ -196,6 +200,10 @@ public:
 
     size_t size() const {
         return mSet.size();
+    }
+
+    const std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>& set() const {
+        return mSet;
     }
 
     class Iterator {

@@ -134,6 +134,10 @@ public:
         return values;
     }
 
+    const std::unordered_map<K, V>& map() const {
+        return mMap;
+    }
+
     class Iterator;
 
     class Entry {
@@ -331,6 +335,10 @@ public:
             values->add(entry.getValue());
         }
         return values;
+    }
+
+    const std::unordered_map<K, sp<V>>& map() const {
+        return mMap;
     }
 
     class Iterator;
@@ -533,6 +541,10 @@ public:
         return values;
     }
 
+    const std::unordered_map<sp<K>, V, Hasher<sp<K>>, EqualityComparator<sp<K>>>& map() const {
+        return mMap;
+    }
+
     class Iterator;
 
     class Entry {
@@ -733,6 +745,10 @@ public:
             values->add(entry.getValue());
         }
         return values;
+    }
+
+    const std::unordered_map<sp<K>, sp<V>, Hasher<sp<K>>, EqualityComparator<sp<K>>>& map() const {
+        return mMap;
     }
 
     class Iterator;
