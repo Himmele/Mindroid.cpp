@@ -226,7 +226,6 @@ void LoggerService::stopLogging(const sp<Bundle>& arguments) {
         while (itr.hasNext()) {
             sp<LogHandler> handler = itr.next();
             handler->close();
-
         }
         mLogHandlers->remove(logBuffer);
         Log::println('D', TAG, "Logging has been stopped {%d}", logBuffer);
