@@ -34,11 +34,16 @@ sp<Integer> Integer::valueOf(const char* string, int32_t radix) {
 }
 
 sp<Integer> Integer::valueOf(const sp<String>& string, int32_t radix) {
-    if (string == nullptr) {
-        throw NumberFormatException("String is null");
+    if (string == nullptr || string->isEmpty()) {
+        throw NumberFormatException("String is null or empty");
     }
-    int32_t value = strtol(string->c_str(), nullptr, radix);
-    if (value == 0 && !string->equals("0")) {
+    if (::isspace(string->charAt(0))) {
+        throw NumberFormatException(String::format("Invalid integral value: %s", string->c_str()));
+    }
+    // See http://man7.org/linux/man-pages/man3/strtol.3.html.
+    char* endptr;
+    int32_t value = ::strtol(string->c_str(), &endptr, radix);
+    if (*endptr != '\0') {
         throw NumberFormatException(String::format("Invalid integral value: %s", string->c_str()));
     }
     return new Integer(value);

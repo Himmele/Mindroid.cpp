@@ -19,12 +19,11 @@
 #define MINDROID_OS_HANDLERTHREAD_H_
 
 #include <mindroid/lang/Thread.h>
+#include <mindroid/os/Looper.h>
+#include <mindroid/util/concurrent/locks/Condition.h>
+#include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
-
-class Looper;
-class ReentrantLock;
-class Condition;
 
 /**
  * Handy class for starting a new thread that has a looper. The looper can then be used to create

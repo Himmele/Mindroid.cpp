@@ -139,8 +139,25 @@ public:
         return strlen(string);
     }
 
-    bool regionMatches(size_t toffset, const sp<String>& other, size_t ooffset, size_t len);
-    bool regionMatches(size_t toffset, const char* other, size_t ooffset, size_t len);
+    /**
+     * Compares the specified string to this string and compares the specified
+     * range of characters to determine if they are the same.
+     *
+     * @param toffset
+     *            the starting offset in this string.
+     * @param string
+     *            the string to compare.
+     * @param ooffset
+     *            the starting offset in the specified string.
+     * @param len
+     *            the number of characters to compare.
+     * @return {@code true} if the ranges of characters are equal, {@code false}
+     *         otherwise
+     * @throws NullPointerException
+     *             if {@code string} is {@code null}.
+     */
+    bool regionMatches(size_t toffset, const sp<String>& string, size_t ooffset, size_t len);
+    bool regionMatches(size_t toffset, const char* string, size_t ooffset, size_t len);
 
     sp<String> replace(char oldChar, char newChar);
 
@@ -198,6 +215,7 @@ private:
     sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
     sp<StringBuffer> mStringBuffer;
+    static const sp<StringBuffer> NULL_STRING_BUFFER;
     static const sp<StringBuffer> EMPTY_STRING_BUFFER;
 
     friend class StringBuilder;

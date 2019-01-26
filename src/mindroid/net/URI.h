@@ -142,6 +142,26 @@ public:
         return mString;
     }
 
+    /**
+     * Returns true if this URI is absolute, which means that a scheme is
+     * defined.
+     */
+    bool isAbsolute() const {
+        return mScheme != nullptr && !mScheme->isEmpty();
+    }
+
+    /**
+     * Returns true if this URI is opaque. Opaque URIs are absolute and have a
+     * scheme-specific part that does not start with a slash character. All
+     * parts except scheme, scheme-specific and fragment are undefined.
+     */
+    bool isOpaque() const {
+        return mOpaque;
+    }
+
+    bool equals(const sp<Object>& other) const override;
+    bool equals(const sp<URI>& uri) const;
+
 private:
     /**
      * Breaks uri into its component parts. This first splits URI into scheme,
@@ -155,7 +175,7 @@ private:
      * info, host and port:
      *   [user-info@][host][:port]
      */
-    void parseURI(const sp<String>& uri);
+    void parseURI(const sp<String>& uri, bool serverBasedNamingAuthority = false);
 
     /**
      * Breaks this URI's authority into user info, host and port parts.
@@ -163,13 +183,20 @@ private:
      * If any part of this fails this method will give up and potentially leave
      * these fields with their default values.
      */
-    void parseAuthority();
+    void parseAuthority(bool serverBasedNamingAuthority);
 
     static size_t indexOf(const sp<String>& string, const char c, size_t start, size_t end);
     static size_t indexOf(const sp<String>& string, const char* chars, size_t start, size_t end);
 
+    /**
+     * Returns true if {@code first} and {@code second} are equal after
+     * unescaping hex sequences like %F1 and %2b.
+     */
+    static bool escapedEqualsIgnoreCase(const sp<String>& first, const sp<String>& second);
+
     sp<String> mString;
     sp<String> mScheme;
+    sp<String> mSchemeSpecificPart;
     sp<String> mAuthority;
     sp<String> mUserInfo;
     sp<String> mHost;
@@ -177,6 +204,7 @@ private:
     sp<String> mPath;
     sp<String> mQuery;
     sp<String> mFragment;
+    bool mOpaque;
 };
 
 } /* namespace mindroid */

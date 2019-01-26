@@ -16,24 +16,37 @@
 
 #include <mindroid/lang/Byte.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/NumberFormatException.h>
 #include <cstdlib>
 
 namespace mindroid {
 
-sp<Byte> Byte::valueOf(const char* s) {
-    return new Byte(strtol(s, nullptr, 10));
+sp<Byte> Byte::valueOf(const char* string) {
+    return valueOf(string, 10);
 }
 
-sp<Byte> Byte::valueOf(const sp<String>& s) {
-    return valueOf(s->c_str());
+sp<Byte> Byte::valueOf(const sp<String>& string) {
+    return valueOf(string, 10);
 }
 
-sp<Byte> Byte::valueOf(const char* s, int32_t radix) {
-    return new Byte(strtol(s, nullptr, radix));
+sp<Byte> Byte::valueOf(const char* string, int32_t radix) {
+    return valueOf(String::valueOf(string), radix);
 }
 
-sp<Byte> Byte::valueOf(const sp<String>& s, int32_t radix) {
-    return valueOf(s->c_str(), radix);
+sp<Byte> Byte::valueOf(const sp<String>& string, int32_t radix) {
+    if (string == nullptr || string->isEmpty()) {
+        throw NumberFormatException("String is null or empty");
+    }
+    if (::isspace(string->charAt(0))) {
+        throw NumberFormatException(String::format("Invalid integral value: %s", string->c_str()));
+    }
+    // See http://man7.org/linux/man-pages/man3/strtol.3.html.
+    char* endptr;
+    int8_t value = ::strtol(string->c_str(), &endptr, radix);
+    if (*endptr != '\0') {
+        throw NumberFormatException(String::format("Invalid integral value: %s", string->c_str()));
+    }
+    return new Byte(value);
 }
 
 } /* namespace mindroid */

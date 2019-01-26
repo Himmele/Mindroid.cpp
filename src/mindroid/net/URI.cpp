@@ -16,6 +16,7 @@
 
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
+#include <mindroid/lang/Class.h>
 #include <mindroid/lang/StringBuilder.h>
 #include <mindroid/lang/Integer.h>
 #include <mindroid/lang/NullPointerException.h>
@@ -146,7 +147,7 @@ URI::URI(const char* scheme, const char* authority, const char* path, const char
                 String::valueOf(query), String::valueOf(fragment)) {
 }
 
-void URI::parseURI(const sp<String>& uri) {
+void URI::parseURI(const sp<String>& uri, bool serverBasedNamingAuthority) {
     mString = uri;
 
     // "#Fragment"
@@ -165,9 +166,18 @@ void URI::parseURI(const sp<String>& uri) {
         if (hierPartStart == fragmentStart) {
             throw URISyntaxException("Scheme-specific part expected");
         }
+
+        if (!uri->regionMatches(hierPartStart, "/", 0, 1)) {
+            mOpaque = true;
+            mSchemeSpecificPart = uri->substring(hierPartStart, fragmentStart);
+            return;
+        }
     } else {
         hierPartStart = 0;
     }
+
+    mOpaque = false;
+    mSchemeSpecificPart = uri->substring(hierPartStart, fragmentStart);
 
     // "//Authority"
     size_t pathStart;
@@ -193,10 +203,10 @@ void URI::parseURI(const sp<String>& uri) {
         mQuery = uri->substring(queryStart + 1, fragmentStart);
     }
 
-    parseAuthority();
+    parseAuthority(serverBasedNamingAuthority);
 }
 
-void URI::parseAuthority()  {
+void URI::parseAuthority(bool serverBasedNamingAuthority) {
     if (mAuthority == nullptr) {
         return;
     }
@@ -220,14 +230,18 @@ void URI::parseAuthority()  {
 
         if (portIndex < ((ssize_t) authority->length() - 1)) {
             try {
-                char firstPortChar = authority->charAt(portIndex + 1);
-                if (firstPortChar >= '0' && firstPortChar <= '9') {
-                    port = Integer::valueOf(authority->substring(portIndex + 1))->intValue();
-                } else {
-                    throw URISyntaxException("Invalid port number");
+                port = Integer::valueOf(authority->substring(portIndex + 1))->intValue();
+                if (port < 0) {
+                    if (serverBasedNamingAuthority) {
+                        throw URISyntaxException("Invalid port number");
+                    }
+                    return;
                 }
             } catch (const NumberFormatException& e) {
-                throw URISyntaxException("Invalid port number");
+                if (serverBasedNamingAuthority) {
+                    throw URISyntaxException("Invalid port number");
+                }
+                return;
             }
         }
     } else {
@@ -235,7 +249,10 @@ void URI::parseAuthority()  {
     }
 
     if (host->isEmpty()) {
-        throw URISyntaxException("Invalid host");
+        if (serverBasedNamingAuthority) {
+            throw URISyntaxException("Invalid host");
+        }
+        return;
     }
 
     mUserInfo = userInfo;
@@ -264,6 +281,122 @@ size_t URI::indexOf(const sp<String>& string, const char* chars, size_t start, s
         }
     }
     return end;
+}
+
+bool URI::equals(const sp<Object>& other) const {
+    if (other == this) {
+        return true;
+    }
+
+    if (Class<URI>::isInstance(other)) {
+        sp<URI> uri = Class<URI>::cast(other);
+        return this->equals(uri);
+    } else {
+        return false;
+    }
+}
+
+bool URI::equals(const sp<URI>& uri) const {
+    if ((uri->mFragment == nullptr && mFragment != nullptr) || (uri->mFragment != nullptr
+            && mFragment == nullptr)) {
+        return false;
+    } else if (uri->mFragment != nullptr && mFragment != nullptr) {
+        if (!escapedEqualsIgnoreCase(uri->mFragment, mFragment)) {
+            return false;
+        }
+    }
+
+    if ((uri->mScheme == nullptr && mScheme != nullptr) || (uri->mScheme != nullptr
+            && mScheme == nullptr)) {
+        return false;
+    } else if (uri->mScheme != nullptr && mScheme != nullptr) {
+        if (!uri->mScheme->equalsIgnoreCase(mScheme)) {
+            return false;
+        }
+    }
+
+    if (uri->mOpaque && mOpaque) {
+        return escapedEqualsIgnoreCase(uri->mSchemeSpecificPart, mSchemeSpecificPart);
+    } else if (!uri->mOpaque && !mOpaque) {
+        if (!escapedEqualsIgnoreCase(mPath, uri->mPath)) {
+            return false;
+        }
+
+        if ((uri->mQuery != nullptr && mQuery == nullptr) || (uri->mQuery == nullptr
+                && mQuery != nullptr)) {
+            return false;
+        } else if (uri->mQuery != nullptr && mQuery != nullptr) {
+            if (!escapedEqualsIgnoreCase(uri->mQuery, mQuery)) {
+                return false;
+            }
+        }
+
+        if ((uri->mAuthority != nullptr && mAuthority == nullptr)
+                || (uri->mAuthority == nullptr && mAuthority != nullptr)) {
+            return false;
+        } else if (uri->mAuthority != nullptr && mAuthority != nullptr) {
+            if ((uri->mHost != nullptr && mHost == nullptr) || (uri->mHost == nullptr
+                    && mHost != nullptr)) {
+                return false;
+            } else if (uri->mHost == nullptr && mHost == nullptr) {
+                // Comparing the whole authority for Registry-based Naming Authority.
+                return escapedEqualsIgnoreCase(uri->mAuthority, mAuthority);
+            } else { // Server-based Naming Authority.
+                if (!mHost->equalsIgnoreCase(uri->mHost)) {
+                    return false;
+                }
+
+                if (mPort != uri->mPort) {
+                    return false;
+                }
+
+                if ((uri->mUserInfo != nullptr && mUserInfo == nullptr)
+                        || (uri->mUserInfo == nullptr && mUserInfo != nullptr)) {
+                    return false;
+                } else if (uri->mUserInfo != nullptr && mUserInfo != nullptr) {
+                    return escapedEqualsIgnoreCase(mUserInfo, uri->mUserInfo);
+                } else {
+                    return true;
+                }
+            }
+        } else {
+            // No authority.
+            return true;
+        }
+
+    } else {
+        return false;
+    }
+}
+
+bool URI::escapedEqualsIgnoreCase(const sp<String>& first, const sp<String>& second) {
+    if (first == nullptr || second == nullptr) {
+        throw NullPointerException();
+    }
+
+    if (first->indexOf('%') != second->indexOf('%')) {
+        return first->equals(second);
+    }
+
+    int index = 0, prevIndex = 0;
+    while ((index = first->indexOf('%', prevIndex)) != -1
+            && second->indexOf('%', prevIndex) == index) {
+        bool match = first->substring(prevIndex, index)->equals(
+                second->substring(prevIndex, index));
+        if (!match) {
+            return false;
+        }
+
+        match = first->substring(index + 1, index + 3)->equalsIgnoreCase(
+                second->substring(index + 1, index + 3));
+        if (!match) {
+            return false;
+        }
+
+        index += 3;
+        prevIndex = index;
+    }
+    return first->substring(prevIndex)->equals(second->substring(prevIndex));
 }
 
 } /* namespace mindroid */

@@ -17,6 +17,7 @@
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Class.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/util/ArrayList.h>
 #include <cstdio>
 #include <regex>
@@ -29,6 +30,7 @@ namespace mindroid {
  * and dynamically initialized shall be initialized in the order in which their definition appears
  * in the translation unit.
  */
+const sp<String::StringBuffer> String::NULL_STRING_BUFFER = new String::StringBuffer(nullptr, 0);
 const sp<String::StringBuffer> String::EMPTY_STRING_BUFFER = new String::StringBuffer("", 0);
 const sp<String> String::EMPTY_STRING = new String();
 
@@ -45,7 +47,7 @@ String::String(const char* string) {
             mStringBuffer = EMPTY_STRING_BUFFER;
         }
     } else {
-        mStringBuffer = EMPTY_STRING_BUFFER;
+        mStringBuffer = NULL_STRING_BUFFER;
     }
 }
 
@@ -57,7 +59,7 @@ String::String(const char* string, size_t size) {
             mStringBuffer = EMPTY_STRING_BUFFER;
         }
     } else {
-        mStringBuffer = EMPTY_STRING_BUFFER;
+        mStringBuffer = NULL_STRING_BUFFER;
     }
 }
 
@@ -69,7 +71,7 @@ String::String(const sp<ByteArray>& byteArray) {
     if (byteArray != nullptr) {
         mStringBuffer = new StringBuffer((const char*) byteArray->c_arr(), byteArray->size());
     } else {
-        mStringBuffer = EMPTY_STRING_BUFFER;
+        mStringBuffer = NULL_STRING_BUFFER;
     }
 }
 
@@ -124,14 +126,14 @@ bool String::equalsIgnoreCase(const char* string) const {
 }
 
 bool String::equalsIgnoreCase(const sp<String>& string) const {
+    if (string == nullptr) {
+        return false;
+    }
     return toLowerCase()->equals(string->toLowerCase());
 }
 
 char String::operator[](const size_t index) const {
-    if (index >= length()) {
-        throw IndexOutOfBoundsException();
-    }
-    return mStringBuffer->mData[index];
+    return charAt(index);
 }
 
 char String::charAt(size_t index) const {
@@ -179,7 +181,12 @@ bool String::startsWith(const char* prefix) const {
 }
 
 bool String::startsWith(const sp<String>& prefix) const {
-    return startsWith(prefix->c_str());
+    size_t prefixSize = prefix->length();
+    if (length() >= prefixSize) {
+        return strncmp(c_str(), prefix->c_str(), prefixSize) == 0;
+    } else {
+        return false;
+    }
 }
 
 bool String::endsWith(const char* suffix) const {
@@ -192,7 +199,12 @@ bool String::endsWith(const char* suffix) const {
 }
 
 bool String::endsWith(const sp<String>& suffix) const {
-    return endsWith(suffix->c_str());
+    size_t suffixSize = suffix->length();
+    if (length() >= suffixSize) {
+        return strncmp(c_str() + length() - suffixSize, suffix->c_str(), suffixSize) == 0;
+    } else {
+        return false;
+    }
 }
 
 sp<String> String::substring(size_t beginIndex) const {
@@ -235,6 +247,9 @@ ssize_t String::indexOf(const char c) const {
 }
 
 ssize_t String::indexOf(const char* string) const {
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
     const char* substr = strstr(c_str(), string);
     if (substr != nullptr) {
         return substr - c_str();
@@ -248,18 +263,29 @@ ssize_t String::indexOf(const sp<String>& string) const {
 }
 
 ssize_t String::indexOf(const char c, size_t fromIndex) const {
-    const char* substr = strchr(c_str() + fromIndex, c);
-    if (substr != nullptr) {
-        return substr - c_str();
+    if (fromIndex < length()) {
+        const char* substr = strchr(c_str() + fromIndex, c);
+        if (substr != nullptr) {
+            return substr - c_str();
+        } else {
+            return -1;
+        }
     } else {
         return -1;
     }
 }
 
 ssize_t String::indexOf(const char* string, size_t fromIndex) const {
-    const char* substr = strstr(c_str() + fromIndex, string);
-    if (substr != nullptr) {
-        return substr - c_str();
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
+    if (fromIndex < length()) {
+        const char* substr = strstr(c_str() + fromIndex, string);
+        if (substr != nullptr) {
+            return substr - c_str();
+        } else {
+            return -1;
+        }
     } else {
         return -1;
     }
@@ -287,9 +313,13 @@ ssize_t String::lastIndexOf(const sp<String>& string) const {
 }
 
 ssize_t String::lastIndexOf(const char c, size_t fromIndex) const {
-    const char* substr = strrchr(c_str() + fromIndex, c);
-    if (substr != nullptr) {
-        return substr - c_str();
+    if (fromIndex < length()) {
+        const char* substr = strrchr(c_str() + fromIndex, c);
+        if (substr != nullptr) {
+            return substr - c_str();
+        } else {
+            return -1;
+        }
     } else {
         return -1;
     }
@@ -413,16 +443,29 @@ sp<String> String::format(const char* format, ...) {
     return formattedString;
 }
 
-bool String::regionMatches(size_t toffset, const sp<String>& other, size_t ooffset,    size_t len) {
-    return regionMatches(toffset, other->c_str(), ooffset, len);
-}
+bool String::regionMatches(size_t toffset, const sp<String>& string, size_t ooffset, size_t len) {
+    if (string == nullptr) {
+        throw NullPointerException();
+    }
+    if (string->length() - ooffset < len) {
+        return false;
+    }
+    if (length() - toffset < len) {
+        return false;
+    }
+    if (len <= 0) {
+        return true;
+    }
 
-bool String::regionMatches(size_t toffset, const char* other, size_t ooffset, size_t len) {
-    if (mStringBuffer->mData && other != nullptr) {
-        return strncmp(mStringBuffer->mData + toffset, other + ooffset, len) == 0;
+    if (mStringBuffer->mData != nullptr) {
+        return strncmp(mStringBuffer->mData + toffset, string->c_str() + ooffset, len) == 0;
     } else {
         return false;
     }
+}
+
+bool String::regionMatches(size_t toffset, const char* string, size_t ooffset, size_t len) {
+    return regionMatches(toffset, valueOf(string), ooffset, len);
 }
 
 sp<String> String::replace(char oldChar, char newChar) {
@@ -481,32 +524,34 @@ sp<String> String::appendFormattedWithVarArgList(const char* format, va_list arg
 
 String::StringBuffer::StringBuffer(size_t size) {
     mSize = size;
-    if (size > 0) {
-        mData = (char*) malloc(mSize + 1);
-        mData[size] = '\0';
-    } else {
-        mData = nullptr;
-    }
+    mData = (char*) malloc(mSize + 1);
+    mData[size] = '\0';
 }
 
 String::StringBuffer::StringBuffer(const char* string, size_t size) {
-    mSize = size;
     if (string != nullptr) {
+        mSize = size;
         mData = (char*) malloc(mSize + 1);
         memcpy(mData, string, size);
         mData[size] = '\0';
     } else {
+        mSize = 0;
         mData = nullptr;
     }
 }
 
 String::StringBuffer::StringBuffer(const char* string1, size_t size1,
         const char* string2, size_t size2) {
-    mSize = size1 + size2;
-    mData = (char*) malloc(mSize + 1);
-    memcpy(mData, string1, size1);
-    memcpy(mData + size1, string2, size2);
-    mData[size1 + size2] = '\0';
+    if (string1 != nullptr && string2 != nullptr) {
+        mSize = size1 + size2;
+        mData = (char*) malloc(mSize + 1);
+        memcpy(mData, string1, size1);
+        memcpy(mData + size1, string2, size2);
+        mData[size1 + size2] = '\0';
+    } else {
+        mSize = 0;
+        mData = nullptr;
+    }
 }
 
 } /* namespace mindroid */
