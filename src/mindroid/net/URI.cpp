@@ -104,7 +104,7 @@ URI::URI(const sp<String>& scheme, const sp<String>& userInfo, const sp<String>&
         uri->append(fragment);
     }
 
-    parseURI(uri->toString());
+    parseURI(uri->toString(), true);
 }
 
 URI::URI(const char* scheme, const char* userInfo, const char* host, int32_t port, const char* path, const char* query, const char* fragment) :
@@ -145,6 +145,99 @@ URI::URI(const sp<String>& scheme, const sp<String>& authority, const sp<String>
 URI::URI(const char* scheme, const char* authority, const char* path, const char* query, const char* fragment) :
         URI(String::valueOf(scheme), String::valueOf(authority), String::valueOf(path),
                 String::valueOf(query), String::valueOf(fragment)) {
+}
+
+bool URI::equals(const sp<Object>& other) const {
+    if (other == this) {
+        return true;
+    }
+
+    if (Class<URI>::isInstance(other)) {
+        sp<URI> uri = Class<URI>::cast(other);
+        return this->equals(uri);
+    } else {
+        return false;
+    }
+}
+
+bool URI::equals(const sp<URI>& uri) const {
+    if ((uri->mFragment == nullptr && mFragment != nullptr) || (uri->mFragment != nullptr
+            && mFragment == nullptr)) {
+        return false;
+    } else if (uri->mFragment != nullptr && mFragment != nullptr) {
+        if (!escapedEqualsIgnoreCase(uri->mFragment, mFragment)) {
+            return false;
+        }
+    }
+
+    if ((uri->mScheme == nullptr && mScheme != nullptr) || (uri->mScheme != nullptr
+            && mScheme == nullptr)) {
+        return false;
+    } else if (uri->mScheme != nullptr && mScheme != nullptr) {
+        if (!uri->mScheme->equalsIgnoreCase(mScheme)) {
+            return false;
+        }
+    }
+
+    if (uri->mOpaque && mOpaque) {
+        return escapedEqualsIgnoreCase(uri->mSchemeSpecificPart, mSchemeSpecificPart);
+    } else if (!uri->mOpaque && !mOpaque) {
+        if (!escapedEqualsIgnoreCase(mPath, uri->mPath)) {
+            return false;
+        }
+
+        if ((uri->mQuery != nullptr && mQuery == nullptr) || (uri->mQuery == nullptr
+                && mQuery != nullptr)) {
+            return false;
+        } else if (uri->mQuery != nullptr && mQuery != nullptr) {
+            if (!escapedEqualsIgnoreCase(uri->mQuery, mQuery)) {
+                return false;
+            }
+        }
+
+        if ((uri->mAuthority != nullptr && mAuthority == nullptr)
+                || (uri->mAuthority == nullptr && mAuthority != nullptr)) {
+            return false;
+        } else if (uri->mAuthority != nullptr && mAuthority != nullptr) {
+            if ((uri->mHost != nullptr && mHost == nullptr) || (uri->mHost == nullptr
+                    && mHost != nullptr)) {
+                return false;
+            } else if (uri->mHost == nullptr && mHost == nullptr) {
+                // Comparing the whole authority for Registry-based Naming Authority.
+                return escapedEqualsIgnoreCase(uri->mAuthority, mAuthority);
+            } else { // Server-based Naming Authority.
+                if (!mHost->equalsIgnoreCase(uri->mHost)) {
+                    return false;
+                }
+
+                if (mPort != uri->mPort) {
+                    return false;
+                }
+
+                if ((uri->mUserInfo != nullptr && mUserInfo == nullptr)
+                        || (uri->mUserInfo == nullptr && mUserInfo != nullptr)) {
+                    return false;
+                } else if (uri->mUserInfo != nullptr && mUserInfo != nullptr) {
+                    return escapedEqualsIgnoreCase(mUserInfo, uri->mUserInfo);
+                } else {
+                    return true;
+                }
+            }
+        } else {
+            // No authority.
+            return true;
+        }
+
+    } else {
+        return false;
+    }
+}
+
+size_t URI::hashCode() const {
+    if (mHashCode == 0) {
+        mHashCode = getHashString()->hashCode();
+    }
+    return mHashCode;
 }
 
 void URI::parseURI(const sp<String>& uri, bool serverBasedNamingAuthority) {
@@ -260,6 +353,50 @@ void URI::parseAuthority(bool serverBasedNamingAuthority) {
     mPort = port;
 }
 
+sp<String> URI::getHashString() const {
+    sp<StringBuilder> hashString = new StringBuilder();
+    if (mScheme != nullptr) {
+        hashString->append(mScheme->toLowerCase());
+        hashString->append(':');
+    }
+    if (mOpaque) {
+        hashString->append(mSchemeSpecificPart);
+    } else {
+        if (mAuthority != nullptr) {
+            hashString->append("//");
+            if (mHost == nullptr) {
+                hashString->append(mAuthority);
+            } else {
+                if (mUserInfo != nullptr) {
+                    hashString->append(mUserInfo);
+                    hashString->append('@');
+                }
+                hashString->append(mHost->toLowerCase());
+                if (mPort != -1) {
+                    hashString->append(':');
+                    hashString->append(mPort);
+                }
+            }
+        }
+
+        if (mPath != nullptr) {
+            hashString->append(mPath);
+        }
+
+        if (mQuery != nullptr) {
+            hashString->append('?');
+            hashString->append(mQuery);
+        }
+    }
+
+    if (mFragment != nullptr) {
+        hashString->append('#');
+        hashString->append(mFragment);
+    }
+
+    return convertHexSequencesToLowerCase(hashString->toString());
+}
+
 size_t URI::indexOf(const sp<String>& string, const char c, size_t start, size_t end) {
     ssize_t index = string->indexOf(c);
     if (index >= 0 && ((size_t) index < end)) {
@@ -281,92 +418,6 @@ size_t URI::indexOf(const sp<String>& string, const char* chars, size_t start, s
         }
     }
     return end;
-}
-
-bool URI::equals(const sp<Object>& other) const {
-    if (other == this) {
-        return true;
-    }
-
-    if (Class<URI>::isInstance(other)) {
-        sp<URI> uri = Class<URI>::cast(other);
-        return this->equals(uri);
-    } else {
-        return false;
-    }
-}
-
-bool URI::equals(const sp<URI>& uri) const {
-    if ((uri->mFragment == nullptr && mFragment != nullptr) || (uri->mFragment != nullptr
-            && mFragment == nullptr)) {
-        return false;
-    } else if (uri->mFragment != nullptr && mFragment != nullptr) {
-        if (!escapedEqualsIgnoreCase(uri->mFragment, mFragment)) {
-            return false;
-        }
-    }
-
-    if ((uri->mScheme == nullptr && mScheme != nullptr) || (uri->mScheme != nullptr
-            && mScheme == nullptr)) {
-        return false;
-    } else if (uri->mScheme != nullptr && mScheme != nullptr) {
-        if (!uri->mScheme->equalsIgnoreCase(mScheme)) {
-            return false;
-        }
-    }
-
-    if (uri->mOpaque && mOpaque) {
-        return escapedEqualsIgnoreCase(uri->mSchemeSpecificPart, mSchemeSpecificPart);
-    } else if (!uri->mOpaque && !mOpaque) {
-        if (!escapedEqualsIgnoreCase(mPath, uri->mPath)) {
-            return false;
-        }
-
-        if ((uri->mQuery != nullptr && mQuery == nullptr) || (uri->mQuery == nullptr
-                && mQuery != nullptr)) {
-            return false;
-        } else if (uri->mQuery != nullptr && mQuery != nullptr) {
-            if (!escapedEqualsIgnoreCase(uri->mQuery, mQuery)) {
-                return false;
-            }
-        }
-
-        if ((uri->mAuthority != nullptr && mAuthority == nullptr)
-                || (uri->mAuthority == nullptr && mAuthority != nullptr)) {
-            return false;
-        } else if (uri->mAuthority != nullptr && mAuthority != nullptr) {
-            if ((uri->mHost != nullptr && mHost == nullptr) || (uri->mHost == nullptr
-                    && mHost != nullptr)) {
-                return false;
-            } else if (uri->mHost == nullptr && mHost == nullptr) {
-                // Comparing the whole authority for Registry-based Naming Authority.
-                return escapedEqualsIgnoreCase(uri->mAuthority, mAuthority);
-            } else { // Server-based Naming Authority.
-                if (!mHost->equalsIgnoreCase(uri->mHost)) {
-                    return false;
-                }
-
-                if (mPort != uri->mPort) {
-                    return false;
-                }
-
-                if ((uri->mUserInfo != nullptr && mUserInfo == nullptr)
-                        || (uri->mUserInfo == nullptr && mUserInfo != nullptr)) {
-                    return false;
-                } else if (uri->mUserInfo != nullptr && mUserInfo != nullptr) {
-                    return escapedEqualsIgnoreCase(mUserInfo, uri->mUserInfo);
-                } else {
-                    return true;
-                }
-            }
-        } else {
-            // No authority.
-            return true;
-        }
-
-    } else {
-        return false;
-    }
 }
 
 bool URI::escapedEqualsIgnoreCase(const sp<String>& first, const sp<String>& second) {
@@ -397,6 +448,23 @@ bool URI::escapedEqualsIgnoreCase(const sp<String>& first, const sp<String>& sec
         prevIndex = index;
     }
     return first->substring(prevIndex)->equals(second->substring(prevIndex));
+}
+
+sp<String> URI::convertHexSequencesToLowerCase(const sp<String>& string) {
+    if (string->indexOf('%') == -1) {
+        return string;
+    }
+
+    sp<StringBuilder> convertedString = new StringBuilder("");
+    ssize_t index, prevIndex = 0;
+    while ((index = string->indexOf('%', prevIndex)) != -1) {
+        convertedString->append(string->substring(prevIndex, index + 1));
+        convertedString->append(string->substring(index + 1, index + 3)->toLowerCase());
+        index += 3;
+        prevIndex = index;
+    }
+    convertedString->append(string->substring(prevIndex));
+    return convertedString->toString();
 }
 
 } /* namespace mindroid */

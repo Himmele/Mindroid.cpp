@@ -161,6 +161,7 @@ public:
 
     bool equals(const sp<Object>& other) const override;
     bool equals(const sp<URI>& uri) const;
+    size_t hashCode() const override;
 
 private:
     /**
@@ -185,6 +186,8 @@ private:
      */
     void parseAuthority(bool serverBasedNamingAuthority);
 
+    sp<String> getHashString() const;
+
     static size_t indexOf(const sp<String>& string, const char c, size_t start, size_t end);
     static size_t indexOf(const sp<String>& string, const char* chars, size_t start, size_t end);
 
@@ -193,6 +196,11 @@ private:
      * unescaping hex sequences like %F1 and %2b.
      */
     static bool escapedEqualsIgnoreCase(const sp<String>& first, const sp<String>& second);
+
+    /*
+     * Converts hex sequences like %F1 or %2b to lower case.
+     */
+    static sp<String> convertHexSequencesToLowerCase(const sp<String>& string);
 
     sp<String> mString;
     sp<String> mScheme;
@@ -205,6 +213,7 @@ private:
     sp<String> mQuery;
     sp<String> mFragment;
     bool mOpaque;
+    mutable size_t mHashCode = 0;
 };
 
 } /* namespace mindroid */
