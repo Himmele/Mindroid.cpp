@@ -95,11 +95,6 @@ public:
      */
     virtual void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) = 0;
 
-    /**
-     * Release unmanaged Binder resources.
-     */
-    virtual void dispose() = 0;
-
     class Supervisor : public Object {
     public:
         virtual void onExit(int32_t reason) = 0;

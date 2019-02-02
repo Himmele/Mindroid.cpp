@@ -291,10 +291,24 @@ void Object::moveStrongReference(const void* oldId, const void* newId) const {
 
 void Object::setObjectLifetime(int32_t mode) const {
     switch (mode) {
-    case OBJECT_LIFETIME_WEAK_REFERENCE:
-    case OBJECT_LIFETIME_STRONG_REFERENCE:
+    case OBJECT_LIFETIME_WEAK_REFERENCE: {
         mReference->mFlags.fetch_or(mode, std::memory_order_relaxed);
         break;
+    }
+    case OBJECT_LIFETIME_STRONG_REFERENCE: {
+        int32_t flags = mReference->mFlags.load(std::memory_order_relaxed);
+        if ((flags & OBJECT_LIFETIME_MASK) == OBJECT_LIFETIME_WEAK_REFERENCE) {
+            int32_t strongReferenceCount = mReference->mStrongReferenceCounter.load(std::memory_order_relaxed);
+            ASSERT(strongReferenceCount >= 0, "Object::setObjectLifetime() called on %p in illegal state", mReference);
+            while (strongReferenceCount == 0) {
+                if (mReference->mStrongReferenceCounter.compare_exchange_weak(strongReferenceCount, INITIAL_STRONG_REFERENCE_VALUE, std::memory_order_relaxed)) {
+                    break;
+                }
+            }
+            mReference->mFlags.fetch_and(mode, std::memory_order_relaxed);
+        }
+        break;
+    }
     }
 }
 

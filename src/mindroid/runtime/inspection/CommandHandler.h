@@ -23,10 +23,6 @@ namespace mindroid {
 
 class CommandHandler : public Object {
 public:
-    virtual ~CommandHandler() {
-        mWrapper->dispose();
-    }
-
     virtual sp<Promise<sp<String>>> execute(const sp<StringArray>& arguments) = 0;
 
     /** @hide */
@@ -48,10 +44,6 @@ private:
             } else {
                 throw mindroid::RuntimeException("CommandHandler::Stub is calling back to a dead CommandHandler");
             }
-        }
-
-        void dispose() override {
-            Binder::dispose();
         }
 
     private:

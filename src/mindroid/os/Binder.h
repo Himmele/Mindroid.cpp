@@ -60,21 +60,21 @@ private:
 
     class Messenger : public IMessenger {
     public:
-        Messenger(const sp<Binder>& binder) : Messenger(binder, Looper::myLooper()) {
+        Messenger(Binder& binder) : Messenger(binder, Looper::myLooper()) {
         }
 
-        Messenger(const sp<Binder>& binder, const sp<Looper>& looper) {
+        Messenger(Binder& binder, const sp<Looper>& looper) {
             class BinderHandler : public Handler {
             public:
-                BinderHandler(const sp<Binder>& binder, const sp<Looper>& looper) : Handler(looper), mBinder(binder) {
+                BinderHandler(Binder& binder, const sp<Looper>& looper) : Handler(looper), mBinder(binder) {
                 }
 
                 void handleMessage(const sp<Message>& message) override {
-                    mBinder->onTransact(message);
+                    mBinder.onTransact(message);
                 }
 
             private:
-                sp<Binder> mBinder;
+                Binder& mBinder;
             };
 
             mHandler = new BinderHandler(binder, looper);
@@ -96,7 +96,7 @@ private:
 
     class ExecutorMessenger : public IMessenger {
     public:
-        ExecutorMessenger(const sp<Binder>& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
+        ExecutorMessenger(Binder& binder, const sp<Executor>& executor) : mBinder(binder), mExecutor(executor) {
         }
 
         bool isCurrentThread() override {
@@ -105,13 +105,13 @@ private:
 
         bool send(const sp<Message>& message) override {
             mExecutor->execute(new Runnable([=] {
-                mBinder->onTransact(message);
+                mBinder.onTransact(message);
             }));
             return true;
         }
 
     private:
-        sp<Binder> mBinder;
+        Binder& mBinder;
         sp<Executor> mExecutor;
     };
 
@@ -122,15 +122,6 @@ public:
     /** @hide */
     Binder(const sp<Binder>& binder);
     virtual ~Binder();
-
-    /**
-     * Release unmanaged Binder resources.
-     *
-     * Messenger holds a reference to Binder which holds a reference to Messenger.
-     */
-    void dispose() override {
-        mTarget.clear();
-    }
 
     uint64_t getId() const override {
         return mId & 0xFFFFFFFFL;
@@ -251,9 +242,6 @@ public:
         static sp<Proxy> create(const sp<URI>& uri);
 
         virtual ~Proxy();
-
-        void dispose() override {
-        }
 
         uint64_t getId() const override {
             return mId;

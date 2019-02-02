@@ -32,27 +32,33 @@ const sp<String> Binder::EXCEPTION_MESSAGE = String::valueOf("Binder transaction
 const sp<String> Binder::Proxy::EXCEPTION_MESSAGE = String::valueOf("Binder transaction failure");
 
 Binder::Binder() {
+    setObjectLifetime(Object::OBJECT_LIFETIME_WEAK_REFERENCE);
     mRuntime = Runtime::getRuntime();
-    mTarget = new Messenger(this);
+    mTarget = new Messenger(*this);
     mId = mRuntime->attachBinder(this);
+    setObjectLifetime(Object::OBJECT_LIFETIME_STRONG_REFERENCE);
 }
 
 Binder::Binder(const sp<Looper>& looper) {
+    setObjectLifetime(Object::OBJECT_LIFETIME_WEAK_REFERENCE);
     mRuntime = Runtime::getRuntime();
-    mTarget = new Messenger(this, looper);
+    mTarget = new Messenger(*this, looper);
     mId = mRuntime->attachBinder(this);
+    setObjectLifetime(Object::OBJECT_LIFETIME_STRONG_REFERENCE);
 }
 
 Binder::Binder(const sp<Executor>& executor) {
+    setObjectLifetime(Object::OBJECT_LIFETIME_WEAK_REFERENCE);
     mRuntime = Runtime::getRuntime();
-    mTarget = new ExecutorMessenger(this, executor);
+    mTarget = new ExecutorMessenger(*this, executor);
     mId = mRuntime->attachBinder(this);
+    setObjectLifetime(Object::OBJECT_LIFETIME_STRONG_REFERENCE);
 }
 
 Binder::Binder(const sp<Binder>& binder) {
     mRuntime = binder->mRuntime;
     if (Class<Messenger>::isInstance(binder->mTarget)) {
-        mTarget = new Messenger(this, Class<Messenger>::cast(binder->mTarget)->mHandler->getLooper());
+        mTarget = new Messenger(*this, Class<Messenger>::cast(binder->mTarget)->mHandler->getLooper());
     } else {
         mTarget = binder->mTarget;
     }
@@ -67,6 +73,7 @@ void Binder::attachInterface(const wp<IInterface>& owner, const sp<String>& desc
     mOwner = owner;
     mDescriptor = descriptor;
 
+    setObjectLifetime(Object::OBJECT_LIFETIME_WEAK_REFERENCE);
     try {
         sp<URI> uri = new URI(mDescriptor);
         if (uri->getScheme() == nullptr) {
@@ -79,6 +86,7 @@ void Binder::attachInterface(const wp<IInterface>& owner, const sp<String>& desc
     } catch (const URISyntaxException& e) {
         Log::e(TAG, "Failed to attach interface to runtime system");
     }
+    setObjectLifetime(Object::OBJECT_LIFETIME_STRONG_REFERENCE);
 }
 
 sp<Promise<sp<Parcel>>> Binder::transact(int32_t what, const sp<Parcel>& data, int32_t flags) {

@@ -419,7 +419,7 @@ sp<T>& sp<T>::operator=(const sp<T>& other) {
 }
 
 template<typename T>
-sp<T>& sp<T>::operator =(sp<T>&& other) {
+sp<T>& sp<T>::operator=(sp<T>&& other) {
     T* pointer(*const_cast<T* volatile*>(&mPointer));
     if (pointer) {
         pointer->decStrongReference(this);
@@ -469,7 +469,7 @@ sp<T>& sp<T>::operator=(const sp<U>& other) {
 }
 
 template<typename T> template<typename U>
-sp<T>& sp<T>::operator =(sp<U>&& other) {
+sp<T>& sp<T>::operator=(sp<U>&& other) {
     T* pointer(*const_cast<T* volatile*>(&mPointer));
     if (mPointer) {
         mPointer->decStrongReference(this);

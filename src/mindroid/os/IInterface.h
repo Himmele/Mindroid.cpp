@@ -35,13 +35,6 @@ public:
      * plain cast, so that proxy objects can return the correct result.
      */
     virtual sp<IBinder> asBinder() = 0;
-
-    /**
-     * Release the unmanaged Binder resources associated with this interface.
-     */
-    void dispose() {
-        asBinder()->dispose();
-    }
 };
 
 template<typename INTERFACE>

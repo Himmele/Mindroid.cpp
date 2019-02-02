@@ -57,10 +57,6 @@ public:
         mCallback = new Stub(listener, handler);
     }
 
-    virtual ~RemoteCallback() {
-        mCallback->dispose();
-    }
-
     sp<IRemoteCallback> asInterface() {
         return mCallback;
     }
