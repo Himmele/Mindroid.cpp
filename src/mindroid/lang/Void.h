@@ -21,10 +21,10 @@
 
 namespace mindroid {
 
-class Void :
+class Void final :
         public Object {
-public:
-    explicit Void() {
+private:
+    Void() {
     }
 };
 

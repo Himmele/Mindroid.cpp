@@ -79,7 +79,7 @@ AbstractClient::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
         Log::d(TAG, "Failed to set up connection");
         try {
             close();
-        } catch (IOException ignore) {
+        } catch (const IOException& ignore) {
         }
         throw e;
     }
