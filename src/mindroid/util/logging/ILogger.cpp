@@ -34,10 +34,12 @@ void Logger::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, 
     }
     case MSG_MARK: {
         mark();
+        object_cast<Promise<sp<Void>>, Object>(result)->complete(nullptr);
         break;
     }
     case MSG_RESET: {
         reset();
+        object_cast<Promise<sp<Void>>, Object>(result)->complete(nullptr);
         break;
     }
     default:
@@ -56,11 +58,15 @@ sp<Promise<sp<String>>> Logger::Stub::Proxy::assumeThat(const sp<String>& tag, c
 }
 
 void Logger::Stub::Proxy::mark() {
-    mRemote->transact(MSG_MARK, 0, nullptr, nullptr, nullptr, FLAG_ONEWAY);
+    sp<Promise<sp<Void>>> promise = new Promise<sp<Void>>();
+    mRemote->transact(MSG_MARK, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    Binder::get(promise);
 }
 
 void Logger::Stub::Proxy::reset() {
-    mRemote->transact(MSG_RESET, 0, nullptr, nullptr, nullptr, FLAG_ONEWAY);
+    sp<Promise<sp<Void>>> promise = new Promise<sp<Void>>();
+    mRemote->transact(MSG_RESET, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    Binder::get(promise);
 }
 
 Logger::Proxy::Proxy(const sp<IBinder>& binder) {

@@ -53,7 +53,7 @@ public:
 private:
     class LoggerImpl : public binder::Logger::Stub {
     public:
-        LoggerImpl(const sp<LoggerService>& service) : mService(service) { }
+        LoggerImpl(LoggerService* service) : mService(service) { }
 
         sp<Promise<sp<String>>> assumeThat(const sp<String>& tag, const sp<String>& message, int64_t timeout) override {
             return mService->assumeThat(tag, message, timeout);
@@ -68,7 +68,7 @@ private:
         }
 
     private:
-        sp<LoggerService> mService;
+        LoggerService* mService;
     };
 
     class TestHandler : public LogHandler {

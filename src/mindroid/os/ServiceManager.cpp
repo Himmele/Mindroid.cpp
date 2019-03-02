@@ -195,7 +195,9 @@ void ServiceManager::shutdown() {
 
     mProcessManager->shutdown();
 
+    sStub = nullptr;
     sServiceManager = nullptr;
+    sSystemServices->clear();
 }
 
 sp<Promise<sp<ComponentName>>> ServiceManager::ServiceManagerImpl::startService(const sp<Intent>& intent) {

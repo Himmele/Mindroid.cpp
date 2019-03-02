@@ -96,4 +96,10 @@ void Log::println(char priority, const char* tag, const char* format, ...) {
     ::fflush(stdout);
 }
 
+void Log::clear() {
+    MAIN_LOG_BUFFER->reset();
+    EVENT_LOG_BUFFER->reset();
+    TEST_LOG_BUFFER->reset();
+}
+
 } /* namespace mindroid */

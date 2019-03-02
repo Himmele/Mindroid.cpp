@@ -54,31 +54,50 @@ void IntegrationTest::SetUpTestCase() {
     sServiceManager = new ServiceManager();
     sServiceManager->start();
 
-    startSystemSerices();
+    startSystemServices();
     startServices();
 }
 
 void IntegrationTest::TearDownTestCase() {
     shutdownServices();
-    shutdownSystemSerices();
+    shutdownSystemServices();
 
     sServiceManager->shutdown();
     sServiceManager = nullptr;
 
     Runtime::shutdown();
+
+    Log::clear();
 }
 
 void IntegrationTest::SetUp() {
     sp<Logger> logger = new Logger();
+    Log::d(TAG, "===> Running test %s <===", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    try {
+        // Wait for test logger to mark beginning of test log history.
+        logger->assumeThat(TAG, String::format("===> Running test %s <===", ::testing::UnitTest::GetInstance()->current_test_info()->name())->c_str(), 60000)->get(60000);
+    } catch (const ExecutionException& e) {
+        throw RuntimeException("System failure", e);
+    } catch (const TimeoutException& e) {
+        throw RuntimeException("System failure", e);
+    }
     logger->mark();
 }
 
 void IntegrationTest::TearDown() {
     sp<Logger> logger = new Logger();
+    Log::d(TAG, "===> Finished test %s <===", ::testing::UnitTest::GetInstance()->current_test_info()->name());
+    try {
+        logger->assumeThat(TAG, String::format("===> Finished test %s <===", ::testing::UnitTest::GetInstance()->current_test_info()->name())->c_str(), 60000)->get(60000);
+    } catch (const ExecutionException& e) {
+        throw RuntimeException("System failure", e);
+    } catch (const TimeoutException& e) {
+        throw RuntimeException("System failure", e);
+    }
     logger->reset();
 }
 
-void IntegrationTest::startSystemSerices() {
+void IntegrationTest::startSystemServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
 
     sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
@@ -134,7 +153,7 @@ void IntegrationTest::startServices() {
     }
 }
 
-void IntegrationTest::shutdownSystemSerices() {
+void IntegrationTest::shutdownSystemServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
 
     sp<Intent> packageManager = new Intent();

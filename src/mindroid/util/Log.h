@@ -283,6 +283,14 @@ public:
         sIntegrationTesting = integrationTesting;
     }
 
+    /**
+     * Integration testing.
+     *
+     * @hide
+     * @private
+     */
+    static void clear();
+
 private:
     static const size_t LOG_MESSAGE_SIZE = 256;
 

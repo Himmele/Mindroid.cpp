@@ -34,9 +34,9 @@ public:
     void TearDown() override;
 
 private:
-    static void startSystemSerices();
+    static void startSystemServices();
     static void startServices();
-    static void shutdownSystemSerices();
+    static void shutdownSystemServices();
     static void shutdownServices();
 
     static const char* const TAG;

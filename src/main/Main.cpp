@@ -47,7 +47,7 @@ CLASS(examples::concurrency, AsyncTaskExample);
 CLASS(examples::eliza, ElizaService);
 CLASS(examples::eliza, You);
 
-void startSystemSerices() {
+void startSystemServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
 
     sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
@@ -85,7 +85,7 @@ void startServices() {
     serviceManager->startSystemService(intent);
 }
 
-void shutdownSystemSerices() {
+void shutdownSystemServices() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
 
     sp<Intent> packageManager = new Intent();
@@ -147,14 +147,14 @@ int32_t main(int32_t argc, char* argv[]) {
     sp<ServiceManager> serviceManager = new ServiceManager();
     serviceManager->start();
 
-    startSystemSerices();
+    startSystemServices();
     startServices();
 
     sShutdownHandler->get();
     Log::println('D', "Main", "Shutting down...");
 
     shutdownServices();
-    shutdownSystemSerices();
+    shutdownSystemServices();
 
     serviceManager->shutdown();
 
