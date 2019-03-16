@@ -19,7 +19,27 @@
 #include <mindroid/runtime/system/Runtime.h>
 #include <mindroid/util/logging/LoggerService.h>
 
+namespace mindroid {
+class TestLoggerService : public LoggerService {
+public:
+    TestLoggerService() {
+        sInstance = this;
+    }
+    ~TestLoggerService() override {
+        if (sInstance != this) {
+            abort();
+        }
+        sInstance = nullptr;
+    }
+    static TestLoggerService* sInstance;
+};
+
+TestLoggerService* TestLoggerService::sInstance = nullptr;
+} // namespace mindroid
+
 using namespace mindroid;
+
+CLASS(mindroid, TestLoggerService);
 
 void startLoggerService() {
     sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
@@ -47,7 +67,25 @@ void shutdownLoggerService() {
     ServiceManager::waitForSystemServiceShutdown(Context::LOGGER_SERVICE);
 }
 
-TEST(Logger, startStop) {
+void startTestLoggerService() {
+    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+
+    sp<ArrayList<sp<String>>> logFlags = new ArrayList<sp<String>>();
+    logFlags->add(String::valueOf("timestamp"));
+    sp<Intent> logger = new Intent(Logger::ACTION_LOG);
+    logger->setComponent(new ComponentName("mindroid", "TestLoggerService"));
+    serviceManager->startSystemService(logger)->get();
+}
+
+void shutdownTestLoggerService() {
+    sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
+
+    sp<Intent> logger = new Intent();
+    logger->setComponent(new ComponentName("mindroid", "TestLoggerService"));
+    serviceManager->stopSystemService(logger)->get();
+}
+
+TEST(Logger, checkLogger) {
     Runtime::start(1, nullptr);
 
     sp<ServiceManager> serviceManager = new ServiceManager();
@@ -65,4 +103,24 @@ TEST(Logger, startStop) {
 
     serviceManager->shutdown();
     Runtime::shutdown();
+}
+
+/*
+ * Regression test that verifies TestLoggerService does not leak memory.
+ */
+TEST(Logger, loggerServiceNoMemoryLeak) {
+    ASSERT_TRUE(TestLoggerService::sInstance == nullptr);
+    {
+        Runtime::start(1, nullptr);
+        sp<ServiceManager> serviceManager = new ServiceManager();
+        serviceManager->start();
+
+        startTestLoggerService();
+        ASSERT_TRUE(TestLoggerService::sInstance != nullptr);
+        shutdownTestLoggerService();
+
+        serviceManager->shutdown();
+        Runtime::shutdown();
+    }
+    ASSERT_TRUE(TestLoggerService::sInstance == nullptr);
 }

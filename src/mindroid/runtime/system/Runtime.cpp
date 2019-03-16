@@ -296,23 +296,38 @@ void Runtime::removeService(const sp<IBinder>& service) {
 }
 
 sp<IBinder> Runtime::getService(const sp<URI>& uri) {
+    if (uri == nullptr) {
+        throw NullPointerException();
+    }
     AutoLock autoLock(mLock);
-    sp<IBinder> binder = mServices->get(uri->toString());
+    sp<URI> serviceUri;
+    if (uri->getScheme() != nullptr) {
+        serviceUri = uri;
+    } else {
+        serviceUri = new URI(MINDROID_SCHEME,
+                uri->getUserInfo(),
+                uri->getHost(),
+                uri->getPort(),
+                uri->getPath(),
+                uri->getQuery(),
+                uri->getFragment());
+    }
+    sp<IBinder> binder = mServices->get(serviceUri->toString());
     if (binder != nullptr) {
         return binder;
     } else {
         try {
-            if (MINDROID_SCHEME->equals(uri->getScheme())) {
+            if (MINDROID_SCHEME->equals(serviceUri->getScheme())) {
                 return nullptr;
             } else {
-                binder = mServices->get(String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), uri->getAuthority()->c_str()));
+                binder = mServices->get(String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), serviceUri->getAuthority()->c_str()));
                 if (binder != nullptr) {
                     if (Class<Binder>::isInstance(binder)) {
-                        sp<Plugin> plugin = mPlugins->get(uri->getScheme());
+                        sp<Plugin> plugin = mPlugins->get(serviceUri->getScheme());
                         if (plugin != nullptr) {
                             sp<Binder> stub = plugin->getStub(object_cast<Binder>(binder));
                             if (stub != nullptr) {
-                                mServices->put(uri->toString(), stub);
+                                mServices->put(serviceUri->toString(), stub);
                             }
                             return stub;
                         } else {
@@ -320,10 +335,10 @@ sp<IBinder> Runtime::getService(const sp<URI>& uri) {
                         }
                     } else {
                         sp<URI> descriptor = new URI(binder->getInterfaceDescriptor());
-                        sp<IBinder> proxy = Binder::Proxy::create(new URI(uri->getScheme(),
+                        sp<IBinder> proxy = Binder::Proxy::create(new URI(serviceUri->getScheme(),
                                 binder->getUri()->getAuthority(),
                                 String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr));
-                        mServices->put(uri->toString(), proxy);
+                        mServices->put(serviceUri->toString(), proxy);
                         return proxy;
                     }
                 } else {
@@ -338,6 +353,9 @@ sp<IBinder> Runtime::getService(const sp<URI>& uri) {
 }
 
 uint64_t Runtime::attachProxy(const sp<Binder::Proxy>& proxy) {
+    if (proxy == nullptr) {
+        throw NullPointerException();
+    }
     const uint64_t proxyId = mProxyIdGenerator->getAndIncrement();
     sp<Plugin> plugin;
     {
@@ -351,6 +369,9 @@ uint64_t Runtime::attachProxy(const sp<Binder::Proxy>& proxy) {
 }
 
 void Runtime::detachProxy(uint64_t id, const sp<URI>& uri, uint64_t proxyId) {
+    if (uri == nullptr) {
+        throw NullPointerException();
+    }
     sp<Plugin> plugin;
     {
         AutoLock autoLock(mLock);
@@ -362,6 +383,9 @@ void Runtime::detachProxy(uint64_t id, const sp<URI>& uri, uint64_t proxyId) {
 }
 
 sp<IInterface> Runtime::getProxy(const sp<IBinder>& binder) {
+    if (binder == nullptr) {
+        throw NullPointerException();
+    }
     sp<Plugin> plugin;
     {
         AutoLock autoLock(mLock);
@@ -375,6 +399,9 @@ sp<IInterface> Runtime::getProxy(const sp<IBinder>& binder) {
 }
 
 sp<Promise<sp<Parcel>>> Runtime::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
+    if (binder == nullptr) {
+        throw NullPointerException();
+    }
     sp<Plugin> plugin;
     {
         AutoLock autoLock(mLock);

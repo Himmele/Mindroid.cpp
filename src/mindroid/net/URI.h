@@ -136,6 +136,14 @@ public:
     }
 
     /**
+     * Returns the decoded scheme-specific part of this URI, or null if this URI
+     * has no scheme-specific part.
+     */
+    sp<String> getSchemeSpecificPart() const {
+        return mSchemeSpecificPart;
+    }
+
+    /**
      * Returns the encoded URI.
      */
     sp<String> toString() const {
