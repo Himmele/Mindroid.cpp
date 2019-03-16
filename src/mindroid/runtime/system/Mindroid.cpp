@@ -160,7 +160,15 @@ sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& i
     int32_t size = inputStream->readInt();
     sp<ByteArray> data = new ByteArray(size);
     inputStream->readFully(data, 0, size);
-    return new Message(type, uri, transactionId, what, data, size);
+    if (type == MESSAGE_TYPE_TRANSACTION) {
+        return new Message(type, uri, transactionId, what, data, size);
+    } else {
+        int32_t exceptionCount = inputStream->readInt();
+        if (exceptionCount > 0) {
+            sp<String> exceptionClassName = inputStream->readUTF();
+        }
+        return new Message(type, uri, transactionId, what, data, size);
+    }
 }
 
 void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
@@ -170,6 +178,9 @@ void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
     outputStream->writeInt(this->what);
     outputStream->writeInt(this->size);
     outputStream->write(this->data, 0, this->size);
+    if (type != MESSAGE_TYPE_TRANSACTION) {
+        outputStream->writeInt(0);
+    }
     outputStream->flush();
 }
 
