@@ -49,13 +49,6 @@ public:
     sp<String> processName;
 
     /**
-     * The app's declared version code.
-     *
-     * @hide
-     */
-    int32_t versionCode;
-
-    /**
      * When false, indicates that all components within this application are considered disabled,
      * regardless of their individually set enabled status.
      */

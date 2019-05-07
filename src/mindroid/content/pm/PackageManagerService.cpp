@@ -70,15 +70,16 @@ int32_t PackageManagerService::onStartCommand(const sp<Intent>& intent, int32_t 
                 sp<IServiceManager> serviceManager = ServiceManager::getServiceManager();
                 auto packageItr = packages->iterator();
                 while (packageItr.hasNext()) {
-                    sp<PackageInfo> package = packageItr.next();
-                    if (package->services != nullptr) {
-                        sp<ArrayList<sp<ServiceInfo>>> services = package->services;
+                    sp<PackageInfo> packageInfo = packageItr.next();
+                    if (packageInfo->services != nullptr) {
+                        sp<ArrayList<sp<ServiceInfo>>> services = packageInfo->services;
                         auto serviceItr = services->iterator();
                         while (serviceItr.hasNext()) {
                             sp<ServiceInfo> serviceInfo = serviceItr.next();
                             if (serviceInfo->isEnabled() && serviceInfo->hasFlag(ServiceInfo::FLAG_AUTO_START)) {
                                 sp<Intent> service = new Intent();
                                 service->setComponent(new ComponentName(serviceInfo->packageName, serviceInfo->name));
+                                Log::d(TAG, "Starting service %s.%s [version: code=%d, name=%s]", serviceInfo->packageName->c_str(), serviceInfo->name->c_str(), packageInfo->versionCode, packageInfo->versionName->c_str());
                                 serviceManager->startService(service);
                             }
                         }
@@ -153,6 +154,8 @@ sp<PackageInfo> PackageManagerService::parseManifest(const sp<File>& file) {
             pi->applicationInfo = ai;
 
             sp<String> packageName;
+            int32_t versionCode = 0;
+            sp<String> versionName = String::EMPTY_STRING;
             const XMLAttribute* attribute = rootNode->FindAttribute("package");
             if (attribute != nullptr) {
                 packageName = String::valueOf(attribute->Value());
@@ -161,7 +164,18 @@ sp<PackageInfo> PackageManagerService::parseManifest(const sp<File>& file) {
                 Log::e(TAG, "Manifest is missing a package name");
                 return nullptr;
             }
+            attribute = rootNode->FindAttribute("mindroid:versionCode");
+            if (attribute != nullptr) {
+                versionCode = attribute->IntValue();
+            }
+            attribute = rootNode->FindAttribute("mindroid:versionName");
+            if (attribute != nullptr) {
+                versionName = String::valueOf(attribute->Value());
+            }
+
             pi->packageName = packageName;
+            pi->versionCode = versionCode;
+            pi->versionName = versionName;
             ai->packageName = pi->packageName;
 
             const XMLElement* element;
