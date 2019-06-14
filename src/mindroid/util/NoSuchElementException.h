@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_LANG_NOSUCHELEMENTEEXCEPTION_H_
-#define MINDROID_LANG_NOSUCHELEMENTEEXCEPTION_H_
+#ifndef MINDROID_UTIL_NOSUCHELEMENTEXCEPTION_H_
+#define MINDROID_UTIL_NOSUCHELEMENTEXCEPTION_H_
 
 #include <mindroid/lang/RuntimeException.h>
 
@@ -30,26 +30,8 @@ public:
 
     NoSuchElementException(const sp<String>& message) : RuntimeException(message) {
     }
-
-    NoSuchElementException(const char* message, const Exception& cause) : RuntimeException(message, cause) {
-    }
-
-    NoSuchElementException(const sp<String>& message, const Exception& cause) : RuntimeException(message, cause) {
-    }
-
-    NoSuchElementException(const char* message, const sp<Exception>& cause) : RuntimeException(message, cause) {
-    }
-
-    NoSuchElementException(const sp<String>& message, const sp<Exception>& cause) : RuntimeException(message, cause) {
-    }
-
-    NoSuchElementException(const Exception& cause) : RuntimeException(cause) {
-    }
-
-    NoSuchElementException(const sp<Exception>& cause) : RuntimeException(cause) {
-    }
 };
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_LANG_NOSUCHELEMENTEEXCEPTION_H_ */
+#endif /* MINDROID_UTIL_NOSUCHELEMENTEXCEPTION_H_ */
