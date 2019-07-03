@@ -56,7 +56,7 @@ Eliza::Eliza(const sp<Context>& context, const sp<Bundle>& extras) {
     }
 
     for (int32_t i = 0; i < 10; i++) {
-        if (context->getSystemService(ELIZA) != nullptr) {
+        if (context->getSystemService(uri) != nullptr) {
             break;
         }
         Thread::sleep(1000);

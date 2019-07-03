@@ -76,6 +76,8 @@ public:
     }
 
     sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) override;
+    void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;
+    bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
     class Message : public Object {
     public:
@@ -122,6 +124,8 @@ public:
     class Server : public AbstractServer {
     public:
         Server(const sp<Runtime>& runtime);
+        void onConnected(const sp<AbstractServer::Connection>& connection) override;
+        void onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) override;
         void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:
@@ -136,6 +140,8 @@ public:
         void shutdown() override;
 
         sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
+        void onConnected() override;
+        void onDisconnected(const Exception& cause) override;
         void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:

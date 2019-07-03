@@ -149,10 +149,10 @@ void Binder::onTransact(const sp<Message>& message) {
     message->result = nullptr;
 }
 
-void Binder::link(const sp<Supervisor>& supervisor, int32_t flags) {
+void Binder::link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
 }
 
-bool Binder::unlink(const sp<Supervisor>& supervisor, int32_t flags) {
+bool Binder::unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
     return true;
 }
 
@@ -221,12 +221,12 @@ void Binder::Proxy::transact(int32_t what, int32_t num, const sp<Object>& obj, c
     throw RemoteException(EXCEPTION_MESSAGE);
 }
 
-void Binder::Proxy::link(const sp<Supervisor>& supervisor, int32_t flags) {
-    mRuntime->link(this, supervisor, flags);
+void Binder::Proxy::link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
+    mRuntime->link(this, supervisor, extras);
 }
 
-bool Binder::Proxy::unlink(const sp<Supervisor>& supervisor, int32_t flags) {
-    return mRuntime->unlink(this, supervisor, flags);
+bool Binder::Proxy::unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
+    return mRuntime->unlink(this, supervisor, extras);
 }
 
 } /* namespace mindroid */

@@ -19,6 +19,7 @@
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/os/Binder.h>
+#include <mindroid/os/Bundle.h>
 
 namespace mindroid {
 
@@ -45,6 +46,9 @@ public:
     virtual sp<Binder> getStub(const sp<Binder>& binder) = 0;
     virtual sp<IInterface> getProxy(const sp<IBinder>& binder) = 0;
     virtual sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) = 0;
+
+    virtual void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) = 0;
+    virtual bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) = 0;
 
     class Observer : public Object {
         virtual void onEntry(int32_t nodeId) = 0;

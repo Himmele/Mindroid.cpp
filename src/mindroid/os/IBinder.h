@@ -95,14 +95,48 @@ public:
      */
     virtual void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) = 0;
 
+    /**
+     * Interface for receiving a callback when the process hosting an IBinder
+     * has gone away.
+     *
+     * @see #link
+     */
     class Supervisor : public Object {
     public:
         virtual void onExit(int32_t reason) = 0;
     };
 
-    virtual void link(const sp<Supervisor>& supervisor, int32_t flags) = 0;
+    /**
+     * Register the supervisor for a notification if this binder
+     * goes away.  If this binder object unexpectedly goes away
+     * (typically because its hosting process has been killed),
+     * then the given {@link Supervisor}'s
+     * {@link Supervisor#onExit Supervisor.onExit()} method
+     * will be called.
+     *
+     * @param supervisor The supervisor.
+     * @param extras Extra parameters.
+     * @throws Throws {@link RemoteException} if the target IBinder's
+     * process has already exited.
+     *
+     * @see #unlink
+     */
+    virtual void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) = 0;
 
-    virtual bool unlink(const sp<Supervisor>& supervisor, int32_t flags) = 0;
+    /**
+     * Remove a previously registered supervisor notification.
+     * The supervisor will no longer be called if this object
+     * goes away.
+     *
+     * @param supervisor The supervisor.
+     * @param extras Extra parameters.
+     * @return Returns true if the <var>supervisor</var> is successfully
+     * unlinked, assuring you that its
+     * {@link Supervisor#onExit Supervisor.onExit()} method
+     * will not be called.  Returns false if the target IBinder has already
+     * gone away, meaning the method has been (or soon will be) called.
+     */
+    virtual bool unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) = 0;
 };
 
 } /* namespace mindroid */

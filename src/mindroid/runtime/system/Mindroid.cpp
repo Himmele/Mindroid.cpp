@@ -63,15 +63,6 @@ void Mindroid::start() {
                 if (service->node->id == nodeId) {
                     uint64_t id = ((uint64_t) nodeId << 32) | (service->id & 0xFFFFFFFFL);
                     ids->add(id);
-                } else {
-                    try {
-                        sp<URI> descriptor = new URI(service->interfaceDescriptor);
-                        sp<URI> uri = new URI(String::valueOf("mindroid"), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr);
-                        sp<IBinder> proxy = Binder::Proxy::create(uri);
-                        mRuntime->addService(new URI(String::valueOf("mindroid"), service->name, nullptr, nullptr, nullptr), proxy);
-                    } catch (const Exception& e) {
-                        Log::println('E', TAG, "Binder proxy registration failed: %s", service->name->c_str());
-                    }
                 }
             }
             mRuntime->addIds(ids);
@@ -148,6 +139,13 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
     return client->transact(binder, what, data, flags);
 }
 
+void Mindroid::link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) {
+}
+
+bool Mindroid::unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) {
+    return true;
+}
+
 void Mindroid::onShutdown(const sp<Client>& client) {
     mClients->remove(client->getNodeId());
 }
@@ -185,6 +183,12 @@ void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
 }
 
 Mindroid::Server::Server(const sp<Runtime>& runtime) : AbstractServer(), mRuntime(runtime) {
+}
+
+void Mindroid::Server::onConnected(const sp<AbstractServer::Connection>& connection) {
+}
+
+void Mindroid::Server::onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) {
 }
 
 void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) {
@@ -267,6 +271,12 @@ void Mindroid::Client::shutdown() {
     sExecutor->post([=] {
         AbstractClient::shutdown();
     });
+}
+
+void Mindroid::Client::onConnected() {
+}
+
+void Mindroid::Client::onDisconnected(const Exception& cause) {
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {

@@ -18,8 +18,9 @@
 #ifndef MINDROID_OS_BINDER_H_
 #define MINDROID_OS_BINDER_H_
 
-#include <mindroid/lang/String.h>
+#include <mindroid/lang/NoSuchMethodException.h>
 #include <mindroid/lang/Runnable.h>
+#include <mindroid/lang/String.h>
 #include <mindroid/os/IBinder.h>
 #include <mindroid/os/IInterface.h>
 #include <mindroid/os/Handler.h>
@@ -174,9 +175,9 @@ public:
 
     void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
 
-    void link(const sp<Supervisor>& supervisor, int32_t flags) override;
+    void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
-    bool unlink(const sp<Supervisor>& supervisor, int32_t flags) override;
+    bool unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
     template<typename T>
     static T get(const sp<Promise<T>>& result) {
@@ -217,9 +218,11 @@ protected:
      * If you want to call this, call transact().
      */
     virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
+        throw RemoteException(NoSuchMethodException());
     }
 
     virtual void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+        throw RemoteException(NoSuchMethodException());
     }
 
 private:
@@ -266,9 +269,9 @@ public:
 
         void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
 
-        void link(const sp<Supervisor>& supervisor, int32_t flags) override;
+        void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
-        bool unlink(const sp<Supervisor>& supervisor, int32_t flags) override;
+        bool unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
     private:
         Proxy(const sp<URI>& uri);

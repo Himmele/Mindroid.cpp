@@ -35,12 +35,12 @@ void You::onCreate() {
         Log::d(TAG, "Eliza: %s", reply->c_str());
 
         Log::d(TAG, "You: Well...");
-        eliza->ask2(String::valueOf("Well..."))->then([=] (const sp<String>& reply) {
+        eliza->ask2(String::valueOf("Well..."))->then([eliza] (const sp<String>& reply) {
             Log::d(TAG, "Eliza: %s", reply->c_str());
 
             Log::d(TAG, "You: What is 1 + 1?");
             try {
-                eliza->ask3(String::valueOf("What is 1 + 1?"), [=] (const sp<String>& reply) {
+                eliza->ask3(String::valueOf("What is 1 + 1?"), [eliza] (const sp<String>& reply) {
                     Log::d(TAG, "Eliza: %s", reply->c_str());
                 });
             } catch (const RemoteException& e) {

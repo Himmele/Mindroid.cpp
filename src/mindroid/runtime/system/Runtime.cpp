@@ -42,7 +42,8 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configuration) :
         mPlugins(new HashMap<sp<String>, sp<Plugin>>()),
         mBinderIds(new HashMap<uint64_t, wp<Binder>>()),
         mBinderUris(new HashMap<sp<String>, wp<Binder>>()),
-        mServices(new HashMap<sp<String>, sp<IBinder>>()),
+        mServices(new HashMap<sp<String>, sp<Binder>>()),
+        mProxies(new HashMap<sp<String>, wp<Binder::Proxy>>()),
         mBinderIdGenerator(new AtomicInteger(1)),
         mProxyIdGenerator(new AtomicInteger(1)),
         mIds(new HashSet<uint64_t>()) {
@@ -258,8 +259,8 @@ void Runtime::addService(const sp<URI>& uri, const sp<IBinder>& service) {
         throw IllegalArgumentException(String::format("Binder scheme mismatch: %s != %s", uri->toString()->c_str(), service->getUri()->toString()->c_str()));
     }
     AutoLock autoLock(mLock);
-    if (!mServices->containsKey(uri->toString())) {
-        if (Class<Binder>::isInstance(service)) {
+    if (Class<Binder>::isInstance(service)) {
+        if (!mServices->containsKey(uri->toString())) {
             if (mConfiguration != nullptr) {
                 sp<Configuration::Plugin> plugin = mConfiguration->plugins->get(MINDROID_SCHEME);
                 if (plugin != nullptr) {
@@ -277,8 +278,10 @@ void Runtime::addService(const sp<URI>& uri, const sp<IBinder>& service) {
                     }
                 }
             }
+            mServices->put(uri->toString(), object_cast<Binder>(service));
         }
-        mServices->put(uri->toString(), service);
+    } else {
+        throw IllegalArgumentException("Service must be of superclass mindroid::Binder");
     }
 }
 
@@ -312,44 +315,29 @@ sp<IBinder> Runtime::getService(const sp<URI>& uri) {
                 uri->getQuery(),
                 uri->getFragment());
     }
+
+    // Services
     sp<IBinder> binder = mServices->get(serviceUri->toString());
     if (binder != nullptr) {
         return binder;
     } else {
-        try {
-            if (MINDROID_SCHEME->equals(serviceUri->getScheme())) {
-                return nullptr;
-            } else {
-                binder = mServices->get(String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), serviceUri->getAuthority()->c_str()));
-                if (binder != nullptr) {
-                    if (Class<Binder>::isInstance(binder)) {
-                        sp<Plugin> plugin = mPlugins->get(serviceUri->getScheme());
-                        if (plugin != nullptr) {
-                            sp<Binder> stub = plugin->getStub(object_cast<Binder>(binder));
-                            if (stub != nullptr) {
-                                mServices->put(serviceUri->toString(), stub);
-                            }
-                            return stub;
-                        } else {
-                            return nullptr;
-                        }
-                    } else {
-                        sp<URI> descriptor = new URI(binder->getInterfaceDescriptor());
-                        sp<IBinder> proxy = Binder::Proxy::create(new URI(serviceUri->getScheme(),
-                                binder->getUri()->getAuthority(),
-                                String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), nullptr, nullptr));
-                        mServices->put(serviceUri->toString(), proxy);
-                        return proxy;
-                    }
-                } else {
-                    return nullptr;
+        binder = mServices->get(String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), serviceUri->getAuthority()->c_str()));
+        if (binder != nullptr) {
+            sp<Plugin> plugin = mPlugins->get(serviceUri->getScheme());
+            if (plugin != nullptr) {
+                sp<Binder> stub = plugin->getStub(object_cast<Binder>(binder));
+                if (stub != nullptr) {
+                    mServices->put(serviceUri->toString(), stub);
                 }
+                return stub;
+            } else {
+                return nullptr;
             }
-        } catch (const URISyntaxException& e) {
-            return nullptr;
         }
-        return nullptr;
     }
+
+    // Proxies
+    return getProxy(serviceUri);
 }
 
 uint64_t Runtime::attachProxy(const sp<Binder::Proxy>& proxy) {
@@ -416,6 +404,84 @@ sp<Promise<sp<Parcel>>> Runtime::transact(const sp<IBinder>& binder, int32_t wha
     } else {
         throw RemoteException("Binder transaction failure");
     }
+}
+
+void Runtime::link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) {
+    if (binder == nullptr || supervisor == nullptr) {
+        throw NullPointerException();
+    }
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(binder->getUri()->getScheme());
+    }
+    if (plugin != nullptr) {
+        plugin->link(binder, supervisor, extras);
+    } else {
+        throw RemoteException("Binder linking failure");
+    }
+}
+
+bool Runtime::unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) {
+    if (binder == nullptr || supervisor == nullptr) {
+        throw NullPointerException();
+    }
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(binder->getUri()->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->unlink(binder, supervisor, extras);
+    } else {
+        return true;
+    }
+}
+
+sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
+    AutoLock autoLock(mLock);
+
+    sp<String> key = uri->toString();
+    wp<Binder::Proxy> wp = mProxies->get(key);
+    sp<Binder::Proxy> p;
+    if (wp != nullptr && (p = wp.get()) != nullptr) {
+        return p;
+    } else {
+        mProxies->remove(key);
+    }
+
+    if (mConfiguration != nullptr) {
+        sp<Configuration::Plugin> plugin = mConfiguration->plugins->get(MINDROID_SCHEME);
+        if (plugin != nullptr) {
+            sp<String> name = uri->getAuthority();
+            sp<Configuration::Service> service = plugin->services->get(name);
+            if (service == nullptr) {
+                return nullptr;
+            }
+
+            try {
+                sp<URI> descriptor = new URI(service->interfaceDescriptor);
+                sp<URI> proxyUri = new URI(uri->getScheme(), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), descriptor->getQuery(), nullptr);
+                sp<Binder::Proxy> proxy = Binder::Proxy::create(proxyUri);
+                mProxies->put(key, proxy);
+                return proxy;
+            } catch (const Exception& e) {
+                return nullptr;
+            }
+        } else {
+            return nullptr;
+        }
+    } else {
+        return nullptr;
+    }
+}
+
+void Runtime::removeProxy(const sp<IBinder>& proxy) {
+    if (proxy == nullptr) {
+        throw NullPointerException();
+    }
+    AutoLock autoLock(mLock);
+    mProxies->remove(proxy->getUri()->toString());
 }
 
 } /* namespace mindroid */

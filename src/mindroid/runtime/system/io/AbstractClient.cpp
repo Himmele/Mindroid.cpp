@@ -47,9 +47,10 @@ void AbstractClient::start(const sp<String>& uri) {
         try {
             mSocket->connect(new InetSocketAddress(mHost, mPort));
             mConnection = new Connection(mSocket, this);
+            onConnected();
         } catch (const IOException& e) {
             Log::e(TAG, "IOException");
-            shutdown();
+            shutdown(e);
             throw e;
         }
     } catch (const URISyntaxException& e) {
@@ -58,12 +59,18 @@ void AbstractClient::start(const sp<String>& uri) {
 }
 
 void AbstractClient::shutdown() {
+    shutdown(Exception());
+}
+
+void AbstractClient::shutdown(const Exception& cause) {
     if (mConnection != nullptr) {
         try {
             mConnection->close();
         } catch (const IOException& ignore) {
         }
     }
+
+    onDisconnected(cause);
 }
 
 AbstractClient::Connection::Connection(const sp<Socket>& socket, const sp<AbstractClient>& client) :
@@ -124,7 +131,7 @@ void AbstractClient::Connection::run() {
             if (DEBUG) {
                 Log::e(TAG, "IOException");
             }
-            mClient->shutdown();
+            mClient->shutdown(e);
             break;
         }
     }

@@ -82,15 +82,15 @@ public:
 
     sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
 
-    void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, int32_t flags) {
-    }
+    void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
 
-    bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, int32_t flags) {
-        return false;
-    }
+    bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
+
+    void removeProxy(const sp<IBinder>& proxy);
 
 private:
     Runtime(uint32_t nodeId, const sp<File>& configuration);
+    sp<Binder::Proxy> getProxy(const sp<URI>& uri);
 
     static const char* const TAG;
     static std::mutex sLock;
@@ -103,7 +103,8 @@ private:
     sp<HashMap<sp<String>, sp<Plugin>>> mPlugins;
     sp<HashMap<uint64_t, wp<Binder>>> mBinderIds;
     sp<HashMap<sp<String>, wp<Binder>>> mBinderUris;
-    sp<HashMap<sp<String>, sp<IBinder>>> mServices;
+    sp<HashMap<sp<String>, sp<Binder>>> mServices;
+    sp<HashMap<sp<String>, wp<Binder::Proxy>>> mProxies;
     sp<AtomicInteger> mBinderIdGenerator;
     sp<AtomicInteger> mProxyIdGenerator;
     sp<HashSet<uint64_t>> mIds;

@@ -38,10 +38,15 @@ public:
     AbstractClient(uint32_t nodeId);
     void start(const sp<String>& uri);
     virtual void shutdown();
+    void shutdown(const Exception& cause);
 
     uint32_t getNodeId() {
         return mNodeId;
     }
+
+    virtual void onConnected() = 0;
+
+    virtual void onDisconnected(const Exception& cause) = 0;
 
     virtual void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) = 0;
 
