@@ -33,5 +33,6 @@ const sp<URI> Context::TELEPHONY_SERVICE = URI::create("mindroid://telephonyServ
 const sp<URI> Context::MEDIA_PLAYER_SERVICE = URI::create("mindroid://mediaPlayerService");
 const sp<URI> Context::MESSAGE_BROKER = URI::create("mindroid://messageBroker");
 const sp<URI> Context::VOICE_SERVICE = URI::create("mindroid://voiceService");
+const sp<URI> Context::SUPERVISOR_SERVICE = URI::create("mindroid://supervisorService");
 
 } /* namespace mindroid */

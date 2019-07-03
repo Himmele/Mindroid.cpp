@@ -57,6 +57,7 @@ public:
     static const sp<URI> MEDIA_PLAYER_SERVICE;
     static const sp<URI> MESSAGE_BROKER;
     static const sp<URI> VOICE_SERVICE;
+    static const sp<URI> SUPERVISOR_SERVICE;
 
     /**
      * File creation mode: the default mode.
