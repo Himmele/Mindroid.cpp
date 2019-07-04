@@ -186,11 +186,13 @@ Mindroid::Server::Server(const sp<Runtime>& runtime) : AbstractServer(), mRuntim
 }
 
 void Mindroid::Server::onConnected(const sp<AbstractServer::Connection>& connection) {
-    Log::d(TAG, "Client connected from %s", connection->getRemoteSocketAddress()->toString()->c_str());
+    sp<InetSocketAddress> remoteSocketAddress = connection->getRemoteSocketAddress();
+    Log::d(TAG, "Client connected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
 void Mindroid::Server::onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) {
-    Log::d(TAG, "Client disconnected from %s", connection->getRemoteSocketAddress()->toString()->c_str());
+    sp<InetSocketAddress> remoteSocketAddress = connection->getRemoteSocketAddress();
+    Log::d(TAG, "Client disconnected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
 void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) {
@@ -287,11 +289,13 @@ void Mindroid::Client::shutdown(const Exception& cause) {
 }
 
 void Mindroid::Client::onConnected() {
-    Log::d(TAG, "Connected to %s", getRemoteSocketAddress()->toString()->c_str());
+    sp<InetSocketAddress> remoteSocketAddress = getRemoteSocketAddress();
+    Log::d(TAG, "Connected to %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
 void Mindroid::Client::onDisconnected(const Exception& cause) {
-    Log::d(TAG, "Disconnected from %s", getRemoteSocketAddress()->toString()->c_str());
+    sp<InetSocketAddress> remoteSocketAddress = getRemoteSocketAddress();
+    Log::d(TAG, "Disconnected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {

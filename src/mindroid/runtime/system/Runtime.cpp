@@ -481,7 +481,14 @@ void Runtime::removeProxy(const sp<IBinder>& proxy) {
         throw NullPointerException();
     }
     AutoLock autoLock(mLock);
-    mProxies->remove(proxy->getUri()->toString());
+    auto itr = mProxies->iterator();
+    while (itr.hasNext()) {
+        auto entry = itr.next();
+        wp<Binder::Proxy> p = entry.getValue();
+        if (proxy->equals(p.get())) {
+            itr.remove();
+        }
+    }
 }
 
 } /* namespace mindroid */

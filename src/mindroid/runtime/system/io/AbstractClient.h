@@ -96,7 +96,7 @@ public:
     }
 
     sp<InetSocketAddress> getRemoteSocketAddress() const {
-        return mConnection->mRemoteSocketAddress;
+        return mConnection != nullptr ? mConnection->mRemoteSocketAddress : nullptr;
     }
 
 protected:
