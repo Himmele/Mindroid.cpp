@@ -16,8 +16,6 @@
 
 #include <mindroid/runtime/system/io/AbstractClient.h>
 #include <mindroid/lang/IllegalArgumentException.h>
-#include <mindroid/net/Socket.h>
-#include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
 #include <mindroid/io/IOException.h>
@@ -58,10 +56,6 @@ void AbstractClient::start(const sp<String>& uri) {
     }
 }
 
-void AbstractClient::shutdown() {
-    shutdown(Exception());
-}
-
 void AbstractClient::shutdown(const Exception& cause) {
     if (mConnection != nullptr) {
         try {
@@ -82,6 +76,7 @@ AbstractClient::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
     try {
         mInputStream = mSocket->getInputStream();
         mOutputStream = mSocket->getOutputStream();
+        mRemoteSocketAddress = mSocket->getRemoteSocketAddress();
     } catch (const IOException& e) {
         Log::d(TAG, "Failed to set up connection");
         try {

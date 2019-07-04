@@ -17,8 +17,6 @@
 #include <mindroid/runtime/system/io/AbstractServer.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/net/ServerSocket.h>
-#include <mindroid/net/Socket.h>
-#include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
 #include <mindroid/io/InputStream.h>
@@ -69,10 +67,6 @@ void AbstractServer::start(const sp<String>& uri) {
     }
 }
 
-void AbstractServer::shutdown() {
-    shutdown(Exception());
-}
-
 void AbstractServer::shutdown(const Exception& cause) {
     try {
         mServerSocket->close();
@@ -104,6 +98,7 @@ AbstractServer::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
     try {
         mInputStream = mSocket->getInputStream();
         mOutputStream = mSocket->getOutputStream();
+        mRemoteSocketAddress = mSocket->getRemoteSocketAddress();
     } catch (const IOException& e) {
         Log::d(TAG, "Failed to set up connection");
         try {
@@ -146,12 +141,13 @@ void AbstractServer::Connection::close(const Exception& cause) {
         }
     }
     join();
+    sp<AbstractServer::Connection> connection = this;
     mServer->mConnections->remove(this);
     if (DEBUG) {
         Log::d(TAG, "Connection has been closed");
     }
 
-    mServer->onDisconnected(this, cause);
+    mServer->onDisconnected(connection, cause);
     mServer.clear();
 }
 

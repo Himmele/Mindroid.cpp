@@ -21,6 +21,8 @@
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Thread.h>
+#include <mindroid/net/Socket.h>
+#include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/io/InputStream.h>
 #include <mindroid/io/OutputStream.h>
 #include <mindroid/os/Binder.h>
@@ -29,7 +31,6 @@
 namespace mindroid {
 
 class Bundle;
-class Socket;
 
 class AbstractClient : public Object {
 public:
@@ -37,8 +38,7 @@ public:
 
     AbstractClient(uint32_t nodeId);
     void start(const sp<String>& uri);
-    virtual void shutdown();
-    void shutdown(const Exception& cause);
+    virtual void shutdown(const Exception& cause);
 
     uint32_t getNodeId() {
         return mNodeId;
@@ -74,6 +74,7 @@ public:
         sp<AbstractClient> mClient;
         sp<InputStream> mInputStream;
         sp<OutputStream> mOutputStream;
+        sp<InetSocketAddress> mRemoteSocketAddress;
 
         friend class AbstractClient;
     };
@@ -90,8 +91,20 @@ public:
         return mConnection->mOutputStream;
     }
 
+    sp<InetSocketAddress> getLocalSocketAddress() const {
+        return mSocket->getLocalSocketAddress();
+    }
+
+    sp<InetSocketAddress> getRemoteSocketAddress() const {
+        return mConnection->mRemoteSocketAddress;
+    }
+
 protected:
     static const bool DEBUG = false;
+
+    sp<Connection> getConnection() const {
+        return mConnection;
+    }
 
 private:
     uint32_t mNodeId;

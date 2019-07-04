@@ -137,7 +137,7 @@ public:
     class Client : public AbstractClient {
     public:
         Client(const sp<Mindroid>& plugin, uint32_t nodeId);
-        void shutdown() override;
+        void shutdown(const Exception& cause) override;
 
         sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
         void onConnected() override;

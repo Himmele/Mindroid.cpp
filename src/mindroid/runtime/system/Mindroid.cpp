@@ -79,7 +79,7 @@ void Mindroid::start() {
 }
 
 void Mindroid::stop() {
-    mServer->shutdown();
+    mServer->shutdown(nullptr);
     sThread->quit();
 }
 
@@ -103,14 +103,14 @@ void Mindroid::detachProxy(uint64_t proxyId, uint64_t binderId) {
 //            mProxies->remove(nodeId);
 //            sp<Client> client = mClients->get(nodeId);
 //            if (client != nullptr) {
-//                client->shutdown();
+//                client->shutdown(nullptr);
 //                mClients->remove(nodeId);
 //            }
 //        }
 //    } else {
 //        sp<Client> client = mClients->get(nodeId);
 //        if (client != nullptr) {
-//            client->shutdown();
+//            client->shutdown(nullptr);
 //            mClients->remove(nodeId);
 //        }
 //    }
@@ -186,9 +186,11 @@ Mindroid::Server::Server(const sp<Runtime>& runtime) : AbstractServer(), mRuntim
 }
 
 void Mindroid::Server::onConnected(const sp<AbstractServer::Connection>& connection) {
+    Log::d(TAG, "Client connected from %s", connection->getRemoteSocketAddress()->toString()->c_str());
 }
 
 void Mindroid::Server::onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) {
+    Log::d(TAG, "Client disconnected from %s", connection->getRemoteSocketAddress()->toString()->c_str());
 }
 
 void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) {
@@ -257,7 +259,10 @@ Mindroid::Client::Client(const sp<Mindroid>& plugin, uint32_t nodeId) : Abstract
         mTransactionIdGenerator(new AtomicInteger(1)) {
 }
 
-void Mindroid::Client::shutdown() {
+void Mindroid::Client::shutdown(const Exception& cause) {
+    sp<Client> self = this;
+    sp<Client::Connection> connection = getConnection();
+
     mPlugin->onShutdown(this);
     mPlugin.clear();
 
@@ -268,15 +273,25 @@ void Mindroid::Client::shutdown() {
         promise->completeWith(sp<Exception>(new RemoteException()));
     }
 
-    sExecutor->post([=] {
-        AbstractClient::shutdown();
+    onDisconnected(cause);
+    self.clear();
+
+    sExecutor->post([connection] {
+        if (connection != nullptr) {
+            try {
+                connection->close();
+            } catch (const IOException& ignore) {
+            }
+        }
     });
 }
 
 void Mindroid::Client::onConnected() {
+    Log::d(TAG, "Connected to %s", getRemoteSocketAddress()->toString()->c_str());
 }
 
 void Mindroid::Client::onDisconnected(const Exception& cause) {
+    Log::d(TAG, "Disconnected from %s", getRemoteSocketAddress()->toString()->c_str());
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
@@ -304,7 +319,7 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         Message::newMessage(binder->getUri()->toString(), transactionId, what, data->getByteArray(), data->size())->write(dataOutputStream);
     } catch (const IOException& e) {
         mTransactions->remove(transactionId);
-        shutdown();
+        shutdown(e);
         throw RemoteException("Binder transaction failure", e);
     }
     return result;

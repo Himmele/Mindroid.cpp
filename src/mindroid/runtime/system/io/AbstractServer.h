@@ -21,6 +21,8 @@
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/ByteArray.h>
 #include <mindroid/lang/Thread.h>
+#include <mindroid/net/Socket.h>
+#include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/util/HashMap.h>
 
@@ -28,7 +30,6 @@ namespace mindroid {
 
 class Bundle;
 class ServerSocket;
-class Socket;
 class InputStream;
 class OutputStream;
 
@@ -40,7 +41,6 @@ public:
 
     AbstractServer() = default;
     void start(const sp<String>& uri);
-    void shutdown();
     void shutdown(const Exception& cause);
 
     virtual void onConnected(const sp<Connection>& connection) = 0;
@@ -71,12 +71,21 @@ public:
             return mOutputStream;
         }
 
+        sp<InetSocketAddress> getLocalSocketAddress() const {
+            return mSocket->getLocalSocketAddress();
+        }
+
+        sp<InetSocketAddress> getRemoteSocketAddress() const {
+            return mRemoteSocketAddress;
+        }
+
     private:
         sp<Bundle> mContext;
         sp<Socket> mSocket;
         sp<AbstractServer> mServer;
         sp<InputStream> mInputStream;
         sp<OutputStream> mOutputStream;
+        sp<InetSocketAddress> mRemoteSocketAddress;
     };
 
 protected:
@@ -85,7 +94,7 @@ protected:
 private:
    sp<ServerSocket> mServerSocket;
    sp<Thread> mThread;
-   // FIXME: Fix concurrent access to collections.
+   // FIXME: Fix concurrent access to connection collection.
    sp<HashSet<sp<Connection>>> mConnections = new HashSet<sp<Connection>>();
 };
 
