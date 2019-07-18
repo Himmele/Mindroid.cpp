@@ -91,10 +91,10 @@ SRCS = \
 	src/mindroid/runtime/inspection/ConsoleService.cpp \
 	src/mindroid/runtime/inspection/ICommandHandler.cpp \
 	src/mindroid/runtime/inspection/IConsole.cpp \
-	src/mindroid/runtime/system/Configuration.cpp \
+	src/mindroid/runtime/system/Mindroid.cpp \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
-	src/mindroid/runtime/system/Mindroid.cpp \
+	src/mindroid/runtime/system/ServiceDiscovery.cpp \
 	src/mindroid/runtime/system/io/AbstractClient.cpp \
 	src/mindroid/runtime/system/io/AbstractServer.cpp \
 	src/mindroid/util/Assert.cpp \
