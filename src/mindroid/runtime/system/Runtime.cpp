@@ -391,6 +391,32 @@ sp<IInterface> Runtime::getProxy(const sp<IBinder>& binder) {
     }
 }
 
+sp<Promise<sp<Void>>> Runtime::connect(const sp<URI>& node, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(node->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->connect(node, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node connection failure")));
+    }
+}
+
+sp<Promise<sp<Void>>> Runtime::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(node->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->disconnect(node, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node disconnection failure")));
+    }
+}
+
 sp<Promise<sp<Parcel>>> Runtime::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
     if (binder == nullptr) {
         throw NullPointerException();

@@ -75,6 +75,8 @@ public:
         return nullptr;
     }
 
+    sp<Promise<sp<Void>>> connect(const sp<URI>& node, const sp<Bundle>& extras) override;
+    sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras) override;
     sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) override;
     void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;
     bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;

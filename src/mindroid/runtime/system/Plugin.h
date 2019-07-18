@@ -45,6 +45,8 @@ public:
 
     virtual sp<Binder> getStub(const sp<Binder>& binder) = 0;
     virtual sp<IInterface> getProxy(const sp<IBinder>& binder) = 0;
+    virtual sp<Promise<sp<Void>>> connect(const sp<URI>& node, const sp<Bundle>& extras) = 0;
+    virtual sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras) = 0;
     virtual sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) = 0;
 
     virtual void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) = 0;

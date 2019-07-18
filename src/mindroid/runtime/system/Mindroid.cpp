@@ -111,6 +111,15 @@ void Mindroid::detachProxy(uint64_t proxyId, uint64_t binderId) {
 //    }
 }
 
+sp<Promise<sp<Void>>> Mindroid::connect(const sp<URI>& node, const sp<Bundle>& extras) {
+    // Automatic connection establishment when referencing other nodes.
+    return nullptr;
+}
+
+sp<Promise<sp<Void>>> Mindroid::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
+    return nullptr;
+}
+
 sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
     uint32_t nodeId = (uint32_t) ((binder->getId() >> 32) & 0xFFFFFFFFL);
     sp<Client> client = mClients->get(nodeId);

@@ -78,6 +78,28 @@ public:
 
     sp<IInterface> getProxy(const sp<IBinder>& binder);
 
+    /**
+     * Establishes a connection to node.
+     *
+     * Erlang Documentation: http://erlang.org/doc/reference_manual/distributed.html#node-connections, http://erlang.org/doc/man/net_kernel.html#connect_node-1.
+     * Elixir Documentation: https://hexdocs.pm/elixir/Node.html.
+     *
+     * @param node The node.
+     * @param extras Extra parameters.
+     */
+    sp<Promise<sp<Void>>> connect(const sp<URI>& node, const sp<Bundle>& extras);
+
+    /**
+     * Forces the disconnection of a node.
+     *
+     * Erlang Documentation: http://erlang.org/doc/reference_manual/distributed.html#node-connections, http://erlang.org/doc/man/net_kernel.html#connect_node-1.
+     * Elixir Documentation: https://hexdocs.pm/elixir/Node.html.
+     *
+     * @param node The node.
+     * @param extras Extra parameters.
+     */
+    sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras);
+
     sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
 
     void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
