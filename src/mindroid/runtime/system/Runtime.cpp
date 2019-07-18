@@ -15,7 +15,6 @@
  */
 
 #include <mindroid/runtime/system/Runtime.h>
-#include <mindroid/runtime/system/Configuration.h>
 #include <mindroid/runtime/system/Plugin.h>
 #include <mindroid/runtime/system/Mindroid.h>
 #include <mindroid/lang/Integer.h>
@@ -24,6 +23,7 @@
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
+#include <mindroid/runtime/system/ServiceDiscovery.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
@@ -36,7 +36,7 @@ const sp<String> Runtime::MINDROID_SCHEME_WITH_SEPARATOR = String::valueOf("mind
 
 CLASS(mindroid, Mindroid);
 
-Runtime::Runtime(uint32_t nodeId, const sp<File>& configuration) :
+Runtime::Runtime(uint32_t nodeId, const sp<File>& configurationFile) :
         mNodeId(nodeId),
         mLock(new ReentrantLock()),
         mPlugins(new HashMap<sp<String>, sp<Plugin>>()),
@@ -51,28 +51,38 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configuration) :
         throw IllegalArgumentException("Mindroid runtime system node id must not be 0");
     }
     Log::println('I', TAG, "Mindroid runtime system node id: %u", mNodeId);
-    if (configuration != nullptr) {
+    if (configurationFile != nullptr) {
         try {
-            mConfiguration = Configuration::read(configuration);
+            mConfiguration = ServiceDiscovery::read(configurationFile);
         } catch (const Exception& e) {
             Log::println('E', TAG, "Failed to read Mindroid runtime system configuration");
         }
     }
-    if (mConfiguration != nullptr) {
-        auto itr = mConfiguration->plugins->iterator();
-        while (itr.hasNext()) {
-            auto entry = itr.next();
-            sp<Configuration::Plugin> plugin = entry.getValue();
-            if (plugin->enabled) {
-                sp<Class<Plugin>> clazz = Class<Plugin>::forName(plugin->clazz);
-                sp<Plugin> p = clazz->newInstance();
-                if (p != nullptr) {
-                    mPlugins->put(plugin->scheme, p);
-                } else {
-                    Log::println('E', TAG, "Cannot find class '%s'", plugin->clazz->c_str());
-                }
+    if (mConfiguration != nullptr && mConfiguration->nodes->containsKey(mNodeId)) {
+        auto pluginItr = mConfiguration->nodes->get(mNodeId)->plugins->iterator();
+        while (pluginItr.hasNext()) {
+            auto entry = pluginItr.next();
+            sp<ServiceDiscovery::Configuration::Plugin> plugin = entry.getValue();
+            sp<Class<Plugin>> clazz = Class<Plugin>::forName(plugin->clazz);
+            sp<Plugin> p = clazz->newInstance();
+            if (p != nullptr) {
+                mPlugins->put(plugin->scheme, p);
+            } else {
+                Log::println('E', TAG, "Cannot find class '%s'", plugin->clazz->c_str());
             }
         }
+
+        sp<HashSet<uint64_t>> ids = new HashSet<uint64_t>();
+        auto serviceItr = mConfiguration->services->iterator();
+        while (serviceItr.hasNext()) {
+            auto entry = serviceItr.next();
+            sp<ServiceDiscovery::Configuration::Service> service = entry.getValue();
+            if (service->node->id == nodeId) {
+                uint64_t id = ((uint64_t) nodeId << 32) | (service->id & 0xFFFFFFFFL);
+                ids->add(id);
+            }
+        }
+        mIds->addAll(ids);
     }
 }
 
@@ -117,12 +127,8 @@ void Runtime::shutdown() {
     }
 }
 
-sp<Configuration> Runtime::getConfiguration() const {
+sp<ServiceDiscovery::Configuration> Runtime::getConfiguration() const {
     return mConfiguration;
-}
-
-void Runtime::addIds(const sp<HashSet<uint64_t>>& ids) {
-    mIds->addAll(ids);
 }
 
 uint64_t Runtime::attachBinder(const sp<Binder>& binder) {
@@ -222,14 +228,13 @@ sp<IBinder> Runtime::getBinder(const sp<URI>& uri) {
                     return binder;
                 } else {
                     mBinderUris->remove(key);
-                    key = String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), uri->getAuthority()->c_str());
-                    b = mBinderUris->get(key);
+                    b = mBinderUris->get(String::format("%s%s", MINDROID_SCHEME_WITH_SEPARATOR->c_str(), uri->getAuthority()->c_str()));
                     if (b != nullptr && (binder = b.get()) != nullptr) {
                         sp<Plugin> plugin = mPlugins->get(uri->getScheme());
                         if (plugin != nullptr) {
                             sp<Binder> stub = plugin->getStub(object_cast<Binder>(binder));
                             if (stub != nullptr) {
-                                mBinderUris->put(stub->getUri()->toString(), stub);
+                                mBinderUris->put(key, stub);
                             }
                             return stub;
                         } else {
@@ -262,9 +267,9 @@ void Runtime::addService(const sp<URI>& uri, const sp<IBinder>& service) {
     if (Class<Binder>::isInstance(service)) {
         if (!mServices->containsKey(uri->toString())) {
             if (mConfiguration != nullptr) {
-                sp<Configuration::Plugin> plugin = mConfiguration->plugins->get(MINDROID_SCHEME);
-                if (plugin != nullptr) {
-                    sp<Configuration::Service> s = plugin->services->get(uri->getAuthority());
+                sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(mNodeId);
+                if (node != nullptr) {
+                    sp<ServiceDiscovery::Configuration::Service> s = node->services->get(uri->getAuthority());
                     if (s != nullptr) {
                         uint64_t oldId = ((uint64_t) mNodeId << 32) | (service->getId() & 0xFFFFFFFFL);
                         mIds->remove(oldId);
@@ -451,24 +456,18 @@ sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
     }
 
     if (mConfiguration != nullptr) {
-        sp<Configuration::Plugin> plugin = mConfiguration->plugins->get(MINDROID_SCHEME);
-        if (plugin != nullptr) {
-            sp<String> name = uri->getAuthority();
-            sp<Configuration::Service> service = plugin->services->get(name);
-            if (service == nullptr) {
-                return nullptr;
-            }
+        sp<ServiceDiscovery::Configuration::Service> service = mConfiguration->services->get(uri->getAuthority());
+        if (service == nullptr) {
+            return nullptr;
+        }
 
-            try {
-                sp<URI> descriptor = new URI(service->interfaceDescriptor);
-                sp<URI> proxyUri = new URI(uri->getScheme(), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", descriptor->getPath()->substring(1)->c_str()), descriptor->getQuery(), nullptr);
-                sp<Binder::Proxy> proxy = Binder::Proxy::create(proxyUri);
-                mProxies->put(key, proxy);
-                return proxy;
-            } catch (const Exception& e) {
-                return nullptr;
-            }
-        } else {
+        try {
+            sp<URI> interfaceDescriptor = new URI(service->announcements->get(uri->getScheme()));
+            sp<URI> proxyUri = new URI(uri->getScheme(), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", interfaceDescriptor->getPath()->substring(1)->c_str()), interfaceDescriptor->getQuery(), nullptr);
+            sp<Binder::Proxy> proxy = Binder::Proxy::create(proxyUri);
+            mProxies->put(key, proxy);
+            return proxy;
+        } catch (const Exception& e) {
             return nullptr;
         }
     } else {

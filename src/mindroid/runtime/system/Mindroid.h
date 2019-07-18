@@ -22,9 +22,9 @@
 #include <mindroid/lang/ByteArray.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/runtime/system/Plugin.h>
-#include <mindroid/runtime/system/Configuration.h>
 #include <mindroid/runtime/system/io/AbstractServer.h>
 #include <mindroid/runtime/system/io/AbstractClient.h>
+#include <mindroid/runtime/system/ServiceDiscovery.h>
 #include <mindroid/util/HashMap.h>
 #include <mindroid/util/HashSet.h>
 #include <mindroid/util/LinkedList.h>
@@ -155,7 +155,7 @@ public:
 private:
     void onShutdown(const sp<Client>& client);
 
-    sp<Configuration::Plugin> mConfiguration;
+    sp<ServiceDiscovery::Configuration> mConfiguration;
     sp<Server> mServer;
     // FIXME: Fix concurrent access to collections.
     sp<HashMap<uint32_t, sp<Client>>> mClients = new HashMap<uint32_t, sp<Client>>();

@@ -1,13 +1,23 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <runtime>
-    <plugins>
-        <plugin name="Mindroid" scheme="mindroid" class="mindroid::Mindroid" enabled="true">
-            <serviceDiscovery>
-                <node id="1" uri="tcp://localhost:12345">
-                    <service id="1" name="eliza" interface="mindroid://interfaces/examples/eliza/IEliza" />
-                </node>
-                <node id="42" uri="tcp://localhost:54321" />
-            </serviceDiscovery>
-        </plugin>
-    </plugins>
+    <nodes>
+        <node id="1">
+            <plugin scheme="mindroid" class="mindroid::Mindroid">
+                <server uri="tcp://localhost:12345" />
+            </plugin>
+        </node>
+        <node id="42">
+            <plugin scheme="mindroid" class="mindroid::Mindroid">
+                <server uri="tcp://localhost:54321" />
+            </plugin>
+        </node>
+    </nodes>
+
+    <serviceDiscovery>
+        <node id="1">
+            <service id="1" name="eliza">
+                <announcement interfaceDescriptor="mindroid://interfaces/examples/eliza/IEliza" />
+            </service>
+        </node>
+    </serviceDiscovery>
 </runtime>

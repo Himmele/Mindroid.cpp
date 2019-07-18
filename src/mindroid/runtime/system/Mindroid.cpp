@@ -51,35 +51,30 @@ void Mindroid::start() {
     sExecutor = new Handler(sThread->getLooper());
 
     uint32_t nodeId = mRuntime->getNodeId();
-    sp<Configuration> configuration = mRuntime->getConfiguration();
-    if (configuration != nullptr) {
-        mConfiguration = configuration->plugins->get(String::valueOf("mindroid"));
-        if (mConfiguration != nullptr) {
-            sp<HashSet<uint64_t>> ids = new HashSet<uint64_t>();
-            auto itr = mConfiguration->services->iterator();
-            while (itr.hasNext()) {
-                auto entry = itr.next();
-                sp<Configuration::Service> service = entry.getValue();
-                if (service->node->id == nodeId) {
-                    uint64_t id = ((uint64_t) nodeId << 32) | (service->id & 0xFFFFFFFFL);
-                    ids->add(id);
+    mConfiguration = mRuntime->getConfiguration();
+    if (mConfiguration != nullptr) {
+        sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+        if (node != nullptr) {
+            sp<ServiceDiscovery::Configuration::Plugin> plugin = node->plugins->get(String::valueOf("mindroid"));
+            if (plugin != nullptr) {
+                sp<ServiceDiscovery::Configuration::Server> server = plugin->server;
+                if (server != nullptr) {
+                    mServer = new Server(mRuntime);
+                    try {
+                        mServer->start(server->uri);
+                    } catch (const IOException& e) {
+                        Log::println('E', TAG, "IOException");
+                    }
                 }
-            }
-            mRuntime->addIds(ids);
-
-            sp<Configuration::Node> node = mConfiguration->nodes->get(nodeId);
-            mServer = new Server(mRuntime);
-            try {
-                mServer->start(node->uri);
-            } catch (const IOException& e) {
-                Log::println('E', TAG, "IOException");
             }
         }
     }
 }
 
 void Mindroid::stop() {
-    mServer->shutdown(nullptr);
+    if (mServer != nullptr) {
+        mServer->shutdown(nullptr);
+    }
     sThread->quit();
 }
 
@@ -120,17 +115,29 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
     uint32_t nodeId = (uint32_t) ((binder->getId() >> 32) & 0xFFFFFFFFL);
     sp<Client> client = mClients->get(nodeId);
     if (client == nullptr) {
-        sp<Configuration::Node> node;
-        if (mConfiguration != nullptr && (node = mConfiguration->nodes->get(nodeId)) != nullptr) {
-            if (!mClients->containsKey(nodeId)) {
-                try {
-                    client = new Client(this, node->id);
-                    mClients->put(nodeId, client);
-                    client->start(node->uri);
-                } catch (const IOException& e) {
-                    mClients->remove(nodeId);
+        if (mConfiguration != nullptr) {
+            sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+            if (node  != nullptr) {
+                sp<ServiceDiscovery::Configuration::Plugin> plugin = node->plugins->get(binder->getUri()->getScheme());
+                if (plugin != nullptr) {
+                    sp<ServiceDiscovery::Configuration::Server> server = plugin->server;
+                    if (server != nullptr) {
+                        try {
+                            client = new Client(this, node->id);
+                            mClients->put(nodeId, client);
+                            client->start(server->uri);
+                        } catch (const IOException& e) {
+                            mClients->remove(nodeId);
+                            throw RemoteException("Binder transaction failure");
+                        }
+                    } else {
+                        throw RemoteException("Binder transaction failure");
+                    }
+                } else {
                     throw RemoteException("Binder transaction failure");
                 }
+            } else {
+                throw RemoteException("Binder transaction failure");
             }
         } else {
             throw RemoteException("Binder transaction failure");

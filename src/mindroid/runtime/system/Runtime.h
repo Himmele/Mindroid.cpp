@@ -23,6 +23,7 @@
 #include <mindroid/os/IInterface.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/os/RemoteException.h>
+#include <mindroid/runtime/system/ServiceDiscovery.h>
 #include <mindroid/util/Log.h>
 #include <mindroid/util/HashMap.h>
 #include <mindroid/util/HashSet.h>
@@ -38,7 +39,6 @@ class File;
 class URI;
 class Parcel;
 class Plugin;
-class Configuration;
 
 class Runtime : public Object {
 public:
@@ -46,7 +46,7 @@ public:
         return sRuntime;
     }
 
-    static void start(int32_t nodeId, const sp<File>& configuration);
+    static void start(int32_t nodeId, const sp<File>& configurationFile);
 
     static void shutdown();
 
@@ -54,9 +54,7 @@ public:
         return mNodeId;
     }
 
-    sp<Configuration> getConfiguration() const;
-
-    void addIds(const sp<HashSet<uint64_t>>& ids);
+    sp<ServiceDiscovery::Configuration> getConfiguration() const;
 
     uint64_t attachBinder(const sp<Binder>& binder);
 
@@ -89,7 +87,7 @@ public:
     void removeProxy(const sp<IBinder>& proxy);
 
 private:
-    Runtime(uint32_t nodeId, const sp<File>& configuration);
+    Runtime(uint32_t nodeId, const sp<File>& configurationFile);
     sp<Binder::Proxy> getProxy(const sp<URI>& uri);
 
     static const char* const TAG;
@@ -108,7 +106,7 @@ private:
     sp<AtomicInteger> mBinderIdGenerator;
     sp<AtomicInteger> mProxyIdGenerator;
     sp<HashSet<uint64_t>> mIds;
-    sp<Configuration> mConfiguration;
+    sp<ServiceDiscovery::Configuration> mConfiguration;
 };
 
 } /* namespace mindroid */
