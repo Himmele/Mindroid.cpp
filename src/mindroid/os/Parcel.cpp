@@ -95,7 +95,7 @@ void Parcel::putChar(char value) {
     }
 }
 
-void Parcel::putShort(short value) {
+void Parcel::putShort(int16_t value) {
     checkOutput();
     try {
         mDataOutputStream->writeShort(value);
@@ -113,7 +113,7 @@ void Parcel::putInt(int32_t value) {
     }
 }
 
-void Parcel::putLong(uint64_t value) {
+void Parcel::putLong(int64_t value) {
     checkOutput();
     try {
         mDataOutputStream->writeLong(value);

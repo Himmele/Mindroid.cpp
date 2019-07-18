@@ -18,16 +18,24 @@
 #ifndef MINDROID_OS_PARCEL_H_
 #define MINDROID_OS_PARCEL_H_
 
-#include <mindroid/lang/Object.h>
-#include <mindroid/lang/String.h>
-#include <mindroid/lang/NullPointerException.h>
-#include <mindroid/os/IBinder.h>
-#include <mindroid/os/Bundle.h>
-#include <mindroid/io/ByteArrayOutputStream.h>
 #include <mindroid/io/ByteArrayInputStream.h>
-#include <mindroid/io/DataOutputStream.h>
+#include <mindroid/io/ByteArrayOutputStream.h>
 #include <mindroid/io/DataInputStream.h>
+#include <mindroid/io/DataOutputStream.h>
+#include <mindroid/lang/Boolean.h>
+#include <mindroid/lang/Byte.h>
+#include <mindroid/lang/Character.h>
+#include <mindroid/lang/Double.h>
+#include <mindroid/lang/Float.h>
+#include <mindroid/lang/Integer.h>
+#include <mindroid/lang/Long.h>
+#include <mindroid/lang/NullPointerException.h>
+#include <mindroid/lang/Object.h>
+#include <mindroid/lang/Short.h>
+#include <mindroid/lang/String.h>
 #include <mindroid/net/URI.h>
+#include <mindroid/os/Bundle.h>
+#include <mindroid/os/IBinder.h>
 #include <mindroid/util/ArrayList.h>
 
 namespace mindroid {
@@ -59,13 +67,61 @@ public:
         return mOutputStream->size();
     }
 
+    /**
+     * Write a boolean value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
     void putBoolean(bool value);
 
+    /**
+     * Write a boolean value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putBoolean(const sp<Boolean>& value) {
+        putBoolean(value->value());
+    }
+
+    /**
+     * Write a byte value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
     void putByte(uint8_t value);
 
+    /**
+     * Write a byte value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putByte(const sp<Byte>& value) {
+        putByte(value->value());
+    }
+
+    /**
+     * Write a character value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
     void putChar(char value);
 
-    void putShort(short value);
+    /**
+     * Write a character value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putChar(const sp<Character>& value) {
+        putChar(value->value());
+    }
+
+    /**
+     * Write a short integer value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putShort(int16_t value);
+
+    /**
+     * Write a short integer value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putShort(const sp<Short>& value) {
+        putShort(value->value());
+    }
 
     /**
      * Write an integer value into the parcel at the current dataPosition(),
@@ -74,10 +130,26 @@ public:
     void putInt(int32_t value);
 
     /**
+     * Write an integer value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putInt(const sp<Integer>& value) {
+        putInt(value->value());
+    }
+
+    /**
      * Write a long integer value into the parcel at the current dataPosition(),
      * growing dataCapacity() if needed.
      */
-    void putLong(uint64_t value);
+    void putLong(int64_t value);
+
+    /**
+     * Write a long integer value into the parcel at the current dataPosition(),
+     * growing dataCapacity() if needed.
+     */
+    void putLong(const sp<Long>& value) {
+        putLong(value->value());
+    }
 
     /**
      * Write a floating point value into the parcel at the current
@@ -86,10 +158,26 @@ public:
     void putFloat(float value);
 
     /**
+     * Write a floating point value into the parcel at the current
+     * dataPosition(), growing dataCapacity() if needed.
+     */
+    void putFloat(const sp<Float>& value) {
+        putFloat(value->value());
+    }
+
+    /**
      * Write a double precision floating point value into the parcel at the
      * current dataPosition(), growing dataCapacity() if needed.
      */
     void putDouble(double value);
+
+    /**
+     * Write a double precision floating point value into the parcel at the
+     * current dataPosition(), growing dataCapacity() if needed.
+     */
+    void putDouble(const sp<Double>& value) {
+        putDouble(value->value());
+    }
 
     /**
      * Write a string value into the parcel at the current dataPosition(),
