@@ -45,7 +45,7 @@ sp<Handler> Mindroid::sExecutor = nullptr;
 Mindroid::Mindroid() : mLock(new ReentrantLock()) {
 }
 
-void Mindroid::start() {
+sp<Promise<sp<Void>>> Mindroid::start(const sp<URI>& uri, const sp<Bundle>& extras) {
     sThread = new HandlerThread("ThreadPoolExecutorDaemon");
     sThread->start();
     sExecutor = new Handler(sThread->getLooper());
@@ -64,18 +64,21 @@ void Mindroid::start() {
                         mServer->start(server->uri);
                     } catch (const IOException& e) {
                         Log::println('E', TAG, "IOException");
+                        return new Promise<sp<Void>>(sp<Exception>(new Exception(e)));
                     }
                 }
             }
         }
     }
+    return new Promise<sp<Void>>(sp<Void>(nullptr));
 }
 
-void Mindroid::stop() {
+sp<Promise<sp<Void>>> Mindroid::stop(const sp<URI>& uri, const sp<Bundle>& extras) {
     if (mServer != nullptr) {
         mServer->shutdown(nullptr);
     }
     sThread->quit();
+    return new Promise<sp<Void>>(sp<Void>(nullptr));
 }
 
 void Mindroid::attachProxy(uint64_t proxyId, const sp<Binder::Proxy>& proxy) {
@@ -109,15 +112,6 @@ void Mindroid::detachProxy(uint64_t proxyId, uint64_t binderId) {
 //            mClients->remove(nodeId);
 //        }
 //    }
-}
-
-sp<Promise<sp<Void>>> Mindroid::connect(const sp<URI>& node, const sp<Bundle>& extras) {
-    // Automatic connection establishment when referencing other nodes.
-    return nullptr;
-}
-
-sp<Promise<sp<Void>>> Mindroid::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
-    return nullptr;
 }
 
 sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
@@ -160,6 +154,15 @@ void Mindroid::link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& su
 
 bool Mindroid::unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) {
     return true;
+}
+
+sp<Promise<sp<Void>>> Mindroid::connect(const sp<URI>& node, const sp<Bundle>& extras) {
+    // Automatic connection establishment when referencing other nodes.
+    return nullptr;
+}
+
+sp<Promise<sp<Void>>> Mindroid::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
+    return nullptr;
 }
 
 void Mindroid::onShutdown(const sp<Client>& client) {

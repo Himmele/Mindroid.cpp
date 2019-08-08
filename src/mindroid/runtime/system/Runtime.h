@@ -78,6 +78,16 @@ public:
 
     sp<IInterface> getProxy(const sp<IBinder>& binder);
 
+    sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
+
+    void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
+    bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
+
+    void removeProxy(const sp<IBinder>& proxy);
+
+    sp<Promise<sp<Void>>> start(const sp<URI>& uri, const sp<Bundle>& extras);
+    sp<Promise<sp<Void>>> stop(const sp<URI>& uri, const sp<Bundle>& extras);
+
     /**
      * Establishes a connection to node.
      *
@@ -99,14 +109,6 @@ public:
      * @param extras Extra parameters.
      */
     sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras);
-
-    sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
-
-    void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
-
-    bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
-
-    void removeProxy(const sp<IBinder>& proxy);
 
 private:
     Runtime(uint32_t nodeId, const sp<File>& configurationFile);

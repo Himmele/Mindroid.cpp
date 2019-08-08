@@ -53,9 +53,8 @@ public:
     Mindroid();
     virtual ~Mindroid() = default;
 
-    void start() override;
-
-    void stop() override;
+    sp<Promise<sp<Void>>> start(const sp<URI>& uri, const sp<Bundle>& extras) override;
+    sp<Promise<sp<Void>>> stop(const sp<URI>& uri, const sp<Bundle>& extras) override;
 
     void attachBinder(const sp<Binder>& binder) override {
     }
@@ -64,7 +63,6 @@ public:
     }
 
     void attachProxy(uint64_t proxyId, const sp<Binder::Proxy>& proxy) override;
-
     void detachProxy(uint64_t proxyId, uint64_t binderId) override;
 
     sp<Binder> getStub(const sp<Binder>& service) override {
@@ -75,11 +73,11 @@ public:
         return nullptr;
     }
 
-    sp<Promise<sp<Void>>> connect(const sp<URI>& node, const sp<Bundle>& extras) override;
-    sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras) override;
     sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) override;
     void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;
     bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras) override;
+    sp<Promise<sp<Void>>> connect(const sp<URI>& node, const sp<Bundle>& extras) override;
+    sp<Promise<sp<Void>>> disconnect(const sp<URI>& node, const sp<Bundle>& extras) override;
 
     class Message : public Object {
     public:

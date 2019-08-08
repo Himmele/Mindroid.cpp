@@ -101,7 +101,13 @@ void Runtime::start(int32_t nodeId, const sp<File>& configuration) {
             auto entry = itr.next();
             sp<Plugin> plugin = entry.getValue();
             plugin->setUp(sRuntime);
-            plugin->start();
+            try {
+                plugin->start(nullptr, nullptr)->get();
+            } catch (const CancellationException& e) {
+                Log::println('E', TAG, "Failed to start plugin");
+            } catch (const ExecutionException& e) {
+                Log::println('E', TAG, "Failed to start plugin");
+            }
         }
     }
 }
@@ -121,7 +127,13 @@ void Runtime::shutdown() {
         while (itr.hasNext()) {
             auto entry = itr.next();
             sp<Plugin> plugin = entry.getValue();
-            plugin->stop();
+            try {
+                plugin->stop(nullptr, nullptr)->get();
+            } catch (const CancellationException& e) {
+                Log::println('E', TAG, "Failed to stop plugin");
+            } catch (const ExecutionException& e) {
+                Log::println('E', TAG, "Failed to stop plugin");
+            }
             plugin->tearDown();
         }
     }
@@ -391,32 +403,6 @@ sp<IInterface> Runtime::getProxy(const sp<IBinder>& binder) {
     }
 }
 
-sp<Promise<sp<Void>>> Runtime::connect(const sp<URI>& node, const sp<Bundle>& extras) {
-    sp<Plugin> plugin;
-    {
-        AutoLock autoLock(mLock);
-        plugin = mPlugins->get(node->getScheme());
-    }
-    if (plugin != nullptr) {
-        return plugin->connect(node, extras);
-    } else {
-        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node connection failure")));
-    }
-}
-
-sp<Promise<sp<Void>>> Runtime::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
-    sp<Plugin> plugin;
-    {
-        AutoLock autoLock(mLock);
-        plugin = mPlugins->get(node->getScheme());
-    }
-    if (plugin != nullptr) {
-        return plugin->disconnect(node, extras);
-    } else {
-        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node disconnection failure")));
-    }
-}
-
 sp<Promise<sp<Parcel>>> Runtime::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
     if (binder == nullptr) {
         throw NullPointerException();
@@ -469,6 +455,73 @@ bool Runtime::unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& s
     }
 }
 
+void Runtime::removeProxy(const sp<IBinder>& proxy) {
+    if (proxy == nullptr) {
+        throw NullPointerException();
+    }
+    AutoLock autoLock(mLock);
+    auto itr = mProxies->iterator();
+    while (itr.hasNext()) {
+        auto entry = itr.next();
+        wp<Binder::Proxy> p = entry.getValue();
+        if (proxy->equals(p.get())) {
+            itr.remove();
+        }
+    }
+}
+
+sp<Promise<sp<Void>>> Runtime::start(const sp<URI>& uri, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(uri->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->start(uri, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Plugin start failure")));
+    }
+}
+
+sp<Promise<sp<Void>>> Runtime::stop(const sp<URI>& uri, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(uri->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->start(uri, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Plugin stop failure")));
+    }
+}
+
+sp<Promise<sp<Void>>> Runtime::connect(const sp<URI>& node, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(node->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->connect(node, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node connection failure")));
+    }
+}
+
+sp<Promise<sp<Void>>> Runtime::disconnect(const sp<URI>& node, const sp<Bundle>& extras) {
+    sp<Plugin> plugin;
+    {
+        AutoLock autoLock(mLock);
+        plugin = mPlugins->get(node->getScheme());
+    }
+    if (plugin != nullptr) {
+        return plugin->disconnect(node, extras);
+    } else {
+        return new Promise<sp<Void>>(sp<Exception>(new RemoteException("Node disconnection failure")));
+    }
+}
+
 sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
     AutoLock autoLock(mLock);
 
@@ -498,21 +551,6 @@ sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
         }
     } else {
         return nullptr;
-    }
-}
-
-void Runtime::removeProxy(const sp<IBinder>& proxy) {
-    if (proxy == nullptr) {
-        throw NullPointerException();
-    }
-    AutoLock autoLock(mLock);
-    auto itr = mProxies->iterator();
-    while (itr.hasNext()) {
-        auto entry = itr.next();
-        wp<Binder::Proxy> p = entry.getValue();
-        if (proxy->equals(p.get())) {
-            itr.remove();
-        }
     }
 }
 
