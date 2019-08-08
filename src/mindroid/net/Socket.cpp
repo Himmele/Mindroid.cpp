@@ -110,7 +110,7 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
                 int32_t scope_id = sin6.sin6_scope_id;
                 sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
                 mLocalAddress = new Inet6Address(ba, nullptr, scope_id);
-                mLocalPort = sin6.sin6_port;
+                mLocalPort = ntohs(sin6.sin6_port);
                 break;
             }
             case AF_INET: {
@@ -119,7 +119,7 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
                 size_t ipAddressSize = 4;
                 sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
                 mLocalAddress = new Inet4Address(ba, nullptr);
-                mLocalPort = sin.sin_port;
+                mLocalPort = ntohs(sin.sin_port);
                 break;
             }
             default:
@@ -129,8 +129,10 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         mIsBound = true;
         mIsConnected = true;
     } else {
+        int connectErrno = errno; // Save errno before closing.
         close();
-        throw SocketException(String::format("Failed to connect to %s (errno=%d)", inetAddress->toString()->c_str(), errno));
+        throw SocketException(String::format("Failed to connect to %s: %s (errno=%d)", inetAddress->toString()->c_str(),
+                    strerror(connectErrno), connectErrno));
     }
 }
 

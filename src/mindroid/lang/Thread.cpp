@@ -89,7 +89,9 @@ void Thread::setName(const sp<String>& name) {
     if (name != nullptr) {
         mName = name;
 #ifndef __APPLE__
-        ::pthread_setname_np(mThread, mName->c_str());
+        if (mThread != 0) {
+            ::pthread_setname_np(mThread, mName->c_str());
+        }
 #endif
     }
 }

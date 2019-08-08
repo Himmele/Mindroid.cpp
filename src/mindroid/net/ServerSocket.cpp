@@ -128,12 +128,12 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
                 switch (ss.ss_family) {
                 case AF_INET6: {
                     const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
-                    mLocalPort = sin6.sin6_port;
+                    mLocalPort = ntohs(sin6.sin6_port);
                     break;
                 }
                 case AF_INET: {
                     const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
-                    mLocalPort = sin.sin_port;
+                    mLocalPort = ntohs(sin.sin_port);
                     break;
                 }
                 default:
@@ -178,7 +178,7 @@ sp<Socket> ServerSocket::accept() {
                 int32_t scope_id = sin6.sin6_scope_id;
                 sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
                 socket->mInetAddress = new Inet6Address(ba, nullptr, scope_id);
-                socket->mPort = sin6.sin6_port;
+                socket->mPort = ntohs(sin6.sin6_port);
                 break;
             }
             case AF_INET: {
@@ -187,7 +187,7 @@ sp<Socket> ServerSocket::accept() {
                 size_t ipAddressSize = 4;
                 sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
                 socket->mInetAddress = new Inet4Address(ba, nullptr);
-                socket->mPort = sin.sin_port;
+                socket->mPort = ntohs(sin.sin_port);
                 break;
             }
             default:

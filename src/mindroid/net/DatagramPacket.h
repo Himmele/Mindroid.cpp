@@ -20,6 +20,7 @@
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
+#include <mindroid/net/InetAddress.h>
 
 namespace mindroid {
 

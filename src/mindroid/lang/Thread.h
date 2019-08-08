@@ -110,12 +110,12 @@ public:
     void start();
 
     /**
-     * Starts the new Thread of execution. The <code>run()</code> method of
-     * the receiver will be called by the receivemThread;r Thread itself (and not the
-     * Thread calling <code>start()</code>).
+     * Causes the thread which sent this message to sleep for the given interval
+     * of time (given in milliseconds). The precision is not guaranteed - the
+     * Thread may sleep more or less than requested.
      *
-     * @throws IllegalThreadStateException - if this thread has already started.
-     * @see Thread#run
+     * @param milliseconds
+     *            The time to sleep in milliseconds.
      */
     static void sleep(uint32_t milliseconds);
 
