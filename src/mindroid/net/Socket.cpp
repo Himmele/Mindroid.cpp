@@ -232,14 +232,17 @@ void Socket::SocketOutputStream::write(int32_t b) {
     }
 
     uint8_t data = (uint8_t) b;
+    ssize_t rc;
+    do {
 #ifndef __APPLE__
-    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(&data), sizeof(data), MSG_NOSIGNAL);
+        rc = ::send(mFd, reinterpret_cast<const char*>(&data), 1, MSG_NOSIGNAL);
 #else
-    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(&data), sizeof(data), 0);
+        rc = ::send(mFd, reinterpret_cast<const char*>(&data), 1, 0);
 #endif
-    if (rc < 0 || ((size_t) rc) != sizeof(data)) {
-        throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
-    }
+        if (rc < 0) {
+            throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
+        }
+    } while (rc == 0);
 }
 
 void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offset, size_t count) {
@@ -252,18 +255,24 @@ void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offse
     if (mFd == -1) {
         throw IOException("Socket already closed");
     }
-
     if (count == 0) {
         return;
     }
+
+    ssize_t rc;
+    do {
 #ifndef __APPLE__
-    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, MSG_NOSIGNAL);
+        rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, MSG_NOSIGNAL);
 #else
-    ssize_t rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, 0);
+        rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, 0);
 #endif
-    if (rc < 0 || ((size_t) rc) != count) {
-        throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
-    }
+        if (rc >= 0) {
+            offset += (size_t) rc;
+            count -= (size_t) rc;
+        } else {
+            throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
+        }
+    } while (count > 0);
 }
 
 } /* namespace mindroid */
