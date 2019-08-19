@@ -116,6 +116,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         close();
     }
     if (mFd != -1 && ::listen(mFd, backlog) == 0) {
+        mIsBound = true;
         if (port != 0) {
             mLocalPort = port;
         } else {
@@ -137,11 +138,11 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
                     break;
                 }
                 default:
+                    mLocalPort = -1;
                     break;
                 }
             }
         }
-        mIsBound = true;
     } else {
         close();
         throw SocketException(String::format("Failed to bind to port %u (errno=%d)", port, errno));

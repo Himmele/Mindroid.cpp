@@ -100,13 +100,27 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
         saSize = sizeof(sockaddr_in);
     }
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) == 0) {
-        mPort = port;
         mIsBound = true;
+        if (port != 0) {
+            mLocalPort = port;
+        } else {
+            mLocalPort = getSocketPort(mFd);
+        }
     } else {
         ::close(mFd);
         mFd = -1;
         throw SocketException(String::format("Failed to bind socket: errno=%d", errno));
     }
+}
+
+int32_t DatagramSocket::getLocalPort() const {
+    if (isClosed()) {
+        return -1;
+    }
+    if (!isBound()) {
+        return 0;
+    }
+    return mLocalPort;
 }
 
 void DatagramSocket::receive(const sp<DatagramPacket>& datagramPacket) {
@@ -125,6 +139,7 @@ void DatagramSocket::receive(const sp<DatagramPacket>& datagramPacket) {
             sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
             sp<InetAddress> inetAddress = new Inet6Address(ba, nullptr, scope_id);
             datagramPacket->setAddress(inetAddress);
+            datagramPacket->setPort(ntohs(sin6.sin6_port));
             break;
         }
         case AF_INET: {
@@ -134,6 +149,7 @@ void DatagramSocket::receive(const sp<DatagramPacket>& datagramPacket) {
             sp<ByteArray> ba = new ByteArray((const uint8_t*) ipAddress, ipAddressSize);
             sp<InetAddress> inetAddress = new Inet4Address(ba, nullptr);
             datagramPacket->setAddress(inetAddress);
+            datagramPacket->setPort(ntohs(sin.sin_port));
             break;
         }
         default:
@@ -170,8 +186,40 @@ void DatagramSocket::send(const sp<DatagramPacket>& datagramPacket) {
     ssize_t rc = ::sendto(mFd, reinterpret_cast<const char*>(datagramPacket->getData()->c_arr() + datagramPacket->getOffset()),
             datagramPacket->getLength(), 0, (struct sockaddr*) &ss, saSize);
     if (rc < 0 || ((size_t) rc) != datagramPacket->getLength()) {
-        throw IOException();
+        int errorCode;
+        sp<String> errorMessage;
+        if (rc < 0) {
+            errorCode = errno;
+            errorMessage = String::valueOf(strerror(errno));
+        } else {
+            errorCode = -1;
+            errorMessage = String::format("Invalid return value: expected=%zu, actual=%zu", datagramPacket->getLength(), (size_t) rc);
+        }
+        throw IOException(String::format("Failed to write to socket: %s (errno=%d)", errorMessage->c_str(), errorCode));
     }
+}
+
+int32_t DatagramSocket::getSocketPort(int fd) {
+    sockaddr_storage ss;
+    sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+    socklen_t saSize = sizeof(ss);
+    std::memset(&ss, 0, saSize);
+    int32_t rc = ::getsockname(fd, sa, &saSize);
+    if (rc == 0) {
+        switch (ss.ss_family) {
+        case AF_INET6: {
+            const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
+            return ntohs(sin6.sin6_port);
+        }
+        case AF_INET: {
+            const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
+            return ntohs(sin.sin_port);
+        }
+        default:
+            return -1;
+        }
+    }
+    return -1;
 }
 
 } /* namespace mindroid */

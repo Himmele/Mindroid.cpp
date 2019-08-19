@@ -100,6 +100,14 @@ public:
     bool isClosed() const { return mIsClosed; }
 
     /**
+     * Gets the local port which this socket is bound to.
+     *
+     * @return the local port of this socket or {@code -1} if this socket is
+     *         closed and {@code 0} if it is unbound.
+     */
+    int32_t getLocalPort() const;
+
+    /**
      * Receives a packet from this socket and stores it in the argument {@code
      * datagramPacket}. All fields of {@code datagramPacket} must be set according
      * to the data received. If the received data is longer than the packet buffer
@@ -125,9 +133,10 @@ public:
 
 private:
     void bind(uint16_t port, const sp<InetAddress>& localAddress);
+    int32_t getSocketPort(int fd);
 
     int32_t mFd = -1;
-    int32_t mPort = -1;
+    int32_t mLocalPort = -1;
     bool mIsBound = false;
     bool mIsClosed = false;
 };
