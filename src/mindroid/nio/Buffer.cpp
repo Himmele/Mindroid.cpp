@@ -74,7 +74,7 @@ sp<Buffer> Buffer::position(size_t newPos) {
     return this;
 }
 
-size_t Buffer::remaining() {
+size_t Buffer::remaining() const {
     return mPosition < mLimit ? mLimit - mPosition : 0;
 }
 

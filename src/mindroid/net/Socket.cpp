@@ -31,6 +31,7 @@
 #include <cerrno>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <netinet/tcp.h>
 
 namespace mindroid {
 
@@ -273,6 +274,30 @@ void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offse
             throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
         }
     } while (count > 0);
+}
+
+void Socket::setTcpNoDelay(bool enabled) {
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+    const int32_t value = enabled ? 1 : 0;
+    const int32_t rc = setsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, sizeof(value));
+    if (rc != 0) {
+        throw SocketException();
+    }
+}
+
+bool Socket::getTcpNoDelay() const {
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+    int32_t value;
+    socklen_t size = sizeof(int32_t);
+    const int32_t rc = getsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, &size);
+    if (rc != 0) {
+        throw SocketException();
+    }
+    return value != 0;
 }
 
 } /* namespace mindroid */

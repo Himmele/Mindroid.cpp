@@ -179,6 +179,22 @@ public:
      */
     bool isClosed() const { return mIsClosed; }
 
+    /**
+     * Sets this socket's {@link SocketOptions#TCP_NODELAY} option.
+     *
+     * @param on
+     *            the state whether this option is enabled or not.
+     */
+    void setTcpNoDelay(bool value);
+
+    /**
+     * Returns this socket's {@code SocketOptions#TCP_NODELAY} setting.
+     *
+     * @return {@code true} if the {@code SocketOptions.TCP_NODELAY} is enabled,
+     *         {@code false} otherwise.
+     */
+    bool getTcpNoDelay() const;
+
 private:
     class SocketInputStream : public InputStream {
     public:

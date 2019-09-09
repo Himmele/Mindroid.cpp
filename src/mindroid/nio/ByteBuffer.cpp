@@ -36,8 +36,16 @@ sp<ByteBuffer> ByteBuffer::allocate(size_t capacity) {
     return new ByteArrayBuffer(capacity);
 }
 
-size_t ByteBuffer::arrayOffset() {
+size_t ByteBuffer::arrayOffset() const {
     return mOffset;
+}
+
+bool ByteBuffer::hasRemaining() const {
+    return (mOffset + mPosition) < mLimit;
+}
+
+size_t ByteBuffer::remaining() const {
+    return (mOffset + mPosition) < mLimit ? mLimit - (mOffset + mPosition) : 0;
 }
 
 int32_t ByteBuffer::compareTo(const sp<ByteBuffer>& other) const {

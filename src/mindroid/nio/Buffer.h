@@ -35,7 +35,7 @@ public:
     /**
      * Returns the offset within this buffer's backing array of the first element of the buffer (optional operation).
      */
-    virtual size_t arrayOffset() = 0;
+    virtual size_t arrayOffset() const = 0;
 
     /**
      * Returns this buffer's capacity.
@@ -86,7 +86,7 @@ public:
     /**
      * Returns the number of elements between the current position and the limit.
      */
-    size_t remaining();
+    virtual size_t remaining() const;
 
     /**
      * Rewinds this buffer. The position is set to zero and the mark is discarded.

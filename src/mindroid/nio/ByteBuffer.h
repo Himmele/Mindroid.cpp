@@ -39,7 +39,17 @@ public:
     /**
      * Returns the offset within this buffer's backing array of the first element of the buffer  (optional operation).
      */
-    size_t arrayOffset() override;
+    size_t arrayOffset() const override;
+
+    /**
+     * Tells whether there are any elements between the current position and the limit.
+     */
+    bool hasRemaining() const override;
+
+    /**
+     * Returns the number of elements between the current position and the limit.
+     */
+    size_t remaining() const override;
 
     /**
      * Compacts this buffer  (optional operation).
