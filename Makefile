@@ -65,6 +65,7 @@ SRCS = \
 	src/mindroid/net/Inet6Address.cpp \
 	src/mindroid/net/InetAddress.cpp \
 	src/mindroid/net/InetSocketAddress.cpp \
+	src/mindroid/net/NetworkInterface.cpp \
 	src/mindroid/net/ServerSocket.cpp \
 	src/mindroid/net/Socket.cpp \
 	src/mindroid/net/URI.cpp \
