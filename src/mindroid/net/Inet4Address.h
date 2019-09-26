@@ -50,6 +50,7 @@ private:
     friend class ServerSocket;
     friend class Socket;
     friend class DatagramSocket;
+    friend class NetworkInterface;
 };
 
 } /* namespace mindroid */

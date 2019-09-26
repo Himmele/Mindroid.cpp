@@ -15,24 +15,33 @@
  */
 
 #include <mindroid/net/NetworkInterface.h>
+#include <mindroid/net/Inet4Address.h>
+#include <mindroid/net/Inet6Address.h>
 #include <mindroid/net/SocketException.h>
+#include <mindroid/util/HashMap.h>
 #include <cerrno>
-#include <ifaddrs.h>
+#include <map>
 #include <net/if.h>
+#include <string>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <unistd.h>
+#ifndef __APPLE__
+#include <linux/if_packet.h>
+#else
+#include <net/if_dl.h>
+#endif
+#include <sys/socket.h>
 
 namespace mindroid {
 
-NetworkInterface::NetworkInterface(const sp<String>& name) : mName(name) {
+NetworkInterface::NetworkInterface(const sp<String>& name) : mName(name), mInetAddresses(new ArrayList<sp<InetAddress>>()) {
 }
 
-sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getInetAddresses() {
-    sp<ArrayList<sp<NetworkInterface>>> networkInterfaceList = new ArrayList<sp<NetworkInterface>>;
+sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
+    sp<HashMap<sp<String>, sp<NetworkInterface>>> networkInterfaceMap = new HashMap<sp<String>, sp<NetworkInterface>>();
 
-    ifaddrs* networkInterfaces;
-
+    ifaddrs* networkInterfaces = nullptr;
     if (getifaddrs(&networkInterfaces) == -1) {
         throw SocketException(String::format("Failed to get information on network interfaces: %s (errno=%d)",
                     strerror(errno), errno));
@@ -40,44 +49,63 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getInetAddresses() {
 
     ifaddrs* curNetworkInterface;
     for (curNetworkInterface = networkInterfaces; curNetworkInterface != nullptr; curNetworkInterface = curNetworkInterface->ifa_next) {
-        if (curNetworkInterface->ifa_addr == nullptr) {
-            continue;
-        }
-        sp<NetworkInterface> networkInterface = new NetworkInterface(new String(curNetworkInterface->ifa_name));
-        networkInterfaceList->add(networkInterface);
-    }
+        sp<String> name = String::valueOf(curNetworkInterface->ifa_name);
 
+        sp<NetworkInterface> networkInterface;
+        if (networkInterfaceMap->containsKey(name)) {
+            networkInterface = networkInterfaceMap->get(name);
+        } else {
+            networkInterface = new NetworkInterface(name);
+            networkInterfaceMap->put(name, networkInterface);
+        }
+
+        networkInterface->addAddress(curNetworkInterface->ifa_addr);
+    }
     freeifaddrs(networkInterfaces);
 
-    return networkInterfaceList;
+    return networkInterfaceMap->values();
 }
 
-sp<ByteArray> NetworkInterface::queryHardwareAddress() const {
-    int socketFd;
-    struct ifreq buffer;
-    const size_t MAC_ADDRESS_SIZE = 6;
+void NetworkInterface::addAddress(struct sockaddr* interfaceAddress) {
+    const size_t IPV6_ADDRESS_SIZE = 16;
 
-    socketFd = socket(PF_INET, SOCK_DGRAM, 0);
-    if (socketFd == -1) {
-        throw SocketException(String::format("Failed create a generic socket: %s (errno=%d)",
-                    strerror(errno), errno));
+    switch (interfaceAddress->sa_family) {
+    case AF_INET6: {
+        auto ipv6InterfaceAddress = reinterpret_cast<struct sockaddr_in6*>(interfaceAddress);
+        sp<ByteArray> ipv6Address = new ByteArray(IPV6_ADDRESS_SIZE);
+        memcpy(ipv6Address->c_arr(), ipv6InterfaceAddress->sin6_addr.s6_addr, IPV6_ADDRESS_SIZE);
+        mInetAddresses->add(new Inet6Address(ipv6Address, nullptr, ipv6InterfaceAddress->sin6_scope_id));
+        break;
     }
-
-    memset(&buffer, 0x00, sizeof(buffer));
-    strcpy(buffer.ifr_name, mName->c_str());
-
-    if (ioctl(socketFd, SIOCGIFHWADDR, &buffer) == -1) {
-        throw SocketException(String::format("Failed to query hardware address from socket: %s (errno=%d)",
-                    strerror(errno), errno));
+    case AF_INET: {
+        auto ipv4InterfaceAddress = reinterpret_cast<struct sockaddr_in*>(interfaceAddress);
+        sp<ByteArray> ipv4Address = new ByteArray(sizeof(uint32_t));
+        memcpy(ipv4Address->c_arr(), &ipv4InterfaceAddress->sin_addr.s_addr, sizeof(uint32_t));
+        mInetAddresses->add(new Inet4Address(ipv4Address, nullptr));
+        break;
     }
-
-    close(socketFd);
-
-    sp<ByteArray> byteArray = new ByteArray(MAC_ADDRESS_SIZE);
-    for (size_t i = 0; i < MAC_ADDRESS_SIZE; ++i) {
-        byteArray->set(i, buffer.ifr_hwaddr.sa_data[i]);
+#ifndef __APPLE__
+    case AF_PACKET: {
+        auto packetInterfaceAddress = reinterpret_cast<struct sockaddr_ll*>(interfaceAddress);
+        mHardwareAddress = new ByteArray(packetInterfaceAddress->sll_halen);
+        memcpy(mHardwareAddress->c_arr(), packetInterfaceAddress->sll_addr, packetInterfaceAddress->sll_halen);
+        break;
     }
-    return byteArray;
+#else
+    case AF_LINK: {
+        sockaddr_dl* linkLevelSocketAddress = (sockaddr_dl*) curNetworkInterface->ifa_addr;
+        mHardwareAddress = new ByteArray(linkLevelSocketAddress->sdl_alen);
+        memcpy(mHardwareAddress->c_arr(), LLADDR(linkLevelSocketAddress), linkLevelSocketAddress->sdl_alen);
+        break;
+    }
+#endif // __APPLE__
+    default:
+        break;
+    }
+}
+
+sp<ArrayList<sp<InetAddress>>> NetworkInterface::getInetAddresses() {
+    return mInetAddresses;
 }
 
 } /* namespace mindroid */

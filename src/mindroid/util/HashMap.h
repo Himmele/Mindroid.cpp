@@ -738,7 +738,7 @@ public:
     }
 
     sp<ArrayList<sp<V>>> values() {
-        sp<ArrayList<sp<V>>> values = new ArrayList<V>();
+        sp<ArrayList<sp<V>>> values = new ArrayList<sp<V>>();
         auto itr = iterator();
         while (itr.hasNext()) {
             auto entry = itr.next();

@@ -19,7 +19,9 @@
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/net/InetAddress.h>
 #include <mindroid/util/ArrayList.h>
+#include <ifaddrs.h>
 
 namespace mindroid {
 
@@ -29,9 +31,15 @@ namespace mindroid {
 class NetworkInterface : public Object {
 public:
     /**
+     * Returns a list with all network interfaces on this machine.
+     */
+    static sp<ArrayList<sp<NetworkInterface>>> getNetworkInterfaces();
+
+    /**
      * Returns an enumeration of the addresses bound to this network interface.
      */
-    static sp<ArrayList<sp<NetworkInterface>>> getInetAddresses();
+    sp<ArrayList<sp<InetAddress>>> getInetAddresses();
+
 
     /**
      * Returns the name of this network interface (such as "eth0" or "lo").
@@ -44,18 +52,16 @@ public:
      * Returns the hardware address of the interface, if it has one, or null otherwise.
      */
     sp<ByteArray> getHardwareAddress() const {
-        if (mHardwareAddress == nullptr) {
-            mHardwareAddress = queryHardwareAddress();
-        }
         return mHardwareAddress;
     }
 
 private:
     NetworkInterface(const sp<String>& name);
-    sp<ByteArray> queryHardwareAddress() const;
+    void addAddress(struct sockaddr* interfaceAddress);
 
     sp<String> mName;
-    mutable sp<ByteArray> mHardwareAddress;
+    sp<ByteArray> mHardwareAddress;
+    sp<ArrayList<sp<InetAddress>>> mInetAddresses;
 };
 
 } /* namespace mindroid */
