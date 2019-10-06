@@ -36,7 +36,7 @@ public:
     virtual ~Inet4Address() = default;
 
 private:
-    Inet4Address() = default;
+    Inet4Address() = delete;
 
     Inet4Address(const sp<ByteArray>& ipAddress, const char* hostName) :
         InetAddress(AF_INET, ipAddress, hostName) {

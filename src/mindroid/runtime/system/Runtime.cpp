@@ -43,7 +43,7 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configurationFile) :
         mBinderIds(new HashMap<uint64_t, wp<Binder>>()),
         mBinderUris(new HashMap<sp<String>, wp<Binder>>()),
         mServices(new HashMap<sp<String>, sp<Binder>>()),
-        mProxies(new HashMap<sp<String>, wp<Binder::Proxy>>()),
+        mNameResolutionCache(new HashMap<sp<String>, sp<URI>>()),
         mBinderIdGenerator(new AtomicInteger(1)),
         mProxyIdGenerator(new AtomicInteger(1)),
         mIds(new HashSet<uint64_t>()) {
@@ -455,21 +455,6 @@ bool Runtime::unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& s
     }
 }
 
-void Runtime::removeProxy(const sp<IBinder>& proxy) {
-    if (proxy == nullptr) {
-        throw NullPointerException();
-    }
-    AutoLock autoLock(mLock);
-    auto itr = mProxies->iterator();
-    while (itr.hasNext()) {
-        auto entry = itr.next();
-        wp<Binder::Proxy> p = entry.getValue();
-        if (proxy->equals(p.get())) {
-            itr.remove();
-        }
-    }
-}
-
 sp<Promise<sp<Void>>> Runtime::start(const sp<URI>& uri, const sp<Bundle>& extras) {
     sp<Plugin> plugin;
     {
@@ -526,12 +511,9 @@ sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
     AutoLock autoLock(mLock);
 
     sp<String> key = uri->toString();
-    wp<Binder::Proxy> wp = mProxies->get(key);
-    sp<Binder::Proxy> p;
-    if (wp != nullptr && (p = wp.get()) != nullptr) {
-        return p;
-    } else {
-        mProxies->remove(key);
+    sp<URI> proxyUri = mNameResolutionCache->get(key);
+    if (proxyUri != nullptr) {
+        return Binder::Proxy::create(proxyUri);
     }
 
     if (mConfiguration != nullptr) {
@@ -542,9 +524,9 @@ sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
 
         try {
             sp<URI> interfaceDescriptor = new URI(service->announcements->get(uri->getScheme()));
-            sp<URI> proxyUri = new URI(uri->getScheme(), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", interfaceDescriptor->getPath()->substring(1)->c_str()), interfaceDescriptor->getQuery(), nullptr);
+            proxyUri = new URI(uri->getScheme(), String::format("%u.%u", service->node->id, service->id), String::format("/if=%s", interfaceDescriptor->getPath()->substring(1)->c_str()), interfaceDescriptor->getQuery(), nullptr);
             sp<Binder::Proxy> proxy = Binder::Proxy::create(proxyUri);
-            mProxies->put(key, proxy);
+            mNameResolutionCache->put(key, proxyUri);
             return proxy;
         } catch (const Exception& e) {
             return nullptr;

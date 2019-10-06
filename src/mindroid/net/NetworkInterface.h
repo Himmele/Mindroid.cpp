@@ -55,6 +55,11 @@ public:
         return mHardwareAddress;
     }
 
+    /**
+     * Returns whether a network interface is up and running.
+     */
+    bool isUp() const;
+
 private:
     NetworkInterface(const sp<String>& name);
     void addAddress(struct sockaddr* interfaceAddress);

@@ -83,8 +83,6 @@ public:
     void link(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
     bool unlink(const sp<IBinder>& binder, const sp<IBinder::Supervisor>& supervisor, const sp<Bundle>& extras);
 
-    void removeProxy(const sp<IBinder>& proxy);
-
     sp<Promise<sp<Void>>> start(const sp<URI>& uri, const sp<Bundle>& extras);
     sp<Promise<sp<Void>>> stop(const sp<URI>& uri, const sp<Bundle>& extras);
 
@@ -126,7 +124,7 @@ private:
     sp<HashMap<uint64_t, wp<Binder>>> mBinderIds;
     sp<HashMap<sp<String>, wp<Binder>>> mBinderUris;
     sp<HashMap<sp<String>, sp<Binder>>> mServices;
-    sp<HashMap<sp<String>, wp<Binder::Proxy>>> mProxies;
+    sp<HashMap<sp<String>, sp<URI>>> mNameResolutionCache;
     sp<AtomicInteger> mBinderIdGenerator;
     sp<AtomicInteger> mProxyIdGenerator;
     sp<HashSet<uint64_t>> mIds;

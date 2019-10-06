@@ -93,7 +93,7 @@ void NetworkInterface::addAddress(struct sockaddr* interfaceAddress) {
     }
 #else
     case AF_LINK: {
-        sockaddr_dl* linkLevelSocketAddress = (sockaddr_dl*) curNetworkInterface->ifa_addr;
+        sockaddr_dl* linkLevelSocketAddress = (sockaddr_dl*) interfaceAddress->sa_data;
         mHardwareAddress = new ByteArray(linkLevelSocketAddress->sdl_alen);
         memcpy(mHardwareAddress->c_arr(), LLADDR(linkLevelSocketAddress), linkLevelSocketAddress->sdl_alen);
         break;
@@ -106,6 +106,26 @@ void NetworkInterface::addAddress(struct sockaddr* interfaceAddress) {
 
 sp<ArrayList<sp<InetAddress>>> NetworkInterface::getInetAddresses() {
     return mInetAddresses;
+}
+
+bool NetworkInterface::isUp() const {
+    int32_t fd = ::socket(AF_INET6, SOCK_STREAM, 0);
+    if (fd < 0) {
+        throw SocketException(String::format("Failed to open socket: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    struct ifreq configuration;
+    memset(&configuration, 0, sizeof(configuration));
+    strcpy(configuration.ifr_name, mName->c_str());
+    if (ioctl(fd, SIOCGIFFLAGS, &configuration) < 0) {
+        throw SocketException(String::format("Failed to get network interface flags: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    if (close(fd) < 0) {
+        throw SocketException(String::format("Failed to close socket: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    return (configuration.ifr_flags & IFF_RUNNING);
 }
 
 } /* namespace mindroid */
