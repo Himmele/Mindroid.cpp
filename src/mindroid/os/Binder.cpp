@@ -18,6 +18,7 @@
 #include <mindroid/os/Binder.h>
 #include <mindroid/os/Parcel.h>
 #include <mindroid/lang/Integer.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
@@ -222,6 +223,9 @@ void Binder::Proxy::transact(int32_t what, int32_t num, const sp<Object>& obj, c
 }
 
 void Binder::Proxy::link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
+    if (supervisor == nullptr) {
+        throw NullPointerException("supervisor is null");
+    }
     mRuntime->link(this, supervisor, extras);
 }
 
