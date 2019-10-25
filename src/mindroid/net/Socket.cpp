@@ -300,4 +300,36 @@ bool Socket::getTcpNoDelay() const {
     return value != 0;
 }
 
+void Socket::shutdownInput() {
+    if (isInputShutdown()) {
+        throw SocketException("Input has already been shutdown");
+    }
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+
+    const int32_t rc = ::shutdown(mFd, SHUT_RD);
+    if (rc != 0) {
+        throw SocketException(String::format("Failed to shutdown input: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    mIsInputShutdown = true;
+}
+
+void Socket::shutdownOutput() {
+    if (isOutputShutdown()) {
+        throw SocketException("Output has already been shutdown");
+    }
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+
+    const int32_t rc = ::shutdown(mFd, SHUT_WR);
+    if (rc != 0) {
+        throw SocketException(String::format("Failed to shutdown output: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    mIsOutputShutdown = true;
+}
+
 } /* namespace mindroid */

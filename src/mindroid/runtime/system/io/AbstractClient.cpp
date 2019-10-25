@@ -94,11 +94,6 @@ void AbstractClient::Connection::close() {
         Log::d(TAG, "Closing connection");
     }
     interrupt();
-    try {
-        mSocket->close();
-    } catch (const IOException& e) {
-        Log::e(TAG, "Cannot close socket");
-    }
     if (mInputStream != nullptr) {
         try {
             mInputStream->close();
@@ -110,6 +105,23 @@ void AbstractClient::Connection::close() {
             mOutputStream->close();
         } catch (const IOException& ignore) {
         }
+    }
+    if (mSocket->isConnected()) {
+        try {
+            mSocket->shutdownInput();
+        } catch (const IOException& e) {
+            Log::e(TAG, "Cannot disable input stream for this socket");
+        }
+        try {
+            mSocket->shutdownOutput();
+        } catch (const IOException& e) {
+            Log::e(TAG, "Cannot disable output stream for this socket");
+        }
+    }
+    try {
+        mSocket->close();
+    } catch (const IOException& e) {
+        Log::e(TAG, "Cannot close socket");
     }
     join();
     mClient.clear();

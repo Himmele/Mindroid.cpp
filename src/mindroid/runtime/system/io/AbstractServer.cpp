@@ -123,11 +123,6 @@ void AbstractServer::Connection::close(const Exception& cause) {
     }
 
     interrupt();
-    try {
-        mSocket->close();
-    } catch (const IOException& e) {
-        Log::e(TAG, "Cannot close socket");
-    }
     if (mInputStream != nullptr) {
         try {
             mInputStream->close();
@@ -139,6 +134,23 @@ void AbstractServer::Connection::close(const Exception& cause) {
             mOutputStream->close();
         } catch (const IOException& ignore) {
         }
+    }
+    if (mSocket->isConnected()) {
+        try {
+            mSocket->shutdownInput();
+        } catch (const IOException& e) {
+            Log::e(TAG, "Cannot disable input stream for this socket");
+        }
+        try {
+            mSocket->shutdownOutput();
+        } catch (const IOException& e) {
+            Log::e(TAG, "Cannot disable output stream for this socket");
+        }
+    }
+    try {
+        mSocket->close();
+    } catch (const IOException& e) {
+        Log::e(TAG, "Cannot close socket");
     }
     join();
     sp<AbstractServer::Connection> connection = this;

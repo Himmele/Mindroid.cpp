@@ -195,6 +195,46 @@ public:
      */
     bool getTcpNoDelay() const;
 
+    /**
+     * Closes the input stream of this socket. Any further data sent to this
+     * socket will be discarded. Reading from this socket after this method has
+     * been called will return the value {@code EOF}.
+     *
+     * @throws IOException
+     */
+    void shutdownInput();
+
+    /**
+     * Closes the output stream of this socket. All buffered data will be sent
+     * followed by the termination sequence. Writing to the closed output stream
+     * will cause an {@code IOException}.
+     *
+     * @throws IOException
+     */
+    void shutdownOutput();
+
+    /**
+     * Returns whether the incoming channel of the socket has already been
+     * closed.
+     *
+     * @return {@code true} if reading from this socket is not possible anymore,
+     *         {@code false} otherwise.
+     */
+    bool isInputShutdown() const {
+        return mIsInputShutdown;
+    }
+
+    /**
+     * Returns whether the outgoing channel of the socket has already been
+     * closed.
+     *
+     * @return {@code true} if writing to this socket is not possible anymore,
+     *         {@code false} otherwise.
+     */
+    bool isOutputShutdown() const {
+        return mIsOutputShutdown;
+    }
+
 private:
     class SocketInputStream : public InputStream {
     public:
@@ -255,6 +295,8 @@ private:
     bool mIsBound = false;
     bool mIsConnected = false;
     bool mIsClosed = false;
+    bool mIsInputShutdown = false;
+    bool mIsOutputShutdown = false;
 
     friend class ServerSocket;
 };
