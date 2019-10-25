@@ -106,7 +106,7 @@ void AbstractClient::Connection::close() {
         } catch (const IOException& ignore) {
         }
     }
-    if (mSocket->isConnected()) {
+    if (!mSocket->isClosed()) {
         try {
             mSocket->shutdownInput();
         } catch (const IOException& e) {
