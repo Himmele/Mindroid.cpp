@@ -138,13 +138,11 @@ void AbstractServer::Connection::close(const Exception& cause) {
     if (!mSocket->isClosed()) {
         try {
             mSocket->shutdownInput();
-        } catch (const IOException& e) {
-            Log::e(TAG, "Cannot disable input stream for this socket");
+        } catch (const IOException& ignore) {
         }
         try {
             mSocket->shutdownOutput();
-        } catch (const IOException& e) {
-            Log::e(TAG, "Cannot disable output stream for this socket");
+        } catch (const IOException& ignore) {
         }
     }
     try {

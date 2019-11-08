@@ -33,6 +33,15 @@ public:
     static sp<InetAddress> ANY;
     static sp<InetAddress> LOOPBACK;
 
+    /**
+     * Gets the scope id as a number if this address is linked to an interface.
+     * Otherwise returns {@code 0}.
+     *
+     * @return the scope_id of this address or 0 when not linked with an
+     *         interface.
+     */
+    int32_t getScopeId() const { return mScopeId; }
+
 private:
     /**
      * Constructs an {@code InetAddress} representing the {@code address} and
@@ -48,11 +57,11 @@ private:
      * @hide
      */
     Inet6Address(const sp<ByteArray>& ipAddress, const char* hostName, int32_t scope_id) :
-        InetAddress(AF_INET6, ipAddress, hostName) {
+        InetAddress(AF_INET6, ipAddress, hostName), mScopeId(scope_id) {
     }
 
     Inet6Address(const sp<ByteArray>& ipAddress, const sp<String>& hostName, int32_t scope_id) :
-        InetAddress(AF_INET6, ipAddress, hostName) {
+        InetAddress(AF_INET6, ipAddress, hostName), mScopeId(scope_id) {
     }
 
     friend class InetAddress;
@@ -60,6 +69,8 @@ private:
     friend class Socket;
     friend class DatagramSocket;
     friend class NetworkInterface;
+
+    int32_t mScopeId;
 };
 
 } /* namespace mindroid */

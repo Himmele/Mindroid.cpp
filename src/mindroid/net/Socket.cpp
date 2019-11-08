@@ -69,11 +69,13 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
     std::memset(&ss, 0, sizeof(ss));
     sp<InetAddress> inetAddress = socketAddress->getAddress();
     if (Class<Inet6Address>::isInstance(inetAddress)) {
+        sp<Inet6Address> inet6Address = Class<Inet6Address>::cast(inetAddress);
         mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
-        std::memcpy(&sin6.sin6_addr.s6_addr, inetAddress->getAddress()->c_arr(), 16);
+        std::memcpy(&sin6.sin6_addr.s6_addr, inet6Address->getAddress()->c_arr(), 16);
         sin6.sin6_port = htons(socketAddress->getPort());
+        sin6.sin6_scope_id = inet6Address->getScopeId();
         saSize = sizeof(sockaddr_in6);
     } else {
         mFd = ::socket(AF_INET, SOCK_STREAM, 0);

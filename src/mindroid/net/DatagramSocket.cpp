@@ -99,6 +99,10 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
         sin.sin_port = htons(port);
         saSize = sizeof(sockaddr_in);
     }
+    {
+        int32_t value = 1;
+        ::setsockopt(mFd, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value));
+    }
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) == 0) {
         mIsBound = true;
         if (port != 0) {
