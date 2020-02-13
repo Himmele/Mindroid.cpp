@@ -111,39 +111,43 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         saSize = sizeof(sockaddr_in);
     }
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
+        int bindErrno = errno; // Save errno before closing.
         close();
+        throw SocketException(String::format("Failed to bind to port %u: %s (errno=%d)", port,
+                   strerror(bindErrno), bindErrno));
     }
-    if (mFd != -1 && ::listen(mFd, backlog) == 0) {
-        mIsBound = true;
-        if (port != 0) {
-            mLocalPort = port;
-        } else {
-            sockaddr_storage ss;
-            sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
-            socklen_t saSize = sizeof(ss);
-            std::memset(&ss, 0, saSize);
-            int32_t rc = ::getsockname(mFd, sa, &saSize);
-            if (rc == 0) {
-                switch (ss.ss_family) {
-                case AF_INET6: {
-                    const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
-                    mLocalPort = ntohs(sin6.sin6_port);
-                    break;
-                }
-                case AF_INET: {
-                    const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
-                    mLocalPort = ntohs(sin.sin_port);
-                    break;
-                }
-                default:
-                    mLocalPort = -1;
-                    break;
-                }
+    if (::listen(mFd, backlog) != 0) {
+        int listenErrno = errno; // Save errno before closing.
+        close();
+        throw SocketException(String::format("Failed to listen on port %u: %s (errno=%d)", port,
+                    strerror(listenErrno), listenErrno));
+    }
+    mIsBound = true;
+    if (port != 0) {
+        mLocalPort = port;
+    } else {
+        sockaddr_storage ss;
+        sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+        socklen_t saSize = sizeof(ss);
+        std::memset(&ss, 0, saSize);
+        int32_t rc = ::getsockname(mFd, sa, &saSize);
+        if (rc == 0) {
+            switch (ss.ss_family) {
+            case AF_INET6: {
+                const sockaddr_in6& sin6 = *reinterpret_cast<const sockaddr_in6*>(&ss);
+                mLocalPort = ntohs(sin6.sin6_port);
+                break;
+            }
+            case AF_INET: {
+                const sockaddr_in& sin = *reinterpret_cast<const sockaddr_in*>(&ss);
+                mLocalPort = ntohs(sin.sin_port);
+                break;
+            }
+            default:
+                mLocalPort = -1;
+                break;
             }
         }
-    } else {
-        close();
-        throw SocketException(String::format("Failed to bind to port %u (errno=%d)", port, errno));
     }
 }
 
