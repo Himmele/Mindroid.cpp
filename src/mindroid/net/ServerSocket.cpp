@@ -234,4 +234,26 @@ void ServerSocket::setReuseAddress(bool reuse) {
     mReuseAddress = reuse;
 }
 
+template<>
+void ServerSocket::setOption<bool>(const SocketOption<bool>& name, bool value) {
+    if (name == StandardSocketOptions::REUSE_PORT) {
+        mReusePort = value;
+    } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+        mReuseAddress = value;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+template<>
+bool ServerSocket::getOption<bool>(const SocketOption<bool>& name) {
+    if (name == StandardSocketOptions::REUSE_PORT) {
+        return mReusePort;
+    } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+        return mReuseAddress;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
 } /* namespace mindroid */
