@@ -93,8 +93,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
         int32_t value = 0;
         ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
-        value = mReuseAddress;
-        ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+        setCommonSocketOptions();
 
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
@@ -103,8 +102,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         saSize = sizeof(sockaddr_in6);
     } else {
         mFd = ::socket(AF_INET, SOCK_STREAM, 0);
-        int32_t value = mReuseAddress;
-        ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+        setCommonSocketOptions();
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
@@ -147,6 +145,14 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         close();
         throw SocketException(String::format("Failed to bind to port %u (errno=%d)", port, errno));
     }
+}
+
+void ServerSocket::setCommonSocketOptions() {
+    int32_t value = mReuseAddress;
+    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+
+    value = mReusePort;
+    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value));
 }
 
 sp<Socket> ServerSocket::accept() {

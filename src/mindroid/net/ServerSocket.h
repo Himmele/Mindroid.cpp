@@ -19,6 +19,9 @@
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
+#include <mindroid/lang/UnsupportedOperationException.h>
+#include <mindroid/net/SocketOption.h>
+#include <mindroid/net/StandardSocketOptions.h>
 
 namespace mindroid {
 
@@ -175,8 +178,43 @@ public:
     */
     void setReuseAddress(bool reuse);
 
+    /**
+     * Sets the value of a socket option.
+     */
+    template<typename T>
+    void setOption(const SocketOption<T>& name, T value);
+
+    template<>
+    void setOption<bool>(const SocketOption<bool>& name, bool value) {
+        if (name == StandardSocketOptions::REUSE_PORT) {
+            mReusePort = value;
+        } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+            mReuseAddress = value;
+        } else {
+            throw UnsupportedOperationException("Unknown socket option");
+        }
+    }
+
+    /**
+     * Returns the value of a socket option.
+     */
+    template<typename T>
+    T getOption(const SocketOption<T>& name);
+
+    template<>
+    bool getOption<bool>(const SocketOption<bool>& name) {
+        if (name == StandardSocketOptions::REUSE_PORT) {
+            return mReusePort;
+        } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+            return mReuseAddress;
+        } else {
+            throw UnsupportedOperationException("Unknown socket option");
+        }
+    }
+
 private:
     void bind(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress);
+    void setCommonSocketOptions();
 
     int32_t mFd = -1;
     sp<InetAddress> mLocalAddress;
@@ -184,6 +222,7 @@ private:
     bool mIsBound = false;
     bool mIsClosed = false;
     bool mReuseAddress = false;
+    bool mReusePort = false;
 };
 
 } /* namespace mindroid */
