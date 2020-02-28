@@ -17,6 +17,7 @@
 #ifndef MINDROID_NET_STANDARDSOCKETOPTIONS_H_
 #define MINDROID_NET_STANDARDSOCKETOPTIONS_H_
 
+#include <mindroid/net/NetworkInterface.h>
 #include <mindroid/net/SocketOption.h>
 
 namespace mindroid {
@@ -25,8 +26,9 @@ class StandardSocketOptions {
 public:
     // See the corresponding SO_REUSEPORT, SO_REUSEADDR etc. in socket.h.
 
-    static const SocketOption<bool> REUSE_PORT;
     static const SocketOption<bool> REUSE_ADDRESS;
+    static const SocketOption<bool> REUSE_PORT;
+    static const SocketOption<sp<NetworkInterface>> MULTICAST_INTERFACE;
 };
 
 } /* namespace mindroid */
