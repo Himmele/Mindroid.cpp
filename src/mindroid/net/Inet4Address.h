@@ -35,6 +35,10 @@ public:
 
     virtual ~Inet4Address() = default;
 
+    bool isMulticastAddress() const override {
+        return (mIpAddress->get(0) & 0xF0u) == 0xE0u;
+    }
+
 private:
     Inet4Address() = delete;
 

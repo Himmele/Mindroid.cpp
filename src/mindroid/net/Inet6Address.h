@@ -42,6 +42,10 @@ public:
      */
     int32_t getScopeId() const { return mScopeId; }
 
+    bool isMulticastAddress() const override {
+        return mIpAddress->get(0) == 0xFFu;
+    }
+
 private:
     /**
      * Constructs an {@code InetAddress} representing the {@code address} and

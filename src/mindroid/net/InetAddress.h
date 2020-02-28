@@ -79,6 +79,15 @@ public:
         return mIpAddress->clone();
     }
 
+    /**
+     * Returns whether this address is a multicast address or not.
+     *
+     * <p>Valid IPv6 multicast addresses have the prefix {@code ff::/8}.
+     *
+     * <p>Valid IPv4 multicast addresses have the prefix {@code 224/4}.
+     */
+    virtual bool isMulticastAddress() const = 0;
+
 private:
     /**
      * Constructs an {@code InetAddress}.
