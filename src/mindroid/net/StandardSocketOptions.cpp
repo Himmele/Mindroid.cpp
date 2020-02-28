@@ -21,5 +21,6 @@ namespace mindroid {
 const SocketOption<bool> StandardSocketOptions::REUSE_ADDRESS(0);
 const SocketOption<bool> StandardSocketOptions::REUSE_PORT(1);
 const SocketOption<sp<NetworkInterface>> StandardSocketOptions::MULTICAST_INTERFACE(2);
+const SocketOption<bool> StandardSocketOptions::MULTICAST_LOOP(3);
 
 } // namespace mindroid

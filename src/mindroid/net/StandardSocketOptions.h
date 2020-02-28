@@ -29,6 +29,7 @@ public:
     static const SocketOption<bool> REUSE_ADDRESS;
     static const SocketOption<bool> REUSE_PORT;
     static const SocketOption<sp<NetworkInterface>> MULTICAST_INTERFACE;
+    static const SocketOption<bool> MULTICAST_LOOP;
 };
 
 } /* namespace mindroid */
