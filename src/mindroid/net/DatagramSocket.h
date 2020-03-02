@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Daniel Himmelein
+ * Copyright (C) 2020 E.S.R. Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,8 @@
 #define MINDROID_NET_DATAGRAMSOCKET_H_
 
 #include <mindroid/lang/Object.h>
+#include <mindroid/net/NetworkInterface.h>
+#include <mindroid/net/SocketOption.h>
 
 namespace mindroid {
 
@@ -131,14 +134,29 @@ public:
      */
     void send(const sp<DatagramPacket>& datagramPacket);
 
+    /**
+     * Sets the value of a socket option.
+     */
+    template<typename T>
+    void setOption(const SocketOption<T>& name, T value);
+
+    /**
+     * Returns the value of a socket option.
+     */
+    template<typename T>
+    T getOption(const SocketOption<T>& name);
+
 private:
     void bind(uint16_t port, const sp<InetAddress>& localAddress);
     int32_t getSocketPort(int fd);
+    void setMulticastInterface(const sp<NetworkInterface>& networkInterface);
+    bool isIpv6Socket();
 
     int32_t mFd = -1;
     int32_t mLocalPort = -1;
     bool mIsBound = false;
     bool mIsClosed = false;
+    sp<NetworkInterface> mMulticastInterface;
 };
 
 } /* namespace mindroid */

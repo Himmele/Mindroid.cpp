@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2012 Daniel Himmelein
+ * Copyright (C) 2020 E.S.R. Labs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +21,10 @@
 #include <mindroid/net/Inet6Address.h>
 #include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/net/SocketException.h>
+#include <mindroid/net/StandardSocketOptions.h>
 #include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/UnsupportedOperationException.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
@@ -224,6 +227,54 @@ int32_t DatagramSocket::getSocketPort(int fd) {
         }
     }
     return -1;
+}
+
+template<>
+void DatagramSocket::setOption<sp<NetworkInterface>>(const SocketOption<sp<NetworkInterface>>& name,
+        sp<NetworkInterface> value) {
+    if (isClosed()) {
+        throw IOException("Unable to set socket option as the socket is closed");
+    }
+
+    if (name == StandardSocketOptions::MULTICAST_INTERFACE) {
+        setMulticastInterface(value);
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+template<>
+sp<NetworkInterface> DatagramSocket::getOption<sp<NetworkInterface>>(const SocketOption<sp<NetworkInterface>>& name) {
+    if (name == StandardSocketOptions::MULTICAST_INTERFACE) {
+        return mMulticastInterface;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+bool DatagramSocket::isIpv6Socket() {
+    sockaddr_storage ss;
+    sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
+    socklen_t saSize = sizeof(ss);
+    std::memset(&ss, 0, saSize);
+    if (::getsockname(mFd, sa, &saSize) != 0) {
+        throw IOException(String::format("Unable to get socket name: %s (errno=%d)", strerror(errno), errno));
+    }
+
+    return ss.ss_family == AF_INET6;
+}
+
+void DatagramSocket::setMulticastInterface(const sp<NetworkInterface>& networkInterface) {
+    if (isIpv6Socket()) {
+        int interfaceIndex = networkInterface == nullptr ? 0 : networkInterface->getIndex();
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_MULTICAST_IF, &interfaceIndex , sizeof(interfaceIndex)) != 0) {
+            throw IOException(String::format("Failed to set socket option IPV6_MULTICAST_IF: %s (errno=%d)",
+                        strerror(errno), errno));
+        }
+    } else {
+        throw Exception("Setting a multicast interface is not yet implemented on IPv4 datagram sockets");
+    }
+    mMulticastInterface = networkInterface;
 }
 
 } /* namespace mindroid */
