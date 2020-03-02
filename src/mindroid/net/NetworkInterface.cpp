@@ -35,7 +35,8 @@
 
 namespace mindroid {
 
-NetworkInterface::NetworkInterface(const sp<String>& name) : mName(name), mInetAddresses(new ArrayList<sp<InetAddress>>()) {
+NetworkInterface::NetworkInterface(const sp<String>& name, uint32_t flags) :
+        mName(name), mInetAddresses(new ArrayList<sp<InetAddress>>()), mFlags(flags) {
 }
 
 sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
@@ -55,7 +56,7 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
         if (networkInterfaceMap->containsKey(name)) {
             networkInterface = networkInterfaceMap->get(name);
         } else {
-            networkInterface = new NetworkInterface(name);
+            networkInterface = new NetworkInterface(name, curNetworkInterface->ifa_flags);
             networkInterfaceMap->put(name, networkInterface);
         }
 
@@ -131,6 +132,18 @@ bool NetworkInterface::isUp() const {
 int32_t NetworkInterface::getIndex() const {
     int rc = if_nametoindex(mName->c_str());
     return rc == 0 ? -1 : rc;
+}
+
+bool NetworkInterface::supportsMulticast() const {
+    return (mFlags & IFF_MULTICAST) == IFF_MULTICAST;
+}
+
+bool NetworkInterface::isPointToPoint() const {
+    return (mFlags & IFF_POINTOPOINT) == IFF_POINTOPOINT;
+}
+
+bool NetworkInterface::isLoopback() const {
+    return (mFlags & IFF_LOOPBACK) == IFF_LOOPBACK;
 }
 
 } /* namespace mindroid */

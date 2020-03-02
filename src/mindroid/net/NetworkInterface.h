@@ -65,13 +65,29 @@ public:
      */
     bool isUp() const;
 
+    /**
+     * Returns whether a network interface supports multicasting.
+     */
+    bool supportsMulticast() const;
+
+    /**
+     * Returns whether a network interface is a point to point interface.
+     */
+    bool isPointToPoint() const;
+
+    /**
+     * Returns whether a network interface is a loopback interface.
+     */
+    bool isLoopback() const;
+
 private:
-    NetworkInterface(const sp<String>& name);
+    NetworkInterface(const sp<String>& name, uint32_t flags);
     void addAddress(struct sockaddr* interfaceAddress);
 
     sp<String> mName;
     sp<ByteArray> mHardwareAddress;
     sp<ArrayList<sp<InetAddress>>> mInetAddresses;
+    uint32_t mFlags;
 };
 
 } /* namespace mindroid */
