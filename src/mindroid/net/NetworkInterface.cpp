@@ -128,4 +128,9 @@ bool NetworkInterface::isUp() const {
     return (configuration.ifr_flags & IFF_RUNNING);
 }
 
+int32_t NetworkInterface::getIndex() const {
+    int rc = if_nametoindex(mName->c_str());
+    return rc == 0 ? -1 : rc;
+}
+
 } /* namespace mindroid */

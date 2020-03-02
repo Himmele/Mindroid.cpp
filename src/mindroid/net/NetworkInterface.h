@@ -49,6 +49,11 @@ public:
     }
 
     /**
+     * Returns the index of this network interface.
+     */
+    int32_t getIndex() const;
+
+    /**
      * Returns the hardware address of the interface, if it has one, or null otherwise.
      */
     sp<ByteArray> getHardwareAddress() const {
