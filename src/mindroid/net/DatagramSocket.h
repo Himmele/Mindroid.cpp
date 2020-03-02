@@ -150,6 +150,7 @@ private:
     void bind(uint16_t port, const sp<InetAddress>& localAddress);
     int32_t getSocketPort(int fd);
     void setMulticastInterface(const sp<NetworkInterface>& networkInterface);
+    void setMulticastLoop(bool enabled);
     bool isIpv6Socket();
 
     int32_t mFd = -1;
@@ -157,6 +158,7 @@ private:
     bool mIsBound = false;
     bool mIsClosed = false;
     sp<NetworkInterface> mMulticastInterface;
+    bool mMulticastLoop = true;
 };
 
 } /* namespace mindroid */

@@ -244,9 +244,27 @@ void DatagramSocket::setOption<sp<NetworkInterface>>(const SocketOption<sp<Netwo
 }
 
 template<>
+void DatagramSocket::setOption<bool>(const SocketOption<bool>& name, bool value) {
+    if (name == StandardSocketOptions::MULTICAST_LOOP) {
+        setMulticastLoop(value);
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+template<>
 sp<NetworkInterface> DatagramSocket::getOption<sp<NetworkInterface>>(const SocketOption<sp<NetworkInterface>>& name) {
     if (name == StandardSocketOptions::MULTICAST_INTERFACE) {
         return mMulticastInterface;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+template<>
+bool DatagramSocket::getOption<bool>(const SocketOption<bool>& name) {
+    if (name == StandardSocketOptions::MULTICAST_LOOP) {
+        return mMulticastLoop;
     } else {
         throw UnsupportedOperationException("Unknown socket option");
     }
@@ -275,6 +293,22 @@ void DatagramSocket::setMulticastInterface(const sp<NetworkInterface>& networkIn
         throw Exception("Setting a multicast interface is not yet implemented on IPv4 datagram sockets");
     }
     mMulticastInterface = networkInterface;
+}
+
+void DatagramSocket::setMulticastLoop(bool enabled) {
+    if (isIpv6Socket()) {
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &enabled, sizeof(enabled)) != 0) {
+            throw IOException(String::format("Failed to set socket option IPV6_MULTICAST_LOOP: %s (errno=%d)",
+                        strerror(errno), errno));
+        }
+    } else {
+        int value = enabled ? 1 : 0;
+        if (::setsockopt(mFd, IPPROTO_IP, IP_MULTICAST_LOOP, &value, sizeof(value)) != 0) {
+            throw IOException(String::format("Failed to set socket option IP_MULTICAST_LOOP: %s (errno=%d)",
+                        strerror(errno), errno));
+        }
+    }
+    mMulticastLoop = enabled;
 }
 
 } /* namespace mindroid */
