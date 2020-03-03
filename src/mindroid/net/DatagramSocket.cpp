@@ -296,13 +296,13 @@ void DatagramSocket::setMulticastInterface(const sp<NetworkInterface>& networkIn
 }
 
 void DatagramSocket::setMulticastLoop(bool enabled) {
+    int value = enabled ? 1 : 0;
     if (isIpv6Socket()) {
-        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &enabled, sizeof(enabled)) != 0) {
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, &value, sizeof(value)) != 0) {
             throw IOException(String::format("Failed to set socket option IPV6_MULTICAST_LOOP: %s (errno=%d)",
                         strerror(errno), errno));
         }
     } else {
-        int value = enabled ? 1 : 0;
         if (::setsockopt(mFd, IPPROTO_IP, IP_MULTICAST_LOOP, &value, sizeof(value)) != 0) {
             throw IOException(String::format("Failed to set socket option IP_MULTICAST_LOOP: %s (errno=%d)",
                         strerror(errno), errno));
