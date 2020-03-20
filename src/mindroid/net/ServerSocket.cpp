@@ -179,7 +179,7 @@ sp<Socket> ServerSocket::accept() {
         sockaddr* sa = reinterpret_cast<sockaddr*>(&ss);
         socklen_t saSize = sizeof(ss);
         std::memset(&ss, 0, saSize);
-        int32_t rc = ::getsockname(socket->mFd, sa, &saSize);
+        int32_t rc = ::getpeername(socket->mFd, sa, &saSize);
         if (rc == 0) {
             switch (ss.ss_family) {
             case AF_INET6: {

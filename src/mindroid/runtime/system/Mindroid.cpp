@@ -53,11 +53,11 @@ sp<Promise<sp<Void>>> Mindroid::start(const sp<URI>& uri, const sp<Bundle>& extr
     uint32_t nodeId = mRuntime->getNodeId();
     mConfiguration = mRuntime->getConfiguration();
     if (mConfiguration != nullptr) {
-        sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+        sp<ServiceDiscoveryConfigurationReader::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
         if (node != nullptr) {
-            sp<ServiceDiscovery::Configuration::Plugin> plugin = node->plugins->get(String::valueOf("mindroid"));
+            sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> plugin = node->plugins->get(String::valueOf("mindroid"));
             if (plugin != nullptr) {
-                sp<ServiceDiscovery::Configuration::Server> server = plugin->server;
+                sp<ServiceDiscoveryConfigurationReader::Configuration::Server> server = plugin->server;
                 if (server != nullptr) {
                     mServer = new Server(mRuntime);
                     try {
@@ -119,11 +119,11 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
     sp<Client> client = mClients->get(nodeId);
     if (client == nullptr) {
         if (mConfiguration != nullptr) {
-            sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+            sp<ServiceDiscoveryConfigurationReader::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
             if (node  != nullptr) {
-                sp<ServiceDiscovery::Configuration::Plugin> plugin = node->plugins->get(binder->getUri()->getScheme());
+                sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> plugin = node->plugins->get(binder->getUri()->getScheme());
                 if (plugin != nullptr) {
-                    sp<ServiceDiscovery::Configuration::Server> server = plugin->server;
+                    sp<ServiceDiscoveryConfigurationReader::Configuration::Server> server = plugin->server;
                     if (server != nullptr) {
                         try {
                             client = new Client(this, node->id);

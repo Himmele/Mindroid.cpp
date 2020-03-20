@@ -23,7 +23,7 @@
 #include <mindroid/os/IInterface.h>
 #include <mindroid/os/Binder.h>
 #include <mindroid/os/RemoteException.h>
-#include <mindroid/runtime/system/ServiceDiscovery.h>
+#include <mindroid/runtime/system/ServiceDiscoveryConfigurationReader.h>
 #include <mindroid/util/Log.h>
 #include <mindroid/util/HashMap.h>
 #include <mindroid/util/HashSet.h>
@@ -54,7 +54,7 @@ public:
         return mNodeId;
     }
 
-    sp<ServiceDiscovery::Configuration> getConfiguration() const;
+    sp<ServiceDiscoveryConfigurationReader::Configuration> getConfiguration() const;
 
     uint64_t attachBinder(const sp<Binder>& binder);
 
@@ -128,7 +128,7 @@ private:
     sp<AtomicInteger> mBinderIdGenerator;
     sp<AtomicInteger> mProxyIdGenerator;
     sp<HashSet<uint64_t>> mIds;
-    sp<ServiceDiscovery::Configuration> mConfiguration;
+    sp<ServiceDiscoveryConfigurationReader::Configuration> mConfiguration;
 };
 
 } /* namespace mindroid */

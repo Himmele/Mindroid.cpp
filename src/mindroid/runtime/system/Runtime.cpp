@@ -23,7 +23,6 @@
 #include <mindroid/lang/NumberFormatException.h>
 #include <mindroid/net/URI.h>
 #include <mindroid/net/URISyntaxException.h>
-#include <mindroid/runtime/system/ServiceDiscovery.h>
 #include <mindroid/util/concurrent/locks/ReentrantLock.h>
 
 namespace mindroid {
@@ -53,7 +52,7 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configurationFile) :
     Log::println('I', TAG, "Mindroid runtime system node id: %u", mNodeId);
     if (configurationFile != nullptr) {
         try {
-            mConfiguration = ServiceDiscovery::read(configurationFile);
+            mConfiguration = ServiceDiscoveryConfigurationReader::read(configurationFile);
         } catch (const Exception& e) {
             Log::println('E', TAG, "Failed to read Mindroid runtime system configuration");
         }
@@ -62,7 +61,7 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configurationFile) :
         auto pluginItr = mConfiguration->nodes->get(mNodeId)->plugins->iterator();
         while (pluginItr.hasNext()) {
             auto entry = pluginItr.next();
-            sp<ServiceDiscovery::Configuration::Plugin> plugin = entry.getValue();
+            sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> plugin = entry.getValue();
             sp<Class<Plugin>> clazz = Class<Plugin>::forName(plugin->clazz);
             sp<Plugin> p = clazz->newInstance();
             if (p != nullptr) {
@@ -76,10 +75,12 @@ Runtime::Runtime(uint32_t nodeId, const sp<File>& configurationFile) :
         auto serviceItr = mConfiguration->services->iterator();
         while (serviceItr.hasNext()) {
             auto entry = serviceItr.next();
-            sp<ServiceDiscovery::Configuration::Service> service = entry.getValue();
+            sp<ServiceDiscoveryConfigurationReader::Configuration::Service> service = entry.getValue();
             if (service->node->id == nodeId) {
                 uint64_t id = ((uint64_t) nodeId << 32) | (service->id & 0xFFFFFFFFL);
-                ids->add(id);
+                if (!ids->add(id)) {
+                    Log::println('E', TAG, "Cannot register service '%s' with already used id %u", service->name->c_str(), service->id);
+                }
             }
         }
         mIds->addAll(ids);
@@ -139,7 +140,7 @@ void Runtime::shutdown() {
     }
 }
 
-sp<ServiceDiscovery::Configuration> Runtime::getConfiguration() const {
+sp<ServiceDiscoveryConfigurationReader::Configuration> Runtime::getConfiguration() const {
     return mConfiguration;
 }
 
@@ -279,9 +280,9 @@ void Runtime::addService(const sp<URI>& uri, const sp<IBinder>& service) {
     if (Class<Binder>::isInstance(service)) {
         if (!mServices->containsKey(uri->toString())) {
             if (mConfiguration != nullptr) {
-                sp<ServiceDiscovery::Configuration::Node> node = mConfiguration->nodes->get(mNodeId);
+                sp<ServiceDiscoveryConfigurationReader::Configuration::Node> node = mConfiguration->nodes->get(mNodeId);
                 if (node != nullptr) {
-                    sp<ServiceDiscovery::Configuration::Service> s = node->services->get(uri->getAuthority());
+                    sp<ServiceDiscoveryConfigurationReader::Configuration::Service> s = node->services->get(uri->getAuthority());
                     if (s != nullptr) {
                         uint64_t oldId = ((uint64_t) mNodeId << 32) | (service->getId() & 0xFFFFFFFFL);
                         mIds->remove(oldId);
@@ -517,7 +518,7 @@ sp<Binder::Proxy> Runtime::getProxy(const sp<URI>& uri) {
     }
 
     if (mConfiguration != nullptr) {
-        sp<ServiceDiscovery::Configuration::Service> service = mConfiguration->services->get(uri->getAuthority());
+        sp<ServiceDiscoveryConfigurationReader::Configuration::Service> service = mConfiguration->services->get(uri->getAuthority());
         if (service == nullptr) {
             return nullptr;
         }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERY_H_
-#define MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERY_H_
+#ifndef MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERYCONFIGURATIONREADER_H_
+#define MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERYCONFIGURATIONREADER_H_
 
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
@@ -31,7 +31,7 @@ namespace mindroid {
 class File;
 class URI;
 
-class ServiceDiscovery : public Object {
+class ServiceDiscoveryConfigurationReader : public Object {
 public:
     class Node;
     class Service;
@@ -65,7 +65,7 @@ public:
         class Service : public Object {
         public:
             sp<Node> node;
-            uint32_t id;
+            int32_t id = -1;
             sp<String> name;
             sp<HashMap<sp<String>, sp<String>>> announcements = new HashMap<sp<String>, sp<String>>();
         };
@@ -78,12 +78,12 @@ public:
 
 private:
     static void parseNodes(const tinyxml2::XMLElement* rootNode, const sp<Configuration>& configuration);
-    static sp<ServiceDiscovery::Configuration::Node> parseNode(const tinyxml2::XMLElement* element);
-    static sp<ServiceDiscovery::Configuration::Plugin> parsePlugin(const tinyxml2::XMLElement* element);
-    static sp<ServiceDiscovery::Configuration::Server> parseServer(const tinyxml2::XMLElement* element);
+    static sp<ServiceDiscoveryConfigurationReader::Configuration::Node> parseNode(const tinyxml2::XMLElement* element);
+    static sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> parsePlugin(const tinyxml2::XMLElement* element);
+    static sp<ServiceDiscoveryConfigurationReader::Configuration::Server> parseServer(const tinyxml2::XMLElement* element);
     static void parseServiceDiscovery(const tinyxml2::XMLElement* sdNode, const sp<Configuration>& configuration);
     static void parseServiceDiscoveryNode(const tinyxml2::XMLElement* element, const sp<Configuration>& configuration);
-    static sp<ServiceDiscovery::Configuration::Service> parseService(const tinyxml2::XMLElement* element);
+    static sp<ServiceDiscoveryConfigurationReader::Configuration::Service> parseService(const tinyxml2::XMLElement* element);
     static sp<URI> parseAnnouncement(const tinyxml2::XMLElement* element);
 
     static const char* const TAG;
@@ -106,4 +106,4 @@ private:
 
 } /* namespace mindroid */
 
-#endif /* MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERY_H_ */
+#endif /* MINDROID_RUNTIME_SYSTEM_SERVICEDISCOVERYCONFIGURATIONREADER_H_ */

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+#include <mindroid/runtime/system/ServiceDiscoveryConfigurationReader.h>
 #include <mindroid/io/File.h>
 #include <mindroid/lang/IllegalArgumentException.h>
 #include <mindroid/net/URI.h>
-#include <mindroid/runtime/system/ServiceDiscovery.h>
 #include <mindroid/util/Log.h>
 #include <tinyxml2/tinyxml2.h>
 
@@ -25,24 +25,24 @@ using namespace tinyxml2;
 
 namespace mindroid {
 
-const char* const ServiceDiscovery::TAG = "ServiceDiscovery";
-const char* const ServiceDiscovery::ROOT_TAG = "runtime";
-const char* const ServiceDiscovery::NODES_TAG = "nodes";
-const char* const ServiceDiscovery::NODE_TAG = "node";
-const char* const ServiceDiscovery::NODE_ID_ATTR = "id";
-const char* const ServiceDiscovery::PLUGIN_TAG = "plugin";
-const char* const ServiceDiscovery::PLUGIN_SCHEME_ATTR = "scheme";
-const char* const ServiceDiscovery::PLUGIN_CLASS_ATTR = "class";
-const char* const ServiceDiscovery::SERVER_TAG = "server";
-const char* const ServiceDiscovery::SERVER_URI_ATTR = "uri";
-const char* const ServiceDiscovery::SERVICE_DISCOVERY_TAG = "serviceDiscovery";
-const char* const ServiceDiscovery::SERVICE_TAG = "service";
-const char* const ServiceDiscovery::SERVICE_ID_ATTR = "id";
-const char* const ServiceDiscovery::SERVICE_NAME_ATTR = "name";
-const char* const ServiceDiscovery::ANNOUNCEMENT_TAG = "announcement";
-const char* const ServiceDiscovery::ANNOUNCEMENT_INTERFACE_DESCRIPTOR_ATTR = "interfaceDescriptor";
+const char* const ServiceDiscoveryConfigurationReader::TAG = "ServiceDiscoveryConfigurationReader";
+const char* const ServiceDiscoveryConfigurationReader::ROOT_TAG = "runtime";
+const char* const ServiceDiscoveryConfigurationReader::NODES_TAG = "nodes";
+const char* const ServiceDiscoveryConfigurationReader::NODE_TAG = "node";
+const char* const ServiceDiscoveryConfigurationReader::NODE_ID_ATTR = "id";
+const char* const ServiceDiscoveryConfigurationReader::PLUGIN_TAG = "plugin";
+const char* const ServiceDiscoveryConfigurationReader::PLUGIN_SCHEME_ATTR = "scheme";
+const char* const ServiceDiscoveryConfigurationReader::PLUGIN_CLASS_ATTR = "class";
+const char* const ServiceDiscoveryConfigurationReader::SERVER_TAG = "server";
+const char* const ServiceDiscoveryConfigurationReader::SERVER_URI_ATTR = "uri";
+const char* const ServiceDiscoveryConfigurationReader::SERVICE_DISCOVERY_TAG = "serviceDiscovery";
+const char* const ServiceDiscoveryConfigurationReader::SERVICE_TAG = "service";
+const char* const ServiceDiscoveryConfigurationReader::SERVICE_ID_ATTR = "id";
+const char* const ServiceDiscoveryConfigurationReader::SERVICE_NAME_ATTR = "name";
+const char* const ServiceDiscoveryConfigurationReader::ANNOUNCEMENT_TAG = "announcement";
+const char* const ServiceDiscoveryConfigurationReader::ANNOUNCEMENT_INTERFACE_DESCRIPTOR_ATTR = "interfaceDescriptor";
 
-sp<ServiceDiscovery::Configuration> ServiceDiscovery::read(const sp<File>& file) {
+sp<ServiceDiscoveryConfigurationReader::Configuration> ServiceDiscoveryConfigurationReader::read(const sp<File>& file) {
     XMLDocument doc;
     if (doc.LoadFile(file->getPath()->c_str()) != XML_SUCCESS) {
         return nullptr;
@@ -64,7 +64,7 @@ sp<ServiceDiscovery::Configuration> ServiceDiscovery::read(const sp<File>& file)
     return nullptr;
 }
 
-void ServiceDiscovery::parseNodes(const XMLElement* curElement, const sp<Configuration>& configuration) {
+void ServiceDiscoveryConfigurationReader::parseNodes(const XMLElement* curElement, const sp<Configuration>& configuration) {
     const XMLElement* element;
     for (element = curElement->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
         if (XMLUtil::StringEqual(NODE_TAG, element->Name())) {
@@ -76,7 +76,7 @@ void ServiceDiscovery::parseNodes(const XMLElement* curElement, const sp<Configu
     }
 }
 
-sp<ServiceDiscovery::Configuration::Node> ServiceDiscovery::parseNode(const XMLElement* curElement) {
+sp<ServiceDiscoveryConfigurationReader::Configuration::Node> ServiceDiscoveryConfigurationReader::parseNode(const XMLElement* curElement) {
     sp<Configuration::Node> node = new Configuration::Node();
     const XMLAttribute* attribute = curElement->FindAttribute(NODE_ID_ATTR);
     if (attribute != nullptr) {
@@ -101,7 +101,7 @@ sp<ServiceDiscovery::Configuration::Node> ServiceDiscovery::parseNode(const XMLE
     return node;
 }
 
-sp<ServiceDiscovery::Configuration::Plugin> ServiceDiscovery::parsePlugin(const XMLElement* curElement) {
+sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> ServiceDiscoveryConfigurationReader::parsePlugin(const XMLElement* curElement) {
     sp<Configuration::Plugin> plugin = new Configuration::Plugin();
     const XMLAttribute* attribute = curElement->FindAttribute(PLUGIN_SCHEME_ATTR);
     if (attribute != nullptr) {
@@ -127,7 +127,7 @@ sp<ServiceDiscovery::Configuration::Plugin> ServiceDiscovery::parsePlugin(const 
     return plugin;
 }
 
-sp<ServiceDiscovery::Configuration::Server> ServiceDiscovery::parseServer(const XMLElement* curElement) {
+sp<ServiceDiscoveryConfigurationReader::Configuration::Server> ServiceDiscoveryConfigurationReader::parseServer(const XMLElement* curElement) {
     sp<Configuration::Server> server = new Configuration::Server();
     const XMLAttribute* attribute = curElement->FindAttribute(SERVER_URI_ATTR);
     if (attribute != nullptr) {
@@ -141,7 +141,7 @@ sp<ServiceDiscovery::Configuration::Server> ServiceDiscovery::parseServer(const 
     return server;
 }
 
-void ServiceDiscovery::parseServiceDiscovery(const XMLElement* sdNode, const sp<Configuration>& configuration) {
+void ServiceDiscoveryConfigurationReader::parseServiceDiscovery(const XMLElement* sdNode, const sp<Configuration>& configuration) {
     const XMLElement* element;
     for (element = sdNode->FirstChildElement(); element != nullptr; element = element->NextSiblingElement()) {
         if (XMLUtil::StringEqual(NODE_TAG, element->Name())) {
@@ -150,7 +150,7 @@ void ServiceDiscovery::parseServiceDiscovery(const XMLElement* sdNode, const sp<
     }
 }
 
-void ServiceDiscovery::parseServiceDiscoveryNode(const XMLElement* curElement, const sp<Configuration>& configuration) {
+void ServiceDiscoveryConfigurationReader::parseServiceDiscoveryNode(const XMLElement* curElement, const sp<Configuration>& configuration) {
     uint32_t nodeId = 0;
     const XMLAttribute* attribute = curElement->FindAttribute(NODE_ID_ATTR);
     if (attribute != nullptr) {
@@ -174,7 +174,7 @@ void ServiceDiscovery::parseServiceDiscoveryNode(const XMLElement* curElement, c
     }
 }
 
-sp<ServiceDiscovery::Configuration::Service> ServiceDiscovery::parseService(const XMLElement* curElement) {
+sp<ServiceDiscoveryConfigurationReader::Configuration::Service> ServiceDiscoveryConfigurationReader::parseService(const XMLElement* curElement) {
     sp<Configuration::Service> service = new Configuration::Service();
     const XMLAttribute* attribute = curElement->FindAttribute(SERVICE_ID_ATTR);
     if (attribute != nullptr) {
@@ -184,7 +184,7 @@ sp<ServiceDiscovery::Configuration::Service> ServiceDiscovery::parseService(cons
     if (attribute != nullptr) {
         service->name = String::valueOf(attribute->Value());
     }
-    if (service->id == 0 || service->name == nullptr || service->name->isEmpty()) {
+    if (service->id < 0 || service->name == nullptr || service->name->isEmpty()) {
         Log::e(TAG, "Invalid service: %u", service->id);
         return nullptr;
     }
@@ -202,7 +202,7 @@ sp<ServiceDiscovery::Configuration::Service> ServiceDiscovery::parseService(cons
     return service;
 }
 
-sp<URI> ServiceDiscovery::parseAnnouncement(const XMLElement* curElement) {
+sp<URI> ServiceDiscoveryConfigurationReader::parseAnnouncement(const XMLElement* curElement) {
     sp<String> interfaceDescriptor = nullptr;
     const XMLAttribute* attribute = curElement->FindAttribute(ANNOUNCEMENT_INTERFACE_DESCRIPTOR_ATTR);
     if (attribute != nullptr) {

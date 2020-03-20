@@ -60,6 +60,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/net/NetworkInterface.cpp \
 	src/mindroid/net/ServerSocket.cpp \
 	src/mindroid/net/Socket.cpp \
+	src/mindroid/net/StandardSocketOptions.cpp \
 	src/mindroid/net/URI.cpp \
 	src/mindroid/nio/Buffer.cpp \
 	src/mindroid/nio/ByteArrayBuffer.cpp \
@@ -87,7 +88,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/runtime/system/Mindroid.cpp \
 	src/mindroid/runtime/system/Plugin.cpp \
 	src/mindroid/runtime/system/Runtime.cpp \
-	src/mindroid/runtime/system/ServiceDiscovery.cpp \
+	src/mindroid/runtime/system/ServiceDiscoveryConfigurationReader.cpp \
 	src/mindroid/runtime/system/io/AbstractClient.cpp \
 	src/mindroid/runtime/system/io/AbstractServer.cpp \
 	src/mindroid/util/Assert.cpp \

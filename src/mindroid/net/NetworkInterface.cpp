@@ -60,7 +60,9 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
             networkInterfaceMap->put(name, networkInterface);
         }
 
-        networkInterface->addAddress(curNetworkInterface->ifa_addr);
+        if (curNetworkInterface->ifa_addr != nullptr) {
+            networkInterface->addAddress(curNetworkInterface->ifa_addr);
+        }
     }
     freeifaddrs(networkInterfaces);
 
