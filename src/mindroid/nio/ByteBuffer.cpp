@@ -25,11 +25,23 @@
 namespace mindroid {
 
 ByteBuffer::ByteBuffer(const sp<ByteArray>& buffer, bool readOnly) :
-        Buffer(0, buffer->size(), buffer->size(), readOnly), mBuffer(buffer) {
+        Buffer(0, buffer->size(), buffer->size(), readOnly), mBuffer(buffer), mOffset(0) {
 }
 
 ByteBuffer::ByteBuffer(const sp<ByteArray>& buffer, size_t position, size_t limit, size_t capacity, bool readOnly, size_t offset) :
         Buffer(position, limit, capacity, readOnly), mBuffer(buffer), mOffset(offset) {
+    if (position > limit) {
+        throw IndexOutOfBoundsException("position > limit");
+    }
+    if (limit > capacity) {
+        throw IndexOutOfBoundsException("limit > capacity");
+    }
+    if (capacity > buffer->size()) {
+        throw IndexOutOfBoundsException("capacity > buffer size");
+    }
+    if (offset + limit > buffer->size()) {
+        throw IndexOutOfBoundsException("buffer overflow");
+    }
 }
 
 sp<ByteBuffer> ByteBuffer::allocate(size_t capacity) {
@@ -40,14 +52,6 @@ size_t ByteBuffer::arrayOffset() const {
     return mOffset;
 }
 
-bool ByteBuffer::hasRemaining() const {
-    return (mOffset + mPosition) < mLimit;
-}
-
-size_t ByteBuffer::remaining() const {
-    return (mOffset + mPosition) < mLimit ? mLimit - (mOffset + mPosition) : 0;
-}
-
 int32_t ByteBuffer::compareTo(const sp<ByteBuffer>& other) const {
     if (other == nullptr) {
         return false;
@@ -56,7 +60,13 @@ int32_t ByteBuffer::compareTo(const sp<ByteBuffer>& other) const {
 }
 
 int32_t ByteBuffer::compareTo(const ByteBuffer& other) const {
-    return std::memcmp(mBuffer->c_arr(), other.mBuffer->c_arr(), std::min(mLimit, other.mLimit));
+    size_t count = (remaining() < other.remaining()) ? remaining() : other.remaining();
+    int32_t comparison = std::memcmp(mBuffer->c_arr() + mPosition, other.mBuffer->c_arr() + other.mPosition, count);
+    if (comparison != 0) {
+        return comparison;
+    } else {
+        return remaining() - other.remaining();
+    }
 }
 
 bool ByteBuffer::equals(const sp<Object>& other) const{
@@ -71,7 +81,7 @@ bool ByteBuffer::equals(const sp<Object>& other) const{
 }
 
 bool ByteBuffer::operator==(const ByteBuffer& other) const {
-    return mLimit == other.mLimit && std::memcmp(mBuffer->c_arr(), other.mBuffer->c_arr(), mLimit) == 0;
+    return compareTo(other) == 0;
 }
 
 bool ByteBuffer::operator!=(const ByteBuffer& other) const {
@@ -276,18 +286,18 @@ sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array) {
     return new ByteArrayBuffer(array);
 }
 
-sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array, size_t offset, size_t count) {
-    return new ByteArrayBuffer(array, offset, count);
+sp<ByteBuffer> ByteBuffer::wrap(const sp<ByteArray>& array, size_t offset, size_t size) {
+    return new ByteArrayBuffer(array, offset, size);
 }
 
 void ByteBuffer::checkBufferOverflow(size_t index, size_t amount) {
-    if (mOffset + index + amount > mLimit) {
+    if (index + amount > mLimit) {
         throw BufferOverflowException();
     }
 }
 
 void ByteBuffer::checkBufferUnderflow(size_t index, size_t amount) {
-    if (mOffset + index + amount > mLimit) {
+    if (index + amount > mLimit) {
         throw BufferUnderflowException();
     }
 }

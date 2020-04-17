@@ -66,11 +66,11 @@ size_t Buffer::position() const {
     return mPosition;
 }
 
-sp<Buffer> Buffer::position(size_t newPos) {
-    if (newPos > mLimit) {
+sp<Buffer> Buffer::position(size_t newPosition) {
+    if (newPosition > mLimit) {
         throw BufferOverflowException("Cannot position outside of the buffer");
     }
-    mPosition = newPos;
+    mPosition = newPosition;
     return this;
 }
 

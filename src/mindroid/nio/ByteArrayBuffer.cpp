@@ -40,9 +40,8 @@ sp<ByteArray> ByteArrayBuffer::array() const {
 }
 
 sp<ByteBuffer> ByteArrayBuffer::compact() {
-    size_t count = mLimit - mPosition;
-    std::memmove(mBuffer->c_arr() + mOffset, mBuffer->c_arr() + mOffset + mPosition, count);
-    mPosition = count;
+    std::memmove(mBuffer->c_arr() + mOffset, mBuffer->c_arr() + mOffset + mPosition, remaining());
+    mPosition = mLimit - mPosition;
     mLimit = mCapacity;
     return this;
 }
@@ -52,8 +51,7 @@ sp<ByteBuffer> ByteArrayBuffer::duplicate() {
 }
 
 sp<ByteBuffer> ByteArrayBuffer::slice() {
-    size_t count = mLimit - mPosition;
-    return new ByteArrayBuffer(mBuffer, 0, count, count, mPosition + mOffset, false);
+    return new ByteArrayBuffer(mBuffer, 0, remaining(), remaining(), mPosition + mOffset, false);
 }
 
 } /* namespace mindroid */

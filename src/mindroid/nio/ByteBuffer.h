@@ -42,22 +42,30 @@ public:
     size_t arrayOffset() const override;
 
     /**
-     * Tells whether there are any elements between the current position and the limit.
-     */
-    bool hasRemaining() const override;
-
-    /**
-     * Returns the number of elements between the current position and the limit.
-     */
-    size_t remaining() const override;
-
-    /**
-     * Compacts this buffer  (optional operation).
+     * Compacts this byte buffer.
+     * <p>
+     * The remaining bytes will be moved to the head of the
+     * buffer, starting from position zero. Then the position is set to
+     * {@code remaining()}; the limit is set to capacity; the mark is
+     * cleared.
+     *
+     * @return {@code this}
+     * @exception ReadOnlyBufferException
+     *                if no changes may be made to the contents of this buffer.
      */
     virtual sp<ByteBuffer> compact() = 0;
 
     /**
-     * Compares this buffer to another.
+     * Compares the remaining bytes of this buffer to another byte buffer's
+     * remaining bytes.
+     *
+     * @param other
+     *            another byte buffer.
+     * @return a negative value if this is less than {@code other}; 0 if this
+     *         equals to {@code other}; a positive value if this is greater
+     *         than {@code other}.
+     * @exception ClassCastException
+     *                if {@code other} is not a byte buffer.
      */
     int32_t compareTo(const sp<ByteBuffer>& other) const;
 
@@ -237,7 +245,21 @@ public:
     sp<ByteBuffer> put(const sp<ByteArray>& byteArray, size_t offset, size_t size);
 
     /**
-     * Creates a new byte buffer whose content is a shared subsequence of this buffer's content.
+     * Returns a sliced buffer that shares its content with this buffer.
+     * <p>
+     * The sliced buffer's capacity will be this buffer's
+     * {@code remaining()}, and it's zero position will correspond to
+     * this buffer's current position. The new buffer's position will be 0,
+     * limit will be its capacity, and its mark is cleared. The new buffer's
+     * read-only property and byte order are the same as this buffer's.
+     * <p>
+     * The new buffer's position will be zero, its capacity and
+     * its limit will be the number of bytes remaining in this buffer,
+     * and its mark will be undefined.
+     * The new buffer will be direct if, and only if, this buffer is direct,
+     * and it will be read-only if, and only if, this buffer is read-only.
+     *
+     * @return a sliced buffer that shares its content with this buffer.
      */
     virtual sp<ByteBuffer> slice() = 0;
 
@@ -263,7 +285,7 @@ protected:
     void checkBufferUnderflow(size_t index, size_t amount);
 
     sp<ByteArray> mBuffer;
-    size_t mOffset = 0;
+    const size_t mOffset;
 };
 
 } /* namespace mindroid */

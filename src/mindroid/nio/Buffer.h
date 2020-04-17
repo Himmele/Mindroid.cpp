@@ -99,7 +99,7 @@ protected:
     Buffer(size_t position, size_t limit, size_t capacity, bool readOnly);
 
     /* 0 <= mark <= position <= limit <= capacity */
-    size_t mPosition = 0;
+    size_t mPosition;
     size_t mLimit;
     const size_t mCapacity;
     const bool mReadOnly;
