@@ -20,8 +20,10 @@
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
 #include <mindroid/net/InetAddress.h>
+#include <mindroid/net/InterfaceAddress.h>
 #include <mindroid/util/ArrayList.h>
 #include <ifaddrs.h>
+#include <netinet/in.h>
 
 namespace mindroid {
 
@@ -40,6 +42,10 @@ public:
      */
     sp<ArrayList<sp<InetAddress>>> getInetAddresses();
 
+    /**
+     * Returns a list of the InterfaceAddresses of this network interface.
+     */
+    sp<ArrayList<sp<InterfaceAddress>>> getInterfaceAddresses();
 
     /**
      * Returns the name of this network interface (such as "eth0" or "lo").
@@ -81,12 +87,16 @@ public:
     bool isLoopback() const;
 
 private:
+    static const size_t IPV6_ADDRESS_SIZE = 16;
+
     NetworkInterface(const sp<String>& name, uint32_t flags);
-    void addAddress(struct sockaddr* interfaceAddress);
+    void addInterfaceAddress(struct ifaddrs* ifAddr);
+    static sp<InetAddress> toInet4Address(sockaddr_in* addr);
+    static sp<InetAddress> toInet6Address(sockaddr_in6* addr);
 
     sp<String> mName;
     sp<ByteArray> mHardwareAddress;
-    sp<ArrayList<sp<InetAddress>>> mInetAddresses;
+    sp<ArrayList<sp<InterfaceAddress>>> mInterfaceAddresses;
     uint32_t mFlags;
 };
 

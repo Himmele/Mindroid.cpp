@@ -36,7 +36,7 @@
 namespace mindroid {
 
 NetworkInterface::NetworkInterface(const sp<String>& name, uint32_t flags) :
-        mName(name), mInetAddresses(new ArrayList<sp<InetAddress>>()), mFlags(flags) {
+        mName(name), mInterfaceAddresses(new ArrayList<sp<InterfaceAddress>>()), mFlags(flags) {
 }
 
 sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
@@ -61,7 +61,7 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
         }
 
         if (curNetworkInterface->ifa_addr != nullptr) {
-            networkInterface->addAddress(curNetworkInterface->ifa_addr);
+            networkInterface->addInterfaceAddress(curNetworkInterface);
         }
     }
     freeifaddrs(networkInterfaces);
@@ -69,34 +69,33 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
     return networkInterfaceMap->values();
 }
 
-void NetworkInterface::addAddress(struct sockaddr* interfaceAddress) {
-    const size_t IPV6_ADDRESS_SIZE = 16;
-
-    switch (interfaceAddress->sa_family) {
+void NetworkInterface::addInterfaceAddress(struct ifaddrs* ifAddr) {
+    switch (ifAddr->ifa_addr->sa_family) {
     case AF_INET6: {
-        auto ipv6InterfaceAddress = reinterpret_cast<struct sockaddr_in6*>(interfaceAddress);
-        sp<ByteArray> ipv6Address = new ByteArray(IPV6_ADDRESS_SIZE);
-        memcpy(ipv6Address->c_arr(), ipv6InterfaceAddress->sin6_addr.s6_addr, IPV6_ADDRESS_SIZE);
-        mInetAddresses->add(new Inet6Address(ipv6Address, nullptr, ipv6InterfaceAddress->sin6_scope_id));
+        sp<InterfaceAddress> interfaceAddress =
+            new InterfaceAddress(toInet6Address(reinterpret_cast<sockaddr_in6*>(ifAddr->ifa_addr)));
+        mInterfaceAddresses->add(interfaceAddress);
         break;
     }
     case AF_INET: {
-        auto ipv4InterfaceAddress = reinterpret_cast<struct sockaddr_in*>(interfaceAddress);
-        sp<ByteArray> ipv4Address = new ByteArray(sizeof(uint32_t));
-        memcpy(ipv4Address->c_arr(), &ipv4InterfaceAddress->sin_addr.s_addr, sizeof(uint32_t));
-        mInetAddresses->add(new Inet4Address(ipv4Address, nullptr));
+        sp<InterfaceAddress> interfaceAddress =
+            new InterfaceAddress(toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddr->ifa_addr)));
+        if (ifAddr->ifa_flags & IFF_BROADCAST) {
+            interfaceAddress->mBroadcast = toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddr->ifa_broadaddr));
+        }
+        mInterfaceAddresses->add(interfaceAddress);
         break;
     }
 #ifndef __APPLE__
     case AF_PACKET: {
-        auto packetInterfaceAddress = reinterpret_cast<struct sockaddr_ll*>(interfaceAddress);
+        auto packetInterfaceAddress = reinterpret_cast<struct sockaddr_ll*>(ifAddr->ifa_addr);
         mHardwareAddress = new ByteArray(packetInterfaceAddress->sll_halen);
         memcpy(mHardwareAddress->c_arr(), packetInterfaceAddress->sll_addr, packetInterfaceAddress->sll_halen);
         break;
     }
 #else
     case AF_LINK: {
-        sockaddr_dl* linkLevelSocketAddress = (sockaddr_dl*) interfaceAddress->sa_data;
+        sockaddr_dl* linkLevelSocketAddress = (sockaddr_dl*) sockAddress->sa_data;
         mHardwareAddress = new ByteArray(linkLevelSocketAddress->sdl_alen);
         memcpy(mHardwareAddress->c_arr(), LLADDR(linkLevelSocketAddress), linkLevelSocketAddress->sdl_alen);
         break;
@@ -107,8 +106,30 @@ void NetworkInterface::addAddress(struct sockaddr* interfaceAddress) {
     }
 }
 
+sp<InetAddress> NetworkInterface::toInet4Address(struct sockaddr_in* ipv4InterfaceAddress) {
+    sp<ByteArray> ipv4Address = new ByteArray(sizeof(uint32_t));
+    memcpy(ipv4Address->c_arr(), &ipv4InterfaceAddress->sin_addr.s_addr, sizeof(uint32_t));
+    return new Inet4Address(ipv4Address, nullptr);
+}
+
+sp<InetAddress> NetworkInterface::toInet6Address(struct sockaddr_in6* ipv6InterfaceAddress) {
+    sp<ByteArray> ipv6Address = new ByteArray(IPV6_ADDRESS_SIZE);
+    memcpy(ipv6Address->c_arr(), ipv6InterfaceAddress->sin6_addr.s6_addr, IPV6_ADDRESS_SIZE);
+    return new Inet6Address(ipv6Address, nullptr, ipv6InterfaceAddress->sin6_scope_id);
+}
+
 sp<ArrayList<sp<InetAddress>>> NetworkInterface::getInetAddresses() {
-    return mInetAddresses;
+    sp<ArrayList<sp<InetAddress>>> inetAddresses = new ArrayList<sp<InetAddress>>(mInterfaceAddresses->size());
+
+    for (const auto& interfaceAddress : mInterfaceAddresses->arr()) {
+        inetAddresses->add(interfaceAddress->getAddress());
+    }
+
+    return inetAddresses;
+}
+
+sp<ArrayList<sp<InterfaceAddress>>> NetworkInterface::getInterfaceAddresses() {
+    return mInterfaceAddresses;
 }
 
 bool NetworkInterface::isUp() const {
