@@ -63,6 +63,7 @@ void AbstractClient::shutdown(const Exception& cause) {
         } catch (const IOException& ignore) {
         }
     }
+    mIsClosed = true;
 
     onDisconnected(cause);
 }

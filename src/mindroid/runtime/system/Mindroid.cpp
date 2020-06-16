@@ -116,21 +116,30 @@ void Mindroid::detachProxy(uint64_t proxyId, uint64_t binderId) {
 
 sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags) {
     uint32_t nodeId = (uint32_t) ((binder->getId() >> 32) & 0xFFFFFFFFL);
-    sp<Client> client = mClients->get(nodeId);
-    if (client == nullptr) {
-        if (mConfiguration != nullptr) {
-            sp<ServiceDiscoveryConfigurationReader::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
-            if (node  != nullptr) {
-                sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> plugin = node->plugins->get(binder->getUri()->getScheme());
-                if (plugin != nullptr) {
-                    sp<ServiceDiscoveryConfigurationReader::Configuration::Server> server = plugin->server;
-                    if (server != nullptr) {
-                        try {
-                            client = new Client(this, node->id);
-                            mClients->put(nodeId, client);
-                            client->start(server->uri);
-                        } catch (const IOException& e) {
-                            mClients->remove(nodeId);
+    sp<Client> client;
+    {
+        AutoLock autoLock(mLock);
+        client = mClients->get(nodeId);
+        if (client == nullptr) {
+            if (mConfiguration != nullptr) {
+                sp<ServiceDiscoveryConfigurationReader::Configuration::Node> node = mConfiguration->nodes->get(nodeId);
+                if (node  != nullptr) {
+                    sp<ServiceDiscoveryConfigurationReader::Configuration::Plugin> plugin = node->plugins->get(binder->getUri()->getScheme());
+                    if (plugin != nullptr) {
+                        sp<ServiceDiscoveryConfigurationReader::Configuration::Server> server = plugin->server;
+                        if (server != nullptr) {
+                            try {
+                                client = new Client(this, node->id);
+                                client->start(server->uri);
+                                if (!client->isClosed()) {
+                                    mClients->put(nodeId, client);
+                                } else {
+                                    throw RemoteException("Binder transaction failure");
+                                }
+                            } catch (const IOException& e) {
+                                throw RemoteException("Binder transaction failure");
+                            }
+                        } else {
                             throw RemoteException("Binder transaction failure");
                         }
                     } else {
@@ -142,8 +151,6 @@ sp<Promise<sp<Parcel>>> Mindroid::transact(const sp<IBinder>& binder, int32_t wh
             } else {
                 throw RemoteException("Binder transaction failure");
             }
-        } else {
-            throw RemoteException("Binder transaction failure");
         }
     }
     return client->transact(binder, what, data, flags);
@@ -166,6 +173,7 @@ sp<Promise<sp<Void>>> Mindroid::disconnect(const sp<URI>& node, const sp<Bundle>
 }
 
 void Mindroid::onShutdown(const sp<Client>& client) {
+    AutoLock autoLock(mLock);
     mClients->remove(client->getNodeId());
 }
 

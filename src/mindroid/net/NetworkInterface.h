@@ -90,9 +90,10 @@ private:
     static const size_t IPV6_ADDRESS_SIZE = 16;
 
     NetworkInterface(const sp<String>& name, uint32_t flags);
-    void addInterfaceAddress(struct ifaddrs* ifAddr);
-    static sp<InetAddress> toInet4Address(sockaddr_in* addr);
-    static sp<InetAddress> toInet6Address(sockaddr_in6* addr);
+    void addInterfaceAddress(struct ifaddrs* interfaceAddress);
+
+    static sp<InetAddress> toInet4Address(sockaddr_in* socketAddress);
+    static sp<InetAddress> toInet6Address(sockaddr_in6* socketAddress);
 
     sp<String> mName;
     sp<ByteArray> mHardwareAddress;

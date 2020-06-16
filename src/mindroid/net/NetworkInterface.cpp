@@ -69,26 +69,26 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
     return networkInterfaceMap->values();
 }
 
-void NetworkInterface::addInterfaceAddress(struct ifaddrs* ifAddr) {
-    switch (ifAddr->ifa_addr->sa_family) {
+void NetworkInterface::addInterfaceAddress(struct ifaddrs* ifAddress) {
+    switch (ifAddress->ifa_addr->sa_family) {
     case AF_INET6: {
         sp<InterfaceAddress> interfaceAddress =
-            new InterfaceAddress(toInet6Address(reinterpret_cast<sockaddr_in6*>(ifAddr->ifa_addr)));
+            new InterfaceAddress(toInet6Address(reinterpret_cast<sockaddr_in6*>(ifAddress->ifa_addr)));
         mInterfaceAddresses->add(interfaceAddress);
         break;
     }
     case AF_INET: {
         sp<InterfaceAddress> interfaceAddress =
-            new InterfaceAddress(toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddr->ifa_addr)));
-        if (ifAddr->ifa_flags & IFF_BROADCAST) {
-            interfaceAddress->mBroadcast = toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddr->ifa_broadaddr));
+            new InterfaceAddress(toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddress->ifa_addr)));
+        if (ifAddress->ifa_flags & IFF_BROADCAST) {
+            interfaceAddress->mBroadcast = toInet4Address(reinterpret_cast<sockaddr_in*>(ifAddress->ifa_broadaddr));
         }
         mInterfaceAddresses->add(interfaceAddress);
         break;
     }
 #ifndef __APPLE__
     case AF_PACKET: {
-        auto packetInterfaceAddress = reinterpret_cast<struct sockaddr_ll*>(ifAddr->ifa_addr);
+        auto packetInterfaceAddress = reinterpret_cast<struct sockaddr_ll*>(ifAddress->ifa_addr);
         mHardwareAddress = new ByteArray(packetInterfaceAddress->sll_halen);
         memcpy(mHardwareAddress->c_arr(), packetInterfaceAddress->sll_addr, packetInterfaceAddress->sll_halen);
         break;
@@ -106,25 +106,23 @@ void NetworkInterface::addInterfaceAddress(struct ifaddrs* ifAddr) {
     }
 }
 
-sp<InetAddress> NetworkInterface::toInet4Address(struct sockaddr_in* ipv4InterfaceAddress) {
+sp<InetAddress> NetworkInterface::toInet4Address(struct sockaddr_in* socketAddress) {
     sp<ByteArray> ipv4Address = new ByteArray(sizeof(uint32_t));
-    memcpy(ipv4Address->c_arr(), &ipv4InterfaceAddress->sin_addr.s_addr, sizeof(uint32_t));
+    memcpy(ipv4Address->c_arr(), &socketAddress->sin_addr.s_addr, sizeof(uint32_t));
     return new Inet4Address(ipv4Address, nullptr);
 }
 
-sp<InetAddress> NetworkInterface::toInet6Address(struct sockaddr_in6* ipv6InterfaceAddress) {
+sp<InetAddress> NetworkInterface::toInet6Address(struct sockaddr_in6* socketAddress) {
     sp<ByteArray> ipv6Address = new ByteArray(IPV6_ADDRESS_SIZE);
-    memcpy(ipv6Address->c_arr(), ipv6InterfaceAddress->sin6_addr.s6_addr, IPV6_ADDRESS_SIZE);
-    return new Inet6Address(ipv6Address, nullptr, ipv6InterfaceAddress->sin6_scope_id);
+    memcpy(ipv6Address->c_arr(), socketAddress->sin6_addr.s6_addr, IPV6_ADDRESS_SIZE);
+    return new Inet6Address(ipv6Address, nullptr, socketAddress->sin6_scope_id);
 }
 
 sp<ArrayList<sp<InetAddress>>> NetworkInterface::getInetAddresses() {
     sp<ArrayList<sp<InetAddress>>> inetAddresses = new ArrayList<sp<InetAddress>>(mInterfaceAddresses->size());
-
     for (const auto& interfaceAddress : mInterfaceAddresses->arr()) {
         inetAddresses->add(interfaceAddress->getAddress());
     }
-
     return inetAddresses;
 }
 

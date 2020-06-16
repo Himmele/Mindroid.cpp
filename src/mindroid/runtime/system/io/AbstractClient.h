@@ -99,6 +99,10 @@ public:
         return mConnection != nullptr ? mConnection->mRemoteSocketAddress : nullptr;
     }
 
+    bool isClosed() const {
+        return mIsClosed;
+    }
+
 protected:
     static const bool DEBUG = false;
 
@@ -112,6 +116,7 @@ private:
     sp<String> mHost;
     int32_t mPort = -1;
     sp<Connection> mConnection;
+    bool volatile mIsClosed = false;
 };
 
 } /* namespace mindroid */
