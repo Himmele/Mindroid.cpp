@@ -364,6 +364,21 @@ bool Socket::getTcpNoDelay() const {
     return value != 0;
 }
 
+void Socket::setSoLinger(bool on, int32_t linger) {
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+
+    struct linger sl;
+    sl.l_onoff = on ? 1 : 0; /* non-zero value enables linger option in kernel */
+    sl.l_linger = linger; /* timeout interval in seconds */
+    const int32_t rc = setsockopt(mFd, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl));
+
+    if (rc != 0) {
+        throw SocketException();
+    }
+}
+
 void Socket::shutdownInput() {
     if (isInputShutdown()) {
         throw SocketException("Input has already been shutdown");

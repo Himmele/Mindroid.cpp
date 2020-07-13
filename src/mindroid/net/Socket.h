@@ -210,6 +210,21 @@ public:
     bool getTcpNoDelay() const;
 
     /**
+     * Sets the state of the {@code SocketOptions.SO_LINGER} with the given
+     * timeout in seconds. The timeout value for this option is silently limited
+     * to the maximum of {@code 65535}.
+     *
+     * @param on
+     *            the state whether this option is enabled or not.
+     * @param timeout
+     *            the linger timeout value in seconds.
+     * @throws SocketException
+     *             if an error occurs while setting the option.
+     * @see SocketOptions#SO_LINGER
+     */
+    void setSoLinger(bool on, int32_t linger);
+
+    /**
      * Closes the input stream of this socket. Any further data sent to this
      * socket will be discarded. Reading from this socket after this method has
      * been called will return the value {@code EOF}.
