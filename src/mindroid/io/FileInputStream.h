@@ -41,6 +41,8 @@ public:
 
     size_t skip(size_t count) override;
 
+    void reset() override;
+
 private:
     std::ifstream mInputFileStream;
 };

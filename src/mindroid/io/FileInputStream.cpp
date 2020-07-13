@@ -87,4 +87,9 @@ size_t FileInputStream::skip(size_t count) {
     return count;
 }
 
+void FileInputStream::reset() {
+    mInputFileStream.clear();
+    mInputFileStream.seekg(0, std::ios_base::beg);
+}
+
 } /* namespace mindroid */

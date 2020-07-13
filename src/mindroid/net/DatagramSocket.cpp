@@ -177,10 +177,12 @@ void DatagramSocket::send(const sp<DatagramPacket>& datagramPacket) {
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(inetAddress)) {
+        auto inet6Address = Class<Inet6Address>::cast(inetAddress);
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
         std::memcpy(&sin6.sin6_addr.s6_addr, inetAddress->getAddress()->c_arr(), 16);
         sin6.sin6_port = htons(datagramPacket->getPort());
+        sin6.sin6_scope_id = inet6Address->getScopeId();
         saSize = sizeof(sockaddr_in6);
     } else {
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
