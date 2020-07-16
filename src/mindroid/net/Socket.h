@@ -21,6 +21,7 @@
 #include <mindroid/lang/String.h>
 #include <mindroid/io/InputStream.h>
 #include <mindroid/io/OutputStream.h>
+#include <mindroid/net/SocketOption.h>
 
 namespace mindroid {
 
@@ -156,6 +157,19 @@ public:
     sp<InetSocketAddress> getRemoteSocketAddress() const;
 
     /**
+     * Binds this socket to the given local host address and port specified by the SocketAddress {@code
+     * socketAddress}. If {@code socketAddress} is set to {@code null}, this socket will be bound to an
+     * available local address on any free port.
+     *
+     * @param localAddr
+     *            the specific address and port on the local machine to bind to.
+     * @throws IOException
+     *             if the socket is already bound or an error occurs while
+     *             binding.
+     */
+    void bind(const sp<InetSocketAddress>& socketAddress);
+
+    /**
      * Returns whether this socket is bound to a local address and port.
      *
      * @return {@code true} if the socket is bound to a local address, {@code
@@ -235,6 +249,18 @@ public:
         return mIsOutputShutdown;
     }
 
+    /**
+     * Sets the value of a socket option.
+     */
+    template<typename T>
+    void setOption(const SocketOption<T>& name, T value);
+
+    /**
+     * Returns the value of a socket option.
+     */
+    template<typename T>
+    T getOption(const SocketOption<T>& name);
+
 private:
     class SocketInputStream : public InputStream {
     public:
@@ -287,6 +313,8 @@ private:
         friend class Socket;
     };
 
+    void setDefaultSocketOptions();
+
     int32_t mFd = -1;
     int32_t mLocalPort = -1;
     sp<InetAddress> mLocalAddress;
@@ -297,6 +325,8 @@ private:
     bool mIsClosed = false;
     bool mIsInputShutdown = false;
     bool mIsOutputShutdown = false;
+    bool mReuseAddress = false;
+    bool mReusePort = false;
 
     friend class ServerSocket;
 };

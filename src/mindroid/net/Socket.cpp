@@ -21,10 +21,12 @@
 #include <mindroid/net/Inet6Address.h>
 #include <mindroid/net/InetSocketAddress.h>
 #include <mindroid/net/SocketException.h>
+#include <mindroid/net/StandardSocketOptions.h>
 #include <mindroid/io/IOException.h>
 #include <mindroid/lang/Class.h>
 #include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
+#include <mindroid/lang/UnsupportedOperationException.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
@@ -64,13 +66,22 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         throw SocketException("Already closed");
     }
 
+    sp<InetAddress> inetAddress = socketAddress->getAddress();
+
+    if (mFd == -1) {
+        assert(!mIsBound);
+        if (Class<Inet6Address>::isInstance(inetAddress)) {
+            mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        } else {
+            mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+        }
+    }
+
     sockaddr_storage ss;
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
-    sp<InetAddress> inetAddress = socketAddress->getAddress();
     if (Class<Inet6Address>::isInstance(inetAddress)) {
         sp<Inet6Address> inet6Address = Class<Inet6Address>::cast(inetAddress);
-        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
         std::memcpy(&sin6.sin6_addr.s6_addr, inet6Address->getAddress()->c_arr(), 16);
@@ -78,7 +89,6 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         sin6.sin6_scope_id = inet6Address->getScopeId();
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
         std::memcpy(&sin.sin_addr.s_addr, inetAddress->getAddress()->c_arr(), 4);
@@ -332,6 +342,87 @@ void Socket::shutdownOutput() {
     }
 
     mIsOutputShutdown = true;
+}
+
+void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
+    if (mIsBound) {
+        throw SocketException("Socket is already bound");
+    }
+    if (mIsClosed) {
+        throw SocketException("Socket is already closed");
+    }
+
+    sp<InetSocketAddress> bindAddress;
+    if (socketAddress == nullptr) {
+        bindAddress = new InetSocketAddress(Inet6Address::ANY, 0);
+    } else {
+        bindAddress = socketAddress;
+    }
+
+    sp<InetAddress> address = bindAddress->getAddress();
+
+    sockaddr_storage ss;
+    socklen_t saSize = 0;
+    std::memset(&ss, 0, sizeof(ss));
+    if (Class<Inet6Address>::isInstance(address)) {
+        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        int32_t value = 0;
+        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+
+        sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
+        sin6.sin6_family = AF_INET6;
+        std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
+        sin6.sin6_port = htons(bindAddress->getPort());
+        saSize = sizeof(sockaddr_in6);
+    } else {
+        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+
+        sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
+        sin.sin_family = AF_INET;
+        std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
+        sin.sin_port = htons(bindAddress->getPort());
+        saSize = sizeof(sockaddr_in);
+    }
+
+    setDefaultSocketOptions();
+
+    if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
+        int bindErrno = errno; // Save errno before closing.
+        close();
+        throw SocketException(String::format("Failed to bind to port %u: %s (errno=%d)",
+                    bindAddress->getPort(), strerror(bindErrno), bindErrno));
+    }
+    mIsBound = true;
+}
+
+void Socket::setDefaultSocketOptions() {
+    int32_t value = mReuseAddress;
+    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+
+    value = mReusePort;
+    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value));
+}
+
+template<>
+void Socket::setOption<bool>(const SocketOption<bool>& name, bool value) {
+    if (name == StandardSocketOptions::REUSE_PORT) {
+        mReusePort = value;
+    } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+        mReuseAddress = value;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
+}
+
+template<>
+bool Socket::getOption<bool>(const SocketOption<bool>& name) {
+    if (name == StandardSocketOptions::REUSE_PORT) {
+        return mReusePort;
+    } else if (name == StandardSocketOptions::REUSE_ADDRESS) {
+        return mReuseAddress;
+    } else {
+        throw UnsupportedOperationException("Unknown socket option");
+    }
 }
 
 } /* namespace mindroid */
