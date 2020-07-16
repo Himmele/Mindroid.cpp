@@ -78,6 +78,8 @@ public:
      */
     void close();
 
+    void close(bool shutdown);
+
     /**
      * Binds this socket to the given local host address and port specified by the SocketAddress {@code
      * socketAddress}. If {@code socketAddress} is set to {@code null}, this socket will be bound to an
@@ -223,6 +225,12 @@ public:
      * @see SocketOptions#SO_LINGER
      */
     void setSoLinger(bool on, int32_t linger);
+
+    /**
+     * Returns this socket's {@link SocketOptions#SO_LINGER linger} timeout in seconds,
+     * or -1 for no linger (i.e. {@code close} will return immediately).
+     */
+    int32_t getSoLinger() const;
 
     /**
      * Closes the input stream of this socket. Any further data sent to this

@@ -49,11 +49,17 @@ Socket::~Socket() {
 }
 
 void Socket::close() {
+    close(true);
+}
+
+void Socket::close(bool shutdown) {
     mIsClosed = true;
     mIsConnected = false;
     mLocalAddress = Inet6Address::ANY;
     if (mFd != -1) {
-        ::shutdown(mFd, SHUT_RDWR);
+        if (shutdown) {
+            ::shutdown(mFd, SHUT_RDWR);
+        }
         ::close(mFd);
         mFd = -1;
     }
@@ -344,6 +350,7 @@ void Socket::setTcpNoDelay(bool enabled) {
     if (mFd == -1) {
         throw SocketException("Socket is closed");
     }
+
     const int32_t value = enabled ? 1 : 0;
     const int32_t rc = setsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, sizeof(value));
     if (rc != 0) {
@@ -355,6 +362,7 @@ bool Socket::getTcpNoDelay() const {
     if (mFd == -1) {
         throw SocketException("Socket is closed");
     }
+
     int32_t value;
     socklen_t size = sizeof(int32_t);
     const int32_t rc = getsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, &size);
@@ -370,13 +378,26 @@ void Socket::setSoLinger(bool on, int32_t linger) {
     }
 
     struct linger sl;
-    sl.l_onoff = on ? 1 : 0; /* non-zero value enables linger option in kernel */
-    sl.l_linger = linger; /* timeout interval in seconds */
+    sl.l_onoff = on ? 1 : 0;
+    sl.l_linger = linger; // Timeout period in seconds.
     const int32_t rc = setsockopt(mFd, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl));
-
     if (rc != 0) {
         throw SocketException();
     }
+}
+
+int32_t Socket::getSoLinger() const {
+    if (mFd == -1) {
+        throw SocketException("Socket is closed");
+    }
+
+    struct linger sl;
+    socklen_t size = sizeof(sl);
+    const int32_t rc = getsockopt(mFd, SOL_SOCKET, SO_LINGER, (void*) &sl, &size);
+    if (rc != 0) {
+        throw SocketException();
+    }
+    return (sl.l_onoff != 0) ? sl.l_linger : -1;
 }
 
 void Socket::shutdownInput() {
