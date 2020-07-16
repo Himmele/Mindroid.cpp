@@ -79,6 +79,19 @@ public:
     void close();
 
     /**
+     * Binds this socket to the given local host address and port specified by the SocketAddress {@code
+     * socketAddress}. If {@code socketAddress} is set to {@code null}, this socket will be bound to an
+     * available local address on any free port.
+     *
+     * @param socketAddress
+     *            the specific address and port on the local machine to bind to.
+     * @throws IOException
+     *             if the socket is already bound or an error occurs while
+     *             binding.
+     */
+    void bind(const sp<InetSocketAddress>& socketAddress);
+
+    /**
      * Connects this socket to the given remote host address and port specified
      * by the SocketAddress {@code socketAddress}.
      *
@@ -155,19 +168,6 @@ public:
      * @return the remote socket address and port.
      */
     sp<InetSocketAddress> getRemoteSocketAddress() const;
-
-    /**
-     * Binds this socket to the given local host address and port specified by the SocketAddress {@code
-     * socketAddress}. If {@code socketAddress} is set to {@code null}, this socket will be bound to an
-     * available local address on any free port.
-     *
-     * @param localAddr
-     *            the specific address and port on the local machine to bind to.
-     * @throws IOException
-     *             if the socket is already bound or an error occurs while
-     *             binding.
-     */
-    void bind(const sp<InetSocketAddress>& socketAddress);
 
     /**
      * Returns whether this socket is bound to a local address and port.

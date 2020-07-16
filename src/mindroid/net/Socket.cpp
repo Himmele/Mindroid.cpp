@@ -27,6 +27,7 @@
 #include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/lang/UnsupportedOperationException.h>
+#include <mindroid/util/Assert.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <cstring>
@@ -58,6 +59,57 @@ void Socket::close() {
     }
 }
 
+void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
+    if (mIsBound) {
+        throw SocketException("Socket is already bound");
+    }
+    if (mIsClosed) {
+        throw SocketException("Socket is already closed");
+    }
+
+    sp<InetSocketAddress> bindAddress;
+    if (socketAddress == nullptr) {
+        bindAddress = new InetSocketAddress(Inet6Address::ANY, 0);
+    } else {
+        bindAddress = socketAddress;
+    }
+
+    sp<InetAddress> address = bindAddress->getAddress();
+
+    sockaddr_storage ss;
+    socklen_t saSize = 0;
+    std::memset(&ss, 0, sizeof(ss));
+    if (Class<Inet6Address>::isInstance(address)) {
+        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        int32_t value = 0;
+        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+
+        sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
+        sin6.sin6_family = AF_INET6;
+        std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
+        sin6.sin6_port = htons(bindAddress->getPort());
+        saSize = sizeof(sockaddr_in6);
+    } else {
+        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+
+        sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
+        sin.sin_family = AF_INET;
+        std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
+        sin.sin_port = htons(bindAddress->getPort());
+        saSize = sizeof(sockaddr_in);
+    }
+
+    setDefaultSocketOptions();
+
+    if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
+        int bindErrno = errno; // Save errno before closing.
+        close();
+        throw SocketException(String::format("Failed to bind to port %u: %s (errno=%d)",
+                bindAddress->getPort(), strerror(bindErrno), bindErrno));
+    }
+    mIsBound = true;
+}
+
 void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
     if (mIsConnected) {
         throw SocketException("Already connected");
@@ -69,7 +121,7 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
     sp<InetAddress> inetAddress = socketAddress->getAddress();
 
     if (mFd == -1) {
-        assert(!mIsBound);
+        Assert::assertFalse(mIsBound);
         if (Class<Inet6Address>::isInstance(inetAddress)) {
             mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
         } else {
@@ -342,57 +394,6 @@ void Socket::shutdownOutput() {
     }
 
     mIsOutputShutdown = true;
-}
-
-void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
-    if (mIsBound) {
-        throw SocketException("Socket is already bound");
-    }
-    if (mIsClosed) {
-        throw SocketException("Socket is already closed");
-    }
-
-    sp<InetSocketAddress> bindAddress;
-    if (socketAddress == nullptr) {
-        bindAddress = new InetSocketAddress(Inet6Address::ANY, 0);
-    } else {
-        bindAddress = socketAddress;
-    }
-
-    sp<InetAddress> address = bindAddress->getAddress();
-
-    sockaddr_storage ss;
-    socklen_t saSize = 0;
-    std::memset(&ss, 0, sizeof(ss));
-    if (Class<Inet6Address>::isInstance(address)) {
-        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
-        int32_t value = 0;
-        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
-
-        sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
-        sin6.sin6_family = AF_INET6;
-        std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
-        sin6.sin6_port = htons(bindAddress->getPort());
-        saSize = sizeof(sockaddr_in6);
-    } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
-
-        sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
-        sin.sin_family = AF_INET;
-        std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
-        sin.sin_port = htons(bindAddress->getPort());
-        saSize = sizeof(sockaddr_in);
-    }
-
-    setDefaultSocketOptions();
-
-    if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
-        int bindErrno = errno; // Save errno before closing.
-        close();
-        throw SocketException(String::format("Failed to bind to port %u: %s (errno=%d)",
-                    bindAddress->getPort(), strerror(bindErrno), bindErrno));
-    }
-    mIsBound = true;
 }
 
 void Socket::setDefaultSocketOptions() {
