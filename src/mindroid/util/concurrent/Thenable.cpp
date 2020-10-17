@@ -15,6 +15,7 @@
  */
 
 #include <mindroid/util/concurrent/Thenable.h>
+#include <mindroid/util/Log.h>
 #include <mindroid/lang/NullPointerException.h>
 #include <mindroid/os/Handler.h>
 
@@ -44,6 +45,10 @@ Thenable::Thenable(const sp<Executor>& executor) :
         mLock(new ReentrantLock()),
         mCondition(mLock->newCondition()) {
     mExecutor = executor;
+}
+
+void Thenable::logException(const sp<Exception>& exception) {
+    Log::e("Promise", "Uncaught exception: %s", (exception != nullptr && exception->getMessage() != nullptr) ? exception->getMessage()->c_str() : "nullptr");
 }
 
 } /* namespace mindroid */

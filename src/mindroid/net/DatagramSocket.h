@@ -146,7 +146,7 @@ public:
     template<typename T>
     T getOption(const SocketOption<T>& name);
 
-private:
+protected:
     void bind(uint16_t port, const sp<InetAddress>& localAddress);
     int32_t getSocketPort(int fd);
     void setMulticastInterface(const sp<NetworkInterface>& networkInterface);

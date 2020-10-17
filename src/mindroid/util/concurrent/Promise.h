@@ -1312,6 +1312,13 @@ public:
         return p;
     }
 
+    sp<Promise<T>> logUncaughtException() {
+        catchException([=] (const sp<Exception>& exception) {
+            logException(exception);
+        });
+        return this;
+    }
+
     sp<Promise<T>> orTimeout(uint64_t timeout) {
         return orTimeout(timeout, nullptr, nullptr);
     }
@@ -1943,6 +1950,7 @@ private:
     using Thenable::runActions;
 
 private:
+    using Thenable::logException;
     using Thenable::mLock;
     using Thenable::mCondition;
     T mResult;

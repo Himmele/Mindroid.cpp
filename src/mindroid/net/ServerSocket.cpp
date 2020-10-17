@@ -90,7 +90,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(mLocalAddress)) {
-        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
         int32_t value = 0;
         ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
         setCommonSocketOptions();
@@ -101,7 +101,7 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         sin6.sin6_port = htons(port);
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+        mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
         setCommonSocketOptions();
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
@@ -165,7 +165,7 @@ sp<Socket> ServerSocket::accept() {
     }
 
     sp<Socket> socket = new Socket();
-    int32_t rc = ::accept(mFd, 0, 0);
+    int32_t rc = ::accept4(mFd, 0, 0, SOCK_CLOEXEC);
     if (rc < 0) {
         throw IOException();
     } else {

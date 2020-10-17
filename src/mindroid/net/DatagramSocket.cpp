@@ -86,7 +86,7 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(address)) {
-        mFd = ::socket(AF_INET6, SOCK_DGRAM, 0);
+        mFd = ::socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0);
         int32_t value = 0;
         ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
@@ -95,7 +95,7 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
         sin6.sin6_port = htons(port);
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_DGRAM, 0);
+        mFd = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
         std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);

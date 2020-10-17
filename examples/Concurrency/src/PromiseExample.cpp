@@ -70,7 +70,7 @@ void PromiseExample::onCreate() {
         Log::i(TAG, "Promise stage 5: %d", i->intValue());
     })->then([&] {
         Log::i(TAG, "Promise stage 6");
-    });
+    })->logUncaughtException();
 
     sp<Handler> h = new Handler();
     h->postDelayed([=] {

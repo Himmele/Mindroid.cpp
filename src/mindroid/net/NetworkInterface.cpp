@@ -131,7 +131,7 @@ sp<ArrayList<sp<InterfaceAddress>>> NetworkInterface::getInterfaceAddresses() {
 }
 
 bool NetworkInterface::isUp() const {
-    int32_t fd = ::socket(AF_INET6, SOCK_STREAM, 0);
+    int32_t fd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
     if (fd < 0) {
         throw SocketException(String::format("Failed to open socket: %s (errno=%d)", strerror(errno), errno));
     }

@@ -86,7 +86,7 @@ void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(address)) {
-        mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+        mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
         int32_t value = 0;
         ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
 
@@ -96,7 +96,7 @@ void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
         sin6.sin6_port = htons(bindAddress->getPort());
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+        mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
@@ -129,9 +129,9 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
     if (mFd == -1) {
         Assert::assertFalse(mIsBound);
         if (Class<Inet6Address>::isInstance(inetAddress)) {
-            mFd = ::socket(AF_INET6, SOCK_STREAM, 0);
+            mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
         } else {
-            mFd = ::socket(AF_INET, SOCK_STREAM, 0);
+            mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
         }
     }
 

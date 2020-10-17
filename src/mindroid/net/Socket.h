@@ -284,6 +284,22 @@ public:
     template<typename T>
     T getOption(const SocketOption<T>& name);
 
+protected:
+    void setDefaultSocketOptions();
+
+    int32_t mFd = -1;
+    int32_t mLocalPort = -1;
+    sp<InetAddress> mLocalAddress;
+    sp<InetAddress> mInetAddress;
+    int32_t mPort = -1;
+    bool mIsBound = false;
+    bool mIsConnected = false;
+    bool mIsClosed = false;
+    bool mIsInputShutdown = false;
+    bool mIsOutputShutdown = false;
+    bool mReuseAddress = false;
+    bool mReusePort = false;
+
 private:
     class SocketInputStream : public InputStream {
     public:
@@ -335,21 +351,6 @@ private:
 
         friend class Socket;
     };
-
-    void setDefaultSocketOptions();
-
-    int32_t mFd = -1;
-    int32_t mLocalPort = -1;
-    sp<InetAddress> mLocalAddress;
-    sp<InetAddress> mInetAddress;
-    int32_t mPort = -1;
-    bool mIsBound = false;
-    bool mIsConnected = false;
-    bool mIsClosed = false;
-    bool mIsInputShutdown = false;
-    bool mIsOutputShutdown = false;
-    bool mReuseAddress = false;
-    bool mReusePort = false;
 
     friend class ServerSocket;
 };

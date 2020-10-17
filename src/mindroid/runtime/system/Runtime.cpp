@@ -134,6 +134,8 @@ void Runtime::shutdown() {
                 Log::println('E', TAG, "Failed to stop plugin");
             } catch (const ExecutionException& e) {
                 Log::println('E', TAG, "Failed to stop plugin");
+            } catch (...) {
+                Log::println('E', TAG, "Failed to stop plugin");
             }
             plugin->tearDown();
         }

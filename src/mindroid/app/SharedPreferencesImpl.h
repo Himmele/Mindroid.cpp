@@ -73,7 +73,7 @@ public:
 
         virtual sp<Editor> putStringSet(const sp<String>& key, const sp<HashSet<sp<String>>>& values) {
             AutoLock autoLock(mSharedPreferences->mLock);
-            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(new HashSet<sp<String>>(values)));
+            mModifications->put(key, (values == nullptr) ? nullptr : new Variant(sp<HashSet<sp<String>>>(new HashSet<sp<String>>(values))));
             return this;
         }
 

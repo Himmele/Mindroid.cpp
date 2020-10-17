@@ -190,7 +190,7 @@ public:
     template<typename T>
     T getOption(const SocketOption<T>& name);
 
-private:
+protected:
     void bind(uint16_t port, int32_t backlog, const sp<InetAddress>& localAddress);
     void setCommonSocketOptions();
 

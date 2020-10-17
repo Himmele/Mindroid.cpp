@@ -115,6 +115,8 @@ protected:
     sp<Executor> mExecutor;
 
 private:
+    static void logException(const sp<Exception>& exception);
+
     // TODO: Lock-free ConcurrentLinkedQueue.
     sp<LinkedList<sp<Action>>> mActions;
 
