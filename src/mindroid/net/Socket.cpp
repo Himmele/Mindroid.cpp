@@ -270,11 +270,11 @@ int32_t Socket::SocketInputStream::read() {
     }
 
     uint8_t data;
-    ssize_t rc = ::recv(mFd, reinterpret_cast<char*>(&data), sizeof(data), 0);
+    const ssize_t rc = ::recv(mFd, reinterpret_cast<char*>(&data), sizeof(data), 0);
     if (rc < 0) {
         throw IOException(String::format("Failed to read from socket (errno=%d)", errno));
     } else {
-        return rc != 0 ? rc : -1;
+        return rc == 1 ? data : -1;
     }
 }
 
