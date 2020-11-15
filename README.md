@@ -7,10 +7,13 @@ The name Mindroid has two different meanings. On one hand Mindroid is a minimal 
 
 ### Blog articles ###
 
-- [On Building Reliable Automotive Software Systems](https://himmele.blogspot.de/2017/04/on-building-reliable-automotive.html)
+- [The four paradigm shifts for the connected car of the future](https://himmele.blogspot.com/2020/11/paradigm-shift-connected-car.html)
+- [On Building Reliable Automotive Software Systems using Mindroid Application Frameworks](https://himmele.blogspot.de/2017/04/on-building-reliable-automotive.html)
+- [Building a car (from the perspective of a pragmatic software engineer)](https://himmele.blogspot.com/2015/10/building-car-as-pragmatic-software.html)
+- [What's Next for Our Programming Languages and Operating Systems?](https://himmele.blogspot.com/2019/05/whats-next-for-our-programming.html)
+- [Alan Kay on Object-Oriented Programming](https://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
 - [Mindroid - Android everywhere](https://himmele.blogspot.de/2013/10/mindroid-android-everywhere.html)
 - [Android messaging and concurrency for native C++ code development](https://himmele.blogspot.com/2011/08/android-messaging-and-concurrency-for.html)
-- [Alan Kay on Object-Oriented Programming](https://himmele.blogspot.com/2010/11/alan-kay-on-object-oriented-programming.html)
 
 ### Ideas from Google Android ###
 
