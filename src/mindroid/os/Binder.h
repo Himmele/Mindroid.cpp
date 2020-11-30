@@ -179,6 +179,10 @@ public:
 
     bool unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
+    bool equals(const sp<Object>& obj) const override;
+
+    size_t hashCode() const override;
+
     template<typename T>
     static T get(const sp<Promise<T>>& result) {
         try {
@@ -272,6 +276,10 @@ public:
         void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
         bool unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
+
+        bool equals(const sp<Object>& obj) const override;
+
+        size_t hashCode() const override;
 
     private:
         Proxy(const sp<URI>& uri);

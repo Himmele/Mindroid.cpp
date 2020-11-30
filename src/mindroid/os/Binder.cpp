@@ -157,6 +157,27 @@ bool Binder::unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) 
     return true;
 }
 
+bool Binder::equals(const sp<Object>& obj) const {
+    if (obj == nullptr) return false;
+    if (obj == this) return true;
+    if (Class<IBinder>::isInstance(obj)) {
+        sp<IBinder> other = Class<IBinder>::cast(obj);
+        return getId() == other->getId();
+    } else {
+        return false;
+    }
+}
+
+size_t Binder::hashCode() const {
+    const uint64_t id = getId();
+
+    size_t hash = 0;
+    for (size_t i = 0; i < sizeof(id); i++) {
+        hash = 31 * hash + reinterpret_cast<const uint8_t*>(&id)[i];
+    }
+    return hash;
+}
+
 void Binder::setId(uint64_t id) {
     mId = id;
     mUri = URI::create(String::format("%s://%u.%u", mUri->getScheme()->c_str(), (uint32_t) ((mId >> 32) & 0xFFFFFFFFL), (uint32_t) (mId & 0xFFFFFFFFL)));
@@ -231,6 +252,27 @@ void Binder::Proxy::link(const sp<Supervisor>& supervisor, const sp<Bundle>& ext
 
 bool Binder::Proxy::unlink(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) {
     return mRuntime->unlink(this, supervisor, extras);
+}
+
+bool Binder::Proxy::equals(const sp<Object>& obj) const {
+    if (obj == nullptr) return false;
+    if (obj == this) return true;
+    if (Class<IBinder>::isInstance(obj)) {
+        sp<IBinder> other = Class<IBinder>::cast(obj);
+        return getId() == other->getId();
+    } else {
+        return false;
+    }
+}
+
+size_t Binder::Proxy::hashCode() const {
+    const uint64_t id = getId();
+
+    size_t hash = 0;
+    for (size_t i = 0; i < sizeof(id); i++) {
+        hash = 31 * hash + reinterpret_cast<const uint8_t*>(&id)[i];
+    }
+    return hash;
 }
 
 } /* namespace mindroid */
