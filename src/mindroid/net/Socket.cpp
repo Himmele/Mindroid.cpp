@@ -49,17 +49,10 @@ Socket::~Socket() {
 }
 
 void Socket::close() {
-    close(true);
-}
-
-void Socket::close(bool shutdown) {
     mIsClosed = true;
     mIsConnected = false;
     mLocalAddress = Inet6Address::ANY;
     if (mFd != -1) {
-        if (shutdown) {
-            ::shutdown(mFd, SHUT_RDWR);
-        }
         ::close(mFd);
         mFd = -1;
     }

@@ -78,8 +78,6 @@ public:
      */
     void close();
 
-    void close(bool shutdown);
-
     /**
      * Binds this socket to the given local host address and port specified by the SocketAddress {@code
      * socketAddress}. If {@code socketAddress} is set to {@code null}, this socket will be bound to an

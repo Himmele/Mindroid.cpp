@@ -15,6 +15,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <mindroid/io/IOException.h>
 #include <mindroid/net/Socket.h>
 #include <mindroid/net/ServerSocket.h>
 #include <mindroid/net/SocketAddress.h>
@@ -37,6 +38,61 @@ TEST(Mindroid, InetAddress) {
     sp<InetAddress> inet4Address = InetAddress::getByName("localhost");
     ASSERT_STREQ(inet4Address->toString()->c_str(), "localhost/127.0.0.1");
     ASSERT_STREQ(inet4Address->getHostAddress()->c_str(), "127.0.0.1");
+}
+
+TEST(Mindroid, TcpIpServerSocketClosing) {
+    sp<Promise<bool>> promise = new Promise<bool>();
+    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<ServerSocket> serverSocket = new ServerSocket();
+    sp<Thread> thread = new Thread([=] {
+        serverSocket->setReuseAddress(true);
+        serverSocket->bind(new InetSocketAddress((sp<InetAddress>) inetAddress, 1234));
+        promise->complete(true);
+        try {
+            sp<Socket> socket = serverSocket->accept();
+            ASSERT_FALSE(true);
+        } catch (const IOException& e) {
+            ASSERT_STREQ(e.getMessage()->c_str(), "ServerSocket closed");
+        }
+    });
+    thread->start();
+    promise->get();
+    Thread::sleep(100);
+    serverSocket->close();
+    thread->join();
+}
+
+TEST(Mindroid, TcpIpSocketClosing) {
+    sp<Promise<bool>> promise = new Promise<bool>();
+    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<ServerSocket> serverSocket = new ServerSocket();
+    sp<Thread> thread = new Thread([=] {
+        serverSocket->setReuseAddress(true);
+        serverSocket->bind(new InetSocketAddress((sp<InetAddress>) inetAddress, 1234));
+        promise->complete(true);
+        sp<Socket> socket = serverSocket->accept();
+        ASSERT_EQ(socket->isConnected(), 1);
+        ASSERT_EQ(socket->getLocalPort(), 1234);
+        sp<ByteArray> buffer = new ByteArray(16);
+        ssize_t rc = socket->getInputStream()->read(buffer);
+        ASSERT_EQ(rc, 6);
+        sp<String> s = new String(buffer);
+        ASSERT_STREQ(s->c_str(), "Hello");
+        rc = socket->getInputStream()->read(buffer);
+        ASSERT_EQ(rc, -1);
+        socket->close();
+    });
+    thread->start();
+    promise->get();
+    sp<Socket> socket = new Socket();
+    socket->connect(new InetSocketAddress(inetAddress, 1234));
+    sp<ByteArray> buffer = new ByteArray(16);
+    std::memcpy(buffer->c_arr(), "Hello", 6);
+    socket->getOutputStream()->write(buffer, 0, 6);
+    Thread::sleep(100);
+    socket->close();
+    serverSocket->close();
+    thread->join();
 }
 
 TEST(Mindroid, TcpIpV6Localhost) {

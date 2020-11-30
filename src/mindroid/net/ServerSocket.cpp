@@ -55,7 +55,7 @@ void ServerSocket::close() {
     mIsClosed = true;
     mIsBound = false;
     if (mFd != -1) {
-        // Unblock calls like accept, etc. -> http://stackoverflow.com/questions/10619952/how-to-completely-destroy-a-socket-connection-in-c
+        // Unblock accept call with shutdown: https://stackoverflow.com/questions/11191028/boostasio-how-to-interrupt-a-blocked-tcp-server-thread/62356967
         ::shutdown(mFd, SHUT_RDWR);
         ::close(mFd);
         mFd = -1;
@@ -167,7 +167,7 @@ sp<Socket> ServerSocket::accept() {
     sp<Socket> socket = new Socket();
     int32_t rc = ::accept4(mFd, 0, 0, SOCK_CLOEXEC);
     if (rc < 0) {
-        throw IOException();
+        throw IOException("ServerSocket closed");
     } else {
         socket->mFd = rc;
         socket->mLocalAddress = mLocalAddress;
