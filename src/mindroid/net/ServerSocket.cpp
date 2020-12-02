@@ -55,8 +55,8 @@ void ServerSocket::close() {
     mIsClosed = true;
     mIsBound = false;
     if (mFd != -1) {
-        // Unblock accept call with shutdown: https://stackoverflow.com/questions/11191028/boostasio-how-to-interrupt-a-blocked-tcp-server-thread/62356967
-        ::shutdown(mFd, SHUT_RDWR);
+        // Unblock accept calls with shutdown: https://stackoverflow.com/questions/11191028/boostasio-how-to-interrupt-a-blocked-tcp-server-thread/62356967
+        ::shutdown(mFd, SHUT_RD);
         ::close(mFd);
         mFd = -1;
     }

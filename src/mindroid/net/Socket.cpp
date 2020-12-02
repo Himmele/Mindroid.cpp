@@ -53,6 +53,8 @@ void Socket::close() {
     mIsConnected = false;
     mLocalAddress = Inet6Address::ANY;
     if (mFd != -1) {
+        // Unblock recv calls with shutdown: https://news.ycombinator.com/item?id=21044529
+        ::shutdown(mFd, SHUT_RD);
         ::close(mFd);
         mFd = -1;
     }
