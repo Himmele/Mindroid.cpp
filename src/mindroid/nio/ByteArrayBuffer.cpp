@@ -28,7 +28,7 @@ ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray) :
 }
 
 ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t offset, size_t size) :
-        ByteBuffer(byteArray, offset, offset + size, byteArray->size(), false, 0) {
+        ByteBuffer(byteArray, 0, size, size, false, offset) {
 }
 
 ByteArrayBuffer::ByteArrayBuffer(const sp<ByteArray>& byteArray, size_t position, size_t limit, size_t capacity, size_t offset, bool readOnly) :
