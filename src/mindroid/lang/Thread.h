@@ -19,6 +19,7 @@
 
 #include <mindroid/lang/String.h>
 #include <mindroid/lang/Runnable.h>
+#include <mindroid/util/concurrent/Future.h>
 #include <pthread.h>
 
 namespace mindroid {
@@ -164,9 +165,21 @@ public:
      *         The interrupted status of the current thread will be cleared before the exception is
      *         thrown.
      * @see Object#notifyAll
-     * @see java.lang.ThreadDeath
      */
     void join() const;
+
+    /**
+     * Blocks the current Thread (<code>Thread.currentThread()</code>) until
+     * the receiver finishes its execution and dies or the specified timeout
+     * expires, whatever happens first.
+     * A timeout of 0 means to wait forever.
+     *
+     * @param millis The maximum time to wait (in milliseconds).
+     * @throws InterruptedException if <code>interrupt()</code> was called for
+     *         the receiver while it was in the <code>join()</code> call
+     * @see Object#notifyAll
+     */
+    void join(uint64_t millis) const;
 
     /**
      * Returns <code>true</code> if the receiver has already been started and
@@ -204,7 +217,7 @@ private:
     sp<String> mName;
     sp<Runnable> mRunnable;
     pthread_t mThread = 0;
-    bool mStarted = false;
+    sp<Future<bool>> mExecution;
     bool mInterrupted = false;
 
     friend class Looper;

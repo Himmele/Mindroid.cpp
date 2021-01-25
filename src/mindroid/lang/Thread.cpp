@@ -15,6 +15,7 @@
  */
 
 #include <mindroid/lang/Thread.h>
+#include <mindroid/util/concurrent/Promise.h>
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
@@ -31,8 +32,9 @@ Thread::Thread(pthread_t thread) :
 }
 
 void Thread::start() {
-    if (!mStarted) {
+    if (mExecution == nullptr) {
         mSelf = this;
+        mExecution = new Promise<bool>(sp<Executor>(nullptr));
         if (::pthread_create(&mThread, nullptr, &Thread::exec, this) == 0) {
 #ifndef __APPLE__
             if (mName != nullptr) {
@@ -41,8 +43,8 @@ void Thread::start() {
 #endif
         } else {
             mSelf.clear();
+            object_cast<Promise<bool>>(mExecution)->complete(false);
         }
-        mStarted = (mSelf != nullptr);
     }
 }
 
@@ -53,15 +55,35 @@ void Thread::sleep(uint32_t milliseconds) {
 
 void Thread::join() const {
     if (mThread != 0) {
+        try {
+            mExecution->get();
+        } catch (const ExecutionException& ignore) {
+        }
         ::pthread_join(mThread, nullptr);
+    }
+}
+
+void Thread::join(uint64_t millis) const {
+    if (mThread != 0) {
+        if (millis == 0) {
+            join();
+        } else {
+            try {
+                mExecution->get(millis);
+            } catch (const TimeoutException& ignore) {
+            } catch (const ExecutionException& ignore) {
+            }
+        }
     }
 }
 
 void* Thread::exec(void* args) {
     Thread* const self = (Thread*) args;
     sp<Runnable> runnable = (self->mRunnable != nullptr) ? self->mRunnable : self;
+    sp<Promise<bool>> execution = object_cast<Promise<bool>>(self->mExecution);
     runnable->run();
     self->mSelf.clear();
+    execution->complete(true);
     return nullptr;
 }
 
