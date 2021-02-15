@@ -52,7 +52,7 @@ TEST(Mindroid, TcpIpServerSocketClosing) {
             sp<Socket> socket = serverSocket->accept();
             ASSERT_FALSE(true);
         } catch (const IOException& e) {
-            ASSERT_STREQ(e.getMessage()->c_str(), "ServerSocket closed");
+            ASSERT_STREQ(e.getMessage()->c_str(), "ServerSocket on port 1234 closed: Invalid argument (errno=22)");
         }
     });
     thread->start();

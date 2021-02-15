@@ -90,9 +90,15 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(mLocalAddress)) {
-        mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open server socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         int32_t value = 0;
-        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_V6ONLY, &value, sizeof(value)) != 0) {
+            throw SocketException(String::format("Failed to set IPV6_V6ONLY socket option: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         setCommonSocketOptions();
 
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
@@ -101,7 +107,10 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         sin6.sin6_port = htons(port);
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open server socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         setCommonSocketOptions();
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
@@ -114,13 +123,13 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
         int bindErrno = errno; // Save errno before closing.
         close();
         throw SocketException(String::format("Failed to bind to port %u: %s (errno=%d)", port,
-                   strerror(bindErrno), bindErrno));
+                strerror(bindErrno), bindErrno));
     }
     if (::listen(mFd, backlog) != 0) {
         int listenErrno = errno; // Save errno before closing.
         close();
         throw SocketException(String::format("Failed to listen on port %u: %s (errno=%d)", port,
-                    strerror(listenErrno), listenErrno));
+                strerror(listenErrno), listenErrno));
     }
     mIsBound = true;
     if (port != 0) {
@@ -153,10 +162,16 @@ void ServerSocket::bind(uint16_t port, int32_t backlog, const sp<InetAddress>& l
 
 void ServerSocket::setCommonSocketOptions() {
     int32_t value = mReuseAddress;
-    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+    if (::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value)) != 0) {
+        throw SocketException(String::format("Failed to set SO_REUSEADDR socket option: %s (errno=%d)",
+                strerror(errno), errno));
+    }
 
     value = mReusePort;
-    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value));
+    if (::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value)) != 0) {
+        throw SocketException(String::format("Failed to set SO_REUSEPORT socket option: %s (errno=%d)",
+                strerror(errno), errno));
+    }
 }
 
 sp<Socket> ServerSocket::accept() {
@@ -167,7 +182,9 @@ sp<Socket> ServerSocket::accept() {
     sp<Socket> socket = new Socket();
     int32_t rc = ::accept4(mFd, 0, 0, SOCK_CLOEXEC);
     if (rc < 0) {
-        throw IOException("ServerSocket closed");
+        int acceptErrno = errno;
+        throw IOException(String::format("ServerSocket on port %u closed: %s (errno=%d)", mLocalPort,
+                strerror(acceptErrno), acceptErrno));
     } else {
         socket->mFd = rc;
         socket->mLocalAddress = mLocalAddress;

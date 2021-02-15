@@ -43,7 +43,7 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
     sp<HashMap<sp<String>, sp<NetworkInterface>>> networkInterfaceMap = new HashMap<sp<String>, sp<NetworkInterface>>();
 
     ifaddrs* networkInterfaces = nullptr;
-    if (getifaddrs(&networkInterfaces) == -1) {
+    if (::getifaddrs(&networkInterfaces) == -1) {
         throw SocketException(String::format("Failed to get information on network interfaces: %s (errno=%d)",
                     strerror(errno), errno));
     }
@@ -64,7 +64,7 @@ sp<ArrayList<sp<NetworkInterface>>> NetworkInterface::getNetworkInterfaces() {
             networkInterface->addInterfaceAddress(curNetworkInterface);
         }
     }
-    freeifaddrs(networkInterfaces);
+    ::freeifaddrs(networkInterfaces);
 
     return networkInterfaceMap->values();
 }
@@ -139,11 +139,11 @@ bool NetworkInterface::isUp() const {
     struct ifreq configuration;
     memset(&configuration, 0, sizeof(configuration));
     strcpy(configuration.ifr_name, mName->c_str());
-    if (ioctl(fd, SIOCGIFFLAGS, &configuration) < 0) {
+    if (::ioctl(fd, SIOCGIFFLAGS, &configuration) < 0) {
         throw SocketException(String::format("Failed to get network interface flags: %s (errno=%d)", strerror(errno), errno));
     }
 
-    if (close(fd) < 0) {
+    if (::close(fd) < 0) {
         throw SocketException(String::format("Failed to close socket: %s (errno=%d)", strerror(errno), errno));
     }
 
@@ -151,7 +151,7 @@ bool NetworkInterface::isUp() const {
 }
 
 int32_t NetworkInterface::getIndex() const {
-    int rc = if_nametoindex(mName->c_str());
+    int rc = ::if_nametoindex(mName->c_str());
     return rc == 0 ? -1 : rc;
 }
 

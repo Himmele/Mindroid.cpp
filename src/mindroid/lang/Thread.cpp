@@ -24,11 +24,13 @@ namespace mindroid {
 
 Thread::Thread(const sp<Runnable>& runnable, const sp<String>& name) :
         mName(name),
-        mRunnable(runnable) {
+        mRunnable(runnable),
+        mInterrupted(false) {
 }
 
 Thread::Thread(pthread_t thread) :
-        mThread(thread) {
+        mThread(thread),
+        mInterrupted(false) {
 }
 
 void Thread::start() {
@@ -88,11 +90,11 @@ void* Thread::exec(void* args) {
 }
 
 void Thread::interrupt() {
-    mInterrupted = true;
+    mInterrupted.store(true, std::memory_order_relaxed);
 }
 
 bool Thread::isInterrupted() const {
-    return mInterrupted;
+    return mInterrupted.load(std::memory_order_relaxed);
 }
 
 bool Thread::isAlive() const {

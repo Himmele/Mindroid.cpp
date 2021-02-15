@@ -21,6 +21,7 @@
 #include <mindroid/lang/Runnable.h>
 #include <mindroid/util/concurrent/Future.h>
 #include <pthread.h>
+#include <atomic>
 
 namespace mindroid {
 
@@ -218,7 +219,7 @@ private:
     sp<Runnable> mRunnable;
     pthread_t mThread = 0;
     sp<Future<bool>> mExecution;
-    bool mInterrupted = false;
+    std::atomic<bool> mInterrupted;
 
     friend class Looper;
 };

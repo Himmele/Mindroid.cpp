@@ -283,7 +283,7 @@ public:
     T getOption(const SocketOption<T>& name);
 
 protected:
-    void setDefaultSocketOptions();
+    void setCommonSocketOptions();
 
     int32_t mFd = -1;
     int32_t mLocalPort = -1;

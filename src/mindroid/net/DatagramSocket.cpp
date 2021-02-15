@@ -86,16 +86,25 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(address)) {
-        mFd = ::socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET6, SOCK_DGRAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open datagram socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         int32_t value = 0;
-        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_V6ONLY, &value, sizeof(value)) != 0) {
+            throw SocketException(String::format("Failed to set IPV6_V6ONLY socket option: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
         std::memcpy(&sin6.sin6_addr.s6_addr, address->getAddress()->c_arr(), 16);
         sin6.sin6_port = htons(port);
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET, SOCK_DGRAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open datagram socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
         std::memcpy(&sin.sin_addr.s_addr, address->getAddress()->c_arr(), 4);
@@ -104,7 +113,10 @@ void DatagramSocket::bind(uint16_t port, const sp<InetAddress>& localAddress) {
     }
     {
         int32_t value = 1;
-        ::setsockopt(mFd, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value));
+        if (::setsockopt(mFd, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value)) != 0) {
+            throw SocketException(String::format("Failed to set SO_BROADCAST socket option: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
     }
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) == 0) {
         mIsBound = true;

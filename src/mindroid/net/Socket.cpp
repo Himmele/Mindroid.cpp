@@ -81,9 +81,15 @@ void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
     socklen_t saSize = 0;
     std::memset(&ss, 0, sizeof(ss));
     if (Class<Inet6Address>::isInstance(address)) {
-        mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
         int32_t value = 0;
-        ::setsockopt(mFd, SOL_SOCKET, IPV6_V6ONLY, &value, sizeof(value));
+        if (::setsockopt(mFd, IPPROTO_IPV6, IPV6_V6ONLY, &value, sizeof(value)) != 0) {
+            throw SocketException(String::format("Failed to set IPV6_V6ONLY socket option: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
 
         sockaddr_in6& sin6 = reinterpret_cast<sockaddr_in6&>(ss);
         sin6.sin6_family = AF_INET6;
@@ -91,7 +97,10 @@ void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
         sin6.sin6_port = htons(bindAddress->getPort());
         saSize = sizeof(sockaddr_in6);
     } else {
-        mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
+        if ((mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0)) == -1) {
+            throw SocketException(String::format("Failed to open socket: %s (errno=%d)",
+                strerror(errno), errno));
+        }
 
         sockaddr_in& sin = reinterpret_cast<sockaddr_in&>(ss);
         sin.sin_family = AF_INET;
@@ -100,7 +109,7 @@ void Socket::bind(const sp<InetSocketAddress>& socketAddress) {
         saSize = sizeof(sockaddr_in);
     }
 
-    setDefaultSocketOptions();
+    setCommonSocketOptions();
 
     if (::bind(mFd, (struct sockaddr*) &ss, saSize) != 0) {
         int bindErrno = errno; // Save errno before closing.
@@ -128,6 +137,10 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
         } else {
             mFd = ::socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
         }
+        if (mFd == -1) {
+            throw SocketException(String::format("Failed to open socket: %s (errno=%d)",
+                    strerror(errno), errno));
+        }
     }
 
     sockaddr_storage ss;
@@ -151,10 +164,11 @@ void Socket::connect(const sp<InetSocketAddress>& socketAddress) {
 
 #ifdef __APPLE__
     const int32_t value = 1;
-    const int32_t rc = setsockopt(mFd, SOL_SOCKET, SO_NOSIGPIPE, (void*) &value, sizeof(int32_t));
+    const int32_t rc = ::setsockopt(mFd, SOL_SOCKET, SO_NOSIGPIPE, (void*) &value, sizeof(int32_t));
     if (rc < 0) {
+        int setSocketOptionErrno = errno; // Save errno before closing.
         close();
-        throw SocketException(String::format("Failed to set socket option SO_NOSIGPIPE (errno=%d)", errno));
+        throw SocketException(String::format("Failed to set socket option SO_NOSIGPIPE (errno=%d)", setSocketOptionErrno));
     }
 #endif
 
@@ -347,9 +361,10 @@ void Socket::setTcpNoDelay(bool enabled) {
     }
 
     const int32_t value = enabled ? 1 : 0;
-    const int32_t rc = setsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, sizeof(value));
+    const int32_t rc = ::setsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, sizeof(value));
     if (rc != 0) {
-        throw SocketException();
+        throw SocketException(String::format("Failed to set TCP_NODELAY socket option: %s (errno=%d)",
+                strerror(errno), errno));
     }
 }
 
@@ -360,9 +375,9 @@ bool Socket::getTcpNoDelay() const {
 
     int32_t value;
     socklen_t size = sizeof(int32_t);
-    const int32_t rc = getsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, &size);
+    const int32_t rc = ::getsockopt(mFd, IPPROTO_TCP, TCP_NODELAY, (void*) &value, &size);
     if (rc != 0) {
-        throw SocketException();
+        throw SocketException("Failed to get TCP_NODELAY socket option");
     }
     return value != 0;
 }
@@ -375,9 +390,10 @@ void Socket::setSoLinger(bool on, int32_t linger) {
     struct linger sl;
     sl.l_onoff = on ? 1 : 0;
     sl.l_linger = linger; // Timeout period in seconds.
-    const int32_t rc = setsockopt(mFd, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl));
+    const int32_t rc = ::setsockopt(mFd, SOL_SOCKET, SO_LINGER, &sl, sizeof(sl));
     if (rc != 0) {
-        throw SocketException();
+        throw SocketException(String::format("Failed to set SO_LINGER socket option: %s (errno=%d)",
+                strerror(errno), errno));
     }
 }
 
@@ -388,9 +404,9 @@ int32_t Socket::getSoLinger() const {
 
     struct linger sl;
     socklen_t size = sizeof(sl);
-    const int32_t rc = getsockopt(mFd, SOL_SOCKET, SO_LINGER, (void*) &sl, &size);
+    const int32_t rc = ::getsockopt(mFd, SOL_SOCKET, SO_LINGER, (void*) &sl, &size);
     if (rc != 0) {
-        throw SocketException();
+        throw SocketException("Failed to get SO_LINGER socket option");
     }
     return (sl.l_onoff != 0) ? sl.l_linger : -1;
 }
@@ -427,12 +443,18 @@ void Socket::shutdownOutput() {
     mIsOutputShutdown = true;
 }
 
-void Socket::setDefaultSocketOptions() {
+void Socket::setCommonSocketOptions() {
     int32_t value = mReuseAddress;
-    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value));
+    if (::setsockopt(mFd, SOL_SOCKET, SO_REUSEADDR, (char*) &value, sizeof(value)) != 0) {
+        throw SocketException(String::format("Failed to set SO_REUSEADDR socket option: %s (errno=%d)",
+                strerror(errno), errno));
+    }
 
     value = mReusePort;
-    ::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value));
+    if (::setsockopt(mFd, SOL_SOCKET, SO_REUSEPORT, (char*) &value, sizeof(value)) != 0) {
+        throw SocketException(String::format("Failed to set SO_REUSEPORT socket option: %s (errno=%d)",
+                strerror(errno), errno));
+    }
 }
 
 template<>
