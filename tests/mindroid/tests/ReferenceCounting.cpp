@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 #include <mindroid/lang/Object.h>
+#include <mindroid/lang/Thread.h>
 
 using namespace mindroid;
 
@@ -62,4 +63,28 @@ TEST(Mindroid, ReferenceCounting) {
     ref6 = nullptr;
     ASSERT_NE(ref5, nullptr);
     ASSERT_EQ(ref5.get(), nullptr);
+}
+
+TEST(Mindroid, MultiThreadedReferenceCounting) {
+    sp<String> test = new String("Test");
+    // Bind function context by value, '='.
+    sp<Thread> thread = new Thread([=] {
+        ASSERT_EQ(test->getStrongReferenceCount(), 2);
+    });
+    thread->start();
+    thread->join();
+    thread.clear();
+    ASSERT_EQ(test->getStrongReferenceCount(), 1);
+}
+
+TEST(Mindroid, BuggyMultiThreadedReferenceCounting) {
+    sp<String> test = new String("Test");
+    // Bind function context by reference, '&'.
+    sp<Thread> thread = new Thread([&] {
+        ASSERT_EQ(test->getStrongReferenceCount(), 1);
+    });
+    thread->start();
+    thread->join();
+    thread.clear();
+    ASSERT_EQ(test->getStrongReferenceCount(), 1);
 }
