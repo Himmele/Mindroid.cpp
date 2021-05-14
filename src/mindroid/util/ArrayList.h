@@ -20,6 +20,7 @@
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/IndexOutOfBoundsException.h>
 #include <mindroid/util/HashSet.h>
+#include <functional>
 #include <vector>
 
 namespace mindroid {
@@ -242,6 +243,12 @@ public:
         return Iterator(mList);
     }
 
+    void forEach(std::function<void(T&)> consumer) {
+        for (T& value : mList) {
+            consumer(value);
+        }
+    }
+
 private:
     std::vector<T> mList;
 };
@@ -459,6 +466,12 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mList);
+    }
+
+    void forEach(std::function<void(const sp<T>&)> consumer) {
+        for (const sp<T>& value : mList) {
+            consumer(value);
+        }
     }
 
 private:

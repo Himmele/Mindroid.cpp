@@ -152,8 +152,28 @@ public:
             Future<T>(handler) {
     }
 
+    Promise(const sp<Handler>& handler, T result) :
+            Future<T>(handler) {
+        complete(result);
+    }
+
+    Promise(const sp<Handler>& handler, const sp<Exception>& exception) :
+            Future<T>(handler) {
+        completeWith(exception);
+    }
+
     Promise(const sp<Executor>& executor) :
             Future<T>(executor) {
+    }
+
+    Promise(const sp<Executor>& executor, T result) :
+            Future<T>(executor) {
+        complete(result);
+    }
+
+    Promise(const sp<Executor>& executor, const sp<Exception>& exception) :
+            Future<T>(executor) {
+        completeWith(exception);
     }
 
     Promise(const sp<Promise<T>>& supplier) : Promise() {

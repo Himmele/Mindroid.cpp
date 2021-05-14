@@ -37,6 +37,12 @@ public:
     CompletionException(const sp<String>& message, const Exception& cause) : Exception(message, cause) {
     }
 
+    CompletionException(const char* message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
+    CompletionException(const sp<String>& message, const sp<Exception>& cause) : Exception(message, cause) {
+    }
+
     CompletionException(const sp<Exception>& cause) : Exception(cause->getMessage(), cause) {
     }
 

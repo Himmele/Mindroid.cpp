@@ -52,7 +52,7 @@ size_t ByteArrayOutputStream::size() const {
 }
 
 sp<ByteArray> ByteArrayOutputStream::toByteArray() const {
-    return new ByteArray(mBuffer);
+    return new ByteArray(mBuffer->c_arr(), mCount);
 }
 
 void ByteArrayOutputStream::write(const sp<ByteArray>& buffer)  {

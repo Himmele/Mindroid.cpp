@@ -18,6 +18,7 @@
 #define MINDROID_UTIL_OPTIONAL_H_
 
 #include <mindroid/lang/Class.h>
+#include <mindroid/lang/NullPointerException.h>
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/String.h>
 #include <mindroid/util/NoSuchElementException.h>
@@ -26,11 +27,11 @@ namespace mindroid {
 
 template<typename T>
 class Optional :
-        public Object { 
+        public Object {
 public:
     /** Returns an empty Optional instance. */
     static sp<Optional<T>> empty() {
-        return new Optional();
+        return EMPTY;
     }
 
     /** Indicates whether some other object is "equal to" this Optional. */
@@ -74,9 +75,10 @@ public:
 
     /** Returns an Optional with the specified present non-null value. */
     static sp<Optional<T>> of(const sp<T>& value) {
-        sp<Optional<T>> optional = empty();
-        optional->mValue = value;
-        return optional;
+        if (value == nullptr) {
+            throw NullPointerException();
+        }
+        return new Optional(value);
     }
 
     /** Returns an Optional describing the specified value, if non-null, otherwise returns an empty Optional. */
@@ -107,12 +109,17 @@ public:
     }
 
 private:
-    Optional() = default;
+    Optional(const sp<T>& value) : mValue(value) {}
 
-    sp<T> mValue;
+    const sp<T> mValue;
+
+    static const sp<Optional> EMPTY;
 };
 
-template<>
+template<typename T>
+const sp<Optional<T>> Optional<T>::EMPTY = new Optional(nullptr);
+
+template<> inline
 sp<String> Optional<String>::toString() const {
     if (isPresent()) {
         return String::format("Optional[%s]", mValue->c_str());

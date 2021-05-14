@@ -26,6 +26,8 @@ LOCAL_SRC_FILES := \
 	src/mindroid/content/pm/IPackageManager.cpp \
 	src/mindroid/content/pm/PackageManager.cpp \
 	src/mindroid/content/pm/PackageManagerService.cpp \
+	src/mindroid/io/BufferedInputStream.cpp \
+	src/mindroid/io/BufferedOutputStream.cpp \
 	src/mindroid/io/ByteArrayInputStream.cpp \
 	src/mindroid/io/ByteArrayOutputStream.cpp \
 	src/mindroid/io/DataInputStream.cpp \

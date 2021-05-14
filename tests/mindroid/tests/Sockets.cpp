@@ -30,19 +30,22 @@
 
 using namespace mindroid;
 
+//#define IPV4_LOCALHOST "localhost"
+#define IPV4_LOCALHOST "127.0.0.1"
+
 TEST(Mindroid, InetAddress) {
     sp<InetAddress> inet6Address = InetAddress::getByName("ip6-localhost");
     ASSERT_STREQ(inet6Address->toString()->c_str(), "ip6-localhost/::1");
     ASSERT_STREQ(inet6Address->getHostAddress()->c_str(), "::1");
 
-    sp<InetAddress> inet4Address = InetAddress::getByName("localhost");
-    ASSERT_STREQ(inet4Address->toString()->c_str(), "localhost/127.0.0.1");
+    sp<InetAddress> inet4Address = InetAddress::getByName(IPV4_LOCALHOST);
+    ASSERT_STREQ(inet4Address->toString()->c_str(), IPV4_LOCALHOST"/127.0.0.1");
     ASSERT_STREQ(inet4Address->getHostAddress()->c_str(), "127.0.0.1");
 }
 
 TEST(Mindroid, TcpIpServerSocketClosing) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<ServerSocket> serverSocket = new ServerSocket();
     sp<Thread> thread = new Thread([=] {
         serverSocket->setReuseAddress(true);
@@ -64,7 +67,7 @@ TEST(Mindroid, TcpIpServerSocketClosing) {
 
 TEST(Mindroid, TcpIpSocketClosing) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<ServerSocket> serverSocket = new ServerSocket();
     sp<Thread> thread = new Thread([=] {
         serverSocket->setReuseAddress(true);
@@ -165,19 +168,19 @@ TEST(Mindroid, TcpIpV6AnyHost) {
 
 TEST(Mindroid, TcpIpV4Localhost) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<Thread> thread = new Thread([=] {
         sp<ServerSocket> serverSocket = new ServerSocket();
         serverSocket->setReuseAddress(true);
         serverSocket->bind(new InetSocketAddress((sp<InetAddress>) inetAddress, 1234));
         ASSERT_EQ(serverSocket->getLocalPort(), 1234);
-        ASSERT_STREQ(serverSocket->getInetAddress()->toString()->c_str(), "localhost/127.0.0.1");
-        ASSERT_STREQ(serverSocket->getLocalSocketAddress()->toString()->c_str(), "localhost/127.0.0.1:1234");
+        ASSERT_STREQ(serverSocket->getInetAddress()->toString()->c_str(), IPV4_LOCALHOST"/127.0.0.1");
+        ASSERT_STREQ(serverSocket->getLocalSocketAddress()->toString()->c_str(), IPV4_LOCALHOST"/127.0.0.1:1234");
         promise->complete(true);
         sp<Socket> socket = serverSocket->accept();
         ASSERT_EQ(socket->isConnected(), 1);
         ASSERT_EQ(socket->getLocalPort(), 1234);
-        ASSERT_STREQ(socket->getLocalSocketAddress()->toString()->c_str(), "localhost/127.0.0.1:1234");
+        ASSERT_STREQ(socket->getLocalSocketAddress()->toString()->c_str(), IPV4_LOCALHOST"/127.0.0.1:1234");
         ASSERT_NE(socket->getPort(), -1);
         ASSERT_STREQ(socket->getRemoteSocketAddress()->toString()->c_str(), String::format("/127.0.0.1:%u", socket->getPort())->c_str());
         sp<ByteArray> buffer = new ByteArray(16);
@@ -194,7 +197,7 @@ TEST(Mindroid, TcpIpV4Localhost) {
     socket->connect(new InetSocketAddress(inetAddress, 1234));
     ASSERT_NE(socket->getLocalPort(), -1);
     ASSERT_STREQ(socket->getLocalAddress()->toString()->c_str(), "/127.0.0.1");
-    ASSERT_STREQ(socket->getRemoteSocketAddress()->toString()->c_str(), "localhost/127.0.0.1:1234");
+    ASSERT_STREQ(socket->getRemoteSocketAddress()->toString()->c_str(), IPV4_LOCALHOST"/127.0.0.1:1234");
     sp<ByteArray> buffer = new ByteArray(16);
     std::memcpy(buffer->c_arr(), "Hello", 6);
     socket->getOutputStream()->write(buffer, 0, 6);
@@ -204,7 +207,7 @@ TEST(Mindroid, TcpIpV4Localhost) {
 
 TEST(Mindroid, TcpIpV4AnyHost) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<Thread> thread = new Thread([=] {
         sp<ServerSocket> serverSocket = new ServerSocket();
         serverSocket->setReuseAddress(true);
@@ -289,7 +292,7 @@ TEST(Mindroid, UdpIpV6AnyHost) {
 
 TEST(Mindroid, UdpIpV4Localhost) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<Thread> thread = new Thread([=] {
         sp<DatagramSocket> datagramSocket = new DatagramSocket(1234, inetAddress);
         promise->complete(true);
@@ -317,7 +320,7 @@ TEST(Mindroid, UdpIpV4Localhost) {
 
 TEST(Mindroid, UdpIpV4AnyHost) {
     sp<Promise<bool>> promise = new Promise<bool>();
-    sp<InetAddress> inetAddress = InetAddress::getByName("localhost");
+    sp<InetAddress> inetAddress = InetAddress::getByName(IPV4_LOCALHOST);
     sp<Thread> thread = new Thread([=] {
         sp<DatagramSocket> datagramSocket = new DatagramSocket(1234, Inet4Address::ANY);
         promise->complete(true);

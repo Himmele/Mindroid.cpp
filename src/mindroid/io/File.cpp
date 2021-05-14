@@ -180,13 +180,13 @@ sp<ArrayList<sp<File>>> File::listFiles() {
     if (direcrory != nullptr) {
         sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
         struct dirent* file;
-        while ((file = readdir(direcrory)) != nullptr) {
+        while ((file = ::readdir(direcrory)) != nullptr) {
             if (!strncmp(file->d_name, ".", strlen(".") + 1)) continue;
             if (!strncmp(file->d_name, "..", strlen("..") + 1)) continue;
 
             list->add(new File(this, file->d_name));
         }
-        closedir(direcrory);
+        ::closedir(direcrory);
         return list;
     } else {
         return nullptr;
@@ -198,7 +198,7 @@ sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
     if (direcrory != nullptr) {
         sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
         struct dirent* file;
-        while ((file = readdir(direcrory)) != nullptr) {
+        while ((file = ::readdir(direcrory)) != nullptr) {
             if (!strncmp(file->d_name, ".", strlen(".") + 1)) continue;
             if (!strncmp(file->d_name, "..", strlen("..") + 1)) continue;
 
@@ -206,7 +206,7 @@ sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
                 list->add(new File(this, file->d_name));
             }
         }
-        closedir(direcrory);
+        ::closedir(direcrory);
         return list;
     } else {
         return nullptr;

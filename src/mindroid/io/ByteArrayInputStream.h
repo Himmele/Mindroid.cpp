@@ -25,22 +25,22 @@ class ByteArrayInputStream : public InputStream {
 public:
     /**
      * Constructs a new {@code ByteArrayInputStream} on the byte array
-     * {@code buf}.
+     * {@code buffer}.
      *
-     * @param buf
+     * @param buffer
      *            the byte array to stream over.
      */
     ByteArrayInputStream(const sp<ByteArray>& buffer);
 
     /**
      * Constructs a new {@code ByteArrayInputStream} on the byte array
-     * {@code buf} with the initial position set to {@code offset} and the
-     * number of bytes available set to {@code offset} + {@code length}.
+     * {@code buffer} with the initial position set to {@code offset} and the
+     * number of bytes available set to {@code offset} + {@code count}.
      *
      * @param buffer
      *            the byte array to stream over.
      * @param offset
-     *            the initial position in {@code buf} to start streaming from.
+     *            the initial position in {@code buffer} to start streaming from.
      * @param count
      *            the number of bytes available for streaming.
      */
@@ -94,12 +94,12 @@ public:
     int32_t read() override;
 
     /**
-     * Reads some number of bytes from the input stream and stores them into the buffer array b.
+     * Reads some number of bytes from the input stream and stores them into the buffer array.
      */
     ssize_t read(const sp<ByteArray>& buffer) override;
 
     /**
-     * Reads up to len bytes of data from the input stream into an array of bytes.
+     * Reads up to count bytes of data from the input stream into an array of bytes.
      */
     ssize_t read(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
 
