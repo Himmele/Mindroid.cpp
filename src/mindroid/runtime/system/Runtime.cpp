@@ -417,7 +417,7 @@ sp<Promise<sp<Parcel>>> Runtime::transact(const sp<IBinder>& binder, int32_t wha
     }
     if (plugin != nullptr) {
         sp<Promise<sp<Parcel>>> promise = plugin->transact(binder, what, data, flags);
-        if (flags != Binder::FLAG_ONEWAY && promise == nullptr) {
+        if (((flags & Binder::FLAG_ONEWAY) == 0) && promise == nullptr) {
             throw RemoteException("Binder transaction failure");
         }
         return promise;

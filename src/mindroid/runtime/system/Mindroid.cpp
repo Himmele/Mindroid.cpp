@@ -336,7 +336,7 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         }
         sp<DataOutputStream> dataOutputStream = object_cast<DataOutputStream>(context->getObject("dataOutputStream"));
 
-        if (flags == Binder::FLAG_ONEWAY) {
+        if ((flags & Binder::FLAG_ONEWAY) != 0) {
             result = nullptr;
         } else {
             sp<Promise<sp<Parcel>>> promise = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);

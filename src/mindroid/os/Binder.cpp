@@ -99,7 +99,7 @@ sp<Promise<sp<Parcel>>> Binder::transact(int32_t what, const sp<Parcel>& data, i
     message->arg1 = what;
     message->obj = data;
     sp<Promise<sp<Parcel>>> promise;
-    if (flags == FLAG_ONEWAY) {
+    if ((flags & FLAG_ONEWAY) != 0 && (flags & (FLAG_ONEWAY_WITH_EXCEPTION_HANDLING ^ FLAG_ONEWAY)) == 0) {
         message->result = nullptr;
         promise = nullptr;
     } else {
