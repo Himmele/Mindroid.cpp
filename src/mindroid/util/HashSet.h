@@ -138,6 +138,16 @@ public:
         return Iterator(mSet);
     }
 
+    typedef typename std::unordered_set<T>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mSet.begin();
+    }
+
+    inline iterator_type end() {
+        return mSet.end();
+    }
+
 private:
     std::unordered_set<T> mSet;
 };
@@ -258,6 +268,16 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mSet);
+    }
+
+    typedef typename std::unordered_set<sp<T>, Hasher<sp<T>>, EqualityComparator<sp<T>>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mSet.begin();
+    }
+
+    inline iterator_type end() {
+        return mSet.end();
     }
 
 private:

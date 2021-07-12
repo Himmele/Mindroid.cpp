@@ -243,6 +243,16 @@ public:
         return Iterator(mList);
     }
 
+    typedef typename std::vector<T>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mList.begin();
+    }
+
+    inline iterator_type end() {
+        return mList.end();
+    }
+
     void forEach(std::function<void(T&)> consumer) {
         for (T& value : mList) {
             consumer(value);
@@ -466,6 +476,16 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mList);
+    }
+
+    typedef typename std::vector<sp<T>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mList.begin();
+    }
+
+    inline iterator_type end() {
+        return mList.end();
     }
 
     void forEach(std::function<void(const sp<T>&)> consumer) {

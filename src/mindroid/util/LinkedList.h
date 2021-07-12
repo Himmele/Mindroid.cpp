@@ -238,6 +238,16 @@ public:
         return Iterator(mList);
     }
 
+    typedef typename std::list<T>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mList.begin();
+    }
+
+    inline iterator_type end() {
+        return mList.end();
+    }
+
 private:
     std::list<T> mList;
 };
@@ -463,6 +473,16 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mList);
+    }
+
+    typedef typename std::list<sp<T>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mList.begin();
+    }
+
+    inline iterator_type end() {
+        return mList.end();
     }
 
 private:

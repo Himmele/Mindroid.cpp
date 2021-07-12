@@ -220,6 +220,16 @@ public:
         return Iterator(mMap);
     }
 
+    typedef typename std::unordered_map<K, V>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mMap.begin();
+    }
+
+    inline iterator_type end() {
+        return mMap.end();
+    }
+
 private:
     std::unordered_map<K, V> mMap;
 };
@@ -421,6 +431,16 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mMap);
+    }
+
+    typedef typename std::unordered_map<K, sp<V>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mMap.begin();
+    }
+
+    inline iterator_type end() {
+        return mMap.end();
     }
 
 private:
@@ -627,6 +647,16 @@ public:
         return Iterator(mMap);
     }
 
+    typedef typename std::unordered_map<sp<K>, V, Hasher<sp<K>>, EqualityComparator<sp<K>>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mMap.begin();
+    }
+
+    inline iterator_type end() {
+        return mMap.end();
+    }
+
 private:
     std::unordered_map<sp<K>, V, Hasher<sp<K>>, EqualityComparator<sp<K>>> mMap;
 };
@@ -831,6 +861,16 @@ public:
 
     inline Iterator iterator() {
         return Iterator(mMap);
+    }
+
+    typedef typename std::unordered_map<sp<K>, sp<V>, Hasher<sp<K>>, EqualityComparator<sp<K>>>::iterator iterator_type;
+
+    inline iterator_type begin() {
+        return mMap.begin();
+    }
+
+    inline iterator_type end() {
+        return mMap.end();
     }
 
 private:

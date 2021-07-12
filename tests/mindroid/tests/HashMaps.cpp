@@ -211,3 +211,141 @@ TEST(Mindroid, HashMapOfStringInteger) {
     }
     ASSERT_EQ(map->size(), 0);
 }
+
+TEST(Mindroid, HashMapOfIntegerIntegerCppStyleIterators) {
+    sp<HashMap<int32_t, int32_t>> map = new HashMap<int32_t, int32_t>();
+    HashMap<int32_t, int32_t>::iterator_type itr;
+    ASSERT_EQ(itr, itr);
+    ASSERT_EQ(itr, map->end());
+    ASSERT_EQ(map->begin(), map->end());
+    map->put(1, 1);
+    itr = map->begin();
+    ASSERT_EQ((*itr).first, 1);
+    ASSERT_EQ((*itr).second, 1);
+    auto itr2 = itr;
+    ASSERT_EQ(itr, itr2);
+    itr++;
+    ASSERT_EQ(itr, map->end());
+    ++itr2;
+    ASSERT_EQ(itr2, map->end());
+    map->put(2, 2);
+    map->put(42, 42);
+    map->put(100, 100);
+    uint8_t entryCount = 0;
+    for (auto itr : map->map()) {
+        ASSERT_EQ(itr.first, itr.second);
+        switch (itr.first) {
+            case 1:
+            case 2:
+            case 42:
+            case 100:
+                entryCount++;
+                break;
+            default:
+                ASSERT_TRUE(false);
+                break;
+        }
+    }
+    ASSERT_EQ(entryCount, 4);
+}
+
+TEST(Mindroid, HashMapOfIntegerStringCppStyleIterators) {
+    sp<HashMap<int32_t, sp<String>>> map = new HashMap<int32_t, sp<String>>();
+    HashMap<int32_t, sp<String>>::iterator_type itr;
+    ASSERT_EQ(itr, itr);
+    ASSERT_EQ(itr, map->end());
+    ASSERT_EQ(map->begin(), map->end());
+    map->put(1, String::valueOf("1"));
+    itr = map->begin();
+    ASSERT_EQ((*itr).first, 1);
+    ASSERT_STREQ((*itr).second->c_str(), "1");
+    auto itr2 = itr;
+    ASSERT_EQ(itr, itr2);
+    itr++;
+    ASSERT_EQ(itr, map->end());
+    ++itr2;
+    ASSERT_EQ(itr2, map->end());
+    map->put(2, String::valueOf("2"));
+    map->put(42, String::valueOf("42"));
+    map->put(100, String::valueOf("100"));
+    uint8_t entryCount = 0;
+    for (auto itr : map->map()) {
+        ASSERT_STREQ(String::valueOf(itr.first)->c_str(), itr.second->c_str());
+        switch (itr.first) {
+            case 1:
+            case 2:
+            case 42:
+            case 100:
+                entryCount++;
+                break;
+            default:
+                ASSERT_TRUE(false);
+                break;
+        }
+    }
+    ASSERT_EQ(entryCount, 4);
+}
+
+TEST(Mindroid, HashMapOfStringIntegerCppStyleIterators) {
+    sp<HashMap<sp<String>, int32_t>> map = new HashMap<sp<String>, int32_t>();
+    HashMap<sp<String>, int32_t>::iterator_type itr;
+    ASSERT_EQ(itr, itr);
+    ASSERT_EQ(itr, map->end());
+    ASSERT_EQ(map->begin(), map->end());
+    map->put(String::valueOf("1"), 1);
+    itr = map->begin();
+    ASSERT_STREQ((*itr).first->c_str(), "1");
+    ASSERT_EQ((*itr).second, 1);
+    auto itr2 = itr;
+    ASSERT_EQ(itr, itr2);
+    itr++;
+    ASSERT_EQ(itr, map->end());
+    ++itr2;
+    ASSERT_EQ(itr2, map->end());
+    map->put(String::valueOf("2"), 2);
+    map->put(String::valueOf("42"), 42);
+    map->put(String::valueOf("100"), 100);
+    uint8_t entryCount = 0;
+    for (auto itr : map->map()) {
+        ASSERT_STREQ(itr.first->c_str(), String::valueOf(itr.second)->c_str());
+        switch (itr.second) {
+            case 1:
+            case 2:
+            case 42:
+            case 100:
+                entryCount++;
+                break;
+            default:
+                ASSERT_TRUE(false);
+                break;
+        }
+    }
+    ASSERT_EQ(entryCount, 4);
+}
+
+TEST(Mindroid, HashMapOfStringStringCppStyleIterators) {
+    sp<HashMap<sp<String>, sp<String>>> map = new HashMap<sp<String>, sp<String>>();
+    HashMap<sp<String>, sp<String>>::iterator_type itr;
+    ASSERT_EQ(itr, itr);
+    ASSERT_EQ(itr, map->end());
+    ASSERT_EQ(map->begin(), map->end());
+    map->put(String::valueOf("1"), String::valueOf("1"));
+    itr = map->begin();
+    ASSERT_STREQ((*itr).first->c_str(), "1");
+    ASSERT_STREQ((*itr).second->c_str(), "1");
+    auto itr2 = itr;
+    ASSERT_EQ(itr, itr2);
+    itr++;
+    ASSERT_EQ(itr, map->end());
+    ++itr2;
+    ASSERT_EQ(itr2, map->end());
+    map->put(String::valueOf("2"), String::valueOf("2"));
+    map->put(String::valueOf("42"), String::valueOf("42"));
+    map->put(String::valueOf("100"), String::valueOf("100"));
+    uint8_t entryCount = 0;
+    for (auto itr : map->map()) {
+        ASSERT_STREQ(itr.first->c_str(), itr.second->c_str());
+        entryCount++;
+    }
+    ASSERT_EQ(entryCount, 4);
+}
