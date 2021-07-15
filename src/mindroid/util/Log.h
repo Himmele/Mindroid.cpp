@@ -79,7 +79,17 @@ public:
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    static int v(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int v(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, VERBOSE, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int v(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, VERBOSE, tag, message);
+    }
 
     /**
      * Send a {@link #DEBUG} log message.
@@ -87,7 +97,17 @@ public:
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    static int d(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int d(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, DEBUG, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int d(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, DEBUG, tag, message);
+    }
 
     /**
      * Send an {@link #INFO} log message.
@@ -95,7 +115,17 @@ public:
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    static int i(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int i(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, INFO, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int i(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, INFO, tag, message);
+    }
 
     /**
      * Send a {@link #WARN} log message.
@@ -103,7 +133,17 @@ public:
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    static int w(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int w(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, WARN, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int w(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, WARN, tag, message);
+    }
 
     /**
      * Send an {@link #ERROR} log message.
@@ -111,7 +151,17 @@ public:
      *        the class or activity where the log call occurs.
      * @param msg The message you would like logged.
      */
-    static int e(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int e(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, ERROR, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int e(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, ERROR, tag, message);
+    }
 
     /**
      * What a Terrible Failure: Report a condition that should never happen.
@@ -122,13 +172,35 @@ public:
      * @param tag Used to identify the source of a log message.
      * @param msg The message you would like logged.
      */
-    static int wtf(const char* tag, const char* format, ...);
+    template<typename... Args>
+    static int wtf(const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, WTF, String::valueOf(tag), message);
+    }
+
+    template<typename... Args>
+    static int wtf(const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        return println(LOG_ID_MAIN, WTF, tag, message);
+    }
 
     /**
      * @hide
      * @private
      */
-    static void println(char priority, const char* tag, const char* format, ...);
+    template<typename... Args>
+    static void println(char priority, const char* tag, const char* format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        ::printf("%c/%s: %s\n", priority, tag, message->c_str());
+        ::fflush(stdout);
+    }
+
+    template<typename... Args>
+    static void println(char priority, const sp<String>& tag, const sp<String>& format, Args... args) {
+        sp<String> message = String::format(format, args...);
+        ::printf("%c/%s: %s\n", priority, tag->c_str(), message->c_str());
+        ::fflush(stdout);
+    }
 
     /**
      * @hide

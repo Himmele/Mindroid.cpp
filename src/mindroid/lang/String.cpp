@@ -67,6 +67,14 @@ String::String(const char c) {
     mStringBuffer = new StringBuffer(&c, 1);
 }
 
+String::String(const sp<String>& string) {
+    if (string != nullptr) {
+        mStringBuffer = new StringBuffer(string->c_str(), string->length());
+    } else {
+        mStringBuffer = NULL_STRING_BUFFER;
+    }
+}
+
 String::String(const sp<ByteArray>& byteArray) {
     if (byteArray != nullptr) {
         mStringBuffer = new StringBuffer((const char*) byteArray->c_arr(), byteArray->size());
@@ -433,14 +441,6 @@ sp<String> String::valueOf(double value) {
     sp<StringBuffer> stringBuffer = new StringBuffer(size);
     snprintf(stringBuffer->mData, size + 1, "%f", value);
     return new String(stringBuffer);
-}
-
-sp<String> String::format(const char* format, ...) {
-    va_list args;
-    va_start(args, format);
-    sp<String> formattedString = EMPTY_STRING->appendFormattedWithVarArgList(format, args);
-    va_end(args);
-    return formattedString;
 }
 
 bool String::regionMatches(size_t toffset, const sp<String>& string, size_t ooffset, size_t len) {

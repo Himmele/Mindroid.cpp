@@ -24,6 +24,7 @@
 #include <cstring>
 #include <cstdarg>
 #include <cctype>
+#include <string>
 
 namespace mindroid {
 
@@ -37,6 +38,7 @@ public:
     explicit String(const char* string, size_t size);
     explicit String(const uint8_t* string, size_t size) : String(reinterpret_cast<const char*>(string), size) { }
     explicit String(const char c);
+    explicit String(const sp<String>& string);
     explicit String(const sp<ByteArray>& byteArray);
     virtual ~String() { }
 
@@ -133,8 +135,6 @@ public:
     static sp<String> valueOf(float value);
     static sp<String> valueOf(double value);
 
-    static sp<String> format(const char* format, ...) __attribute__((format (printf, 1, 2)));
-
     static size_t length(const char* string) {
         return strlen(string);
     }
@@ -182,6 +182,24 @@ public:
         return new ByteArray(reinterpret_cast<uint8_t*>(mStringBuffer->mData), mStringBuffer->mSize);
     }
 
+    static sp<String> format(const char* string) {
+        return new String(string);
+    }
+
+    static sp<String> format(const sp<String>& string) {
+        return new String(string);
+    }
+
+    template<typename... Args>
+    static sp<String> format(const char* format, Args... args) {
+        return EMPTY_STRING->appendFormatted(format, toValue(args)...);
+    }
+
+    template<typename... Args>
+    static sp<String> format(const sp<String>& format, Args... args) {
+        return EMPTY_STRING->appendFormatted(format->c_str(), toValue(args)...);
+    }
+
 private:
     class StringBuffer : public LightweightObject<StringBuffer> {
     public:
@@ -214,7 +232,21 @@ private:
 
     sp<String> appendFormattedWithVarArgList(const char* format, va_list args) const;
 
+    template<typename T, typename... Rest>
+    struct is_any : std::false_type {};
+
+    template<typename T, typename First>
+    struct is_any<T, First> : std::is_same<T, First> {};
+
+    template<typename T, typename First, typename... Rest>
+    struct is_any<T, First, Rest...> : std::integral_constant<bool, std::is_same<T, First>::value || is_any<T, Rest...>::value> {};
+
+    template<typename T, typename std::enable_if<!is_any<T, sp<String>, std::string>::value>::type* = nullptr> static T toValue(const T& value) { return value; }
+    template<typename T, typename std::enable_if<std::is_same<T, sp<String>>::value>::type* = nullptr> static const char* toValue(const T& value) { return value->c_str(); }
+    template<typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type* = nullptr> static const char* toValue(const T& value) { return value.c_str(); }
+
     sp<StringBuffer> mStringBuffer;
+
     static const sp<StringBuffer> NULL_STRING_BUFFER;
     static const sp<StringBuffer> EMPTY_STRING_BUFFER;
 

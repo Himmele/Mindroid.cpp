@@ -36,25 +36,31 @@ public:
     Exception(const sp<String>& message) : mMessage(message) {
     }
 
-    Exception(const char* message, const Exception& cause) : mMessage(String::valueOf(message)), mCause(new Exception(cause)) {
-    }
-
-    Exception(const sp<String>& message, const Exception& cause) : mMessage(message), mCause(new Exception(cause)) {
-    }
-
     Exception(const char* message, const sp<Exception>& cause) : mMessage(String::valueOf(message)), mCause(cause) {
     }
 
     Exception(const sp<String>& message, const sp<Exception>& cause) : mMessage(message), mCause(cause) {
     }
 
+    Exception(const char* message, const Exception& cause) : mMessage(String::valueOf(message)), mCause(new Exception(cause)) {
+    }
+
+    Exception(const sp<String>& message, const Exception& cause) : mMessage(message), mCause(new Exception(cause)) {
+    }
+
+    Exception(const char* message, const std::exception& cause) : mMessage(String::valueOf(message)), mCause(new Exception(cause)) {
+    }
+
+    Exception(const sp<String>& message, const std::exception& cause) : mMessage(message), mCause(new Exception(cause)) {
+    }
+
     Exception(const sp<Exception>& cause) : mMessage(cause->getMessage()), mCause(cause) {
     }
 
-    Exception(const std::exception& cause) : mMessage(String::valueOf(cause.what())) {
+    Exception(const Exception& exception) : Object(), mMessage(exception.getMessage()) {
     }
 
-    Exception(const Exception& exception) : Object(), mMessage(exception.getMessage()) {
+    Exception(const std::exception& cause) : mMessage(String::valueOf(cause.what())) {
     }
 
     sp<String> getMessage() const {

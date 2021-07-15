@@ -124,4 +124,16 @@ TEST(Mindroid, Strings) {
     ASSERT_EQ(s13->equals(o), false);
     sp<Integer> integer = new Integer(123);
     ASSERT_EQ(s13->equals(object_cast<Object>(integer)), false);
+
+    sp<String> s16 = String::format("%s", "Test");
+    ASSERT_EQ(s16->equals("Test"), true);
+    sp<String> s17 = String::format("%i", 42);
+    ASSERT_EQ(s17->equals("42"), true);
+    sp<String> s18 = String::format("%s", String::valueOf("Test"));
+    ASSERT_EQ(s18->equals("Test"), true);
+    std::string cppString("C++ string");
+    sp<String> s19 = String::format("%s", cppString);
+    ASSERT_EQ(s19->equals("C++ string"), true);
+    sp<String> s20 = String::format("Test");
+    ASSERT_EQ(s20->equals("Test"), true);
 }
