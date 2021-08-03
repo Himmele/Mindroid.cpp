@@ -57,10 +57,11 @@ public:
     Exception(const sp<Exception>& cause) : mMessage(cause->getMessage()), mCause(cause) {
     }
 
-    Exception(const Exception& exception) : Object(), mMessage(exception.getMessage()) {
+    Exception(const std::exception& cause) : mMessage(String::valueOf(cause.what())) {
     }
 
-    Exception(const std::exception& cause) : mMessage(String::valueOf(cause.what())) {
+    // Copy constructor.
+    Exception(const Exception& exception) : mMessage(exception.getMessage()), mCause(exception.getCause()) {
     }
 
     sp<String> getMessage() const {
@@ -72,12 +73,48 @@ public:
     }
 
     virtual sp<Exception> clone() const {
-        return new Exception(mMessage);
+        return new Exception(mMessage, mCause);
     }
 
 private:
     sp<String> mMessage;
     sp<Exception> mCause;
+};
+
+template<typename T, typename... Args>
+void throwException(const char* format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message);
+};
+
+template<typename T, typename... Args>
+void throwException(const sp<String>& format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message);
+};
+
+template<typename T, typename... Args>
+void throwException(const Exception& cause, const char* format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message, cause);
+};
+
+template<typename T, typename... Args>
+void throwException(const Exception& cause, const sp<String>& format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message, cause);
+};
+
+template<typename T, typename... Args>
+void throwException(const sp<Exception>& cause, const char* format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message, cause);
+};
+
+template<typename T, typename... Args>
+void throwException(const sp<Exception>& cause, const sp<String>& format, Args... args) {
+    sp<String> message = String::format(format, args...);
+    throw T(message, cause);
 };
 
 } /* namespace mindroid */

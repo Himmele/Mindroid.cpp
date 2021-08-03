@@ -33,6 +33,10 @@ public:
 
     IOException(const sp<String>& message) : Exception(message) {
     }
+
+    // Copy constructor.
+    IOException(const IOException& exception) : Exception(exception) {
+    }
 };
 
 } /* namespace mindroid */

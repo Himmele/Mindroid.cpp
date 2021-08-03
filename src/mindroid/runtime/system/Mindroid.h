@@ -83,6 +83,7 @@ public:
     public:
         static const int32_t MESSAGE_TYPE_TRANSACTION = 1;
         static const int32_t MESSAGE_TYPE_EXCEPTION_TRANSACTION = 2;
+        static const int32_t MAX_MESSAGE_SIZE = 64 * 1024 * 1024; //64MB
 
         Message(int32_t type, const sp<String>& uri, int32_t transactionId, int32_t what, const sp<ByteArray>& data, size_t size) :
                 type(type),
@@ -125,7 +126,7 @@ public:
     public:
         Server(const sp<Runtime>& runtime);
         void onConnected(const sp<AbstractServer::Connection>& connection) override;
-        void onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) override;
+        void onDisconnected(const sp<AbstractServer::Connection>& connection, const sp<Exception>& cause) override;
         void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:
@@ -137,11 +138,11 @@ public:
     class Client : public AbstractClient {
     public:
         Client(const sp<Mindroid>& plugin, uint32_t nodeId);
-        void shutdown(const Exception& cause) override;
+        void shutdown(const sp<Exception>& cause) override;
 
         sp<Promise<sp<Parcel>>> transact(const sp<IBinder>& binder, int32_t what, const sp<Parcel>& data, int32_t flags);
         void onConnected() override;
-        void onDisconnected(const Exception& cause) override;
+        void onDisconnected(const sp<Exception>& cause) override;
         void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) override;
 
     private:

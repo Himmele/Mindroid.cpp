@@ -48,7 +48,7 @@ void AbstractClient::start(const sp<String>& uri) {
             onConnected();
         } catch (const IOException& e) {
             Log::e(TAG, "IOException");
-            shutdown(e);
+            shutdown(new IOException(e));
             throw e;
         }
     } catch (const URISyntaxException& e) {
@@ -56,7 +56,7 @@ void AbstractClient::start(const sp<String>& uri) {
     }
 }
 
-void AbstractClient::shutdown(const Exception& cause) {
+void AbstractClient::shutdown(const sp<Exception>& cause) {
     if (mConnection != nullptr) {
         try {
             mConnection->close();
@@ -70,7 +70,7 @@ void AbstractClient::shutdown(const Exception& cause) {
 
 AbstractClient::Connection::Connection(const sp<Socket>& socket, const sp<AbstractClient>& client) :
         mContext(new Bundle()) {
-    setName(String::format("Client: %s <<>> %s", socket->getLocalSocketAddress()->toString()->c_str(), socket->getRemoteSocketAddress()->toString()->c_str()));
+    setName(String::format("Client [%s <<>> %s]", socket->getLocalSocketAddress()->toString(), socket->getRemoteSocketAddress()->toString()));
     mContext->putObject("connection", this);
     mSocket = socket;
     mClient = client;
@@ -137,7 +137,7 @@ void AbstractClient::Connection::run() {
             if (DEBUG) {
                 Log::e(TAG, "IOException");
             }
-            mClient->shutdown(e);
+            mClient->shutdown(new IOException(e));
             break;
         }
     }

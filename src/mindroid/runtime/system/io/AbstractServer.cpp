@@ -67,7 +67,7 @@ void AbstractServer::start(const sp<String>& uri) {
     }
 }
 
-void AbstractServer::shutdown(const Exception& cause) {
+void AbstractServer::shutdown(const sp<Exception>& cause) {
     try {
         mServerSocket->close();
     } catch (const IOException& e) {
@@ -94,6 +94,7 @@ AbstractServer::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
         mContext(new Bundle()),
         mSocket(socket),
         mServer(server) {
+	setName(String::format("Server [%s <<>> %s]", socket->getLocalSocketAddress()->toString(), socket->getRemoteSocketAddress()->toString()));
     mContext->putObject("connection", this);
     try {
         mInputStream = mSocket->getInputStream();
@@ -113,10 +114,10 @@ AbstractServer::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
 }
 
 void AbstractServer::Connection::close() {
-    close(Exception());
+    close(new IOException());
 }
 
-void AbstractServer::Connection::close(const Exception& cause) {
+void AbstractServer::Connection::close(const sp<Exception>& cause) {
     mContext->clear();
     if (DEBUG) {
         Log::d(TAG, "Disconnecting from %s", mSocket->getRemoteSocketAddress()->toString()->c_str());
@@ -170,7 +171,7 @@ void AbstractServer::Connection::run() {
                 Log::e(TAG, "IOException");
             }
             try {
-                close(e);
+                close(new IOException(e));
             } catch (const IOException& ignore) {
             }
             break;

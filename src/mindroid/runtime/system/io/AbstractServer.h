@@ -41,22 +41,22 @@ public:
 
     AbstractServer() = default;
     void start(const sp<String>& uri);
-    void shutdown(const Exception& cause);
+    void shutdown(const sp<Exception>& cause);
 
     virtual void onConnected(const sp<Connection>& connection) = 0;
 
-    virtual void onDisconnected(const sp<Connection>& connection, const Exception& cause) = 0;
+    virtual void onDisconnected(const sp<Connection>& connection, const sp<Exception>& cause) = 0;
 
     virtual void onTransact(const sp<Bundle>& context, const sp<InputStream>& inputStream, const sp<OutputStream>& outputStream) = 0;
 
-    virtual void onShutdown(const Exception& cause) {
+    virtual void onShutdown(const sp<Exception>& cause) {
     }
 
     class Connection : public Thread {
     public:
         Connection(const sp<Socket>& socket, const sp<AbstractServer>& server);
         void close();
-        void close(const Exception& cause);
+        void close(const sp<Exception>& cause);
         void run() override;
 
         sp<Bundle> getContext() {

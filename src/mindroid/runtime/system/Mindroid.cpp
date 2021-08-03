@@ -183,6 +183,9 @@ sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& i
     int32_t transactionId = inputStream->readInt();
     int32_t what = inputStream->readInt();
     int32_t size = inputStream->readInt();
+    if (size < 0 || size > MAX_MESSAGE_SIZE) {
+        throw IOException(String::format("Invalid message size: uri=%s, what=%d, size=%d", uri, what, size));
+    }
     sp<ByteArray> data = new ByteArray(size);
     inputStream->readFully(data, 0, size);
     if (type == MESSAGE_TYPE_TRANSACTION) {
@@ -217,7 +220,7 @@ void Mindroid::Server::onConnected(const sp<AbstractServer::Connection>& connect
     Log::d(TAG, "Client connected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
-void Mindroid::Server::onDisconnected(const sp<AbstractServer::Connection>& connection, const Exception& cause) {
+void Mindroid::Server::onDisconnected(const sp<AbstractServer::Connection>& connection, const sp<Exception>& cause) {
     sp<InetSocketAddress> remoteSocketAddress = connection->getRemoteSocketAddress();
     Log::d(TAG, "Client disconnected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
@@ -288,7 +291,7 @@ Mindroid::Client::Client(const sp<Mindroid>& plugin, uint32_t nodeId) : Abstract
         mTransactionIdGenerator(new AtomicInteger(1)) {
 }
 
-void Mindroid::Client::shutdown(const Exception& cause) {
+void Mindroid::Client::shutdown(const sp<Exception>& cause) {
     sp<Client> self = this;
     sp<Client::Connection> connection = getConnection();
 
@@ -320,7 +323,7 @@ void Mindroid::Client::onConnected() {
     Log::d(TAG, "Connected to %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
 
-void Mindroid::Client::onDisconnected(const Exception& cause) {
+void Mindroid::Client::onDisconnected(const sp<Exception>& cause) {
     sp<InetSocketAddress> remoteSocketAddress = getRemoteSocketAddress();
     Log::d(TAG, "Disconnected from %s", (remoteSocketAddress != nullptr) ? remoteSocketAddress->toString()->c_str() : "nullptr");
 }
@@ -350,7 +353,7 @@ sp<Promise<sp<Parcel>>> Mindroid::Client::transact(const sp<IBinder>& binder, in
         Message::newMessage(binder->getUri()->toString(), transactionId, what, data->getByteArray(), data->size())->write(dataOutputStream);
     } catch (const IOException& e) {
         mTransactions->remove(transactionId);
-        shutdown(e);
+        shutdown(new IOException(e));
         throw RemoteException("Binder transaction failure", e);
     }
     return result;

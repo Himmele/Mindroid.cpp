@@ -136,4 +136,8 @@ TEST(Mindroid, Strings) {
     ASSERT_EQ(s19->equals("C++ string"), true);
     sp<String> s20 = String::format("Test");
     ASSERT_EQ(s20->equals("Test"), true);
+
+    sp<String> s21 = nullptr;
+    sp<String> s22 = String::format("%s, %s", nullptr, s21);
+    ASSERT_EQ(s22->equals("(null), nullptr"), true);
 }

@@ -242,8 +242,8 @@ private:
     struct is_any<T, First, Rest...> : std::integral_constant<bool, std::is_same<T, First>::value || is_any<T, Rest...>::value> {};
 
     template<typename T, typename std::enable_if<!is_any<T, sp<String>, std::string>::value>::type* = nullptr> static T toValue(const T& value) { return value; }
-    template<typename T, typename std::enable_if<std::is_same<T, sp<String>>::value>::type* = nullptr> static const char* toValue(const T& value) { return value->c_str(); }
-    template<typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type* = nullptr> static const char* toValue(const T& value) { return value.c_str(); }
+    template<typename T, typename std::enable_if<std::is_same<T, sp<String>>::value>::type* = nullptr> static const char* toValue(const T& value) { return (value != nullptr && value->c_str() != nullptr) ? value->c_str() : "nullptr"; }
+    template<typename T, typename std::enable_if<std::is_same<T, std::string>::value>::type* = nullptr> static const char* toValue(const T& value) { return (value.c_str() != nullptr) ? value.c_str() : "nullptr"; }
 
     sp<StringBuffer> mStringBuffer;
 
