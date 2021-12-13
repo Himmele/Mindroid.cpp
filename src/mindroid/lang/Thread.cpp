@@ -102,7 +102,9 @@ bool Thread::isAlive() const {
 }
 
 uint64_t Thread::getId() const {
-    return (uint64_t) ::pthread_self();
+    uint64_t threadId = 0;
+    std::memcpy(&threadId, &mThread, std::min(sizeof(threadId), sizeof(mThread)));
+    return threadId;
 }
 
 sp<Thread> Thread::currentThread() {

@@ -184,7 +184,7 @@ sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& i
     int32_t what = inputStream->readInt();
     int32_t size = inputStream->readInt();
     if (size < 0 || size > MAX_MESSAGE_SIZE) {
-        throw IOException(String::format("Invalid message size: uri=%s, what=%d, size=%d", uri, what, size));
+        throw IOException(String::format("Invalid input message size: uri=%s, transactionId=%d, what=%d, size=%d", uri, transactionId, what, size));
     }
     sp<ByteArray> data = new ByteArray(size);
     inputStream->readFully(data, 0, size);
@@ -200,6 +200,9 @@ sp<Mindroid::Message> Mindroid::Message::newMessage(const sp<DataInputStream>& i
 }
 
 void Mindroid::Message::write(const sp<DataOutputStream>& outputStream) {
+    if (size < 0 || size > MAX_MESSAGE_SIZE) {
+        throw IOException(String::format("Invalid output message size: uri=%s, transactionId=%d, what=%d, size=%d", uri, transactionId, what, size));
+    }
     outputStream->writeInt(this->type);
     outputStream->writeUTF(this->uri);
     outputStream->writeInt(this->transactionId);

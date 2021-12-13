@@ -308,7 +308,6 @@ private:
         void close() override {
             InputStream::close();
             mSocket = nullptr;
-            mFd = -1;
         }
 
         size_t available() override;
@@ -316,11 +315,19 @@ private:
         ssize_t read(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
 
     private:
-        SocketInputStream(const sp<Socket>& socket) : mSocket(socket), mFd(socket->mFd) {
+        SocketInputStream(const sp<Socket>& socket) : mSocket(socket) {
+        }
+
+        int32_t getFd() {
+            sp<Socket> socket = mSocket;
+            if (socket != nullptr) {
+                return socket->mFd;
+            } else {
+                return -1;
+            }
         }
 
         sp<Socket> mSocket;
-        int32_t mFd;
 
         friend class Socket;
     };
@@ -334,18 +341,25 @@ private:
         void close() override  {
             OutputStream::close();
             mSocket = nullptr;
-            mFd = -1;
         }
 
         void write(int32_t b) override;
         void write(const sp<ByteArray>& buffer, size_t offset, size_t count) override;
 
     private:
-        SocketOutputStream(const sp<Socket>& socket) : mSocket(socket), mFd(socket->mFd) {
+        SocketOutputStream(const sp<Socket>& socket) : mSocket(socket) {
+        }
+
+        int32_t getFd() {
+            sp<Socket> socket = mSocket;
+            if (socket != nullptr) {
+                return socket->mFd;
+            } else {
+                return -1;
+            }
         }
 
         sp<Socket> mSocket;
-        int32_t mFd;
 
         friend class Socket;
     };

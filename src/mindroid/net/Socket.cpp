@@ -274,12 +274,13 @@ size_t Socket::SocketInputStream::available() {
 }
 
 int32_t Socket::SocketInputStream::read() {
-    if (mFd == -1) {
+    int32_t fd = getFd();
+    if (fd == -1) {
         throw IOException("Socket already closed");
     }
 
     uint8_t data;
-    const ssize_t rc = ::recv(mFd, reinterpret_cast<char*>(&data), sizeof(data), 0);
+    const ssize_t rc = ::recv(fd, reinterpret_cast<char*>(&data), sizeof(data), 0);
     if (rc < 0) {
         throw IOException(String::format("Failed to read from socket (errno=%d)", errno));
     } else {
@@ -294,11 +295,12 @@ ssize_t Socket::SocketInputStream::read(const sp<ByteArray>& buffer, size_t offs
     if ((offset + count) > buffer->size()) {
         throw IndexOutOfBoundsException();
     }
-    if (mFd == -1) {
+    int32_t fd = getFd();
+    if (fd == -1) {
         throw IOException("Socket already closed");
     }
 
-    ssize_t rc = ::recv(mFd, reinterpret_cast<char*>(buffer->c_arr() + offset), count, 0);
+    ssize_t rc = ::recv(fd, reinterpret_cast<char*>(buffer->c_arr() + offset), count, 0);
     if (rc < 0) {
         throw IOException(String::format("Failed to read from socket (errno=%d)", errno));
     } else {
@@ -307,7 +309,8 @@ ssize_t Socket::SocketInputStream::read(const sp<ByteArray>& buffer, size_t offs
 }
 
 void Socket::SocketOutputStream::write(int32_t b) {
-    if (mFd == -1) {
+    int32_t fd = getFd();
+    if (fd == -1) {
         throw IOException("Socket already closed");
     }
 
@@ -315,9 +318,9 @@ void Socket::SocketOutputStream::write(int32_t b) {
     ssize_t rc;
     do {
 #ifndef __APPLE__
-        rc = ::send(mFd, reinterpret_cast<const char*>(&data), 1, MSG_NOSIGNAL);
+        rc = ::send(fd, reinterpret_cast<const char*>(&data), 1, MSG_NOSIGNAL);
 #else
-        rc = ::send(mFd, reinterpret_cast<const char*>(&data), 1, 0);
+        rc = ::send(fd, reinterpret_cast<const char*>(&data), 1, 0);
 #endif
         if (rc < 0) {
             throw IOException(String::format("Failed to write to socket (errno=%d)", (rc < 0) ? errno : -1));
@@ -332,7 +335,8 @@ void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offse
     if ((offset + count) > buffer->size()) {
         throw IndexOutOfBoundsException();
     }
-    if (mFd == -1) {
+    int32_t fd = getFd();
+    if (fd == -1) {
         throw IOException("Socket already closed");
     }
     if (count == 0) {
@@ -342,9 +346,9 @@ void Socket::SocketOutputStream::write(const sp<ByteArray>& buffer, size_t offse
     ssize_t rc;
     do {
 #ifndef __APPLE__
-        rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, MSG_NOSIGNAL);
+        rc = ::send(fd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, MSG_NOSIGNAL);
 #else
-        rc = ::send(mFd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, 0);
+        rc = ::send(fd, reinterpret_cast<const char*>(buffer->c_arr() + offset), count, 0);
 #endif
         if (rc >= 0) {
             offset += (size_t) rc;
