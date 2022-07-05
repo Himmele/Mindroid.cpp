@@ -37,7 +37,12 @@ void Thread::start() {
     if (mExecution == nullptr) {
         mSelf = this;
         mExecution = new Promise<bool>(sp<Executor>(nullptr));
-        if (::pthread_create(&mThread, nullptr, &Thread::exec, this) == 0) {
+
+        // Detached thread creation to prevent resource leaks: https://stackoverflow.com/questions/13865375/why-do-unjoined-pthreads-leak-resources-when-thread-is-not-detached-after-pthrea?rq=1
+        pthread_attr_t threadAttributes;
+        pthread_attr_init(&threadAttributes);
+        pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_DETACHED);
+        if (::pthread_create(&mThread, &threadAttributes, &Thread::exec, this) == 0) {
 #ifndef __APPLE__
             if (mName != nullptr) {
                 ::pthread_setname_np(mThread, mName->c_str());
@@ -47,6 +52,7 @@ void Thread::start() {
             mSelf.clear();
             object_cast<Promise<bool>>(mExecution)->complete(false);
         }
+        pthread_attr_destroy(&threadAttributes);
     }
 }
 
@@ -61,7 +67,6 @@ void Thread::join() const {
             mExecution->get();
         } catch (const ExecutionException& ignore) {
         }
-        ::pthread_join(mThread, nullptr);
     }
 }
 

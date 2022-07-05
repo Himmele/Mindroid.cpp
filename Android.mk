@@ -67,6 +67,7 @@ LOCAL_SRC_FILES := \
 	src/mindroid/nio/Buffer.cpp \
 	src/mindroid/nio/ByteArrayBuffer.cpp \
 	src/mindroid/nio/ByteBuffer.cpp \
+	src/mindroid/nio/file/Files.cpp \
 	src/mindroid/os/AsyncTask.cpp \
 	src/mindroid/os/Binder.cpp \
 	src/mindroid/os/Bundle.cpp \

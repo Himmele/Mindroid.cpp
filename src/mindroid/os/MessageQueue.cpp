@@ -137,6 +137,8 @@ sp<Message> MessageQueue::dequeueMessage() {
                 mHeadMessage = message->nextMessage;
                 if (mHeadMessage != nullptr) {
                     mHeadMessage->prevMessage = nullptr;
+                } else {
+                    mTailMessage = nullptr;
                 }
                 message->prevMessage = nullptr;
                 message->nextMessage = nullptr;
