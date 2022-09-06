@@ -17,6 +17,7 @@
 #include <gtest/gtest.h>
 #include <mindroid/lang/Object.h>
 #include <mindroid/lang/Thread.h>
+#include <mindroid/util/concurrent/Promise.h>
 
 using namespace mindroid;
 
@@ -67,11 +68,14 @@ TEST(Mindroid, ReferenceCounting) {
 
 TEST(Mindroid, MultiThreadedReferenceCounting) {
     sp<String> test = new String("Test");
-    // Bind function context by value, '='.
+    sp<Promise<bool>> promise = new Promise<bool>();
+    // Capture function context by value, '='.
     sp<Thread> thread = new Thread([=] {
         ASSERT_EQ(test->getStrongReferenceCount(), 2);
+        promise->complete(true);
     });
     thread->start();
+    promise->get();
     thread->join();
     thread.clear();
     ASSERT_EQ(test->getStrongReferenceCount(), 1);
@@ -79,11 +83,14 @@ TEST(Mindroid, MultiThreadedReferenceCounting) {
 
 TEST(Mindroid, BuggyMultiThreadedReferenceCounting) {
     sp<String> test = new String("Test");
-    // Bind function context by reference, '&'.
-    sp<Thread> thread = new Thread([&] {
+    sp<Promise<bool>> promise = new Promise<bool>();
+    // Capture promise by value and everything else by reference, '&'.
+    sp<Thread> thread = new Thread([&, promise] {
         ASSERT_EQ(test->getStrongReferenceCount(), 1);
+        promise->complete(true);
     });
     thread->start();
+    promise->get();
     thread->join();
     thread.clear();
     ASSERT_EQ(test->getStrongReferenceCount(), 1);
