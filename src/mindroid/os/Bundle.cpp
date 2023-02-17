@@ -24,11 +24,11 @@ Bundle::Bundle() {
 }
 
 Bundle::~Bundle() {
-    clear();
+    mMap.clear();
 }
 
 Bundle::Bundle(const sp<Bundle>& other) : Bundle() {
-    putAll(other);
+    mMap->putAll(other->mMap);
 }
 
 sp<HashSet<sp<String>>> Bundle::keySet() const {
@@ -49,80 +49,99 @@ bool Bundle::containsKey(const sp<String>& key) {
     return mMap->containsKey(key);
 }
 
-void Bundle::remove(const sp<String>& key) {
+sp<Bundle> Bundle::remove(const sp<String>& key) {
     mMap->remove(key);
+    return this;
 }
 
-void Bundle::putAll(const sp<Bundle>& bundle) {
+sp<Bundle> Bundle::putAll(const sp<Bundle>& bundle) {
     mMap->putAll(bundle->mMap);
+    return this;
 }
 
-void Bundle::putBinder(const sp<String>& key, const sp<IBinder>& binder) {
+sp<Bundle> Bundle::putBinder(const sp<String>& key, const sp<IBinder>& binder) {
     mMap->put(key, new Variant(binder));
+    return this;
 }
 
-void Bundle::putBoolean(const sp<String>& key, bool value) {
+sp<Bundle> Bundle::putBoolean(const sp<String>& key, bool value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putBundle(const sp<String>& key, const sp<Bundle>& value) {
+sp<Bundle> Bundle::putBundle(const sp<String>& key, const sp<Bundle>& value) {
     mMap->put(key, new Variant(sp<Object>(value)));
+    return this;
 }
 
-void Bundle::putByte(const sp<String>& key, uint8_t value) {
+sp<Bundle> Bundle::putByte(const sp<String>& key, uint8_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putChar(const sp<String>& key, char value) {
+sp<Bundle> Bundle::putChar(const sp<String>& key, char value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putDouble(const sp<String>& key, double value) {
+sp<Bundle> Bundle::putDouble(const sp<String>& key, double value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putFloat(const sp<String>& key, float value) {
+sp<Bundle> Bundle::putFloat(const sp<String>& key, float value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putInt(const sp<String>& key, int32_t value) {
+sp<Bundle> Bundle::putInt(const sp<String>& key, int32_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putUnsignedInt(const sp<String>& key, uint32_t value) {
+sp<Bundle> Bundle::putUnsignedInt(const sp<String>& key, uint32_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value) {
+sp<Bundle> Bundle::putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putLong(const sp<String>& key, int64_t value) {
+sp<Bundle> Bundle::putLong(const sp<String>& key, int64_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putUnsignedLong(const sp<String>& key, uint64_t value) {
+sp<Bundle> Bundle::putUnsignedLong(const sp<String>& key, uint64_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putObject(const sp<String>& key, const sp<Object>& object) {
+sp<Bundle> Bundle::putObject(const sp<String>& key, const sp<Object>& object) {
     mMap->put(key, new Variant(object));
+    return this;
 }
 
-void Bundle::putShort(const sp<String>& key, int16_t value) {
+sp<Bundle> Bundle::putShort(const sp<String>& key, int16_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putUnsignedShort(const sp<String>& key, uint16_t value) {
+sp<Bundle> Bundle::putUnsignedShort(const sp<String>& key, uint16_t value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
-void Bundle::putString(const sp<String>& key, const sp<String>& string) {
+sp<Bundle> Bundle::putString(const sp<String>& key, const sp<String>& string) {
     mMap->put(key, new Variant(string));
+    return this;
 }
 
-void Bundle::putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value) {
+sp<Bundle> Bundle::putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value) {
     mMap->put(key, new Variant(value));
+    return this;
 }
 
 sp<IBinder> Bundle::getBinder(const sp<String>& key) const {

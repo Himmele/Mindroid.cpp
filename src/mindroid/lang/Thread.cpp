@@ -42,13 +42,7 @@ void Thread::start() {
         pthread_attr_t threadAttributes;
         pthread_attr_init(&threadAttributes);
         pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_DETACHED);
-        if (::pthread_create(&mThread, &threadAttributes, &Thread::exec, this) == 0) {
-#ifndef __APPLE__
-            if (mName != nullptr) {
-                ::pthread_setname_np(mThread, mName->c_str());
-            }
-#endif
-        } else {
+        if (::pthread_create(&mThread, &threadAttributes, &Thread::exec, this) != 0) {
             mSelf.clear();
             object_cast<Promise<bool>>(mExecution)->complete(false);
         }
@@ -86,6 +80,11 @@ void Thread::join(uint64_t millis) const {
 
 void* Thread::exec(void* args) {
     Thread* const self = (Thread*) args;
+#ifndef __APPLE__
+    if (self->mName != nullptr) {
+        ::pthread_setname_np(::pthread_self(), self->mName->c_str());
+    }
+#endif
     sp<Runnable> runnable = (self->mRunnable != nullptr) ? self->mRunnable : self;
     sp<Promise<bool>> execution = object_cast<Promise<bool>>(self->mExecution);
     runnable->run();

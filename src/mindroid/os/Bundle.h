@@ -45,9 +45,13 @@ public:
 
     /**
      * Removes all elements from the mapping of this Bundle.
+     *
+     * @return Returns a reference to the same Bundle object, so you can chain calls
+     * together.
      */
-    void clear() {
+    sp<Bundle> clear() {
         mMap.clear();
+        return this;
     }
 
     /**
@@ -101,18 +105,22 @@ public:
      * Removes any entry with the given key from the mapping of this Bundle.
      *
      * @param key a String key
+     * @return Returns a reference to the same Bundle object, so you can chain calls
+     * together.
      */
-    void remove(const char* key) {
-        remove(String::valueOf(key));
+    sp<Bundle> remove(const char* key) {
+        return remove(String::valueOf(key));
     }
-    void remove(const sp<String>& key);
+    sp<Bundle> remove(const sp<String>& key);
 
     /**
      * Inserts all mappings from the given Bundle into this Bundle.
      *
      * @param bundle a Bundle
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putAll(const sp<Bundle>& bundle);
+    sp<Bundle> putAll(const sp<Bundle>& bundle);
 
     /**
      * Inserts an {@link IBinder} value into the mapping of this Bundle, replacing any existing
@@ -128,11 +136,13 @@ public:
      *
      * @param key a String, or null
      * @param value an IBinder object, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putBinder(const char* key, const sp<IBinder>& value) {
-        putBinder(String::valueOf(key), value);
+    sp<Bundle> putBinder(const char* key, const sp<IBinder>& value) {
+        return putBinder(String::valueOf(key), value);
     }
-    void putBinder(const sp<String>& key, const sp<IBinder>& value);
+    sp<Bundle> putBinder(const sp<String>& key, const sp<IBinder>& value);
 
     /**
      * Inserts a Boolean value into the mapping of this Bundle, replacing any existing value for the
@@ -140,11 +150,13 @@ public:
      *
      * @param key a String, or null
      * @param value a Boolean, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putBoolean(const char* key, bool value) {
-        putBoolean(String::valueOf(key), value);
+    sp<Bundle> putBoolean(const char* key, bool value) {
+        return putBoolean(String::valueOf(key), value);
     }
-    void putBoolean(const sp<String>& key, bool value);
+    sp<Bundle> putBoolean(const sp<String>& key, bool value);
 
     /**
      * Inserts a Bundle value into the mapping of this Bundle, replacing any existing value for the
@@ -152,11 +164,13 @@ public:
      *
      * @param key a String, or null
      * @param value a Bundle object, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putBundle(const char* key, const sp<Bundle>& value) {
-        putBundle(String::valueOf(key), value);
+    sp<Bundle> putBundle(const char* key, const sp<Bundle>& value) {
+        return putBundle(String::valueOf(key), value);
     }
-    void putBundle(const sp<String>& key, const sp<Bundle>& value);
+    sp<Bundle> putBundle(const sp<String>& key, const sp<Bundle>& value);
 
     /**
      * Inserts a byte value into the mapping of this Bundle, replacing any existing value for the
@@ -164,11 +178,13 @@ public:
      *
      * @param key a String, or null
      * @param value a byte
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putByte(const char* key, uint8_t value) {
-        putByte(String::valueOf(key), value);
+    sp<Bundle> putByte(const char* key, uint8_t value) {
+        return putByte(String::valueOf(key), value);
     }
-    void putByte(const sp<String>& key, uint8_t value);
+    sp<Bundle> putByte(const sp<String>& key, uint8_t value);
 
     /**
      * Inserts a char value into the mapping of this Bundle, replacing any existing value for the
@@ -176,11 +192,13 @@ public:
      *
      * @param key a String, or null
      * @param value a char, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putChar(const char* key, char value) {
-        putChar(String::valueOf(key), value);
+    sp<Bundle> putChar(const char* key, char value) {
+        return putChar(String::valueOf(key), value);
     }
-    void putChar(const sp<String>& key, char value);
+    sp<Bundle> putChar(const sp<String>& key, char value);
 
     /**
      * Inserts a double value into the mapping of this Bundle, replacing any existing value for the
@@ -188,11 +206,13 @@ public:
      *
      * @param key a String, or null
      * @param value a double
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putDouble(const char* key, double value) {
-        putDouble(String::valueOf(key), value);
+    sp<Bundle> putDouble(const char* key, double value) {
+        return putDouble(String::valueOf(key), value);
     }
-    void putDouble(const sp<String>& key, double value);
+    sp<Bundle> putDouble(const sp<String>& key, double value);
 
     /**
      * Inserts a float value into the mapping of this Bundle, replacing any existing value for the
@@ -200,11 +220,13 @@ public:
      *
      * @param key a String, or null
      * @param value a float
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putFloat(const char* key, float value) {
-        putFloat(String::valueOf(key), value);
+    sp<Bundle> putFloat(const char* key, float value) {
+        return putFloat(String::valueOf(key), value);
     }
-    void putFloat(const sp<String>& key, float value);
+    sp<Bundle> putFloat(const sp<String>& key, float value);
 
     /**
      * Inserts an int value into the mapping of this Bundle, replacing any existing value for the
@@ -212,15 +234,17 @@ public:
      *
      * @param key a String, or null
      * @param value an int, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putInt(const char* key, int32_t value) {
-        putInt(String::valueOf(key), value);
+    sp<Bundle> putInt(const char* key, int32_t value) {
+        return putInt(String::valueOf(key), value);
     }
-    void putInt(const sp<String>& key, int32_t value);
-    void putUnsignedInt(const char* key, uint32_t value) {
-        putUnsignedInt(String::valueOf(key), value);
+    sp<Bundle> putInt(const sp<String>& key, int32_t value);
+    sp<Bundle> putUnsignedInt(const char* key, uint32_t value) {
+        return putUnsignedInt(String::valueOf(key), value);
     }
-    void putUnsignedInt(const sp<String>& key, uint32_t value);
+    sp<Bundle> putUnsignedInt(const sp<String>& key, uint32_t value);
 
     /**
      * Inserts an ArrayList<Integer> value into the mapping of this Bundle, replacing any existing
@@ -228,11 +252,13 @@ public:
      *
      * @param key a String, or null
      * @param value an ArrayList<Integer> object, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putIntegerArrayList(const char* key, const sp<ArrayList<int32_t>>& value) {
-        putIntegerArrayList(String::valueOf(key), value);
+    sp<Bundle> putIntegerArrayList(const char* key, const sp<ArrayList<int32_t>>& value) {
+        return putIntegerArrayList(String::valueOf(key), value);
     }
-    void putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value);
+    sp<Bundle> putIntegerArrayList(const sp<String>& key, const sp<ArrayList<int32_t>>& value);
 
     /**
      * Inserts a long value into the mapping of this Bundle, replacing any existing value for the
@@ -240,15 +266,17 @@ public:
      *
      * @param key a String, or null
      * @param value a long
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putLong(const char* key, int64_t value) {
-        putLong(String::valueOf(key), value);
+    sp<Bundle> putLong(const char* key, int64_t value) {
+        return putLong(String::valueOf(key), value);
     }
-    void putLong(const sp<String>& key, int64_t value);
-    void putUnsignedLong(const char* key, uint64_t value) {
-        putUnsignedLong(String::valueOf(key), value);
+    sp<Bundle> putLong(const sp<String>& key, int64_t value);
+    sp<Bundle> putUnsignedLong(const char* key, uint64_t value) {
+        return putUnsignedLong(String::valueOf(key), value);
     }
-    void putUnsignedLong(const sp<String>& key, uint64_t value);
+    sp<Bundle> putUnsignedLong(const sp<String>& key, uint64_t value);
 
     /**
      * Inserts an object value into the mapping of this Bundle, replacing any existing value for the
@@ -256,11 +284,13 @@ public:
      *
      * @param key a String, or null
      * @param value an object, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putObject(const char* key, const sp<Object>& value) {
-        putObject(String::valueOf(key), value);
+    sp<Bundle> putObject(const char* key, const sp<Object>& value) {
+        return putObject(String::valueOf(key), value);
     }
-    void putObject(const sp<String>& key, const sp<Object>& value);
+    sp<Bundle> putObject(const sp<String>& key, const sp<Object>& value);
 
     /**
      * Inserts a short value into the mapping of this Bundle, replacing any existing value for the
@@ -268,15 +298,17 @@ public:
      *
      * @param key a String, or null
      * @param value a short
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putShort(const char* key, int16_t value) {
-        putShort(String::valueOf(key), value);
+    sp<Bundle> putShort(const char* key, int16_t value) {
+        return putShort(String::valueOf(key), value);
     }
-    void putShort(const sp<String>& key, int16_t value);
-    void putUnsignedShort(const char* key, uint16_t value) {
-        putUnsignedShort(String::valueOf(key), value);
+    sp<Bundle> putShort(const sp<String>& key, int16_t value);
+    sp<Bundle> putUnsignedShort(const char* key, uint16_t value) {
+        return putUnsignedShort(String::valueOf(key), value);
     }
-    void putUnsignedShort(const sp<String>& key, uint16_t value);
+    sp<Bundle> putUnsignedShort(const sp<String>& key, uint16_t value);
 
     /**
      * Inserts a String value into the mapping of this Bundle, replacing any existing value for the
@@ -284,14 +316,16 @@ public:
      *
      * @param key a String, or null
      * @param value a String, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putString(const char* key, const char* value) {
-        putString(String::valueOf(key), String::valueOf(value));
+    sp<Bundle> putString(const char* key, const char* value) {
+        return putString(String::valueOf(key), String::valueOf(value));
     }
-    void putString(const char* key, const sp<String>& value) {
-        putString(String::valueOf(key), value);
+    sp<Bundle> putString(const char* key, const sp<String>& value) {
+        return putString(String::valueOf(key), value);
     }
-    void putString(const sp<String>& key, const sp<String>& value);
+    sp<Bundle> putString(const sp<String>& key, const sp<String>& value);
 
     /**
      * Inserts an ArrayList<String> value into the mapping of this Bundle, replacing any existing
@@ -299,11 +333,13 @@ public:
      *
      * @param key a String, or null
      * @param value an ArrayList<String> object, or null
+     * @return Returns a reference to the same Bundle object, so you can chain put calls
+     * together.
      */
-    void putStringArrayList(const char* key, const sp<ArrayList<sp<String>>>& value) {
-        putStringArrayList(String::valueOf(key), value);
+    sp<Bundle> putStringArrayList(const char* key, const sp<ArrayList<sp<String>>>& value) {
+        return putStringArrayList(String::valueOf(key), value);
     }
-    void putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value);
+    sp<Bundle> putStringArrayList(const sp<String>& key, const sp<ArrayList<sp<String>>>& value);
 
     /**
      * Returns the value associated with the given key, or null if
