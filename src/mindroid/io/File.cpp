@@ -75,15 +75,15 @@ File::File(const sp<String>& dirPath, const sp<String>& name) {
 }
 
 bool File::canExecute() const {
-    return (access(mPath->c_str(), X_OK) == 0);
+    return (::access(mPath->c_str(), X_OK) == 0);
 }
 
 bool File::canRead() const {
-    return (access(mPath->c_str(), R_OK) == 0);
+    return (::access(mPath->c_str(), R_OK) == 0);
 }
 
 bool File::canWrite() const {
-    return (access(mPath->c_str(), W_OK) == 0);
+    return (::access(mPath->c_str(), W_OK) == 0);
 }
 
 bool File::remove() {
@@ -92,7 +92,7 @@ bool File::remove() {
 
 bool File::exists() const {
     struct stat status;
-    return (stat(mPath->c_str(), &status) == 0);
+    return (::stat(mPath->c_str(), &status) == 0);
 }
 
 sp<String> File::getAbsolutePath() {
@@ -150,7 +150,7 @@ bool File::isAbsolute() const {
 
 bool File::isDirectory() const {
     struct stat status;
-    if (stat(mPath->c_str(), &status) == 0) {
+    if (::stat(mPath->c_str(), &status) == 0) {
         return S_ISDIR(status.st_mode);
     } else {
         return false;
@@ -159,7 +159,7 @@ bool File::isDirectory() const {
 
 bool File::isFile() const {
     struct stat status;
-    if (stat(mPath->c_str(), &status) == 0) {
+    if (::stat(mPath->c_str(), &status) == 0) {
         return S_ISREG(status.st_mode);
     } else {
         return false;
@@ -168,7 +168,7 @@ bool File::isFile() const {
 
 size_t File::length() const {
     struct stat status;
-    if (stat(mPath->c_str(), &status) == 0) {
+    if (::stat(mPath->c_str(), &status) == 0) {
         return status.st_size;
     } else {
         return 0;
@@ -176,7 +176,7 @@ size_t File::length() const {
 }
 
 sp<ArrayList<sp<File>>> File::listFiles() {
-    DIR* direcrory = opendir(mPath->c_str());
+    DIR* direcrory = ::opendir(mPath->c_str());
     if (direcrory != nullptr) {
         sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
         struct dirent* file;
@@ -194,7 +194,7 @@ sp<ArrayList<sp<File>>> File::listFiles() {
 }
 
 sp<ArrayList<sp<File>>> File::listFiles(const sp<FilenameFilter>& filter) {
-    DIR* direcrory = opendir(mPath->c_str());
+    DIR* direcrory = ::opendir(mPath->c_str());
     if (direcrory != nullptr) {
         sp<ArrayList<sp<File>>> list = new ArrayList<sp<File>>();
         struct dirent* file;
@@ -233,9 +233,9 @@ bool File::mkdirs() {
 }
 
 bool File::createNewFile() {
-    int fd = open(mPath->c_str(), O_RDWR | O_CREAT | O_TRUNC, 0600);
+    int fd = ::open(mPath->c_str(), O_RDWR | O_CREAT | O_TRUNC, 0600);
     if (fd != -1) {
-        close(fd);
+        ::close(fd);
         return true;
     } else {
         return false;
@@ -267,10 +267,10 @@ sp<String> File::join(sp<String>& prefix, sp<String>& suffix) {
 }
 
 bool File::fsync() {
-    int fd = open(mPath->c_str(), O_RDONLY);
+    int fd = ::open(mPath->c_str(), O_RDONLY);
     if (fd != -1) {
         int result = ::fsync(fd);
-        close(fd);
+        ::close(fd);
         return result == 0;
     } else {
         return false;
