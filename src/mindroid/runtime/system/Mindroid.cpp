@@ -285,7 +285,7 @@ void Mindroid::Server::onTransact(const sp<Bundle>& context, const sp<InputStrea
         if (DEBUG) {
             Log::e(TAG, "IOException");
         }
-        throw e;
+        throw;
     }
 }
 
@@ -387,7 +387,7 @@ void Mindroid::Client::onTransact(const sp<Bundle>& context, const sp<InputStrea
         if (DEBUG) {
             Log::e(TAG, "IOException");
         }
-        throw e;
+        throw;
     }
 }
 

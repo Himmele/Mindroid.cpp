@@ -32,7 +32,7 @@ sp<Promise<sp<String>>> Logger::assumeThat(const sp<String>& tag, const sp<Strin
         try {
             return mLogger->assumeThat(tag, message, timeout);
         } catch (const RemoteException& e) {
-            throw new RuntimeException("System failure", e);
+            throw RuntimeException("System failure", e);
         }
     } else {
         return new Promise<sp<String>>(sp<Exception>(new ExecutionException()));
@@ -44,7 +44,7 @@ void Logger::mark() {
         try {
             return mLogger->mark();
         } catch (const RemoteException& e) {
-            throw new RuntimeException("System failure", e);
+            throw RuntimeException("System failure", e);
         }
     }
 }
@@ -54,7 +54,7 @@ void Logger::reset() {
         try {
             return mLogger->reset();
         } catch (const RemoteException& e) {
-            throw new RuntimeException("System failure", e);
+            throw RuntimeException("System failure", e);
         }
     }
 }

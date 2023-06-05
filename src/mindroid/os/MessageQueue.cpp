@@ -69,14 +69,12 @@ bool MessageQueue::quit() {
 bool MessageQueue::enqueueMessage(const sp<Message>& message, uint64_t when) {
     if (message->target == nullptr) {
         throw IllegalArgumentException("Message must have a target");
-        return false;
     }
 
     AutoLock autoLock(mLock);
 
     if (message->isInUse()) {
         throw IllegalStateException("Message is already in use");
-        return false;
     }
 
     if (mQuitting) {

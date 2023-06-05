@@ -266,4 +266,15 @@ sp<String> File::join(sp<String>& prefix, sp<String>& suffix) {
     }
 }
 
+bool File::fsync() {
+    int fd = open(mPath->c_str(), O_RDONLY);
+    if (fd != -1) {
+        int result = ::fsync(fd);
+        close(fd);
+        return result == 0;
+    } else {
+        return false;
+    }
+}
+
 } /* namespace mindroid */

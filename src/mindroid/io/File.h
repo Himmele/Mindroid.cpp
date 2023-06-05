@@ -297,6 +297,11 @@ public:
     bool renameTo(const sp<File>& newPath);
 
     /**
+     * Ensure file/directory is synced to underlying storage device (fsync)
+     */
+    bool fsync();
+
+    /**
      * Returns a string containing a concise, human-readable description of this
      * file.
      *

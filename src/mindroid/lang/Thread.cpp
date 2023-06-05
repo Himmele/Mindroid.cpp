@@ -88,6 +88,7 @@ void* Thread::exec(void* args) {
     sp<Runnable> runnable = (self->mRunnable != nullptr) ? self->mRunnable : self;
     sp<Promise<bool>> execution = object_cast<Promise<bool>>(self->mExecution);
     runnable->run();
+    runnable.clear();
     self->mSelf.clear();
     execution->complete(true);
     return nullptr;

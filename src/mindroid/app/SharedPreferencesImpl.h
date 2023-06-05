@@ -184,9 +184,11 @@ private:
 
     bool writeMap(const sp<File>& file, const sp<HashMap<sp<String>, sp<Variant>>>& map);
     tinyxml2::XMLElement* writeValue(tinyxml2::XMLDocument& doc, const sp<String>& name, const sp<Variant>& value);
+    bool fsync(const sp<File>& file);
 
     sp<File> makeBackupFile(const sp<File>& prefsFile);
 
+    int32_t mMode;
     sp<File> mFile;
     sp<File> mBackupFile;
     sp<ReentrantLock> mLock;

@@ -72,9 +72,8 @@ TEST(Mindroid, PromiseChain) {
 
 TEST(Mindroid, PromiseChainCompletedExceptionally) {
     sp<Promise<int32_t>>(new Promise<int32_t>(Executors::SYNCHRONOUS_EXECUTOR, 42))
-            ->thenApply<sp<String>>([=] (int32_t value) {
+            ->thenApply<sp<String>>([=] (int32_t value) -> sp<String> {
                 throw RuntimeException("RuntimeException");
-                return String::valueOf(value);
             })
             ->thenAccept([=] (const sp<String>& value) { ASSERT_TRUE(false); })
             ->catchException([=] (const sp<Exception>& exception) { ASSERT_STREQ(exception->getMessage()->c_str(), "RuntimeException"); });

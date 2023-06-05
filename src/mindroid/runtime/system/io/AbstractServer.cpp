@@ -106,7 +106,7 @@ AbstractServer::Connection::Connection(const sp<Socket>& socket, const sp<Abstra
             close();
         } catch (const IOException& ignore) {
         }
-        throw e;
+        throw;
     }
 
     mServer->onConnected(this);

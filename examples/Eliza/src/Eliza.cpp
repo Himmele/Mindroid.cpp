@@ -92,7 +92,7 @@ void Eliza::ask3(const sp<String>& question, const std::function<void (const sp<
         mService->ask3(question, wrapper);
     } catch (const RemoteException& e) {
         mListeners->remove(wrapper);
-        throw e;
+        throw;
     }
 }
 

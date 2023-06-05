@@ -75,9 +75,23 @@ public:
     bool contains(const char* subString) const;
     bool contains(const sp<String>& subString) const;
 
+    /**
+     * @brief Checks if the string starts with the prefix
+     *
+     * @param prefix null terminated string
+     * @return true when the string starts with the prefix
+     * @return false when the string does not start with the prefix
+     */
     bool startsWith(const char* prefix) const;
     bool startsWith(const sp<String>& prefix) const;
 
+    /**
+     * @brief Checks if the string ends with the suffix
+     *
+     * @param suffix null terminated string
+     * @return true when the string ends with the suffix
+     * @return false when the string does not end with the suffix
+     */
     bool endsWith(const char* suffix) const;
     bool endsWith(const sp<String>& suffix) const;
 
@@ -103,6 +117,12 @@ public:
 
     sp<String> trim() const;
 
+    /**
+     * @brief Splits the string at the separator
+     *
+     * @param separator null terminated string
+     * @return sp<StringArray> array of strings split at separator, omitting the separator
+     */
     sp<StringArray> split(const char* separator) const;
     sp<StringArray> split(const sp<String>& separator) const;
 
@@ -135,6 +155,12 @@ public:
     static sp<String> valueOf(float value);
     static sp<String> valueOf(double value);
 
+    /**
+     * @brief Calculates the string length of the input
+     *
+     * @param string for which to get the length, null terminated
+     * @return size_t length of the string
+     */
     static size_t length(const char* string) {
         return strlen(string);
     }
@@ -147,7 +173,7 @@ public:
      *            the starting offset in this string.
      * @param string
      *            the string to compare.
-     * @param ooffset
+     * @param offset
      *            the starting offset in the specified string.
      * @param len
      *            the number of characters to compare.
@@ -156,8 +182,8 @@ public:
      * @throws NullPointerException
      *             if {@code string} is {@code null}.
      */
-    bool regionMatches(size_t toffset, const sp<String>& string, size_t ooffset, size_t len);
-    bool regionMatches(size_t toffset, const char* string, size_t ooffset, size_t len);
+    bool regionMatches(size_t toffset, const sp<String>& string, size_t offset, size_t len);
+    bool regionMatches(size_t toffset, const char* string, size_t offset, size_t len);
 
     sp<String> replace(char oldChar, char newChar);
 
@@ -165,6 +191,12 @@ public:
         return append(&c, 1);
     }
 
+    /**
+     * @brief Append a string to the current string
+     *
+     * @param string to append, null terminated
+     * @return sp<String> the new string
+     */
     sp<String> append(const char* string) const {
         return append(string, strlen(string));
     }

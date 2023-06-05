@@ -17,6 +17,7 @@
  */
 
 #include <mindroid/app/SharedPreferencesImpl.h>
+#include <mindroid/content/Context.h>
 #include <mindroid/io/File.h>
 #include <mindroid/util/Log.h>
 #include <tinyxml2/tinyxml2.h>
@@ -38,6 +39,7 @@ const char* const SharedPreferencesImpl::NAME_ATTR = "name";
 const char* const SharedPreferencesImpl::VALUE_ATTR = "value";
 
 SharedPreferencesImpl::SharedPreferencesImpl(const sp<File>& file, int32_t mode) :
+        mMode(mode),
         mFile(file),
         mLock(new ReentrantLock()),
         mListeners(new HashMap<sp<SharedPreferences::OnSharedPreferenceChangeListener>, sp<IOnSharedPreferenceChangeListener>>()) {
@@ -246,11 +248,13 @@ bool SharedPreferencesImpl::storeSharedPrefs() {
     }
 
     if (writeMap(mFile, mMap)) {
+        fsync(mFile);
         if (mBackupFile->exists()) {
             if (!mBackupFile->remove()) {
                 Log::e(TAG, "Cannot clean up backup file %s", mBackupFile->getPath()->c_str());
             }
         }
+        fsync(mFile->getParentFile());
         return true;
     } else {
         Log::e(TAG, "Cannot write shared preferences: %s", mFile->getPath()->c_str());
@@ -260,6 +264,7 @@ bool SharedPreferencesImpl::storeSharedPrefs() {
                 Log::e(TAG, "Cannot clean up partially-written file %s", mFile->getPath()->c_str());
             }
         }
+        fsync(mFile->getParentFile());
         return false;
     }
 }
@@ -459,6 +464,21 @@ XMLElement* SharedPreferencesImpl::writeValue(XMLDocument& doc, const sp<String>
         return element;
     }
     return nullptr;
+}
+
+bool SharedPreferencesImpl::fsync(const sp<File>& file) {
+    if (file == nullptr) {
+        return false;
+    }
+    if ((mMode & Context::MODE_NO_SYNC) != 0) {
+        return true;
+    }
+
+    if (!file->fsync()) {
+        Log::w(TAG, "Cannot sync %s %s", file->isDirectory() ? "directory " : "file ", file->getAbsolutePath());
+        return false;
+    }
+    return true;
 }
 
 } /* namespace mindroid */
