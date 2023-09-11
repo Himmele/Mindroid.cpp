@@ -28,7 +28,7 @@ TEST(Mindroid, Objects) {
     ASSERT_EQ(o1->equals(o3), true);
 }
 
-TEST(Mindroid, objectsBuiltByCreatorFunction) {
+TEST(Mindroid, ObjectsBuiltByCreatorFunction) {
     auto o1 = sp<Object>::of();
     auto o2 = sp<Object>::of();
     ASSERT_EQ(o1->equals(o2), false);
@@ -41,7 +41,7 @@ TEST(Mindroid, objectsBuiltByCreatorFunction) {
     ASSERT_EQ(o2->getStrongReferenceCount(), 1);
 }
 
-TEST(Mindroid, objectsBuiltByCreatorFunctionWithArgs) {
+TEST(Mindroid, ObjectsBuiltByCreatorFunctionWithArgs) {
     class TestObject : public Object {
     public:
         TestObject(int32_t value) : value(value) {}
