@@ -27,3 +27,42 @@ TEST(Mindroid, Objects) {
     sp<Object> o3 = o1;
     ASSERT_EQ(o1->equals(o3), true);
 }
+
+TEST(Mindroid, objectsBuiltByCreatorFunction) {
+    auto o1 = sp<Object>::of();
+    auto o2 = sp<Object>::of();
+    ASSERT_EQ(o1->equals(o2), false);
+    ASSERT_EQ(o1->getStrongReferenceCount(), 1);
+    ASSERT_EQ(o2->getStrongReferenceCount(), 1);
+    sp<Object> o3 = o1;
+    ASSERT_EQ(o1->equals(o3), true);
+    ASSERT_EQ(o1->getStrongReferenceCount(), 2);
+    ASSERT_EQ(o3->getStrongReferenceCount(), 2);
+    ASSERT_EQ(o2->getStrongReferenceCount(), 1);
+}
+
+TEST(Mindroid, objectsBuiltByCreatorFunctionWithArgs) {
+    class TestObject : public Object {
+    public:
+        TestObject(int32_t value) : value(value) {}
+        const int32_t value;
+    };
+    const int32_t value1 = 1;
+    const int32_t value2 = 1;
+
+    auto o1 = sp<TestObject>::of(value1);
+    auto o2 = sp<TestObject>::of(value2);
+
+    ASSERT_EQ(o1->value, value1);
+    ASSERT_EQ(o2->value, value2);
+    ASSERT_EQ(o1->equals(o2), false);
+    ASSERT_EQ(o1->getStrongReferenceCount(), 1);
+    ASSERT_EQ(o2->getStrongReferenceCount(), 1);
+    sp<TestObject> o3 = o1;
+    ASSERT_EQ(o1->value, value1);
+    ASSERT_EQ(o3->value, value1);
+    ASSERT_EQ(o1->equals(o3), true);
+    ASSERT_EQ(o1->getStrongReferenceCount(), 2);
+    ASSERT_EQ(o3->getStrongReferenceCount(), 2);
+    ASSERT_EQ(o2->getStrongReferenceCount(), 1);
+}

@@ -39,8 +39,8 @@ public:
         return new Wrapper<T>();
     }
 
-    template<typename... Args>
-    static sp<Wrapper<T>> newInstance(Args&&... args) {
+    template<typename ... Args>
+    static sp<Wrapper<T>> newInstance(Args&& ... args) {
         return new Wrapper<T>(T(std::forward<Args>(args)...));
     }
 
