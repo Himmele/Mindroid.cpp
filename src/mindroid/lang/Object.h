@@ -174,11 +174,6 @@ inline bool operator _operator_ (const wp<U>& o) const {       \
 template<typename T>
 class sp {
 public:
-    template<typename ... Args>
-    static sp<T> of(Args&& ... args) {
-        return new T(std::forward<Args>(args)...);
-    }
-
     inline sp() : mPointer(nullptr) { }
 
     sp(T* other);
@@ -215,6 +210,11 @@ public:
 
     void clear();
 
+    template<typename ... Args>
+    static sp<T> of(Args&& ... args) {
+        return new T(std::forward<Args>(args)...);
+    }
+
 private:
     template<typename Y> friend class sp;
     template<typename Y> friend class wp;
@@ -250,11 +250,6 @@ template<typename T>
 class wp {
 public:
     typedef typename Object::WeakReference WeakReference;
-
-    template<typename ... Args>
-    static wp<T> of(Args&& ... args) {
-        return new T(std::forward<Args>(args)...);
-    }
 
     inline wp() : mPointer(nullptr), mReference(nullptr) { }
 
@@ -341,6 +336,11 @@ public:
 
     template<typename U> inline bool operator>=(const wp<U>& o) const {
         return !operator <(o);
+    }
+
+    template<typename ... Args>
+    static wp<T> of(Args&& ... args) {
+        return new T(std::forward<Args>(args)...);
     }
 
 private:
