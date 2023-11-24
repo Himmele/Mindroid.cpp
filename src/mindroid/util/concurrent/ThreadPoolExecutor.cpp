@@ -58,7 +58,7 @@ bool ThreadPoolExecutor::shutdown(bool shutdownAllowed) {
             mWorkerThreads[i]->join();
             mWorkerThreads[i] = nullptr;
         }
-        delete[] mWorkerThreads;
+        delete [] mWorkerThreads;
         mWorkerThreads = nullptr;
     }
     return true;
