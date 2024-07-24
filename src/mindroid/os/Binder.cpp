@@ -132,7 +132,7 @@ void Binder::onTransact(const sp<Message>& message) {
     try {
         switch (message->what) {
         case TRANSACTION:
-            onTransact(message->arg1, object_cast<Parcel>(message->obj), object_cast<Promise<sp<Parcel>>, Thenable>(message->result));
+            onTransact(message->arg1, object_cast<Parcel>(message->obj), object_cast<Promise<sp<Parcel>>>(message->result));
             break;
         case LIGHTWEIGHT_TRANSACTION:
             onTransact(message->arg1, message->arg2, message->obj, message->peekData(), message->result);
@@ -144,10 +144,10 @@ void Binder::onTransact(const sp<Message>& message) {
         if (message->result != nullptr) {
             switch (message->what) {
             case TRANSACTION:
-                object_cast<Promise<sp<Parcel>>, Thenable>(message->result)->completeWith(e);
+                object_cast<Promise<sp<Parcel>>>(message->result)->completeWith(e);
                 break;
             case LIGHTWEIGHT_TRANSACTION:
-                object_cast<Promise<sp<Object>>, Thenable>(message->result)->completeWith(e);
+                object_cast<Promise<sp<Object>>>(message->result)->completeWith(e);
                 break;
             default:
                 Log::w(TAG, EXCEPTION_MESSAGE->c_str());

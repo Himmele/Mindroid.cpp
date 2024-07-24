@@ -28,12 +28,12 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
     switch (what) {
     case MSG_START_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<ComponentName>>, Thenable>(result)->completeWith(startService(service));
+        object_cast<Promise<sp<ComponentName>>>(result)->completeWith(startService(service));
         break;
     }
     case MSG_STOP_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(stopService(service));
+        object_cast<Promise<sp<Boolean>>>(result)->completeWith(stopService(service));
         break;
     }
     case MSG_BIND_SERVICE: {
@@ -41,7 +41,7 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
         sp<ServiceConnection> conn = object_cast<ServiceConnection>(data->getObject("conn"));
         int32_t flags = data->getInt("flags");
         sp<IBinder> binder = data->getBinder("binder");
-        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(bindService(service, conn, flags, binder::RemoteCallback::Stub::asInterface(binder)));
+        object_cast<Promise<sp<Boolean>>>(result)->completeWith(bindService(service, conn, flags, binder::RemoteCallback::Stub::asInterface(binder)));
         break;
     }
     case MSG_UNBIND_SERVICE: {
@@ -57,12 +57,12 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
     }
     case MSG_START_SYSTEM_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<ComponentName>>, Thenable>(result)->completeWith(startSystemService(service));
+        object_cast<Promise<sp<ComponentName>>>(result)->completeWith(startSystemService(service));
         break;
     }
     case MSG_STOP_SYSTEM_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(stopSystemService(service));
+        object_cast<Promise<sp<Boolean>>>(result)->completeWith(stopSystemService(service));
         break;
     }
     default:

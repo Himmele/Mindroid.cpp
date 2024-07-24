@@ -26,7 +26,7 @@ const char* const CommandHandler::Stub::DESCRIPTOR = "mindroid://interfaces/mind
 void CommandHandler::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_EXECUTE: {
-        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(execute(object_cast<StringArray>(obj)));
+        object_cast<Promise<sp<String>>>(result)->completeWith(execute(object_cast<StringArray>(obj)));
         break;
     }
     default:

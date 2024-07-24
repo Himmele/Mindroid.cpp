@@ -30,13 +30,13 @@ void PackageManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
     switch (what) {
     case MSG_GET_INSTALLED_PACKAGES: {
         sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(num);
-        object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>, Thenable>(result)->complete(packages);
+        object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>>(result)->complete(packages);
         break;
     }
     case MSG_RESOLVE_SERVICE: {
         sp<Intent> intent = object_cast<Intent>(obj);
         sp<ResolveInfo> serviceInfo = resolveService(intent, num);
-        object_cast<Promise<sp<ResolveInfo>>, Thenable>(result)->complete(serviceInfo);
+        object_cast<Promise<sp<ResolveInfo>>>(result)->complete(serviceInfo);
         break;
     }
     default:

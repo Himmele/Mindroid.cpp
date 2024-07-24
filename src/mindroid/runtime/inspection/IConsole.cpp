@@ -31,21 +31,21 @@ void Console::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj,
         sp<String> description = data->getString("description");
         sp<IBinder> binder = data->getBinder("binder");
         addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder));
-        object_cast<Promise<sp<Boolean>>, Thenable>(result)->complete(new Boolean(addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder))));
+        object_cast<Promise<sp<Boolean>>>(result)->complete(new Boolean(addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder))));
         break;
     }
     case MSG_REMOVE_COMMAND: {
-        object_cast<Promise<sp<Boolean>>, Thenable>(result)->complete(new Boolean(removeCommand(object_cast<String>(obj))));
+        object_cast<Promise<sp<Boolean>>>(result)->complete(new Boolean(removeCommand(object_cast<String>(obj))));
         break;
     }
     case MSG_EXECUTE_COMMAND: {
         sp<String> command = data->getString("command");
         sp<StringArray> arguments = object_cast<StringArray>(data->getObject("arguments"));
-        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(executeCommand(command, arguments));
+        object_cast<Promise<sp<String>>>(result)->completeWith(executeCommand(command, arguments));
         break;
     }
     case MSG_LIST_COMMANDS: {
-        object_cast<Promise<sp<HashMap<sp<String>, sp<String>>>>, Thenable>(result)->complete(listCommands());
+        object_cast<Promise<sp<HashMap<sp<String>, sp<String>>>>>(result)->complete(listCommands());
         break;
     }
     default:

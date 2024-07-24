@@ -29,17 +29,17 @@ void Logger::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, 
         sp<String> tag = data->getString("tag");
         sp<String> message = data->getString("message");
         int64_t timeout = data->getLong("timeout");
-        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(assumeThat(tag, message, timeout));
+        object_cast<Promise<sp<String>>>(result)->completeWith(assumeThat(tag, message, timeout));
         break;
     }
     case MSG_MARK: {
         mark();
-        object_cast<Promise<sp<Void>>, Thenable>(result)->complete(nullptr);
+        object_cast<Promise<sp<Void>>>(result)->complete(nullptr);
         break;
     }
     case MSG_RESET: {
         reset();
-        object_cast<Promise<sp<Void>>, Thenable>(result)->complete(nullptr);
+        object_cast<Promise<sp<Void>>>(result)->complete(nullptr);
         break;
     }
     default:
