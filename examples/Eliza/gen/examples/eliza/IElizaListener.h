@@ -62,7 +62,7 @@ public:
             return this;
         }
 
-        void onTransact(int32_t what, const sp<mindroid::Parcel>& data, const sp<mindroid::Thenable>& result) override;
+        void onTransact(int32_t what, const sp<mindroid::Parcel>& data, const sp<mindroid::Promise<sp<mindroid::Parcel>>>& result) override;
 
         class Proxy : public IElizaListener {
         public:

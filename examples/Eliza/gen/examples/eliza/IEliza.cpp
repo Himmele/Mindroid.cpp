@@ -28,14 +28,14 @@ namespace binder {
 
 const char* const Eliza::Stub::DESCRIPTOR = "mindroid://interfaces/examples/eliza/IEliza";
 
-void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Thenable>& result) {
+void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
     switch (what) {
     case MSG_ASK1: {
         sp<String> _question = data->getString();
         sp<String> _reply = ask1(_question);
         sp<Parcel> _parcel = Parcel::obtain();
         _parcel->putString(_reply);
-        object_cast<Promise<sp<Parcel>>, Thenable>(result)->complete(_parcel);
+        result->complete(_parcel);
         break;
     }
     case MSG_ASK2: {
@@ -46,12 +46,12 @@ void Eliza::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Then
                 sp<Parcel> _parcel = Parcel::obtain();
                 try {
                     _parcel->putString(value);
-                    object_cast<Promise<sp<Parcel>>, Thenable>(result)->complete(_parcel);
+                    result->complete(_parcel);
                 } catch (const RemoteException& e) {
-                    object_cast<Promise<sp<Parcel>>, Thenable>(result)->completeWith(e);
+                    result->completeWith(e);
                 }
             } else {
-                object_cast<Promise<sp<Parcel>>, Thenable>(result)->completeWith(exception);
+                result->completeWith(exception);
             }
         });
         break;

@@ -221,7 +221,7 @@ protected:
      * <p>
      * If you want to call this, call transact().
      */
-    virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Thenable>& result) {
+    virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
         throw RemoteException(NoSuchMethodException());
     }
 

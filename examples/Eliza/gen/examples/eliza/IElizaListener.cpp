@@ -28,7 +28,7 @@ namespace binder {
 
 const char* const ElizaListener::Stub::DESCRIPTOR = "mindroid://interfaces/examples/eliza/IElizaListener";
 
-void ElizaListener::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Thenable>& result) {
+void ElizaListener::Stub::onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
     switch (what) {
     case MSG_ON_REPLY: {
         sp<String> _reply = data->getString();
