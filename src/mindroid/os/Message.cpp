@@ -17,7 +17,7 @@
 
 #include <mindroid/os/Message.h>
 #include <mindroid/os/Handler.h>
-#include <mindroid/util/concurrent/Promise.h>
+#include <mindroid/util/concurrent/Thenable.h>
 
 namespace mindroid {
 

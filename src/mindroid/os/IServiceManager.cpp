@@ -24,16 +24,16 @@ namespace binder {
 
 const char* const ServiceManager::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/os/IServiceManager";
 
-void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_START_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<ComponentName>>, Object>(result)->completeWith(startService(service));
+        object_cast<Promise<sp<ComponentName>>, Thenable>(result)->completeWith(startService(service));
         break;
     }
     case MSG_STOP_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<Boolean>>, Object>(result)->completeWith(stopService(service));
+        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(stopService(service));
         break;
     }
     case MSG_BIND_SERVICE: {
@@ -41,7 +41,7 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
         sp<ServiceConnection> conn = object_cast<ServiceConnection>(data->getObject("conn"));
         int32_t flags = data->getInt("flags");
         sp<IBinder> binder = data->getBinder("binder");
-        object_cast<Promise<sp<Boolean>>, Object>(result)->completeWith(bindService(service, conn, flags, binder::RemoteCallback::Stub::asInterface(binder)));
+        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(bindService(service, conn, flags, binder::RemoteCallback::Stub::asInterface(binder)));
         break;
     }
     case MSG_UNBIND_SERVICE: {
@@ -57,12 +57,12 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
     }
     case MSG_START_SYSTEM_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<ComponentName>>, Object>(result)->completeWith(startSystemService(service));
+        object_cast<Promise<sp<ComponentName>>, Thenable>(result)->completeWith(startSystemService(service));
         break;
     }
     case MSG_STOP_SYSTEM_SERVICE: {
         sp<Intent> service = object_cast<Intent>(obj);
-        object_cast<Promise<sp<Boolean>>, Object>(result)->completeWith(stopSystemService(service));
+        object_cast<Promise<sp<Boolean>>, Thenable>(result)->completeWith(stopSystemService(service));
         break;
     }
     default:
@@ -72,13 +72,13 @@ void ServiceManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
 
 sp<Promise<sp<ComponentName>>> ServiceManager::Stub::Proxy::startService(const sp<Intent>& service) {
     sp<Promise<sp<ComponentName>>> promise = new Promise<sp<ComponentName>>();
-    mRemote->transact(MSG_START_SERVICE, 0, service, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_START_SERVICE, 0, service, nullptr, promise, 0);
     return promise;
 }
 
 sp<Promise<sp<Boolean>>> ServiceManager::Stub::Proxy::stopService(const sp<Intent>& service) {
     sp<Promise<sp<Boolean>>> promise = new Promise<sp<Boolean>>();
-    mRemote->transact(MSG_STOP_SERVICE, 0, service, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_STOP_SERVICE, 0, service, nullptr, promise, 0);
     return promise;
 }
 
@@ -89,7 +89,7 @@ sp<Promise<sp<Boolean>>> ServiceManager::Stub::Proxy::bindService(const sp<Inten
     data->putObject("conn", conn);
     data->putInt("flags", flags);
     data->putBinder("binder", callback->asBinder());
-    mRemote->transact(MSG_BIND_SERVICE, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_BIND_SERVICE, 0, nullptr, data, promise, 0);
     return promise;
 }
 
@@ -110,13 +110,13 @@ void ServiceManager::Stub::Proxy::unbindService(const sp<Intent>& intent, const 
 
 sp<Promise<sp<ComponentName>>> ServiceManager::Stub::Proxy::startSystemService(const sp<Intent>& service) {
     sp<Promise<sp<ComponentName>>> promise = new Promise<sp<ComponentName>>();
-    mRemote->transact(MSG_START_SYSTEM_SERVICE, 0, service, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_START_SYSTEM_SERVICE, 0, service, nullptr, promise, 0);
     return promise;
 }
 
 sp<Promise<sp<Boolean>>> ServiceManager::Stub::Proxy::stopSystemService(const sp<Intent>& service) {
     sp<Promise<sp<Boolean>>> promise = new Promise<sp<Boolean>>();
-    mRemote->transact(MSG_STOP_SYSTEM_SERVICE, 0, service, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_STOP_SYSTEM_SERVICE, 0, service, nullptr, promise, 0);
     return promise;
 }
 

@@ -27,7 +27,7 @@ namespace mindroid {
 class Runnable;
 class Handler;
 class Message;
-template<typename T> class Promise;
+class Thenable;
 
 /// @private
 struct MessagePool {
@@ -277,7 +277,7 @@ private:
      *
      * @hide
      */
-    sp<Promise<sp<Object>>> result;
+    sp<Thenable> result;
 
     friend class MessageQueue;
     friend class Looper;

@@ -173,7 +173,7 @@ public:
      */
     sp<Promise<sp<Parcel>>> transact(int32_t what, const sp<Parcel>& data, int32_t flags) override;
 
-    void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
+    void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result, int32_t flags) override;
 
     void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 
@@ -221,11 +221,11 @@ protected:
      * <p>
      * If you want to call this, call transact().
      */
-    virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Promise<sp<Parcel>>>& result) {
+    virtual void onTransact(int32_t what, const sp<Parcel>& data, const sp<Thenable>& result) {
         throw RemoteException(NoSuchMethodException());
     }
 
-    virtual void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+    virtual void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
         throw RemoteException(NoSuchMethodException());
     }
 
@@ -271,7 +271,7 @@ public:
 
         sp<Promise<sp<Parcel>>> transact(int32_t what, const sp<Parcel>& data, int32_t flags) override;
 
-        void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) override;
+        void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result, int32_t flags) override;
 
         void link(const sp<Supervisor>& supervisor, const sp<Bundle>& extras) override;
 

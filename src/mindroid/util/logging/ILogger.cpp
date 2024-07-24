@@ -23,23 +23,23 @@ namespace binder {
 
 const char* const Logger::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/util/logging/ILogger";
 
-void Logger::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+void Logger::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_ASSUME_THAT: {
         sp<String> tag = data->getString("tag");
         sp<String> message = data->getString("message");
         int64_t timeout = data->getLong("timeout");
-        object_cast<Promise<sp<String>>, Object>(result)->completeWith(assumeThat(tag, message, timeout));
+        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(assumeThat(tag, message, timeout));
         break;
     }
     case MSG_MARK: {
         mark();
-        object_cast<Promise<sp<Void>>, Object>(result)->complete(nullptr);
+        object_cast<Promise<sp<Void>>, Thenable>(result)->complete(nullptr);
         break;
     }
     case MSG_RESET: {
         reset();
-        object_cast<Promise<sp<Void>>, Object>(result)->complete(nullptr);
+        object_cast<Promise<sp<Void>>, Thenable>(result)->complete(nullptr);
         break;
     }
     default:
@@ -53,19 +53,19 @@ sp<Promise<sp<String>>> Logger::Stub::Proxy::assumeThat(const sp<String>& tag, c
     data->putString("tag", tag);
     data->putString("message", message);
     data->putLong("timeout", timeout);
-    mRemote->transact(MSG_ASSUME_THAT, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_ASSUME_THAT, 0, nullptr, data, promise, 0);
     return promise;
 }
 
 void Logger::Stub::Proxy::mark() {
     sp<Promise<sp<Void>>> promise = new Promise<sp<Void>>();
-    mRemote->transact(MSG_MARK, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_MARK, 0, nullptr, nullptr, promise, 0);
     Binder::get(promise);
 }
 
 void Logger::Stub::Proxy::reset() {
     sp<Promise<sp<Void>>> promise = new Promise<sp<Void>>();
-    mRemote->transact(MSG_RESET, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_RESET, 0, nullptr, nullptr, promise, 0);
     Binder::get(promise);
 }
 

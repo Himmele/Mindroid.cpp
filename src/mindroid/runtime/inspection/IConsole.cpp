@@ -24,28 +24,28 @@ namespace binder {
 
 const char* const Console::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/inspection/IConsole";
 
-void Console::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+void Console::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_ADD_COMMAND: {
         sp<String> command = data->getString("command");
         sp<String> description = data->getString("description");
         sp<IBinder> binder = data->getBinder("binder");
         addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder));
-        object_cast<Promise<sp<Boolean>>, Object>(result)->complete(new Boolean(addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder))));
+        object_cast<Promise<sp<Boolean>>, Thenable>(result)->complete(new Boolean(addCommand(command, description, binder::CommandHandler::Stub::asInterface(binder))));
         break;
     }
     case MSG_REMOVE_COMMAND: {
-        object_cast<Promise<sp<Boolean>>, Object>(result)->complete(new Boolean(removeCommand(object_cast<String>(obj))));
+        object_cast<Promise<sp<Boolean>>, Thenable>(result)->complete(new Boolean(removeCommand(object_cast<String>(obj))));
         break;
     }
     case MSG_EXECUTE_COMMAND: {
         sp<String> command = data->getString("command");
         sp<StringArray> arguments = object_cast<StringArray>(data->getObject("arguments"));
-        object_cast<Promise<sp<String>>, Object>(result)->completeWith(executeCommand(command, arguments));
+        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(executeCommand(command, arguments));
         break;
     }
     case MSG_LIST_COMMANDS: {
-        object_cast<Promise<sp<HashMap<sp<String>, sp<String>>>>, Object>(result)->complete(listCommands());
+        object_cast<Promise<sp<HashMap<sp<String>, sp<String>>>>, Thenable>(result)->complete(listCommands());
         break;
     }
     default:
@@ -59,13 +59,13 @@ bool Console::Stub::Proxy::addCommand(const sp<String>& command, const sp<String
     data->putString("description", description);
     data->putBinder("binder", commandHandler->asBinder());
     sp<Promise<sp<Boolean>>> promise = new Promise<sp<Boolean>>();
-    mRemote->transact(MSG_ADD_COMMAND, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_ADD_COMMAND, 0, nullptr, data, promise, 0);
     return Binder::get(promise)->booleanValue();
 }
 
 bool Console::Stub::Proxy::removeCommand(const sp<String>& command) {
     sp<Promise<sp<Boolean>>> promise = new Promise<sp<Boolean>>();
-    mRemote->transact(MSG_REMOVE_COMMAND, 0, command, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_REMOVE_COMMAND, 0, command, nullptr, promise, 0);
     return Binder::get(promise)->booleanValue();
 }
 
@@ -74,13 +74,13 @@ sp<Promise<sp<String>>> Console::Stub::Proxy::executeCommand(const sp<String>& c
     data->putString("command", command);
     data->putObject("arguments", arguments);
     sp<Promise<sp<String>>> promise = new Promise<sp<String>>();
-    mRemote->transact(MSG_EXECUTE_COMMAND, 0, nullptr, data, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_EXECUTE_COMMAND, 0, nullptr, data, promise, 0);
     return promise;
 }
 
 sp<HashMap<sp<String>, sp<String>>> Console::Stub::Proxy::listCommands() {
     sp<Promise<sp<HashMap<sp<String>, sp<String>>>>> promise = new Promise<sp<HashMap<sp<String>, sp<String>>>>();
-    mRemote->transact(MSG_LIST_COMMANDS, 0, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_LIST_COMMANDS, 0, nullptr, nullptr, promise, 0);
     return Binder::get(promise);
 }
 

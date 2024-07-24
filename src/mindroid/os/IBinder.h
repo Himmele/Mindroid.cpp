@@ -30,6 +30,7 @@ class String;
 class Variant;
 class URI;
 class Parcel;
+class Thenable;
 template<typename T> class Promise;
 
 /**
@@ -98,7 +99,7 @@ public:
      * @param flags Additional operation flags. Either 0 for a normal RPC, or {@link #FLAG_ONEWAY}
      * for a one-way RPC.
      */
-    virtual void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) = 0;
+    virtual void transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result, int32_t flags) = 0;
 
     /**
      * Interface for receiving a callback when the process hosting an IBinder

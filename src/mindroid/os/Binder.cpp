@@ -104,7 +104,7 @@ sp<Promise<sp<Parcel>>> Binder::transact(int32_t what, const sp<Parcel>& data, i
         promise = nullptr;
     } else {
         sp<Promise<sp<Parcel>>> p = new Promise<sp<Parcel>>(Executors::SYNCHRONOUS_EXECUTOR);
-        message->result = object_cast<Promise<sp<Object>>, Object>(p);
+        message->result = p;
         promise = p->then([=] (const sp<Parcel>& parcel) {
             parcel->asInput();
         });
@@ -115,14 +115,14 @@ sp<Promise<sp<Parcel>>> Binder::transact(int32_t what, const sp<Parcel>& data, i
     return promise;
 }
 
-void Binder::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) {
+void Binder::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result, int32_t flags) {
     sp<Message> message = Message::obtain();
     message->what = LIGHTWEIGHT_TRANSACTION;
     message->arg1 = what;
     message->arg2 = num;
     message->obj = obj;
     message->setData(data);
-    message->result = promise;
+    message->result = result;
     if (!mTarget->send(message)) {
         throw RemoteException(EXCEPTION_MESSAGE);
     }
@@ -132,7 +132,7 @@ void Binder::onTransact(const sp<Message>& message) {
     try {
         switch (message->what) {
         case TRANSACTION:
-            onTransact(message->arg1, object_cast<Parcel>(message->obj), object_cast<Promise<sp<Parcel>>, Object>(message->result));
+            onTransact(message->arg1, object_cast<Parcel>(message->obj), message->result);
             break;
         case LIGHTWEIGHT_TRANSACTION:
             onTransact(message->arg1, message->arg2, message->obj, message->peekData(), message->result);
@@ -142,7 +142,17 @@ void Binder::onTransact(const sp<Message>& message) {
         }
     } catch (const RemoteException& e) {
         if (message->result != nullptr) {
-            message->result->completeWith(e);
+            switch (message->what) {
+            case TRANSACTION:
+                object_cast<Promise<sp<Parcel>>, Thenable>(message->result)->completeWith(e);
+                break;
+            case LIGHTWEIGHT_TRANSACTION:
+                object_cast<Promise<sp<Object>>, Thenable>(message->result)->completeWith(e);
+                break;
+            default:
+                Log::w(TAG, EXCEPTION_MESSAGE->c_str());
+                break;
+            }
         } else {
             Log::w(TAG, EXCEPTION_MESSAGE->c_str());
         }
@@ -239,7 +249,7 @@ sp<Promise<sp<Parcel>>> Binder::Proxy::transact(int32_t what, const sp<Parcel>& 
     return mRuntime->transact(this, what, data, flags);
 }
 
-void Binder::Proxy::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& promise, int32_t flags) {
+void Binder::Proxy::transact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result, int32_t flags) {
     throw RemoteException(EXCEPTION_MESSAGE);
 }
 

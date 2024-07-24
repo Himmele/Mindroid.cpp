@@ -48,14 +48,6 @@ public:
     virtual ~Future() = default;
 
     /**
-     * Returns {@code true} if completed in any fashion: normally,
-     * exceptionally, or via cancellation.
-     *
-     * @return {@code true} if completed
-     */
-    virtual bool isDone() const = 0;
-
-    /**
      * Waits if necessary for this Future to complete, and then
      * returns its result.
      *
@@ -80,38 +72,6 @@ public:
      * @throws TimeoutException if the wait timed out
      */
     virtual T get(uint64_t timeout) const = 0;
-
-    /**
-     * If not already completed, completes this Future with
-     * a {@link CancellationException}. Dependent Futures
-     * that have not already completed will also complete
-     * exceptionally, with a {@link CompletionException} caused by
-     * this {@code CancellationException}.
-     *
-     * @return {@code true} if this task is now cancelled
-     */
-    virtual bool cancel() = 0;
-
-    /**
-     * Returns {@code true} if this Future was cancelled
-     * before it completed normally.
-     *
-     * @return {@code true} if this Future was cancelled
-     * before it completed normally
-     */
-    virtual bool isCancelled() const = 0;
-
-    /**
-     * Returns {@code true} if this Future completed
-     * exceptionally, in any way. Possible causes include
-     * cancellation, explicit invocation of {@code
-     * completeWith(Throwable)}, and abrupt termination of a
-     * Future action.
-     *
-     * @return {@code true} if this Future completed
-     * exceptionally
-     */
-    virtual bool isCompletedExceptionally() const  = 0;
 };
 
 } /* namespace mindroid */

@@ -58,7 +58,7 @@ public:
             return this;
         }
 
-        void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) override;
+        void onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) override;
 
         class Proxy : public IConsole {
         public:

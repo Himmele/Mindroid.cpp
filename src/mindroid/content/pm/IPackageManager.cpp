@@ -26,17 +26,17 @@ namespace binder {
 
 const char* const PackageManager::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/content/pm/IPackageManager";
 
-void PackageManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+void PackageManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_GET_INSTALLED_PACKAGES: {
         sp<ArrayList<sp<PackageInfo>>> packages = getInstalledPackages(num);
-        object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>, Object>(result)->complete(packages);
+        object_cast<Promise<sp<ArrayList<sp<PackageInfo>>>>, Thenable>(result)->complete(packages);
         break;
     }
     case MSG_RESOLVE_SERVICE: {
         sp<Intent> intent = object_cast<Intent>(obj);
         sp<ResolveInfo> serviceInfo = resolveService(intent, num);
-        object_cast<Promise<sp<ResolveInfo>>, Object>(result)->complete(serviceInfo);
+        object_cast<Promise<sp<ResolveInfo>>, Thenable>(result)->complete(serviceInfo);
         break;
     }
     default:
@@ -46,13 +46,13 @@ void PackageManager::Stub::onTransact(int32_t what, int32_t num, const sp<Object
 
 sp<ArrayList<sp<PackageInfo>>> PackageManager::Stub::Proxy::getInstalledPackages(int32_t flags) {
     sp<Promise<sp<ArrayList<sp<PackageInfo>>>>> promise = new Promise<sp<ArrayList<sp<PackageInfo>>>>();
-    mRemote->transact(MSG_GET_INSTALLED_PACKAGES, flags, nullptr, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_GET_INSTALLED_PACKAGES, flags, nullptr, nullptr, promise, 0);
     return Binder::get(promise);
 }
 
 sp<ResolveInfo> PackageManager::Stub::Proxy::resolveService(const sp<Intent>& intent, int32_t flags) {
     sp<Promise<sp<ResolveInfo>>> promise = new Promise<sp<ResolveInfo>>();
-    mRemote->transact(MSG_RESOLVE_SERVICE, flags, intent, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_RESOLVE_SERVICE, flags, intent, nullptr, promise, 0);
     return Binder::get(promise);
 }
 

@@ -23,10 +23,10 @@ namespace binder {
 
 const char* const CommandHandler::Stub::DESCRIPTOR = "mindroid://interfaces/mindroid/runtime/inspection/ICommandHandler";
 
-void CommandHandler::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Promise<sp<Object>>>& result) {
+void CommandHandler::Stub::onTransact(int32_t what, int32_t num, const sp<Object>& obj, const sp<Bundle>& data, const sp<Thenable>& result) {
     switch (what) {
     case MSG_EXECUTE: {
-        object_cast<Promise<sp<String>>, Object>(result)->completeWith(execute(object_cast<StringArray>(obj)));
+        object_cast<Promise<sp<String>>, Thenable>(result)->completeWith(execute(object_cast<StringArray>(obj)));
         break;
     }
     default:
@@ -36,7 +36,7 @@ void CommandHandler::Stub::onTransact(int32_t what, int32_t num, const sp<Object
 
 sp<Promise<sp<String>>> CommandHandler::Stub::Proxy::execute(const sp<StringArray>& arguments) {
     sp<Promise<sp<String>>> promise = new Promise<sp<String>>();
-    mRemote->transact(MSG_EXECUTE, 0, arguments, nullptr, object_cast<Promise<sp<Object>>, Object>(promise), 0);
+    mRemote->transact(MSG_EXECUTE, 0, arguments, nullptr, promise, 0);
     return promise;
 }
 
